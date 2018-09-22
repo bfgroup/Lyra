@@ -487,9 +487,9 @@ namespace detail {
         virtual ~ParserBase() = default;
         virtual auto validate() const -> Result { return Result::ok(); }
         virtual auto parse( std::string const& exeName, TokenStream const &tokens, ParserCustomization const &customize ) const -> InternalParseResult  = 0;
-        virtual auto cardinality() const -> std::tuple<int,int> { return std::make_tuple(0,1); }
+        virtual auto cardinality() const -> std::tuple<size_t,size_t> { return std::make_tuple(0,1); }
 
-        auto cardinalityCount() const -> int {
+        auto cardinalityCount() const -> size_t {
             auto c = cardinality();
             return std::get<1>(c) - std::get<0>(c);
         }
@@ -517,7 +517,7 @@ namespace detail {
         std::shared_ptr<BoundRef> m_ref;
         std::string m_hint;
         std::string m_description;
-        std::tuple<int,int> m_cardinality;
+        std::tuple<size_t,size_t> m_cardinality;
 
         explicit ParserRefImpl( std::shared_ptr<BoundRef> const &ref )
         :   m_ref( ref ) {
@@ -557,12 +557,12 @@ namespace detail {
             return static_cast<DerivedT &>( *this );
         };
 
-        auto cardinality(int n) -> DerivedT & {
+        auto cardinality(size_t n) -> DerivedT & {
             m_cardinality = std::make_tuple(n, n);
             return static_cast<DerivedT &>( *this );
         }
 
-        auto cardinality(int n, int m) -> DerivedT & {
+        auto cardinality(size_t n, size_t m) -> DerivedT & {
             m_cardinality = std::make_tuple(n, m);
             return static_cast<DerivedT &>( *this );
         }
@@ -571,7 +571,7 @@ namespace detail {
             return m_optionality == Optionality::Optional;
         }
 
-        auto cardinality() const -> std::tuple<int,int> override {
+        auto cardinality() const -> std::tuple<size_t,size_t> override {
             return m_cardinality;
         }
 
@@ -922,7 +922,7 @@ namespace detail {
                 if( result.value().type() == ParseResultType::ShortCircuitAll )
                     return result;
                 if( !tokenParsed )
-                    return InternalParseResult::runtimeError( "Unrecognised token: " + result.value().remainingTokens()->token );
+                    return InternalParseResult::runtimeError( "Unrecognized token: " + result.value().remainingTokens()->token );
             }
             // !TBD Check missing required options
             return result;
