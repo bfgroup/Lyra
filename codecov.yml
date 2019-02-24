@@ -1,7 +1,0 @@
-codecov:
-  branch: master
-
-coverage:
-  ignore:
-    - "src/*"
-    - "third_party/catch.hpp"

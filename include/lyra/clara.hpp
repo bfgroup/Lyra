@@ -27,7 +27,7 @@
 #   endif
 #endif
 
-#include "clara_textflow.hpp"
+#include "detail/TextFlow.hpp"
 
 #include <vector>
 #include <memory>

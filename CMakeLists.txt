@@ -1,39 +1,36 @@
-cmake_minimum_required(VERSION 3.8.2)
-project(Clara)
+# Copyright Rene Rivera 2019
+# Distributed under the Boost Software License, Version 1.0.
+# See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt
 
-set(SOURCE_FILES src/main.cpp src/ClaraTests.cpp include/clara.hpp)
-include_directories( include third_party )
-add_executable(ClaraTests ${SOURCE_FILES})
+# NOTE:
+#   CMake support for Lyra is currently experimental at best and the
+#   interface is likely to change in the future
+#
+# This file provides minimal cmake support (no unit-tests,
+# no installation) for integration into a "host" cmake project
+# via the "add_subdirectory( <path-to-lyra> )" command.
+#
+# Other cmake targets can then use the public target name
+# "BFG::Lyra" in order to express their dependency
+# on this library. I.e:
+#
+# target_link_libraries( <my-exe/lib> PUBLIC BFG::Lyra )
 
-if(USE_CPP14)
-    set_property(TARGET ClaraTests PROPERTY CXX_STANDARD 14)
-    message(STATUS "Enabled C++14")
-elseif(USE_CPP17)
-    set_property(TARGET ClaraTests PROPERTY CXX_STANDARD 17)
-    message(STATUS "Enabled C++17")
-else(USE_CPP11)
-    set_property(TARGET ClaraTests PROPERTY CXX_STANDARD 11)
-    message(STATUS "Enabled C++11")
-endif()
+# Only need the basic minimum of project, add_library, and
+# target_include_directories commands.
+cmake_minimum_required( VERSION 3.0 )
 
-set_property(TARGET ClaraTests PROPERTY CXX_STANDARD_REQUIRED ON)
-set_property(TARGET ClaraTests PROPERTY CXX_EXTENSIONS OFF)
+# Don't set VERSION, as that's a pita to keep up to date with the version
+# header. And don't set LANGUAGES as we are multi-language and header
+# only, so it's irrelevant.
+project( BFG_Lyra )
 
+# Simple INTERFACE, and header only, library target.
+add_library( bfg_lyra INTERFACE )
 
-if( CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU" )
-    target_compile_options( ClaraTests PRIVATE -Wall -Wextra -pedantic -Werror )
-endif()
-if( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
-	target_compile_options( ClaraTests PRIVATE /W4 /WX )
-endif()
+# The only usage requirement is include dir for consumers.
+target_include_directories( bfg_lyra INTERFACE include )
 
-if (ENABLE_COVERAGE)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")
-    find_package(codecov)
-    add_coverage(ClaraTests)
-    list(APPEND LCOV_REMOVE_PATTERNS "/usr/")
-    coverage_evaluate()
-endif()
-
-include(CTest)
-add_test(NAME RunTests COMMAND $<TARGET_FILE:ClaraTests>)
+# Add an alias to public name.
+add_library( BFG::Lyra ALIAS bfg_lyra )
