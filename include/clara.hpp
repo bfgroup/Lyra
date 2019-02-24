@@ -35,6 +35,7 @@
 #include <cassert>
 #include <set>
 #include <algorithm>
+#include <tuple>
 
 #if !defined(CLARA_PLATFORM_WINDOWS) && ( defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) )
 #define CLARA_PLATFORM_WINDOWS
@@ -486,7 +487,12 @@ namespace detail {
         virtual ~ParserBase() = default;
         virtual auto validate() const -> Result { return Result::ok(); }
         virtual auto parse( std::string const& exeName, TokenStream const &tokens, ParserCustomization const &customize ) const -> InternalParseResult  = 0;
-        virtual auto cardinality() const -> size_t { return 1; }
+        virtual auto cardinality() const -> std::tuple<size_t,size_t> { return std::make_tuple(0,1); }
+
+        auto cardinalityCount() const -> size_t {
+            auto c = cardinality();
+            return std::get<1>(c) - std::get<0>(c);
+        }
 
         auto parse( Args const &args, ParserCustomization const &customize = DefaultParserCustomization() ) const -> InternalParseResult {
             return parse( args.exeName(), TokenStream( args, customize.token_delimiters(), customize.option_prefix() ), customize );
@@ -511,21 +517,30 @@ namespace detail {
         std::shared_ptr<BoundRef> m_ref;
         std::string m_hint;
         std::string m_description;
+        std::tuple<size_t,size_t> m_cardinality;
 
-        explicit ParserRefImpl( std::shared_ptr<BoundRef> const &ref ) : m_ref( ref ) {}
+        explicit ParserRefImpl( std::shared_ptr<BoundRef> const &ref )
+        :   m_ref( ref ) {
+            if( m_ref->isContainer() )
+                m_cardinality = std::make_tuple(0,0);
+            else
+                m_cardinality = std::make_tuple(0,1);
+        }
 
     public:
         template<typename T>
         ParserRefImpl( T &ref, std::string const &hint )
-        :   m_ref( std::make_shared<BoundValueRef<T>>( ref ) ),
-            m_hint( hint )
-        {}
+        :   ParserRefImpl( std::make_shared<BoundValueRef<T>>( ref ) )
+        {
+            m_hint = hint;
+        }
 
         template<typename LambdaT>
         ParserRefImpl( LambdaT const &ref, std::string const &hint )
-        :   m_ref( std::make_shared<BoundLambda<LambdaT>>( ref ) ),
-            m_hint(hint)
-        {}
+        :   ParserRefImpl( std::make_shared<BoundLambda<LambdaT>>( ref ) )
+        {
+            m_hint = hint;
+        }
 
         auto operator()( std::string const &description ) -> DerivedT & {
             m_description = description;
@@ -542,15 +557,22 @@ namespace detail {
             return static_cast<DerivedT &>( *this );
         };
 
+        auto cardinality(size_t n) -> DerivedT & {
+            m_cardinality = std::make_tuple(n, n);
+            return static_cast<DerivedT &>( *this );
+        }
+
+        auto cardinality(size_t n, size_t m) -> DerivedT & {
+            m_cardinality = std::make_tuple(n, m);
+            return static_cast<DerivedT &>( *this );
+        }
+
         auto isOptional() const -> bool {
             return m_optionality == Optionality::Optional;
         }
 
-        auto cardinality() const -> size_t override {
-            if( m_ref->isContainer() )
-                return 0;
-            else
-                return 1;
+        auto cardinality() const -> std::tuple<size_t,size_t> override {
+            return m_cardinality;
         }
 
         auto hint() const -> std::string { return m_hint; }
@@ -812,7 +834,7 @@ namespace detail {
                         required = false;
                     }
                     os << "<" << arg.hint() << ">";
-                    if( arg.cardinality() == 0 )
+                    if( arg.cardinalityCount() != 1 )
                         os << " ... ";
                 }
                 if( !required )
@@ -885,7 +907,7 @@ namespace detail {
 
                 for( size_t i = 0; i < totalParsers; ++i ) {
                     auto&  parseInfo = parseInfos[i];
-                    if( parseInfo.parser->cardinality() == 0 || parseInfo.count < parseInfo.parser->cardinality() ) {
+                    if( parseInfo.parser->cardinalityCount() == 0 || parseInfo.count < parseInfo.parser->cardinalityCount() ) {
                         result = parseInfo.parser->parse(exeName, result.value().remainingTokens(), customize);
                         if (!result)
                             return result;
@@ -900,7 +922,7 @@ namespace detail {
                 if( result.value().type() == ParseResultType::ShortCircuitAll )
                     return result;
                 if( !tokenParsed )
-                    return InternalParseResult::runtimeError( "Unrecognised token: " + result.value().remainingTokens()->token );
+                    return InternalParseResult::runtimeError( "Unrecognized token: " + result.value().remainingTokens()->token );
             }
             // !TBD Check missing required options
             return result;
