@@ -143,7 +143,7 @@ before_install:
 install:
   - |
     cd ..
-    tar xvf b2.zip
+    7z x b2.zip
     cd b2
     ./bootstrap.sh
     ./b2 install
