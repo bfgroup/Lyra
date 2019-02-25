@@ -33,7 +33,7 @@ namespace bfg { namespace mini_test {
         }
     };
 
-    #define REQUIRE(condition) (condition), #condition, __FILE__, __LINE__
+    #define REQUIRE(condition) (bool(condition)), #condition, __FILE__, __LINE__
 }}
 
 #endif

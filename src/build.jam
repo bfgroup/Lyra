@@ -12,3 +12,4 @@ project /bfg_lyra_tests
 
 compile test_base.cpp ;
 run test_single_parser.cpp ;
+run test_combined_parser.cpp ;
