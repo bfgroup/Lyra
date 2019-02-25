@@ -1,5 +1,79 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Rene Rivera 2019.
+
 version: "{build}"
 
 os:
   - Visual Studio 2017
   - Visual Studio 2015
+
+environment:
+  matrix:
+  - TOOLSET: msvc
+    COMPILER_VERSION: 9.0
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: msvc
+    COMPILER_VERSION: 10.0
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: msvc
+    COMPILER_VERSION: 11.0
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: msvc
+    COMPILER_VERSION: 12.0
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: msvc
+    COMPILER_VERSION: 12.0
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: msvc
+    COMPILER_VERSION: 14.0
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: msvc
+    COMPILER_VERSION: 14.0
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: msvc
+    COMPILER_VERSION: 14.1
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: msvc
+    COMPILER_VERSION: 14.1
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: gcc
+    COMPILER: C:/MinGW/bin/g++.exe
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: gcc
+    COMPILER: C:/mingw-w64/x86_64-6.3.0-posix-seh-rt_v5-rev1/mingw64/bin/g++.exe
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: gcc
+    COMPILER: C:/mingw-w64/x86_64-7.3.0-posix-seh-rt_v5-rev0/mingw64/bin/g++.exe
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: gcc
+    COMPILER: C:/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/g++.exe
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+install:
+  - cd %APPVEYOR_BUILD_FOLDER%/..
+  - curl "https://github.com/boostorg/build/archive/develop.zip" -o b2.zip
+  - 7z x b2.zip
+  - cd build-develop
+  - ./bootstrap.bat
+  - ./b2.exe install
+
+test_script:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - "echo \"using %TOOLSET% : %COMPILER_VERSION% : %COMPILER% ;\" > project-config.jam"
+  - "%APPVEYOR_BUILD_FOLDER%/../build-develop/b2 toolset=%TOOLSET% address-model=%PLATFORM%"
