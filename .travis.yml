@@ -23,7 +23,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['clang-3.5']
-      env: COMPILER='clang++-3.5' TOOLSET=clang
+      env: COMPILER='clang++-3.5' TOOLSET=clang CXXSTD=11
 
     - os: linux
       compiler: clang
@@ -31,7 +31,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: [clang-3.6']
-      env: COMPILER='clang++-3.6' TOOLSET=clang
+      env: COMPILER='clang++-3.6' TOOLSET=clang CXXSTD=11,14
 
     # Travis's containers do not seem to have Clang 3.7 in apt, no matter what sources I add.
     # - os: linux
@@ -40,7 +40,7 @@ matrix:
     #     apt:
     #       sources: *all_sources
     #       packages: ['clang-3.7']
-    #   env: COMPILER='clang++-3.7' TOOLSET=clang
+    #   env: COMPILER='clang++-3.7' TOOLSET=clang CXXSTD=11,14
 
     - os: linux
       compiler: clang
@@ -48,40 +48,40 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['clang-3.8']
-      env: COMPILER='clang++-3.8' TOOLSET=clang
+      env: COMPILER='clang++-3.8' TOOLSET=clang CXXSTD=11,14
 
     - os: linux
       compiler: clang
       addons:
           apt:
-              sources: *all_sources
-              packages: ['clang-3.9']
-      env: COMPILER='clang++-3.9' TOOLSET=clang
+            sources: *all_sources
+            packages: ['clang-3.9']
+      env: COMPILER='clang++-3.9' TOOLSET=clang CXXSTD=11,14
 
     - os: linux
       compiler: clang
       addons:
           apt:
-              sources: *all_sources
-              packages: ['clang-4.0']
-      env: COMPILER='clang++-4.0' TOOLSET=clang
+            sources: *all_sources
+            packages: ['clang-4.0']
+      env: COMPILER='clang++-4.0' TOOLSET=clang CXXSTD=11,14
 
     - os: linux
       compiler: clang
       addons:
           apt:
-              sources: *all_sources
-              packages: ['clang-5.0']
-      env: COMPILER='clang++-5.0' TOOLSET=clang
+            sources: *all_sources
+            packages: ['clang-5.0']
+      env: COMPILER='clang++-5.0' TOOLSET=clang CXXSTD=11,14,17
 
     # 2/ Linux GCC Builds
     - os: linux
       compiler: gcc
       addons:
         apt:
-         sources: ['ubuntu-toolchain-r-test']
+          sources: *all_sources
          packages: ['g++-4.8']
-      env: COMPILER='g++-4.8' TOOLSET=gcc
+      env: COMPILER='g++-4.8' TOOLSET=gcc CXXSTD=11
 
     - os: linux
       compiler: gcc
@@ -89,7 +89,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['g++-4.9']
-      env: COMPILER='g++-4.9' TOOLSET=gcc
+      env: COMPILER='g++-4.9' TOOLSET=gcc CXXSTD=11
 
     - os: linux
       compiler: gcc
@@ -97,7 +97,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['g++-5']
-      env: COMPILER='g++-5' TOOLSET=gcc
+      env: COMPILER='g++-5' TOOLSET=gcc CXXSTD=11,14
 
     - os: linux
       compiler: gcc
@@ -105,7 +105,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['g++-6']
-      env: COMPILER='g++-6' TOOLSET=gcc
+      env: COMPILER='g++-6' TOOLSET=gcc CXXSTD=11,14,17
 
     - os: linux
       compiler: gcc
@@ -113,28 +113,28 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['g++-7']
-      env: COMPILER='g++-7' TOOLSET=gcc
+      env: COMPILER='g++-7' TOOLSET=gcc CXXSTD=11,14,17
       
     # 5/ OSX Clang Builds
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      env: COMPILER='clang++' TOOLSET=clang
+      env: COMPILER='clang++' TOOLSET=clang CXXSTD=11
 
     - os: osx
       osx_image: xcode9
       compiler: clang
-      env: COMPILER='clang++' TOOLSET=clang
+      env: COMPILER='clang++' TOOLSET=clang CXXSTD=11,14
 
     - os: osx
       osx_image: xcode9.1
       compiler: clang
-      env: COMPILER='clang++' TOOLSET=clang
+      env: COMPILER='clang++' TOOLSET=clang CXXSTD=11,14
 
     - os: osx
       osx_image: xcode9.1
       compiler: clang
-      env: COMPILER='clang++' TOOLSET=clang
+      env: COMPILER='clang++' TOOLSET=clang CXXSTD=11,14,17
 
 before_install:
   - |
@@ -152,5 +152,5 @@ install:
 script:
   - "echo \"using ${TOOLSET} : : ${COMPILER} ;\" > project-config.jam"
   - "pushd src"
-  - "b2 toolset=${TOOLSET}"
+  - "b2 toolset=${TOOLSET} cxxstd=${CXXSTD}"
   - "popd"
