@@ -112,7 +112,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-          packages: [''g++-7']
+          packages: ['g++-7']
       env: COMPILER='g++-7' TOOLSET=gcc
       
     # 5/ OSX Clang Builds
