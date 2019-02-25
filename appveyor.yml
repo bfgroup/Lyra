@@ -76,7 +76,7 @@ build: off
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%
-  - "echo \"using %TOOLSET% : %COMPILER_VERSION% : %COMPILER% ;\" > project-config.jam"
+  - "echo using %TOOLSET% ^: %COMPILER_VERSION% ^: %COMPILER% ^; > project-config.jam"
   - type project-config.jam
   - set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
   - cd src
