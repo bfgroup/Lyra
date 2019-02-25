@@ -8,26 +8,26 @@ version: "{build}"
 
 environment:
   matrix:
-  - TOOLSET: msvc
-    COMPILER_VERSION: 9.0
-    platform: 32
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-  - TOOLSET: msvc
-    COMPILER_VERSION: 10.0
-    platform: 32
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-  - TOOLSET: msvc
-    COMPILER_VERSION: 11.0
-    platform: 32
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-  - TOOLSET: msvc
-    COMPILER_VERSION: 12.0
-    platform: 32
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-  - TOOLSET: msvc
-    COMPILER_VERSION: 12.0
-    platform: 64
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  # - TOOLSET: msvc
+  #   COMPILER_VERSION: 9.0
+  #   platform: 32
+  #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  # - TOOLSET: msvc
+  #   COMPILER_VERSION: 10.0
+  #   platform: 32
+  #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  # - TOOLSET: msvc
+  #   COMPILER_VERSION: 11.0
+  #   platform: 32
+  #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  # - TOOLSET: msvc
+  #   COMPILER_VERSION: 12.0
+  #   platform: 32
+  #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  # - TOOLSET: msvc
+  #   COMPILER_VERSION: 12.0
+  #   platform: 64
+  #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
   - TOOLSET: msvc
     COMPILER_VERSION: 14.0
     platform: 32
