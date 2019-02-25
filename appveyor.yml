@@ -76,4 +76,4 @@ test_script:
   - type project-config.jam
   - set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
   - cd src
-  - "%APPVEYOR_BUILD_FOLDER%/../build-develop/b2 toolset=%TOOLSET% address-model=%PLATFORM%"
+  - "%APPVEYOR_BUILD_FOLDER%/../build-develop/b2 toolset=%TOOLSET% address-model=%PLATFORM% -j2"

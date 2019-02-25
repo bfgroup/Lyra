@@ -152,5 +152,5 @@ install:
 script:
   - "echo \"using ${TOOLSET} : : ${COMPILER} ;\" > project-config.jam"
   - "pushd src"
-  - "b2 toolset=${TOOLSET} cxxstd=${CXXSTD}"
+  - "b2 toolset=${TOOLSET} cxxstd=${CXXSTD} -j2"
   - "popd"
