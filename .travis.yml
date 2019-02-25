@@ -144,7 +144,7 @@ install:
   - |
     cd ..
     unzip b2.zip
-    cd b2
+    cd build-develop
     ./bootstrap.sh
     ./b2 install
 
