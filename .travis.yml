@@ -23,15 +23,15 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['clang-3.5']
-      env: COMPILER='clang++-3.5' TOOLSET=clang CXXSTD=11
+      env: COMPILER='clang++-3.5' CXXSTD=11 TOOLSET=clang
 
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: *all_sources
-          packages: [clang-3.6']
-      env: COMPILER='clang++-3.6' TOOLSET=clang CXXSTD=11,14
+    # - os: linux
+    #   compiler: clang
+    #   addons:
+    #     apt:
+    #       sources: *all_sources
+    #       packages: [clang-3.6']
+    #   env: COMPILER='clang++-3.6' CXXSTD=11,14 TOOLSET=clang
 
     # Travis's containers do not seem to have Clang 3.7 in apt, no matter what sources I add.
     # - os: linux
@@ -40,7 +40,7 @@ matrix:
     #     apt:
     #       sources: *all_sources
     #       packages: ['clang-3.7']
-    #   env: COMPILER='clang++-3.7' TOOLSET=clang CXXSTD=11,14
+    #   env: COMPILER='clang++-3.7' CXXSTD=11 TOOLSET=clang
 
     - os: linux
       compiler: clang
@@ -48,7 +48,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['clang-3.8']
-      env: COMPILER='clang++-3.8' TOOLSET=clang CXXSTD=11,14
+      env: COMPILER='clang++-3.8' CXXSTD=11 TOOLSET=clang
 
     - os: linux
       compiler: clang
@@ -56,7 +56,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['clang-3.9']
-      env: COMPILER='clang++-3.9' TOOLSET=clang CXXSTD=11,14
+      env: COMPILER='clang++-3.9' CXXSTD=11 TOOLSET=clang
 
     - os: linux
       compiler: clang
@@ -64,7 +64,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['clang-4.0']
-      env: COMPILER='clang++-4.0' TOOLSET=clang CXXSTD=11,14
+      env: COMPILER='clang++-4.0' CXXSTD=11,14 TOOLSET=clang
 
     - os: linux
       compiler: clang
@@ -72,7 +72,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['clang-5.0']
-      env: COMPILER='clang++-5.0' TOOLSET=clang CXXSTD=11,14,17
+      env: COMPILER='clang++-5.0' CXXSTD=11,14,17 TOOLSET=clang
 
     # 2/ Linux GCC Builds
     - os: linux
@@ -81,7 +81,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['g++-4.8']
-      env: COMPILER='g++-4.8' TOOLSET=gcc CXXSTD=11
+      env: COMPILER='g++-4.8' CXXSTD=11 TOOLSET=gcc
 
     - os: linux
       compiler: gcc
@@ -89,7 +89,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['g++-4.9']
-      env: COMPILER='g++-4.9' TOOLSET=gcc CXXSTD=11
+      env: COMPILER='g++-4.9' CXXSTD=11 TOOLSET=gcc
 
     - os: linux
       compiler: gcc
@@ -97,7 +97,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['g++-5']
-      env: COMPILER='g++-5' TOOLSET=gcc CXXSTD=11,14
+      env: COMPILER='g++-5' CXXSTD=11,14 TOOLSET=gcc
 
     - os: linux
       compiler: gcc
@@ -105,7 +105,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['g++-6']
-      env: COMPILER='g++-6' TOOLSET=gcc CXXSTD=11,14,17
+      env: COMPILER='g++-6' CXXSTD=11,14,17 TOOLSET=gcc
 
     - os: linux
       compiler: gcc
@@ -113,13 +113,13 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['g++-7']
-      env: COMPILER='g++-7' TOOLSET=gcc CXXSTD=11,14,17
+      env: COMPILER='g++-7' CXXSTD=11,14,17 TOOLSET=gcc
       
     # 5/ OSX Clang Builds
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      env: COMPILER='clang++' TOOLSET=clang CXXSTD=11
+      env: COMPILER='clang++' CXXSTD=11 TOOLSET=clang
 
     - os: osx
       osx_image: xcode9
@@ -129,12 +129,12 @@ matrix:
     - os: osx
       osx_image: xcode9.1
       compiler: clang
-      env: COMPILER='clang++' TOOLSET=clang CXXSTD=11,14
+      env: COMPILER='clang++' CXXSTD=11,14 TOOLSET=clang
 
     - os: osx
       osx_image: xcode9.1
       compiler: clang
-      env: COMPILER='clang++' TOOLSET=clang CXXSTD=11,14,17
+      env: COMPILER='clang++' CXXSTD=11,14 TOOLSET=clang
 
 before_install:
   - |
