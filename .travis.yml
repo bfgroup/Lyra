@@ -146,7 +146,7 @@ install:
     unzip b2.zip
     cd build-develop
     ./bootstrap.sh
-    ./b2 install
+    sudo ./b2 install
 
 script:
   - |
