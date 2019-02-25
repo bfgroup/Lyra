@@ -142,14 +142,15 @@ before_install:
 
 install:
   - |
-    cd ..
+    pushd ..
     unzip b2.zip
     cd build-develop
     ./bootstrap.sh
     sudo ./b2 install
+    popd
 
 script:
-  - |
-    echo "using ${TOOLSET} : : ${COMPILER} ;" > project-config.jam
-    cd src
-    b2 toolset=${TOOLSET}
+  - echo "using ${TOOLSET} : : ${COMPILER} ;" > project-config.jam
+  - pushd src
+  - b2 toolset=${TOOLSET}
+  - popd
