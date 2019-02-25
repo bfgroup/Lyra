@@ -71,7 +71,7 @@ install:
   - 7z x b2.zip
   - cd build-develop
   - ./bootstrap.bat
-  - ./b2.exe install
+  - .\\b2 install
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%
