@@ -1,28 +1,25 @@
+// Copyright 2018-2019 Rene Rivera
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
-// See https://github.com/philsquared/Clara for more details
 
-// Clara v1.1.5
+#ifndef LYRA_HPP_INCLUDED
+#define LYRA_HPP_INCLUDED
 
-#ifndef CLARA_HPP_INCLUDED
-#define CLARA_HPP_INCLUDED
-
-#ifndef CLARA_CONFIG_CONSOLE_WIDTH
-#define CLARA_CONFIG_CONSOLE_WIDTH 80
+#ifndef LYRA_CONFIG_CONSOLE_WIDTH
+#define LYRA_CONFIG_CONSOLE_WIDTH 80
 #endif
 
-#ifndef CLARA_TEXTFLOW_CONFIG_CONSOLE_WIDTH
-#define CLARA_TEXTFLOW_CONFIG_CONSOLE_WIDTH CLARA_CONFIG_CONSOLE_WIDTH
+#ifndef LYRA_TEXTFLOW_CONFIG_CONSOLE_WIDTH
+#define LYRA_TEXTFLOW_CONFIG_CONSOLE_WIDTH LYRA_CONFIG_CONSOLE_WIDTH
 #endif
 
-#ifndef CLARA_CONFIG_OPTIONAL_TYPE
+#ifndef LYRA_CONFIG_OPTIONAL_TYPE
 #   ifdef __has_include
 #       if __has_include(<optional>) && __cplusplus >= 201703L
 #           include <optional>
-#           define CLARA_CONFIG_OPTIONAL_TYPE std::optional
+#           define LYRA_CONFIG_OPTIONAL_TYPE std::optional
 #       endif
 #   endif
 #endif
@@ -37,11 +34,11 @@
 #include <algorithm>
 #include <tuple>
 
-#if !defined(CLARA_PLATFORM_WINDOWS) && ( defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) )
-#define CLARA_PLATFORM_WINDOWS
+#if !defined(LYRA_PLATFORM_WINDOWS) && ( defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) )
+#define LYRA_PLATFORM_WINDOWS
 #endif
 
-namespace clara {
+namespace lyra {
 namespace detail {
 
     // Traits for extracting arg and return type of lambdas (for single argument lambdas)
@@ -335,16 +332,16 @@ namespace detail {
             return ParserResult::runtimeError( "Expected a boolean value but did not recognise: '" + source + "'" );
         return ParserResult::ok( ParseResultType::Matched );
     }
-#ifdef CLARA_CONFIG_OPTIONAL_TYPE
+#ifdef LYRA_CONFIG_OPTIONAL_TYPE
     template<typename T>
-    inline auto convertInto( std::string const &source, CLARA_CONFIG_OPTIONAL_TYPE<T>& target ) -> ParserResult {
+    inline auto convertInto( std::string const &source, LYRA_CONFIG_OPTIONAL_TYPE<T>& target ) -> ParserResult {
         T temp;
         auto result = convertInto( source, temp );
         if( result )
             target = std::move(temp);
         return result;
     }
-#endif // CLARA_CONFIG_OPTIONAL_TYPE
+#endif // LYRA_CONFIG_OPTIONAL_TYPE
 
     struct NonCopyable {
         NonCopyable() = default;
@@ -408,7 +405,7 @@ namespace detail {
 
     template<typename ReturnType>
     struct LambdaInvoker {
-        static_assert( std::is_same<ReturnType, ParserResult>::value, "Lambda must return void or clara::ParserResult" );
+        static_assert( std::is_same<ReturnType, ParserResult>::value, "Lambda must return void or lyra::ParserResult" );
 
         template<typename L, typename ArgType>
         static auto invoke( L const &lambda, ArgType const &arg ) -> ParserResult {
@@ -474,7 +471,7 @@ namespace detail {
         auto token_delimiters() const -> std::string override { return " :="; }
         auto option_prefix() const -> std::string override
         {
-#ifdef CLARA_PLATFORM_WINDOWS
+#ifdef LYRA_PLATFORM_WINDOWS
             return "-/";
 #else
             return "-";
@@ -746,7 +743,7 @@ namespace detail {
             for( auto const &name : m_optNames ) {
                 if( name.empty() )
                     return Result::logicError( "Option name cannot be empty" );
-#ifdef CLARA_PLATFORM_WINDOWS
+#ifdef LYRA_PLATFORM_WINDOWS
                 if( name[0] != '-' && name[0] != '/' )
                     return Result::logicError( "Option name must begin with '-' or '/'" );
 #else
@@ -845,7 +842,7 @@ namespace detail {
             }
 
             auto rows = getHelpColumns();
-            size_t consoleWidth = CLARA_CONFIG_CONSOLE_WIDTH;
+            size_t consoleWidth = LYRA_CONFIG_CONSOLE_WIDTH;
             size_t optWidth = 0;
             for( auto const &cols : rows )
                 optWidth = (std::max)(optWidth, cols.left.size() + 2);
@@ -965,6 +962,6 @@ using detail::ParserResult;
 using detail::ParserCustomization;
 
 
-} // namespace clara
+} // namespace lyra
 
-#endif // CLARA_HPP_INCLUDED
+#endif // LYRA_HPP_INCLUDED
