@@ -53,25 +53,25 @@ matrix:
     - os: linux
       compiler: clang
       addons:
-          apt:
-            sources: *all_sources
-            packages: ['clang-3.9']
+        apt:
+          sources: *all_sources
+          packages: ['clang-3.9']
       env: COMPILER='clang++-3.9' TOOLSET=clang CXXSTD=11,14
 
     - os: linux
       compiler: clang
       addons:
-          apt:
-            sources: *all_sources
-            packages: ['clang-4.0']
+        apt:
+          sources: *all_sources
+          packages: ['clang-4.0']
       env: COMPILER='clang++-4.0' TOOLSET=clang CXXSTD=11,14
 
     - os: linux
       compiler: clang
       addons:
-          apt:
-            sources: *all_sources
-            packages: ['clang-5.0']
+        apt:
+          sources: *all_sources
+          packages: ['clang-5.0']
       env: COMPILER='clang++-5.0' TOOLSET=clang CXXSTD=11,14,17
 
     # 2/ Linux GCC Builds
@@ -80,7 +80,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-         packages: ['g++-4.8']
+          packages: ['g++-4.8']
       env: COMPILER='g++-4.8' TOOLSET=gcc CXXSTD=11
 
     - os: linux
