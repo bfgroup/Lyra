@@ -73,6 +73,8 @@ install:
   - ./bootstrap.bat
   - .\\b2 install
 
+build: off
+
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%
   - "echo \"using %TOOLSET% : %COMPILER_VERSION% : %COMPILER% ;\" > project-config.jam"
