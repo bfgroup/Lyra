@@ -67,7 +67,7 @@ environment:
 
 install:
   - cd %APPVEYOR_BUILD_FOLDER%/..
-  - curl "https://github.com/boostorg/build/archive/develop.zip" -o b2.zip
+  - curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
   - 7z x b2.zip
   - cd build-develop
   - ./bootstrap.bat
