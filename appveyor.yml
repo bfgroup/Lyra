@@ -45,21 +45,25 @@ environment:
     platform: 64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
   - TOOLSET: gcc
+    CXXSTD: 11,14,17
     COMPILER: C:/MinGW/bin/g++.exe
     platform: 32
     COMPILER_PATH: C:/MinGW/bin
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
   - TOOLSET: gcc
+    CXXSTD: 11,14,17
     COMPILER: C:/mingw-w64/x86_64-6.3.0-posix-seh-rt_v5-rev1/mingw64/bin/g++.exe
     platform: 64
     COMPILER_PATH: C:/mingw-w64/x86_64-6.3.0-posix-seh-rt_v5-rev1/mingw64/bin
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
   - TOOLSET: gcc
+    CXXSTD: 11,14,17
     COMPILER: C:/mingw-w64/x86_64-7.3.0-posix-seh-rt_v5-rev0/mingw64/bin/g++.exe
     platform: 64
     COMPILER_PATH: C:/mingw-w64/x86_64-7.3.0-posix-seh-rt_v5-rev0/mingw64/bin
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
   - TOOLSET: gcc
+    CXXSTD: 11,14,17
     COMPILER: C:/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/g++.exe
     platform: 64
     COMPILER_PATH: C:/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin
@@ -81,4 +85,4 @@ test_script:
   - set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
   - cd src
   - set Path=%Path%;%COMPILER_PATH%
-  - "%APPVEYOR_BUILD_FOLDER%/../build-develop/b2 toolset=%TOOLSET% address-model=%PLATFORM% -j2"
+  - "%APPVEYOR_BUILD_FOLDER%/../build-develop/b2 toolset=%TOOLSET% address-model=%PLATFORM% cxxstd=%CXXSTD% -j2"
