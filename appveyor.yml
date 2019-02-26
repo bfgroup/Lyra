@@ -83,6 +83,6 @@ test_script:
   - "echo using %TOOLSET% ^: %COMPILER_VERSION% ^: %COMPILER% ^; > project-config.jam"
   - type project-config.jam
   - set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
-  - cd src
+  - cd tests
   - set Path=%Path%;%COMPILER_PATH%
   - "%APPVEYOR_BUILD_FOLDER%/../build-develop/b2 toolset=%TOOLSET% address-model=%PLATFORM% cxxstd=%CXXSTD% -j2"
