@@ -136,6 +136,11 @@ matrix:
       compiler: clang
       env: COMPILER='clang++' CXXSTD=11,14 TOOLSET=clang
 
+    - os: osx
+      osx_image: xcode10.1
+      compiler: clang
+      env: COMPILER='clang++' CXXSTD=11,14,17,2a TOOLSET=clang
+
 before_install:
   - |
     wget "https://github.com/boostorg/build/archive/develop.zip" -O ../b2.zip
