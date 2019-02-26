@@ -19,3 +19,4 @@ run test_invalid_parsers.cpp ;
 run test_multiple_flags.cpp ;
 run test_unrecognized_opts.cpp ;
 run test_char_args.cpp ;
+run test_optional_type.cpp ;
