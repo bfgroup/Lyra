@@ -68,15 +68,15 @@ auto cli
 `Opt` specifies options that start with a short dash (`-`) or long dash (`--`).
 On Windows forward slashes are also accepted (and automatically interpreted as
 a short dash). Options can be argument taking (such as `-w 42`), in which case
-the `Opt` takes a second argument - a hint, or they are pure flags (such as
-`-d`), in which case the `Opt` has only one argument - which must be a boolean.
+the `Opt` takes a second argument -- a hint, or they are pure flags (such as
+`-d`), in which case the `Opt` has only one argument -- which must be a boolean.
 The option names are provided in one or more sets of square brackets, and a
 description string can be provided in parentheses. The first argument to an
 `Opt` is any variable, local, global member, of any type that can be converted
 from a string using `std::ostream`.
 
-`Arg`s specify arguments that are not tied to options, and so have no square
-bracket names. They otherwise work just like `Opt`s.
+`Arg` specifies arguments that are not tied to options, and so have no square
+bracket names. They otherwise work just like `Opt`.
 
 A, console optimized, usage string can be obtained by inserting the parser into
 a stream. The usage string is built from the information supplied and is
@@ -92,7 +92,7 @@ Some of the key features:
   strings with no redundancy.
 * Composing. Each `Opt` or `Arg` is an independent parser. Combine these to
   produce a composite parser - this can be done in stages across multiple
-  function calls - or even projects.
+  function calls -- or even projects.
 * Bind parsers directly to variables that will receive the results of the parse
   -- no intermediate dictionaries to worry about.
 * Or can also bind parsers to lambdas for more custom handling.
