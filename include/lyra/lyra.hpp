@@ -329,7 +329,7 @@ namespace detail {
         else if (srcLC == "n" || srcLC == "0" || srcLC == "false" || srcLC == "no" || srcLC == "off")
             target = false;
         else
-            return ParserResult::runtimeError( "Expected a boolean value but did not recognise: '" + source + "'" );
+            return ParserResult::runtimeError( "Expected a boolean value but did not recognize: '" + source + "'" );
         return ParserResult::ok( ParseResultType::Matched );
     }
 #ifdef LYRA_CONFIG_OPTIONAL_TYPE
