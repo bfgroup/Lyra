@@ -114,7 +114,15 @@ matrix:
           sources: *all_sources
           packages: ['g++-7']
       env: COMPILER='g++-7' CXXSTD=11,14,17 TOOLSET=gcc
-      
+
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['g++-8']
+      env: COMPILER='g++-8' CXXSTD=11,14,17,2a TOOLSET=gcc
+
     # 5/ OSX Clang Builds
     - os: osx
       osx_image: xcode8.3
