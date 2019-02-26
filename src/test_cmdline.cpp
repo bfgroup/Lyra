@@ -160,6 +160,14 @@ int main()
             (REQUIRE( config.flag ));
         #endif
     }
+    config = Config();
+    {
+        auto result = parser.parse( { "TestApp", "-f", "1st", "-o", "filename", "2nd" } );
+        test
+            (REQUIRE( result ))
+            (REQUIRE( config.first_pos == "1st" ))
+            (REQUIRE( config.second_pos == "2nd" ));
+    }
 
     return test;
 }

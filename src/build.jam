@@ -14,3 +14,4 @@ compile test_base.cpp ;
 run test_single_parser.cpp ;
 run test_combined_parser.cpp ;
 run test_cmdline.cpp ;
+run test_flag_parser.cpp ;
