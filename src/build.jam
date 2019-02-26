@@ -17,3 +17,4 @@ run test_cmdline.cpp ;
 run test_flag_parser.cpp ;
 run test_invalid_parsers.cpp ;
 run test_multiple_flags.cpp ;
+run test_unrecognized_opts.cpp ;
