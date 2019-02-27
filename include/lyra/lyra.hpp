@@ -7,14 +7,6 @@
 #ifndef LYRA_HPP_INCLUDED
 #define LYRA_HPP_INCLUDED
 
-#ifndef LYRA_CONFIG_CONSOLE_WIDTH
-#define LYRA_CONFIG_CONSOLE_WIDTH 80
-#endif
-
-#ifndef LYRA_TEXTFLOW_CONFIG_CONSOLE_WIDTH
-#define LYRA_TEXTFLOW_CONFIG_CONSOLE_WIDTH LYRA_CONFIG_CONSOLE_WIDTH
-#endif
-
 #ifndef LYRA_CONFIG_OPTIONAL_TYPE
 #   ifdef __has_include
 #       if __has_include(<optional>) && __cplusplus >= 201703L
@@ -23,8 +15,6 @@
 #       endif
 #   endif
 #endif
-
-#include "detail/TextFlow.hpp"
 
 #include <vector>
 #include <memory>
@@ -819,7 +809,7 @@ namespace detail {
 
         void writeToStream( std::ostream &os ) const {
             if (!m_exeName.name().empty()) {
-                os << "usage:\n" << "  " << m_exeName.name() << " ";
+                os << "Usage:\n" << "  " << m_exeName.name() << " ";
                 bool required = true, first = true;
                 for( auto const &arg : m_args ) {
                     if (first)
@@ -838,23 +828,11 @@ namespace detail {
                     os << "]";
                 if( !m_options.empty() )
                     os << " options";
-                os << "\n\nwhere options are:" << std::endl;
+                os << "\n\nOptions:";
             }
 
-            auto rows = getHelpColumns();
-            size_t consoleWidth = LYRA_CONFIG_CONSOLE_WIDTH;
-            size_t optWidth = 0;
-            for( auto const &cols : rows )
-                optWidth = (std::max)(optWidth, cols.left.size() + 2);
-
-            optWidth = (std::min)(optWidth, consoleWidth/2);
-
-            for( auto const &cols : rows ) {
-                auto row =
-                        TextFlow::Column( cols.left ).width( optWidth ).indent( 2 ) +
-                        TextFlow::Spacer(4) +
-                        TextFlow::Column( cols.right ).width( consoleWidth - 7 - optWidth );
-                os << row << std::endl;
+            for( auto const &cols : getHelpColumns() ) {
+                os << "\n  " << cols.left << "\n\n  " << cols.right << "\n";
             }
         }
 
