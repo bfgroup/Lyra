@@ -5,7 +5,11 @@ A simple to use, composing, command line parser for C++ 11 and beyond.
 image:https://travis-ci.com/bfgroup/Lyra.svg?branch=master["Travis", link="https://travis-ci.com/bfgroup/Lyra"]
 image:https://ci.appveyor.com/api/projects/status/y45imn392t6u75r4/branch/master?svg=true["Appveyor", link="https://ci.appveyor.com/project/grafikrobot/lyra/branch/master"]
 image:https://img.shields.io/badge/license-BSL%201.0-blue.svg["Boost Software License 1.0", link="LICENSE.txt"]
-image:https://img.shields.io/badge/PFL-cxx--pflR1-orange.svg["Pitchfork Layout R1", link="https://github.com/vector-of-bool/pitchfork"]
+image:https://img.shields.io/badge/standard-PFLR1-orange.svg["Pitchfork Layout R1", link="https://github.com/vector-of-bool/pitchfork"]
+image:https://img.shields.io/badge/standard-C%2B%2B%2011-blue.svg?logo=C%2B%2B["C++ 11", link="https://isocpp.org/"]
+image:https://img.shields.io/badge/standard-C%2B%2B%2014-blue.svg?logo=C%2B%2B["C++ 14", link="https://isocpp.org/"]
+image:https://img.shields.io/badge/standard-C%2B%2B%2017-blue.svg?logo=C%2B%2B["C++ 17", link="https://isocpp.org/"]
+image:https://img.shields.io/badge/standard-C%2B%2B%202a-blue.svg?logo=C%2B%2B["C++ 2a", link="https://isocpp.org/"]
 
 == License
 
