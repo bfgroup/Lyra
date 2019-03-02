@@ -1,0 +1,24 @@
+#|
+Copyright Rene Rivera 2019
+Distributed under the Boost Software License, Version 1.0.
+(See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt)
+|#
+
+using asciidoctor ;
+
+for local e in [ glob example*.cpp ]
+{
+    exe $(e:B) : $(e) : <use>/bfg_lyra ;
+}
+
+html index.html : lyra.adoc ;
+
+rule locate ( target : source : properties * )
+{
+    LOCATE on $(target) = [ on $(source) return $(LOCATE) ] ;
+}
+
+install html
+    :   index.html
+    :   <location>. ;

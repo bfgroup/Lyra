@@ -9,4 +9,7 @@ project /bfg_lyra_examples
         <cxxstd>11
     ;
 
-exe combined_parser : combined_parser.cpp ;
+for local e in [ glob *.cpp ]
+{
+    exe $(e:B) : $(e) ;
+}
