@@ -10,13 +10,11 @@ project /bfg_lyra_tests
         <use>/bfg_lyra
     ;
 
-compile test_base.cpp ;
-run test_single_parser.cpp ;
-run test_combined_parser.cpp ;
-run test_cmdline.cpp ;
-run test_flag_parser.cpp ;
-run test_invalid_parsers.cpp ;
-run test_multiple_flags.cpp ;
-run test_unrecognized_opts.cpp ;
-run test_char_args.cpp ;
-run test_optional_type.cpp ;
+for local test in [ glob *_compile_test.cpp ]
+{
+    compile $(test) ;
+}
+for local test in [ glob *_run_test.cpp ]
+{
+    run $(test) ;
+}
