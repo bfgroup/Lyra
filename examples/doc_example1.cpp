@@ -17,7 +17,7 @@ int main(int argc, const char ** argv)
 
     // The parser with the one option argument:
     auto cli
-        = lyra::Opt( width, "width" )
+        = lyra::opt( width, "width" )
             ["-w"]["--width"]
             ("How wide should it be?");
 

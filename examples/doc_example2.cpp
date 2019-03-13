@@ -20,13 +20,13 @@ int main(int argc, const char ** argv)
     // The parser with the multiple option arguments. They are composed
     // together by the "|" operator.
     auto cli
-        = lyra::Opt( width, "width" )
+        = lyra::opt( width, "width" )
             ["-w"]["--width"]
             ("How wide should it be?")
-        | lyra::Opt( name, "name" )
+        | lyra::opt( name, "name" )
             ["-n"]["--name"]
             ("By what name should I be known")
-        | lyra::Opt( doIt )
+        | lyra::opt( doIt )
             ["-d"]["--doit"]
             ("Do the thing" );
 

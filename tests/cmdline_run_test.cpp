@@ -24,30 +24,30 @@ int main()
         std::vector<std::string> unpositional;
     } config;
     auto parser
-        = ExeName( config.process_name )
-          | Opt( config.file_name, "filename" )
+        = exe_name( config.process_name )
+          | opt( config.file_name, "filename" )
               ["-o"]["--output"]
               ( "specifies output file" )
-          | Opt( config.number, "an integral value" )
+          | opt( config.number, "an integral value" )
               ["-n"]
-          | Opt( [&]( int i ) {
+          | opt( [&]( int i ) {
                     if (i < 0 || i > 10)
-                        return ParserResult::runtimeError("index must be between 0 and 10");
+                        return parser_result::runtimeError("index must be between 0 and 10");
                     else {
                         config.index = i;
-                        return ParserResult::ok( ParseResultType::Matched );
+                        return parser_result::ok( parser_result_type::matched );
                     }
                 }, "index" )
               ["-i"]
               ( "An index, which is an integer between 0 and 10, inclusive" )
-          | Opt( config.flag )
+          | opt( config.flag )
               ["-f"]
               ( "A flag" )
-          | Arg( config.first_pos, "first arg" )
+          | arg( config.first_pos, "first arg" )
               ( "First position" )
-          | Arg( config.second_pos, "second arg" )
+          | arg( config.second_pos, "second arg" )
               ( "Second position" );
-    
+
     config = Config();
     {
         auto result = parser.parse( { "TestApp", "-o", "filename.ext" } );
@@ -58,13 +58,6 @@ int main()
     config = Config();
     {
         auto result = parser.parse( { "TestApp", "-o", "filename.ext" } );
-        test
-            (REQUIRE( result ))
-            (REQUIRE( config.file_name == "filename.ext" ));
-    }
-    config = Config();
-    {
-        auto result = parser.parse( { "TestApp", "-o:filename.ext" } );
         test
             (REQUIRE( result ))
             (REQUIRE( config.file_name == "filename.ext" ));
@@ -124,7 +117,7 @@ int main()
         auto result = parser.parse({ "TestApp" });
         test
             (REQUIRE( result ))
-            (REQUIRE( result.value().type() == ParseResultType::NoMatch))
+            (REQUIRE( result.value().type() == parser_result_type::no_match))
             (REQUIRE( config.flag == false ));
     }
     config = Config();
@@ -150,15 +143,6 @@ int main()
             (REQUIRE( result ))
             (REQUIRE( config.flag == false ))
             (REQUIRE( config.first_pos == "something" ));
-    }
-    config = Config();
-    {
-        #ifdef LYRA_PLATFORM_WINDOWS
-        auto result = parser.parse( { "TestApp", "/f" } );
-        test
-            (REQUIRE( result ))
-            (REQUIRE( config.flag ));
-        #endif
     }
     config = Config();
     {

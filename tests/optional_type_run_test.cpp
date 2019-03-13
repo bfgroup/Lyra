@@ -15,17 +15,17 @@ int main()
 
     #if defined(CLARA_CONFIG_OPTIONAL_TYPE)
     CLARA_CONFIG_OPTIONAL_TYPE<std::string> name;
-    auto p = Opt(name, "name")
+    auto p = opt(name, "name")
         ["-n"]["--name"]
         ("the name to use");
     {
-        auto result = p.parse(Args{ "TestApp", "-q", "Pixie" });
+        auto result = p.parse({ "TestApp", "-q", "Pixie" });
         test
             REQUIRE( result )
             REQUIRE_FALSE( name.has_value() );
     }
     {
-        auto result = p.parse(Args{ "TestApp", "-n", "Pixie" });
+        auto result = p.parse({ "TestApp", "-n", "Pixie" });
         test
             (REQUIRE( result ))
             (REQUIRE( name.has_value() ))

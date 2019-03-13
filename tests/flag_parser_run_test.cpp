@@ -13,7 +13,7 @@ int main()
     using namespace lyra;
     bfg::mini_test::scope test;
     bool flag = false;
-    auto p = Opt( flag, "true|false" )
+    auto p = opt( flag, "true|false" )
             ["-f"]
             ("A flag");
 
@@ -72,7 +72,7 @@ int main()
         auto result = p.parse( {"TestApp", "-f", "what"} );
         test
             (REQUIRE( !result ))
-            (REQUIRE( result.errorMessage().find( "Expected a boolean value" ) != std::string::npos ));
+            (REQUIRE( result.errorMessage().find( "Unable to convert" ) != std::string::npos ));
     }
     flag = false;
     {

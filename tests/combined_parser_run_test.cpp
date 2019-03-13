@@ -22,30 +22,30 @@ int main()
         double value = 0;
     } config;
     auto parser
-        = Help( show_help )
-        | Opt( config.seed, "time|value" )
+        = help( show_help )
+        | opt( config.seed, "time|value" )
             ["--rng-seed"]["-r"]
             ("set a specific seed for random numbers" )
             .required()
-        | Opt( config.name, "name" )
+        | opt( config.name, "name" )
             ["-n"]["--name"]
             ( "the name to use" )
-        | Opt( config.flag )
+        | opt( config.flag )
             ["-f"]["--flag"]
             ( "a flag to set" )
-        | Opt( [&]( double value ){ config.value = value; }, "number" )
+        | opt( [&]( double value ){ config.value = value; }, "number" )
             ["-d"]["--double"]
             ( "just some number" )
-        | Arg( config.tests, "test name|tags|pattern" )
+        | arg( config.tests, "test name|tags|pattern" )
             ( "which test or tests to use" );
-    
+
     show_help = false;
     config = Config();
     {
-        auto result = parser.parse( Args{ "TestApp", "-n", "Bill", "-d:123.45", "-f", "test1", "test2" } );
+        auto result = parser.parse( { "TestApp", "-n", "Bill", "-d=123.45", "-f", "test1", "test2" } );
         test
             (REQUIRE( result ))
-            (REQUIRE( result.value().type() == ParseResultType::Matched ))
+            (REQUIRE( result.value().type() == parser_result_type::matched ))
             (REQUIRE( config.name == "Bill" ))
             (REQUIRE( config.value == 123.45 ))
             (REQUIRE( (config.tests == std::vector<std::string> { "test1", "test2" }) ))
@@ -55,10 +55,10 @@ int main()
     show_help = false;
     config = Config();
     {
-        auto result = parser.parse( Args{ "TestApp", "-?", "-n:NotSet" } );
+        auto result = parser.parse( { "TestApp", "-?", "-n=NotSet" } );
         test
             (REQUIRE( result ))
-            (REQUIRE( result.value().type() == ParseResultType::ShortCircuitAll ))
+            (REQUIRE( result.value().type() == parser_result_type::short_circuit_all ))
             (REQUIRE( config.name == "" )) // We should never have processed -n:NotSet
             (REQUIRE( show_help == true ))
             ;

@@ -14,12 +14,12 @@ int main()
     bfg::mini_test::scope test;
 
     std::string value;
-    Parser cli = Parser() | Arg( value, "value" );
+    auto cli = cli_parser() | arg( value, "value" );
 
     value = "";
     {
         char* args[] = { (char*)"TestApp", (char*)"hello" };
-        auto result = cli.parse( Args( 2, args ) );
+        auto result = cli.parse( { 2, args } );
         test
             (REQUIRE( result ))
             (REQUIRE( value == "hello" ));
@@ -27,7 +27,7 @@ int main()
     value = "";
     {
         const char* args[] = { "TestApp", "hello" };
-        auto result = cli.parse( Args( 2, args ) );
+        auto result = cli.parse( { 2, args } );
         test
             (REQUIRE( result ))
             (REQUIRE( value == "hello" ));

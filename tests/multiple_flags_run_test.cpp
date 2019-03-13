@@ -15,7 +15,7 @@ int main()
 
     {
         bool a = false, b = false, c = false;
-        auto cli = Opt( a )["-a"] | Opt( b )["-b"] | Opt( c )["-c"];
+        auto cli = opt( a )["-a"] | opt( b )["-b"] | opt( c )["-c"];
         auto result = cli.parse({ "TestApp", "-a", "-b", "-c" });
         test
             (REQUIRE(result))
@@ -25,7 +25,7 @@ int main()
     }
     {
         bool a = false, b = false, c = false;
-        auto cli = Opt( a )["-a"] | Opt( b )["-b"] | Opt( c )["-c"];
+        auto cli = opt( a )["-a"] | opt( b )["-b"] | opt( c )["-c"];
         auto result = cli.parse({ "TestApp", "-abc" });
         test
             (REQUIRE(result))

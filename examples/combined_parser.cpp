@@ -21,23 +21,23 @@ int main(int argc, const char ** argv)
         double value = 0;
     } config;
     auto parser
-        = Help( show_help )
-        | Opt( config.seed, "time|value" )
+        = help( show_help )
+        | opt( config.seed, "time|value" )
             ["--rng-seed"]["-r"]
             ("set a specific seed for random numbers" )
             .required()
-        | Opt( config.name, "name" )
+        | opt( config.name, "name" )
             ["-n"]["--name"]
             ( "the name to use" )
-        | Opt( config.flag )
+        | opt( config.flag )
             ["-f"]["--flag"]
             ( "a flag to set" )
-        | Opt( [&]( double value ){ config.value = value; }, "number" )
+        | opt( [&]( double value ){ config.value = value; }, "number" )
             ["-d"]["--double"]
             ( "just some number" )
-        | Arg( config.tests, "test name|tags|pattern" )
+        | arg( config.tests, "test name|tags|pattern" )
             ( "which test or tests to use" );
-    
+
     parser.parse({argc, argv});
 
     if (show_help)

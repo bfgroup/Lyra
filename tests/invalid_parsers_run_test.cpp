@@ -15,15 +15,15 @@ int main()
 
     {
         int number = 0;
-        auto cli = Opt( number, "number" );
+        auto cli = opt( number, "number" );
         auto result = cli.parse( { "TestApp", "-o", "filename" } );
         test
             (REQUIRE( !result ))
-            (REQUIRE( result.errorMessage() == "No options supplied to Opt" ));
+            (REQUIRE( result.errorMessage() == "No options supplied to opt" ));
     }
     {
         int number = 0;
-        auto cli = Opt( number, "number" )[""];
+        auto cli = opt( number, "number" )[""];
         auto result = cli.parse( { "TestApp", "-o", "filename" } );
         test
             (REQUIRE( !result ))
@@ -31,7 +31,7 @@ int main()
     }
     {
         int number = 0;
-        auto cli = Opt( number, "number" )["invalid"];
+        auto cli = opt( number, "number" )["invalid"];
         auto result = cli.parse( { "TestApp", "-o", "filename" } );
         test
             (REQUIRE( !result ))

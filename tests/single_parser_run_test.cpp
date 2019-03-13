@@ -13,30 +13,26 @@ int main()
     using namespace lyra;
     bfg::mini_test::scope test;
     std::string name;
-    auto p = Opt(name, "name")["-n"]["--name"]("the name to use");
-    
+    auto p = opt(name, "name")["-n"]["--name"]("the name to use");
+
     name = "";
-    p.parse( Args{ "TestApp", "-n", "Vader" } );
+    p.parse( { "TestApp", "-n", "Vader" } );
     test(REQUIRE(name == "Vader"));
 
     name = "";
-    p.parse( Args{ "TestApp", "--name", "Vader" } );
+    p.parse( { "TestApp", "--name", "Vader" } );
     test(REQUIRE(name == "Vader"));
 
     name = "";
-    p.parse( Args{ "TestApp", "-n:Vader" } );
+    p.parse( { "TestApp", "-n=Vader" } );
     test(REQUIRE(name == "Vader"));
 
     name = "";
-    p.parse( Args{ "TestApp", "-n=Vader" } );
-    test(REQUIRE(name == "Vader"));
-
-    name = "";
-    p.parse( Args{ "TestApp" } );
+    p.parse( { "TestApp" } );
     test(REQUIRE(name == ""));
 
     name = "";
-    p.parse( Args{ "TestApp", "-f" } );
+    p.parse( { "TestApp", "-f" } );
     test(REQUIRE(name == ""));
 
     return test;

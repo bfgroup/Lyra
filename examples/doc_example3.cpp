@@ -20,14 +20,14 @@ int main(int argc, const char ** argv)
 
     // The parser with the multiple option arguments and help option.
     auto cli
-        = lyra::Help( show_help ) // <2>
-        | lyra::Opt( width, "width" )
+        = lyra::help( show_help ) // <2>
+        | lyra::opt( width, "width" )
             ["-w"]["--width"]
             ("How wide should it be?")
-        | lyra::Opt( name, "name" )
+        | lyra::opt( name, "name" )
             ["-n"]["--name"]
             ("By what name should I be known")
-        | lyra::Opt( doIt )
+        | lyra::opt( doIt )
             ["-d"]["--doit"]
             ("Do the thing" );
 

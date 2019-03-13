@@ -15,7 +15,7 @@ int main()
 
     {
         bool a = false;
-        Parser cli = Parser() | Opt( a )["-a"];
+        auto cli = cli_parser() | opt( a )["-a"];
         auto result = cli.parse( { "TestApp", "-b" } );
         test
             (REQUIRE( !result ))
