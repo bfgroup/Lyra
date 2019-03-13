@@ -12,7 +12,13 @@
 
 namespace lyra
 {
-// A Combined parser
+/* tag::reference[]
+
+= `lyra::cli_parser`
+
+A Combined parser.
+
+*/ // end::reference[]
 class cli_parser : parser_base
 {
     public:
@@ -130,7 +136,7 @@ class cli_parser : parser_base
                 return result;
             if (!tokenParsed)
                 return parse_result::runtimeError(
-                    "Unrecognized token: " + result.value().remainingTokens()->token);
+                    "Unrecognized token: " + result.value().remainingTokens()->name);
         }
         // !TBD Check missing required options
         return result;

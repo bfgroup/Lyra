@@ -11,7 +11,13 @@
 
 namespace lyra
 {
-// A parser for options
+/* tag::reference[]
+
+= `lyra::opt`
+
+A parser for options.
+
+*/ // end::reference[]
 class opt : public bound_parser<opt>
 {
     protected:
@@ -115,7 +121,7 @@ class opt : public bound_parser<opt>
         if (remainingTokens && remainingTokens->type == detail::token_type::option)
         {
             auto const& token = *remainingTokens;
-            if (isMatch(token.token, customize))
+            if (isMatch(token.name, customize))
             {
                 if (m_ref->isFlag())
                 {
@@ -133,12 +139,12 @@ class opt : public bound_parser<opt>
                     ++remainingTokens;
                     if (!remainingTokens)
                         return parse_result::runtimeError(
-                            "Expected argument following " + token.token);
+                            "Expected argument following " + token.name);
                     auto const& argToken = *remainingTokens;
                     if (argToken.type != detail::token_type::argument)
                         return parse_result::runtimeError(
-                            "Expected argument following " + token.token);
-                    auto result = valueRef->setValue(argToken.token);
+                            "Expected argument following " + token.name);
+                    auto result = valueRef->setValue(argToken.name);
                     if (!result)
                         return parse_result(result);
                     if (result.value() == parser_result_type::short_circuit_all)

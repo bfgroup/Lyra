@@ -11,7 +11,13 @@
 
 namespace lyra
 {
-// A parser for arguments
+/* tag::reference[]
+
+= `lyra::arg`
+
+A parser for arguments.
+
+*/ // end::reference[]
 class arg : public bound_parser<arg>
 {
     public:
@@ -51,7 +57,7 @@ class arg : public bound_parser<arg>
         assert(!m_ref->isFlag());
         auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());
 
-        auto result = valueRef->setValue(remainingTokens->token);
+        auto result = valueRef->setValue(remainingTokens->name);
         if (!result)
             return parse_result(result);
         else
