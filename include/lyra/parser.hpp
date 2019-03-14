@@ -15,6 +15,8 @@
 #include "lyra/detail/tokens.hpp"
 
 #include <memory>
+#include <string>
+#include <tuple>
 
 namespace lyra
 {
