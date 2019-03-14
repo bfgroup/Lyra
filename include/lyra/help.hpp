@@ -11,7 +11,17 @@
 
 namespace lyra
 {
-// Wrapper for option parser that specifies a help option.
+/* tag::reference[]
+
+= `lyra::help`
+
+Utility function that defines a default `--help` option. You can specify a `bool`
+flag to indicate if the help option was specified and that you could display
+a help message.
+
+The option accepts `-?`, `-h`, and `--help` as allowed option names.
+
+*/ // end::reference[]
 class help : public opt
 {
     public:
@@ -22,7 +32,7 @@ class help : public opt
         })
     {
         static_cast<opt&> (*this)(
-            "display usage information")["-?"]["-h"]["--help"]
+            "Display usage information.")["-?"]["-h"]["--help"]
             .optional();
     }
 };

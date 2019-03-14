@@ -7,67 +7,139 @@
 #ifndef LYRA_EXE_NAME_HPP
 #define LYRA_EXE_NAME_HPP
 
-#include "lyra/parser.hpp"
-#include "lyra/parser_result.hpp"
 #include "lyra/detail/bound.hpp"
 #include "lyra/detail/tokens.hpp"
+#include "lyra/parser.hpp"
+#include "lyra/parser_result.hpp"
 
 namespace lyra
 {
-// Specifies the name of the executable
+/* tag::reference[]
+
+= `lyra::exe_name`
+
+Specifies the name of the executable.
+
+end::reference[] */
 class exe_name : public composable_parser<exe_name>
 {
-    std::shared_ptr<std::string> m_name;
-    std::shared_ptr<detail::BoundValueRefBase> m_ref;
+	public:
+	exe_name()
+		: m_name(std::make_shared<std::string>("<executable>"))
+	{
+	}
 
-    public:
-    exe_name()
-        : m_name(std::make_shared<std::string>("<executable>"))
-    {
-    }
+	explicit exe_name(std::string& ref);
 
-    explicit exe_name(std::string& ref)
-        : exe_name()
-    {
-        m_ref = std::make_shared<detail::BoundValueRef<std::string>>(ref);
-    }
+	template <typename LambdaT>
+	explicit exe_name(LambdaT const& lambda);
 
-    template <typename LambdaT>
-    explicit exe_name(LambdaT const& lambda)
-        : exe_name()
-    {
-        m_ref = std::make_shared<detail::BoundLambda<LambdaT>>(lambda);
-    }
+	std::string name() const;
+	parser_result set(std::string const& newName);
 
-    // The exe name is not parsed out of the normal tokens, but is handled
-    // specially
-    auto parse(std::string const&, detail::token_iterator const& tokens, parser_customization const&) const
-        -> parse_result override
-    {
-        return parse_result::ok(
-            detail::parse_state(parser_result_type::no_match, tokens));
-    }
+	// The exe name is not parsed out of the normal tokens, but is handled
+	// specially
+	parse_result parse(std::string const&, detail::token_iterator const& tokens, parser_customization const&) const
+	{
+		return parse_result::ok(
+			detail::parse_state(parser_result_type::no_match, tokens));
+	}
 
-    auto name() const -> std::string { return *m_name; }
-    auto set(std::string const& newName) -> parser_result
-    {
-        auto lastSlash = newName.find_last_of("\\/");
-        auto filename = (lastSlash == std::string::npos)
-            ? newName
-            : newName.substr(lastSlash + 1);
+	virtual std::unique_ptr<parser_base> clone() const override
+	{
+		return std::unique_ptr<parser_base>(new exe_name(*this));
+	}
 
-        *m_name = filename;
-        if (m_ref)
-            return m_ref->setValue(filename);
-        else
-            return parser_result::ok(parser_result_type::matched);
-    }
-
-    virtual std::unique_ptr<parser_base> clone() const override
-    {
-        return std::unique_ptr<parser_base>(new exe_name(*this));
-    }
+	private:
+	std::shared_ptr<std::string> m_name;
+	std::shared_ptr<detail::BoundValueRefBase> m_ref;
 };
+
+/* tag::reference[]
+
+== Constructors
+
+end::reference[] */
+
+/* tag::reference[]
+[source]
+----
+exe_name::exe_name(std::string& ref)
+----
+
+Constructs with a target string to receive the name of the executable. When
+the `cli_parser` is run the target string will contain the exec name.
+
+end::reference[] */
+exe_name::exe_name(std::string& ref)
+	: exe_name()
+{
+	m_ref = std::make_shared<detail::BoundValueRef<std::string>>(ref);
 }
+
+/* tag::reference[]
+[source]
+----
+template <typename LambdaT>
+exe_name::exe_name(LambdaT const& lambda)
+----
+
+Construct with a callback that is called with the value of the executable name
+when the `cli_parser` runs.
+
+end::reference[] */
+template <typename LambdaT>
+exe_name::exe_name(LambdaT const& lambda)
+	: exe_name()
+{
+	m_ref = std::make_shared<detail::BoundLambda<LambdaT>>(lambda);
+}
+
+/* tag::reference[]
+
+== Accessors
+
+end::reference[] */
+
+/* tag::reference[]
+[source]
+----
+std::string exe_name::name() const
+----
+
+Returns the executable name when available. Otherwise it returns a default
+value.
+
+end::reference[] */
+std::string exe_name::name() const
+{
+	return *m_name;
+}
+
+/* tag::reference[]
+[source]
+----
+parser_result exe_name::set(std::string const& newName)
+----
+
+Sets the executable name with the `newName` value. The new value is reflected
+in the bound string reference or callback.
+
+end::reference[] */
+parser_result exe_name::set(std::string const& newName)
+{
+	auto lastSlash = newName.find_last_of("\\/");
+	auto filename = (lastSlash == std::string::npos)
+		? newName
+		: newName.substr(lastSlash + 1);
+
+	*m_name = filename;
+	if (m_ref)
+		return m_ref->setValue(filename);
+	else
+		return parser_result::ok(parser_result_type::matched);
+}
+
+} // namespace lyra
 
 #endif

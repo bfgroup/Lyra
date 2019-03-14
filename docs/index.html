@@ -432,6 +432,77 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+.listingblock .pygments .hll { background-color: #ffffcc }
+.listingblock .pygments, .listingblock .pygments code { background: #f8f8f8; }
+.listingblock .pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+.listingblock .pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+.listingblock .pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+.listingblock .pygments .tok-o { color: #666666 } /* Operator */
+.listingblock .pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.listingblock .pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.listingblock .pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+.listingblock .pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.listingblock .pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+.listingblock .pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+.listingblock .pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+.listingblock .pygments .tok-ge { font-style: italic } /* Generic.Emph */
+.listingblock .pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+.listingblock .pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.listingblock .pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+.listingblock .pygments .tok-go { color: #888888 } /* Generic.Output */
+.listingblock .pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.listingblock .pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+.listingblock .pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.listingblock .pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+.listingblock .pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.listingblock .pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.listingblock .pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.listingblock .pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+.listingblock .pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.listingblock .pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+.listingblock .pygments .tok-m { color: #666666 } /* Literal.Number */
+.listingblock .pygments .tok-s { color: #BA2121 } /* Literal.String */
+.listingblock .pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+.listingblock .pygments .tok-nb { color: #008000 } /* Name.Builtin */
+.listingblock .pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.listingblock .pygments .tok-no { color: #880000 } /* Name.Constant */
+.listingblock .pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+.listingblock .pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+.listingblock .pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.listingblock .pygments .tok-nf { color: #0000FF } /* Name.Function */
+.listingblock .pygments .tok-nl { color: #A0A000 } /* Name.Label */
+.listingblock .pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.listingblock .pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+.listingblock .pygments .tok-nv { color: #19177C } /* Name.Variable */
+.listingblock .pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.listingblock .pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+.listingblock .pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+.listingblock .pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+.listingblock .pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+.listingblock .pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+.listingblock .pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+.listingblock .pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+.listingblock .pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+.listingblock .pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+.listingblock .pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+.listingblock .pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.listingblock .pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+.listingblock .pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.listingblock .pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+.listingblock .pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.listingblock .pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+.listingblock .pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+.listingblock .pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+.listingblock .pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+.listingblock .pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+.listingblock .pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+.listingblock .pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+.listingblock .pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+.listingblock .pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+.listingblock .pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+.listingblock .pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -456,9 +527,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_help_option">3. Help Option</a></li>
-<li><a href="#_history">4. History</a>
+<li><a href="#_reference">4. Reference</a>
 <ul class="sectlevel2">
-<li><a href="#_1_0">4.1. 1.0</a></li>
+<li><a href="#_lyracli_parser">4.1. <code>lyra::cli_parser</code></a></li>
+<li><a href="#_lyraopt">4.2. <code>lyra::opt</code></a></li>
+<li><a href="#_lyraarg">4.3. <code>lyra::arg</code></a></li>
+<li><a href="#_lyrahelp">4.4. <code>lyra::help</code></a></li>
+<li><a href="#_lyraexe_name">4.5. <code>lyra::exe_name</code></a>
+<ul class="sectlevel3">
+<li><a href="#_constructors">4.5.1. Constructors</a></li>
+<li><a href="#_accessors">4.5.2. Accessors</a></li>
+</ul>
+</li>
+<li><a href="#_lyraargs">4.6. <code>lyra::args</code></a></li>
+</ul>
+</li>
+<li><a href="#_history">5. History</a>
+<ul class="sectlevel2">
+<li><a href="#_1_0">5.1. 1.0</a></li>
 </ul>
 </li>
 </ul>
@@ -592,22 +678,22 @@ build with exceptions disabled, but that will be coming later)</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">#include &lt;lyra/lyra.hpp&gt;
-#include &lt;iostream&gt;
-#include &lt;cstdlib&gt;
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;cstdlib&gt;</span><span class="tok-cp"></span>
 
-int main(int argc, const char ** argv)
-{
-    // Where we read in the argument value:
-    int width = 0;
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span> <span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-c1">// Where we read in the argument value:</span>
+    <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 
-    // The parser with the one option argument:
-    auto cli
-        = lyra::Opt( width, "width" )
-            ["-w"]["--width"]
-            ("How wide should it be?");
+    <span class="tok-c1">// The parser with the one option argument:</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span>
+        <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
+            <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
+            <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">);</span>
 
-    // ...</code></pre>
+    <span class="tok-c1">// ...</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -615,20 +701,20 @@ int main(int argc, const char ** argv)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    // ...
+<pre class="pygments highlight"><code data-lang="c++"><span></span>    <span class="tok-c1">// ...</span>
 
-    // Parse the program arguments:
-    auto result = cli.parse( { argc, argv } );
+    <span class="tok-c1">// Parse the program arguments:</span>
+    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">(</span> <span class="tok-p">{</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">}</span> <span class="tok-p">);</span>
 
-    // Check that the arguments where valid:
-    if( !result )
-    {
-        std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.errorMessage() &lt;&lt; std::endl;
-        std::exit(1);
-    }
+    <span class="tok-c1">// Check that the arguments where valid:</span>
+    <span class="tok-k">if</span><span class="tok-p">(</span> <span class="tok-o">!</span><span class="tok-n">result</span> <span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
 
-    std::cout &lt;&lt; "width = " &lt;&lt; width &lt;&lt; "\n";
-}</code></pre>
+    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -636,8 +722,8 @@ int main(int argc, const char ** argv)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">&gt; example1 -w 10
-width = 10</code></pre>
+<pre class="pygments highlight"><code data-lang="shell"><span></span>&gt; example1 -w <span class="tok-m">10</span>
+<span class="tok-nv">width</span> <span class="tok-o">=</span> <span class="tok-m">10</span></code></pre>
 </div>
 </div>
 </div>
@@ -650,31 +736,31 @@ operator (<code>|</code>).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">#include &lt;lyra/lyra.hpp&gt;
-#include &lt;iostream&gt;
-#include &lt;cstdlib&gt;
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;cstdlib&gt;</span><span class="tok-cp"></span>
 
-int main(int argc, const char ** argv)
-{
-    // Where we read in the argument values:
-    int width = 0;
-    std::string name;
-    bool doIt = false;
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span> <span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-c1">// Where we read in the argument values:</span>
+    <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">name</span><span class="tok-p">;</span>
+    <span class="tok-kt">bool</span> <span class="tok-n">doIt</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
 
-    // The parser with the multiple option arguments. They are composed
-    // together by the "|" operator.
-    auto cli
-        = lyra::Opt( width, "width" )
-            ["-w"]["--width"]
-            ("How wide should it be?")
-        | lyra::Opt( name, "name" )
-            ["-n"]["--name"]
-            ("By what name should I be known")
-        | lyra::Opt( doIt )
-            ["-d"]["--doit"]
-            ("Do the thing" );
+    <span class="tok-c1">// The parser with the multiple option arguments. They are composed</span>
+    <span class="tok-c1">// together by the &quot;|&quot; operator.</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span>
+        <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
+            <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
+            <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">)</span>
+        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">name</span><span class="tok-p">,</span> <span class="tok-s">&quot;name&quot;</span> <span class="tok-p">)</span>
+            <span class="tok-p">[</span><span class="tok-s">&quot;-n&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--name&quot;</span><span class="tok-p">]</span>
+            <span class="tok-p">(</span><span class="tok-s">&quot;By what name should I be known&quot;</span><span class="tok-p">)</span>
+        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">doIt</span> <span class="tok-p">)</span>
+            <span class="tok-p">[</span><span class="tok-s">&quot;-d&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--doit&quot;</span><span class="tok-p">]</span>
+            <span class="tok-p">(</span><span class="tok-s">&quot;Do the thing&quot;</span> <span class="tok-p">);</span>
 
-    // ...</code></pre>
+    <span class="tok-c1">// ...</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -682,20 +768,20 @@ int main(int argc, const char ** argv)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    // ...
+<pre class="pygments highlight"><code data-lang="c++"><span></span>    <span class="tok-c1">// ...</span>
 
-    // Parse the program arguments:
-    auto result = cli.parse( { argc, argv } );
+    <span class="tok-c1">// Parse the program arguments:</span>
+    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">(</span> <span class="tok-p">{</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">}</span> <span class="tok-p">);</span>
 
-    // Check that the arguments where valid:
-    if( !result )
-    {
-        std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.errorMessage() &lt;&lt; std::endl;
-        std::exit(1);
-    }
+    <span class="tok-c1">// Check that the arguments where valid:</span>
+    <span class="tok-k">if</span><span class="tok-p">(</span> <span class="tok-o">!</span><span class="tok-n">result</span> <span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
 
-    std::cout &lt;&lt; "width = " &lt;&lt; width &lt;&lt; ", name = " &lt;&lt; name &lt;&lt; ", doIt = " &lt;&lt; doIt &lt;&lt; "\n";
-}</code></pre>
+    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -703,8 +789,8 @@ int main(int argc, const char ** argv)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">&gt; example2 -w 10 --name=Lyra
-width = 10, name = Lyra, doIt = 0</code></pre>
+<pre class="pygments highlight"><code data-lang="shell"><span></span>&gt; example2 -w <span class="tok-m">10</span> --name<span class="tok-o">=</span>Lyra
+<span class="tok-nv">width</span> <span class="tok-o">=</span> <span class="tok-m">10</span>, <span class="tok-nv">name</span> <span class="tok-o">=</span> Lyra, <span class="tok-nv">doIt</span> <span class="tok-o">=</span> <span class="tok-m">0</span></code></pre>
 </div>
 </div>
 </div>
@@ -719,28 +805,28 @@ In addition to specifying the</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">int main(int argc, const char ** argv)
-{
-    // Where we read in the argument values:
-    int width = 0;
-    std::string name;
-    bool doIt = false;
-    bool show_help = false; <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span> <span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-c1">// Where we read in the argument values:</span>
+    <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">name</span><span class="tok-p">;</span>
+    <span class="tok-kt">bool</span> <span class="tok-n">doIt</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
+    <span class="tok-kt">bool</span> <span class="tok-n">show_help</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
 
-    // The parser with the multiple option arguments and help option.
-    auto cli
-        = lyra::Help( show_help ) <i class="conum" data-value="2"></i><b>(2)</b>
-        | lyra::Opt( width, "width" )
-            ["-w"]["--width"]
-            ("How wide should it be?")
-        | lyra::Opt( name, "name" )
-            ["-n"]["--name"]
-            ("By what name should I be known")
-        | lyra::Opt( doIt )
-            ["-d"]["--doit"]
-            ("Do the thing" );
+    <span class="tok-c1">// The parser with the multiple option arguments and help option.</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span>
+        <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span> <span class="tok-n">show_help</span> <span class="tok-p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
+            <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
+            <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">)</span>
+        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">name</span><span class="tok-p">,</span> <span class="tok-s">&quot;name&quot;</span> <span class="tok-p">)</span>
+            <span class="tok-p">[</span><span class="tok-s">&quot;-n&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--name&quot;</span><span class="tok-p">]</span>
+            <span class="tok-p">(</span><span class="tok-s">&quot;By what name should I be known&quot;</span><span class="tok-p">)</span>
+        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">doIt</span> <span class="tok-p">)</span>
+            <span class="tok-p">[</span><span class="tok-s">&quot;-d&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--doit&quot;</span><span class="tok-p">]</span>
+            <span class="tok-p">(</span><span class="tok-s">&quot;Do the thing&quot;</span> <span class="tok-p">);</span>
 
-    // ...</code></pre>
+    <span class="tok-c1">// ...</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -761,28 +847,28 @@ specified:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    // ...
+<pre class="pygments highlight"><code data-lang="c++"><span></span>    <span class="tok-c1">// ...</span>
 
-    // Parse the program arguments:
-    auto result = cli.parse( { argc, argv } );
+    <span class="tok-c1">// Parse the program arguments:</span>
+    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">(</span> <span class="tok-p">{</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">}</span> <span class="tok-p">);</span>
 
-    // Check that the arguments where valid:
-    if ( !result )
-    {
-        std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.errorMessage() &lt;&lt; std::endl;
-        std::cerr &lt;&lt; cli &lt;&lt; "\n"; <i class="conum" data-value="1"></i><b>(1)</b>
-        exit(1);
-    }
+    <span class="tok-c1">// Check that the arguments where valid:</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span> <span class="tok-o">!</span><span class="tok-n">result</span> <span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
 
-    // Show the help when asked for.
-    if (show_help) <i class="conum" data-value="2"></i><b>(2)</b>
-    {
-        std::cout &lt;&lt; cli &lt;&lt; "\n";
-        exit(0);
-    }
+    <span class="tok-c1">// Show the help when asked for.</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+        <span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
 
-    std::cout &lt;&lt; "width = " &lt;&lt; width &lt;&lt; ", name = " &lt;&lt; name &lt;&lt; ", doIt = " &lt;&lt; doIt &lt;&lt; "\n";
-}</code></pre>
+    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -800,10 +886,99 @@ specified:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_history"><a class="anchor" href="#_history"></a>4. History</h2>
+<h2 id="_reference"><a class="anchor" href="#_reference"></a>4. Reference</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>4.1. 1.0</h3>
+<h3 id="_lyracli_parser"><a class="anchor" href="#_lyracli_parser"></a>4.1. <code>lyra::cli_parser</code></h3>
+<div class="paragraph">
+<p>A Combined parser.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lyraopt"><a class="anchor" href="#_lyraopt"></a>4.2. <code>lyra::opt</code></h3>
+<div class="paragraph">
+<p>A parser for options.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lyraarg"><a class="anchor" href="#_lyraarg"></a>4.3. <code>lyra::arg</code></h3>
+<div class="paragraph">
+<p>A parser for arguments.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lyrahelp"><a class="anchor" href="#_lyrahelp"></a>4.4. <code>lyra::help</code></h3>
+<div class="paragraph">
+<p>Utility function that defines a default <code>--help</code> option. You can specify a <code>bool</code>
+flag to indicate if the help option was specified and that you could display
+a help message.</p>
+</div>
+<div class="paragraph">
+<p>The option accepts <code>-?</code>, <code>-h</code>, and <code>--help</code> as allowed option names.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lyraexe_name"><a class="anchor" href="#_lyraexe_name"></a>4.5. <code>lyra::exe_name</code></h3>
+<div class="paragraph">
+<p>Specifies the name of the executable.</p>
+</div>
+<div class="sect3">
+<h4 id="_constructors"><a class="anchor" href="#_constructors"></a>4.5.1. Constructors</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">exe_name</span><span class="tok-p">(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constructs with a target string to receive the name of the executable. When
+the <code>cli_parser</code> is run the target string will contain the exec name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">LambdaT</span><span class="tok-o">&gt;</span>
+<span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">exe_name</span><span class="tok-p">(</span><span class="tok-n">LambdaT</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">lambda</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Construct with a callback that is called with the value of the executable name
+when the <code>cli_parser</code> runs.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_accessors"><a class="anchor" href="#_accessors"></a>4.5.2. Accessors</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">name</span><span class="tok-p">()</span> <span class="tok-k">const</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Returns the executable name when available. Otherwise it returns a default
+value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-n">parser_result</span> <span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">set</span><span class="tok-p">(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">newName</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sets the executable name with the <code>newName</code> value. The new value is reflected
+in the bound string reference or callback.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lyraargs"><a class="anchor" href="#_lyraargs"></a>4.6. <code>lyra::args</code></h3>
+<div class="paragraph">
+<p>Transport for raw args (copied from main args, or supplied via init list).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_history"><a class="anchor" href="#_history"></a>5. History</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>5.1. 1.0</h3>
 <div class="paragraph">
 <p>This is the initial base version based on Clara library. Changes from that
 library:</p>
@@ -840,8 +1015,5 @@ Xcode (8.3, 9, 9.1, 10.1).</p>
 </div>
 </div>
 </div>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-<script>hljs.initHighlighting()</script>
 </body>
 </html>

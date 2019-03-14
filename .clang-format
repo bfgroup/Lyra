@@ -1,6 +1,8 @@
 ---
 BasedOnStyle: WebKit
 IndentWidth: 4
+TabWidth: 4
+UseTab: ForContinuationAndIndentation
 ---
 Language: Cpp
 AccessModifierOffset: 0

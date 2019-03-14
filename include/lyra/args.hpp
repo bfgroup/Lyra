@@ -13,8 +13,13 @@
 
 namespace lyra
 {
-// Transport for raw args (copied from main args, or supplied via init list for
-// testing)
+/* tag::reference[]
+
+= `lyra::args`
+
+Transport for raw args (copied from main args, or supplied via init list).
+
+*/ // end::reference[]
 class args
 {
     public:
