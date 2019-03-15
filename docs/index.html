@@ -530,12 +530,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_reference">4. Reference</a>
 <ul class="sectlevel2">
 <li><a href="#_lyracli_parser">4.1. <code>lyra::cli_parser</code></a></li>
-<li><a href="#_lyraopt">4.2. <code>lyra::opt</code></a></li>
+<li><a href="#_lyraopt">4.2. <code>lyra::opt</code></a>
+<ul class="sectlevel3">
+<li><a href="#_constructors">4.2.1. Constructors</a></li>
+</ul>
+</li>
 <li><a href="#_lyraarg">4.3. <code>lyra::arg</code></a></li>
 <li><a href="#_lyrahelp">4.4. <code>lyra::help</code></a></li>
 <li><a href="#_lyraexe_name">4.5. <code>lyra::exe_name</code></a>
 <ul class="sectlevel3">
-<li><a href="#_constructors">4.5.1. Constructors</a></li>
+<li><a href="#_constructors_2">4.5.1. Constructors</a></li>
 <li><a href="#_accessors">4.5.2. Accessors</a></li>
 </ul>
 </li>
@@ -897,7 +901,52 @@ specified:</p>
 <div class="sect2">
 <h3 id="_lyraopt"><a class="anchor" href="#_lyraopt"></a>4.2. <code>lyra::opt</code></h3>
 <div class="paragraph">
-<p>A parser for options.</p>
+<p>A parser for one option with multiple possible names. The option value(s) are
+communicated through a reference to a variable, a container, or a callback.</p>
+</div>
+<div class="sect3">
+<h4 id="_constructors"><a class="anchor" href="#_constructors"></a>4.2.1. Constructors</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-kt">bool</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">);</span>
+
+<span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">LambdaT</span><span class="tok-o">&gt;</span>
+<span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">LambdaT</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constructs a flag option with a target <code>bool</code> to indicate if the flag is
+present. The first form takes a reference to a variable to receive the
+<code>bool</code>. The second takes a callback that is called with <code>true</code> when the
+option is present.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">T</span><span class="tok-o">&gt;</span>
+<span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">T</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">,</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">hint</span><span class="tok-p">);</span>
+
+<span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">LambdaT</span><span class="tok-o">&gt;</span>
+<span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">LambdaT</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">,</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">hint</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constructs a value option with a target typed variable or callback. These are
+options that take a value as in <code>--opt=value</code>. In the first form the given
+<code>ref</code> receives the value of the option after parsing. The second form the
+callback is called during the parse with the given value. Both take a
+<code>hint</code> that is used in the help text. When the option can be specified
+multiple times the callback will be called consecutively for each option value
+given. And if a container is given as a reference on the first form it will
+contain all the specified values.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-k">operator</span><span class="tok-p">[](</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">optName</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add a spelling for the option of the form <code>--&lt;name&gt;</code> or <code>-n</code>.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -923,7 +972,7 @@ a help message.</p>
 <p>Specifies the name of the executable.</p>
 </div>
 <div class="sect3">
-<h4 id="_constructors"><a class="anchor" href="#_constructors"></a>4.5.1. Constructors</h4>
+<h4 id="_constructors_2"><a class="anchor" href="#_constructors_2"></a>4.5.1. Constructors</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">exe_name</span><span class="tok-p">(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">)</span></code></pre>
