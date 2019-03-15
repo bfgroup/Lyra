@@ -10,7 +10,7 @@
 :sectnumlevels: 5
 :icons: font
 :source-highlighter: pygments
-:source-language: cpp
+:source-language: c++
 :toc: left
 :toclevels: 5
 :caution-caption: ⚑
@@ -69,14 +69,14 @@ To use, include the header with `#include "lyra/lyra.hpp"`.
 
 A parser for a single option can be created like this:
 
-[source,c++]
+[source]
 ----
 include::../examples/doc_example1.cpp[tag=part1]
 ----
 
 You can use this parser by giving it the program arguments of `main`:
 
-[source,c++]
+[source]
 ----
 include::../examples/doc_example1.cpp[tag=part2]
 ----
@@ -95,14 +95,14 @@ It's rare that we are interested in accepting a single option. To parse
 multiple options we compose the options as alternatives with the *or*
 operator (`|`).
 
-[source,c++]
+[source]
 ----
 include::../examples/doc_example2.cpp[tag=part1]
 ----
 
 You can use this parser by giving it the program arguments of `main`:
 
-[source,c++]
+[source]
 ----
 include::../examples/doc_example2.cpp[tag=part2]
 ----
@@ -120,7 +120,7 @@ width = 10, name = Lyra, doIt = 0
 From the specified arguments parser we also get convenient help output.
 In addition to specifying the
 
-[source,c++]
+[source]
 ----
 include::../examples/doc_example3.cpp[tag=part1]
 ----
@@ -130,7 +130,7 @@ include::../examples/doc_example3.cpp[tag=part1]
 We need some changes when using the parser to check if the help option was
 specified:
 
-[source,c++]
+[source]
 ----
 include::../examples/doc_example3.cpp[tag=part2]
 ----
@@ -140,6 +140,8 @@ include::../examples/doc_example3.cpp[tag=part2]
 == Reference
 
 :leveloffset: +2
+
+include::../include/lyra/parser.hpp[tag=reference]
 
 include::../include/lyra/cli_parser.hpp[tag=reference]
 
