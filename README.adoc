@@ -19,6 +19,5 @@ file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 == More
 
-[horizontal]
-Web site:: For more information and documentation see the
+For more information and documentation see the
 link:https://bfgroup.github.io/Lyra/[web site].
