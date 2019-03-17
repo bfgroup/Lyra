@@ -31,10 +31,16 @@ class opt : public bound_parser<opt>
 	explicit opt(LambdaT const& ref);
 
 	template <typename T>
-	opt(T& ref, std::string const& hint);
+	opt(T& ref, std::string const& hint)
+		: bound_parser(ref, hint)
+	{
+	}
 
 	template <typename LambdaT>
-	opt(LambdaT const& ref, std::string const& hint);
+	opt(LambdaT const& ref, std::string const& hint)
+		: bound_parser(ref, hint)
+	{
+	}
 
 	opt& operator[](std::string const& optName);
 
@@ -164,7 +170,7 @@ class opt : public bound_parser<opt>
 
 /* tag::reference[]
 
-== Constructors
+== Construction
 
 end::reference[] */
 
@@ -194,35 +200,10 @@ opt::opt(LambdaT const& ref)
 }
 
 /* tag::reference[]
-[source]
-----
-template <typename T>
-opt::opt(T& ref, std::string const& hint);
 
-template <typename LambdaT>
-opt::opt(LambdaT const& ref, std::string const& hint);
-----
-
-Constructs a value option with a target typed variable or callback. These are
-options that take a value as in `--opt=value`. In the first form the given
-`ref` receives the value of the option after parsing. The second form the
-callback is called during the parse with the given value. Both take a
-`hint` that is used in the help text. When the option can be specified
-multiple times the callback will be called consecutively for each option value
-given. And if a container is given as a reference on the first form it will
-contain all the specified values.
+== Specification
 
 end::reference[] */
-template <typename T>
-opt::opt(T& ref, std::string const& hint)
-	: bound_parser(ref, hint)
-{
-}
-template <typename LambdaT>
-opt::opt(LambdaT const& ref, std::string const& hint)
-	: bound_parser(ref, hint)
-{
-}
 
 /* tag::reference[]
 [source]

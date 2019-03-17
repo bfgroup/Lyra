@@ -155,14 +155,28 @@ parser_base::parse_result parser_base::parse(
 	return parse(args.exe_name(), detail::token_iterator(args, customize.token_delimiters(), customize.option_prefix()), customize);
 }
 
+/* tag::reference[]
+
+= `lyra::composable_parser`
+
+A parser that can be composed with other parsers using `operator|`.
+
+end::reference[] */
 template <typename DerivedT>
 class composable_parser : public parser_base
 {
 };
 
 // Common code and state for args and Opts
-template <typename DerivedT>
-class bound_parser : public composable_parser<DerivedT>
+/* tag::reference[]
+
+= `lyra::bound_parser`
+
+Parser that binds a variable reference or callback to the value of an argument.
+
+end::reference[] */
+template <typename Derived>
+class bound_parser : public composable_parser<Derived>
 {
 	protected:
 	std::shared_ptr<detail::BoundRef> m_ref;
@@ -180,49 +194,151 @@ class bound_parser : public composable_parser<DerivedT>
 	}
 
 	public:
-	template <typename T>
-	bound_parser(T& ref, std::string const& hint)
-		: bound_parser(std::make_shared<detail::BoundValueRef<T>>(ref))
-	{
-		m_hint = hint;
-	}
+	template <typename Reference>
+	bound_parser(Reference& ref, std::string const& hint);
 
-	template <typename LambdaT>
-	bound_parser(LambdaT const& ref, std::string const& hint)
-		: bound_parser(std::make_shared<detail::BoundLambda<LambdaT>>(ref))
-	{
-		m_hint = hint;
-	}
+	template <typename Lambda>
+	bound_parser(Lambda const& ref, std::string const& hint);
 
-	auto operator()(std::string const& description) -> DerivedT&
-	{
-		m_description = description;
-		return static_cast<DerivedT&>(*this);
-	}
-
-	auto optional() -> DerivedT& { return this->cardinality(0, 1); }
-
-	auto required() -> DerivedT& { return this->cardinality(1, 1); }
-
-	auto cardinality(size_t n) -> DerivedT&
-	{
-		m_cardinality = std::make_tuple(n, n);
-		return static_cast<DerivedT&>(*this);
-	}
-
-	auto cardinality(size_t n, size_t m) -> DerivedT&
-	{
-		m_cardinality = std::make_tuple(n, m);
-		return static_cast<DerivedT&>(*this);
-	}
-
-	auto cardinality() const -> std::tuple<size_t, size_t> override
-	{
-		return m_cardinality;
-	}
-
-	auto hint() const -> std::string { return m_hint; }
+	Derived& operator()(std::string const& description);
+	Derived& optional();
+	Derived& required(size_t n = 1);
+	Derived& cardinality(size_t n);
+	Derived& cardinality(size_t n, size_t m);
+	std::tuple<size_t, size_t> cardinality() const override { return m_cardinality; }
+	std::string hint() const { return m_hint; }
 };
+
+/* tag::reference[]
+
+== Construction
+
+end::reference[] */
+
+/* tag::reference[]
+[source]
+----
+template <typename Derived>
+template <typename Reference>
+bound_parser<Derived>::bound_parser(Reference& ref, std::string const& hint);
+
+template <typename Derived>
+template <typename Lambda>
+bound_parser<Derived>::bound_parser(Lambda const& ref, std::string const& hint);
+----
+
+Constructs a value option with a target typed variable or callback. These are
+options that take a value as in `--opt=value`. In the first form the given
+`ref` receives the value of the option after parsing. The second form the
+callback is called during the parse with the given value. Both take a
+`hint` that is used in the help text. When the option can be specified
+multiple times the callback will be called consecutively for each option value
+given. And if a container is given as a reference on the first form it will
+contain all the specified values.
+
+end::reference[] */
+template <typename Derived>
+template <typename Reference>
+bound_parser<Derived>::bound_parser(Reference& ref, std::string const& hint)
+	: bound_parser(std::make_shared<detail::BoundValueRef<Reference>>(ref))
+{
+	m_hint = hint;
+}
+
+template <typename Derived>
+template <typename Lambda>
+bound_parser<Derived>::bound_parser(Lambda const& ref, std::string const& hint)
+	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref))
+{
+	m_hint = hint;
+}
+
+/* tag::reference[]
+
+== Specification
+
+end::reference[] */
+
+/* tag::reference[]
+[source]
+----
+template <typename Derived>
+Derived& bound_parser<Derived>::operator()(std::string const& description);
+----
+
+Defines the help description of an argument.
+
+end::reference[] */
+template <typename Derived>
+Derived& bound_parser<Derived>::operator()(std::string const& description)
+{
+	m_description = description;
+	return static_cast<Derived&>(*this);
+}
+
+/* tag::reference[]
+[source]
+----
+template <typename Derived>
+Derived& bound_parser<Derived>::optional();
+----
+
+Indicates that the argument is optional. This is equivalent to specifying
+`cardinality(0, 1)`.
+
+end::reference[] */
+template <typename Derived>
+Derived& bound_parser<Derived>::optional()
+{
+	return this->cardinality(0, 1);
+}
+
+/* tag::reference[]
+[source]
+----
+template <typename Derived>
+Derived& bound_parser<Derived>::required(size_t n);
+----
+
+Specifies that the argument needs to given the number of `n` times
+(defaults to *1*).
+
+end::reference[] */
+template <typename Derived>
+Derived& bound_parser<Derived>::required(size_t n)
+{
+	return this->cardinality(n);
+}
+
+/* tag::reference[]
+[source]
+----
+template <typename Derived>
+Derived& bound_parser<Derived>::cardinality(size_t n);
+
+template <typename Derived>
+Derived& bound_parser<Derived>::cardinality(size_t n, size_t m);
+----
+
+Specifies the number of times the argument can and needs to appear in the list
+of arguments. In the first form the argument can appear exactly `n` times. In
+the second form is specifies that the argument can appear from `n` to `m` times
+inclusive.
+
+end::reference[] */
+template <typename Derived>
+Derived& bound_parser<Derived>::cardinality(size_t n)
+{
+	m_cardinality = std::make_tuple(n, n);
+	return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+Derived& bound_parser<Derived>::cardinality(size_t n, size_t m)
+{
+	m_cardinality = std::make_tuple(n, m);
+	return static_cast<Derived&>(*this);
+}
 
 } // namespace lyra
 
