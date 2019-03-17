@@ -7,18 +7,19 @@ http://www.boost.org/LICENSE_1_0.txt)
 
 using asciidoctor ;
 
-for local e in [ glob example*.cpp ]
-{
-    exe $(e:B) : $(e) : <use>/bfg_lyra ;
-}
-
-html index.html : lyra.adoc ;
-
 rule locate ( target : source : properties * )
 {
     LOCATE on $(target) = [ on $(source) return $(LOCATE) ] ;
 }
 
+for local e in [ glob example*.cpp ]
+{
+    exe $(e:B) : $(e) : <use>/bfg_lyra ;
+}
+
+html lyra.html : lyra.adoc ;
+html index.html : index.adoc ;
+
 install html
-    :   index.html
+    :   lyra.html index.html
     :   <location>. ;

@@ -1,0 +1,150 @@
+= Lyra -- CLI C++11 Parsing Library
+:copyright: Copyright 2019 Rene Rivera
+:version-label!:
+:reproducible:
+:nofooter:
+:sectanchors:
+:sectnums:
+:sectnumlevels: 5
+:icons: font
+:source-highlighter: pygments
+:source-language: c++
+:toc: left
+:toclevels: 5
+:caution-caption: ⚑
+:important-caption: ‼
+:note-caption: ℹ
+:tip-caption: ☀
+:warning-caption: ⚠
+:CPP: C++
+:PP: ++
+:P: +
+
+ifdef::backend-html5[]
+++++
+<style>
+include::std.css[]
+</style>
+++++
+endif::[]
+
+[.tagline]
+A simple to use, composing, command line parser for C++ 11 and beyond.
+
+[horizontal.shields]
+Obtain:: image:https://img.shields.io/github/downloads/bfgroup/Lyra/total.svg?label=GitHub[GitHub All Releases, link="https://github.com/bfgroup/Lyra/releases"]
+License:: image:https://img.shields.io/badge/license-BSL%201.0-blue.svg["Boost Software License 1.0", link="LICENSE.txt"]
+Standards:: image:https://img.shields.io/badge/standard-PFLR1-orange.svg["Pitchfork Layout R1", link="https://github.com/vector-of-bool/pitchfork"]
+image:https://img.shields.io/badge/standard-C%2B%2B%2011-blue.svg?logo=C%2B%2B["C\+\+ 11", link="https://isocpp.org/"]
+image:https://img.shields.io/badge/standard-C%2B%2B%2014-blue.svg?logo=C%2B%2B["C\+\+ 14", link="https://isocpp.org/"]
+image:https://img.shields.io/badge/standard-C%2B%2B%2017-blue.svg?logo=C%2B%2B["C\+\+ 17", link="https://isocpp.org/"]
+image:https://img.shields.io/badge/standard-C%2B%2B%202a-blue.svg?logo=C%2B%2B["C\+\+ 2a", link="https://isocpp.org/"]
+Stats:: image:https://img.shields.io/github/languages/code-size/bfgroup/Lyra.svg[GitHub code size in bytes, link="https://github.com/bfgroup/Lyra"]
+image:https://img.shields.io/github/issues/bfgroup/Lyra.svg[GitHub issues, link="https://github.com/bfgroup/Lyra/issues"]
+image:https://img.shields.io/github/stars/bfgroup/Lyra.svg?label=%E2%98%85[GitHub stars, link="https://github.com/bfgroup/Lyra/stargazers"]
+Tests:: image:https://travis-ci.com/bfgroup/Lyra.svg?branch=master["Travis", link="https://travis-ci.com/bfgroup/Lyra"]
+image:https://ci.appveyor.com/api/projects/status/y45imn392t6u75r4/branch/master?svg=true["Appveyor", link="https://ci.appveyor.com/project/grafikrobot/lyra/branch/master"]
+
+== License
+
+Distributed under the highly permissive Boost Software License, Version 1.0.
+(See accompanying file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+== Features
+
+* Header only with no external dependencies (except the `std` library).
+* Define your interface once to get parsing, type conversions and usage
+  strings with no redundancy.
+* Composing. Each `opt` or `arg` is an independent parser. Combine these to
+  produce a composite parser -- this can be done in stages across multiple
+  function calls -- or even projects.
+* Bind parsers directly to variables that will receive the results of the parse
+  -- no intermediate dictionaries to worry about.
+* Or can also bind parsers to lambdas for more custom handling.
+* Deduces types from bound variables or lambdas and performs type conversions
+  (via `ostream <<`), with error handling, behind the scenes.
+* Bind parsers to vectors for args that can have multiple values.
+* Uses result types for error propagation, rather than exceptions (doesn't yet
+  build with exceptions disabled, but that will be coming later)
+* Models POSIX standards for short and long opt behavior.
+* Customizable option syntax.
+* Specify cardinality of `arg`-s from one to many.
+
+== Using
+
+To use, just `#include <lyra/lyra.hpp>`
+
+A parser for a single option can be created like this:
+
+[source]
+----
+int width = 0;
+auto cli
+    = lyra::( width, "width" )
+        ["-w"]["--width"]
+        ("How wide should it be?");
+----
+
+You can use this parser directly like this:
+
+[source]
+----
+auto result = cli.parse( { argc, argv } );
+if ( !result )
+{
+	std::cerr << "Error in command line: " << result.errorMessage() << std::endl;
+	exit(1);
+}
+
+// Everything was ok, width will have a value if supplied on command line.
+----
+
+Note that exceptions are not used for error handling.
+
+You can combine parsers by composing with `|`, like this:
+
+[source]
+----
+int width = 0;
+std::string name;
+bool doIt = false;
+std::string command;
+auto cli
+    = lyra::opt( width, "width" )
+        ["-w"]["--width"]
+        ("How wide should it be?")
+    | lyra::opt( name, "name" )
+        ["-n"]["--name"]
+        ("By what name should I be known")
+    | lyra::opt( doIt )
+        ["-d"]["--doit"]
+        ("Do the thing" )
+    | lyra::arg( command, "command" )
+        ("which command to run");
+----
+
+`opt` specifies options that start with a short dash (`-`) or long dash (`--`).
+Options can be argument taking (such as `-w 42`), in which case
+the `opt` takes a second argument -- a hint, or they are pure flags (such as
+`-d`), in which case the `opt` has only one argument -- which must be a boolean.
+The option names are provided in one or more sets of square brackets, and a
+description string can be provided in parentheses. The first argument to an
+`opt` is any variable, local, global member, of any type that can be converted
+from a string using `std::ostream`.
+
+`arg` specifies arguments that are not tied to options, and so have no square
+bracket names. They otherwise work just like `opt`.
+
+A usage string can be obtained by inserting the parser into
+a stream. The usage string is built from the information supplied.
+
+As a convenience, the standard help options (`-h`, `--help` and `-?`) can be
+specified using the `help` parser, which just takes a boolean to bind to.
+
+== Documentation
+
+More examples and reference is available in the included xref:lyra.adoc[documentation].
+
+== Origins
+
+This is a fork of the dormant Clara project.
