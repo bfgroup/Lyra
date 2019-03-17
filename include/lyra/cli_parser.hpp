@@ -16,7 +16,18 @@ namespace lyra
 
 = `lyra::cli_parser`
 
-A Combined parser.
+A Combined parser made up of any two or more other parsers. Creating and using
+one of these as a basis one can incrementally compose other parsers into this
+one incrementally. For example:
+
+[source]
+----
+auto cli = lyra::cli_parser();
+std::string what;
+float when = 0;
+cli |= lyra::opt(what, "what")["--make-it-so"]("Make it so.").required();
+cli |= lyra::opt(when. "when")["--time"]("When to do <what>.").optional();
+----
 
 */ // end::reference[]
 class cli_parser : parser_base

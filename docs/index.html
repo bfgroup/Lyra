@@ -1042,7 +1042,18 @@ inclusive.</p>
 <div class="sect2">
 <h3 id="_lyracli_parser"><a class="anchor" href="#_lyracli_parser"></a>4.6. <code>lyra::cli_parser</code></h3>
 <div class="paragraph">
-<p>A Combined parser.</p>
+<p>A Combined parser made up of any two or more other parsers. Creating and using
+one of these as a basis one can incrementally compose other parsers into this
+one incrementally. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">();</span>
+<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">what</span><span class="tok-p">;</span>
+<span class="tok-kt">float</span> <span class="tok-n">when</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-n">cli</span> <span class="tok-o">|=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">what</span><span class="tok-p">,</span> <span class="tok-s">&quot;what&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--make-it-so&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;Make it so.&quot;</span><span class="tok-p">).</span><span class="tok-n">required</span><span class="tok-p">();</span>
+<span class="tok-n">cli</span> <span class="tok-o">|=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">when</span><span class="tok-p">.</span> <span class="tok-s">&quot;when&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--time&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;When to do &lt;what&gt;.&quot;</span><span class="tok-p">).</span><span class="tok-n">optional</span><span class="tok-p">();</span></code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
