@@ -15,7 +15,29 @@ namespace lyra
 
 = `lyra::arg`
 
-A parser for arguments.
+A parser for regular arguments, i.e. not `--` or `-` prefixed. This is simply
+a way to get values of arguments directly specified in the cli. For example:
+
+[source]
+----
+#include <iostream>
+#include <lyra/lyra.hpp>
+
+int main(int argc, const char** argv)
+{
+	int repeat = 0;
+	std::string message;
+	// Ex: <exe> --repeat=10 "Hello world."
+	auto cli
+		= lyra::opt(repeat, "-repeat")["--repeat"]
+		| lyra::arg(message, "message");
+	if (cli.parse({ argc, argv }))
+	{
+		for (int count= 0; count < repeat; ++count)
+			std::cout << message << "\n";
+	}
+}
+----
 
 */ // end::reference[]
 class arg : public bound_parser<arg>

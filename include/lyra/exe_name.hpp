@@ -57,7 +57,7 @@ class exe_name : public composable_parser<exe_name>
 
 /* tag::reference[]
 
-== Constructors
+== Construction
 
 end::reference[] */
 
