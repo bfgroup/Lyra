@@ -2,6 +2,8 @@
 :copyright: Copyright 2019 Rene Rivera
 :author: Rene Rivera
 :email: grafikrobot@gmail.com
+:revnumber: 1.0
+:revremark: First official release.
 :version-label!:
 :reproducible:
 :nofooter:
