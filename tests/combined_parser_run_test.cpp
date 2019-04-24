@@ -26,7 +26,6 @@ int main()
         | opt( config.seed, "time|value" )
             ["--rng-seed"]["-r"]
             ("set a specific seed for random numbers" )
-            .required()
         | opt( config.name, "name" )
             ["-n"]["--name"]
             ( "the name to use" )
