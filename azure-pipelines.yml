@@ -64,6 +64,7 @@ stages:
           TOOLSET: gcc
           CXX: g++-4.7
           PACKAGES: g++-4.7
+          CXXSTD: 11
         Clang 8:
           TOOLSET: clang
           CXX: clang++-8
@@ -130,6 +131,115 @@ stages:
         fi
         sudo -E apt-get update
         sudo -E apt-get -yq --no-install-suggests --no-install-recommends install ${PACKAGES}
+      displayName: Install Toolset
+    - bash: |
+        set -e
+        pushd ..
+        wget "https://github.com/boostorg/build/archive/develop.zip" -O b2.zip
+        unzip b2.zip
+        cd build-develop
+        CXX= ./bootstrap.sh
+        CXX= sudo ./b2 install
+        popd
+        CXX_PATH=`which ${CXX}`
+        echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+      displayName: Install B2
+    - bash: |
+        set -e
+        pushd tests
+        b2 toolset=${TOOLSET} cxxstd=${CXXSTD} -j2
+        popd
+      displayName: Test
+
+  - job: 'macOS'
+    strategy:
+      matrix:
+        Xcode 10.2.1:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_10.2.1.app
+          VM_IMAGE: 'macOS-10.14'
+          CXXSTD: 11,14,17,2a
+        Xcode 10.2:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_10.2.app
+          VM_IMAGE: 'macOS-10.14'
+          CXXSTD: 11,14,17,2a
+        Xcode 10.1:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_10.1.app
+          VM_IMAGE: 'macOS-10.14'
+          CXXSTD: 11,14,17,2a
+        Xcode 10.0:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_10.app
+          VM_IMAGE: 'macOS-10.14'
+          CXXSTD: 11,14,17,2a
+        Xcode 9.4.1:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_9.4.1.app
+          VM_IMAGE: 'macOS-10.13'
+          CXXSTD: 11,14
+        Xcode 9.4:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_9.4.app
+          VM_IMAGE: 'macOS-10.13'
+          CXXSTD: 11,14
+        Xcode 9.3.1:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_9.3.1.app
+          VM_IMAGE: 'macOS-10.13'
+          CXXSTD: 11,14
+        Xcode 9.3:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_9.3.app
+          VM_IMAGE: 'macOS-10.13'
+          CXXSTD: 11,14
+        Xcode 9.2:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_9.2.app
+          VM_IMAGE: 'macOS-10.13'
+          CXXSTD: 11,14
+        Xcode 9.1:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_9.1.app
+          VM_IMAGE: 'macOS-10.13'
+          CXXSTD: 11,14
+        Xcode 9.0.1:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_9.0.1.app
+          VM_IMAGE: 'macOS-10.13'
+          CXXSTD: 11,14
+        Xcode 9.0:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_9.app
+          VM_IMAGE: 'macOS-10.13'
+          CXXSTD: 11,14
+        Xcode 8.3.3:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_8.3.3.app
+          VM_IMAGE: 'macOS-10.13'
+          CXXSTD: 11
+    pool:
+      vmImage: $(VM_IMAGE)
+    steps:
+    - bash: |
+        set -e
+        uname -a
+        sudo xcode-select -switch ${XCODE_APP}
+        which clang++
       displayName: Install Toolset
     - bash: |
         set -e
