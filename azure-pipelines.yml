@@ -1,0 +1,144 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Rene Rivera 2019.
+
+trigger:
+	branches:
+		include:
+		- develop
+		- master
+		- feature/*
+pr:
+	branches:
+		include:
+		- develop
+
+stages:
+
+- stage: Test
+	jobs:
+
+	- job: 'Linux'
+		pool:
+			vmImage: 'ubuntu-16.04'
+		strategy:
+			matrix:
+				GCC 9:
+					TOOLSET: gcc
+					TEST_TOOLSET: gcc
+					CXX: g++-9
+					PACKAGES: g++-9
+				GCC 8:
+					TOOLSET: gcc
+					TEST_TOOLSET: gcc
+					CXX: g++-8
+					PACKAGES: g++-8
+				GCC 7:
+					TOOLSET: gcc
+					TEST_TOOLSET: gcc
+					CXX: g++-7
+					PACKAGES: g++-7
+				GCC 6:
+					TOOLSET: gcc
+					TEST_TOOLSET: gcc
+					CXX: g++-6
+					PACKAGES: g++-6
+				GCC 5:
+					TOOLSET: gcc
+					TEST_TOOLSET: gcc
+					CXX: g++-5
+					PACKAGES: g++-5
+				GCC 4.9:
+					TOOLSET: gcc
+					TEST_TOOLSET: gcc
+					CXX: g++-4.9
+					PACKAGES: g++-4.9
+				GCC 4.8:
+					TOOLSET: gcc
+					TEST_TOOLSET: gcc
+					CXX: g++-4.8
+					PACKAGES: g++-4.8
+				GCC 4.7:
+					TOOLSET: gcc
+					TEST_TOOLSET: gcc
+					CXX: g++-4.7
+					PACKAGES: g++-4.7
+				Clang 8:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-8
+					PACKAGES: clang-8
+					LLVM_REPO: llvm-toolchain-xenial-8
+				Clang 7:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-7
+					PACKAGES: clang-7
+					LLVM_REPO: llvm-toolchain-xenial-7
+				Clang 6:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-6.0
+					PACKAGES: clang-6.0
+					LLVM_REPO: llvm-toolchain-xenial-6.0
+				Clang 5:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-5.0
+					PACKAGES: clang-5.0
+					LLVM_REPO: llvm-toolchain-xenial-5.0
+				Clang 4:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-4.0
+					PACKAGES: clang-4.0
+					LLVM_REPO: llvm-toolchain-xenial-4.0
+				Clang 3.9:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-3.9
+					PACKAGES: clang-3.9
+				Clang 3.8:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-3.8
+					PACKAGES: clang-3.8
+				Clang 3.7:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-3.7
+					PACKAGES: clang-3.7
+				Clang 3.6:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-3.6
+					PACKAGES: clang-3.6
+				Clang 3.5:
+					TOOLSET: clang
+					TEST_TOOLSET: clang
+					CXX: clang++-3.5
+					PACKAGES: clang-3.5
+		steps:
+		- bash: |
+				set -e
+				uname -a
+				sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
+				if test -n "${LLVM_REPO}" ; then
+					wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+					sudo -E apt-add-repository "deb http://apt.llvm.org/xenial/ ${LLVM_REPO} main"
+				fi
+				sudo -E apt-get update
+				sudo -E apt-get -yq --no-install-suggests --no-install-recommends install ${PACKAGES}
+			displayName: Install Toolset
+		- bash: |
+				set -e
+				pushd ..
+				wget "https://github.com/boostorg/build/archive/develop.zip" -O b2.zip
+				unzip b2.zip
+				cd build-develop
+				CXX= ./bootstrap.sh
+				CXX= sudo ./b2 install
+				popd
+			displayName: Install B2
