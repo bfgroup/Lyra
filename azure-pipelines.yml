@@ -27,99 +27,98 @@ stages:
       matrix:
         GCC 9:
           TOOLSET: gcc
-          TEST_TOOLSET: gcc
           CXX: g++-9
           PACKAGES: g++-9
+          CXXSTD: 11,14,17,2a
         GCC 8:
           TOOLSET: gcc
-          TEST_TOOLSET: gcc
           CXX: g++-8
           PACKAGES: g++-8
+          CXXSTD: 11,14,17,2a
         GCC 7:
           TOOLSET: gcc
-          TEST_TOOLSET: gcc
           CXX: g++-7
           PACKAGES: g++-7
+          CXXSTD: 11,14,17
         GCC 6:
           TOOLSET: gcc
-          TEST_TOOLSET: gcc
           CXX: g++-6
           PACKAGES: g++-6
+          CXXSTD: 11,14,17
         GCC 5:
           TOOLSET: gcc
-          TEST_TOOLSET: gcc
           CXX: g++-5
           PACKAGES: g++-5
+          CXXSTD: 11,14
         GCC 4.9:
           TOOLSET: gcc
-          TEST_TOOLSET: gcc
           CXX: g++-4.9
           PACKAGES: g++-4.9
+          CXXSTD: 11
         GCC 4.8:
           TOOLSET: gcc
-          TEST_TOOLSET: gcc
           CXX: g++-4.8
           PACKAGES: g++-4.8
+          CXXSTD: 11
         GCC 4.7:
           TOOLSET: gcc
-          TEST_TOOLSET: gcc
           CXX: g++-4.7
           PACKAGES: g++-4.7
         Clang 8:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-8
           PACKAGES: clang-8
           LLVM_REPO: llvm-toolchain-xenial-8
+          CXXSTD: 11,14,17,2a
         Clang 7:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-7
           PACKAGES: clang-7
           LLVM_REPO: llvm-toolchain-xenial-7
+          CXXSTD: 11,14,17,2a
         Clang 6:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-6.0
           PACKAGES: clang-6.0
           LLVM_REPO: llvm-toolchain-xenial-6.0
+          CXXSTD: 11,14,17,2a
         Clang 5:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-5.0
           PACKAGES: clang-5.0
           LLVM_REPO: llvm-toolchain-xenial-5.0
+          CXXSTD: 11,14,17
         Clang 4:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-4.0
           PACKAGES: clang-4.0
           LLVM_REPO: llvm-toolchain-xenial-4.0
+          CXXSTD: 11,14
         Clang 3.9:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-3.9
           PACKAGES: clang-3.9
+          CXXSTD: 11
         Clang 3.8:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-3.8
           PACKAGES: clang-3.8
+          CXXSTD: 11
         Clang 3.7:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-3.7
           PACKAGES: clang-3.7
+          CXXSTD: 11
         Clang 3.6:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-3.6
           PACKAGES: clang-3.6
+          CXXSTD: 11
         Clang 3.5:
           TOOLSET: clang
-          TEST_TOOLSET: clang
           CXX: clang++-3.5
           PACKAGES: clang-3.5
+          CXXSTD: 11
     steps:
     - bash: |
         set -e
@@ -141,4 +140,12 @@ stages:
         CXX= ./bootstrap.sh
         CXX= sudo ./b2 install
         popd
+        CXX_PATH=`which ${CXX}`
+        echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
       displayName: Install B2
+    - bash: |
+        set -e
+        pushd tests
+        b2 toolset=${TOOLSET} cxxstd=${CXXSTD} -j2
+        popd
+      displayName: Test
