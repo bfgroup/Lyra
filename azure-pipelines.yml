@@ -60,11 +60,11 @@ stages:
           CXX: g++-4.8
           PACKAGES: g++-4.8
           CXXSTD: 11
-        GCC 4.7:
-          TOOLSET: gcc
-          CXX: g++-4.7
-          PACKAGES: g++-4.7
-          CXXSTD: 11
+        # GCC 4.7:
+        #   TOOLSET: gcc
+        #   CXX: g++-4.7
+        #   PACKAGES: g++-4.7
+        #   CXXSTD: 11
         Clang 8:
           TOOLSET: clang
           CXX: clang++-8
@@ -241,6 +241,51 @@ stages:
         sudo xcode-select -switch ${XCODE_APP}
         which clang++
       displayName: Install Toolset
+    - bash: |
+        set -e
+        pushd ..
+        wget "https://github.com/boostorg/build/archive/develop.zip" -O b2.zip
+        unzip b2.zip
+        cd build-develop
+        CXX= ./bootstrap.sh
+        CXX= sudo ./b2 install
+        popd
+        CXX_PATH=`which ${CXX}`
+        echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+      displayName: Install B2
+    - bash: |
+        set -e
+        pushd tests
+        b2 toolset=${TOOLSET} cxxstd=${CXXSTD} -j2
+        popd
+      displayName: Test
+
+  - job: 'Windows'
+    strategy:
+      matrix:
+        VS 2019:
+          TOOLSET: vc142
+          TEST_TOOLSET: msvc
+          VM_IMAGE: 'windows-2019'
+        VS 2017:
+          TOOLSET: vc141
+          TEST_TOOLSET: msvc
+          VM_IMAGE: 'vs2017-win2016'
+        VS 2015:
+          TOOLSET: vc14
+          TEST_TOOLSET: msvc
+          VM_IMAGE: 'vs2015-win2012r2'
+        VS 2013:
+          TOOLSET: vc12
+          TEST_TOOLSET: msvc
+          VM_IMAGE: 'vs2015-win2012r2'
+        MinGW 8.1.0:
+          TOOLSET: mingw
+          TEST_TOOLSET: gcc
+          VM_IMAGE: 'vs2017-win2016'
+    pool:
+      vmImage: $(VM_IMAGE)
+    steps:
     - bash: |
         set -e
         pushd ..
