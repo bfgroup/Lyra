@@ -275,10 +275,10 @@ stages:
           TOOLSET: msvc
           TOOLSET_VERSION: 14.0
           VM_IMAGE: 'vs2015-win2012r2'
-        VS 2013:
-          TOOLSET: msvc
-          TOOLSET_VERSION: 12.0
-          VM_IMAGE: 'vs2015-win2012r2'
+        # VS 2013:
+        #   TOOLSET: msvc
+        #   TOOLSET_VERSION: 12.0
+        #   VM_IMAGE: 'vs2015-win2012r2'
         MinGW 8.1.0:
           TOOLSET: gcc
           VM_IMAGE: 'vs2017-win2016'
