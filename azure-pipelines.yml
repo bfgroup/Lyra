@@ -299,8 +299,7 @@ stages:
         cd %BUILD_SOURCESDIRECTORY%/../build-develop
         ./bootstrap.bat
         ./b2.exe install
-        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOME%/user-config.jam
-        type %HOME%/user-config.jam
+        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
       displayName: Install B2
     - script: |
         set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../build-develop
