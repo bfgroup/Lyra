@@ -304,5 +304,5 @@ stages:
     - script: |
         set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../build-develop
         cd %BUILD_SOURCESDIRECTORY%/tests
-        %BUILD_SOURCESDIRECTORY%/../build-develop/b2.exe toolset=%TOOLSET% -j2
+        %BUILD_SOURCESDIRECTORY%/../build-develop/b2.exe --debug-configuration toolset=%TOOLSET% -j2
       displayName: Test
