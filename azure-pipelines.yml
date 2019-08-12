@@ -288,8 +288,12 @@ stages:
     - script: |
         cd %BUILD_SOURCESDIRECTORY%/..
         curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
-        7z x b2.zip
-        cd build-develop
+    - task: ExtractFiles@1
+      inputs:
+        archiveFilePatterns: $(Build.SourcesDirectory)/../b2.zip
+        destinationFolder: $(Build.SourcesDirectory)/..
+    - script: |
+        cd %BUILD_SOURCESDIRECTORY%/../build-develop
         ./bootstrap.bat
         ./b2.exe install
         "echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOME%/user-config.jam"
