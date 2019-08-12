@@ -285,16 +285,17 @@ stages:
     pool:
       vmImage: $(VM_IMAGE)
     steps:
-    - powershell: |
-        cd $env:BUILD_SOURCESDIRECTORY/..
+    - batch: |
+        cd %BUILD_SOURCESDIRECTORY%/..
         curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
         7z x b2.zip
         cd build-develop
         ./bootstrap.bat
         ./b2.exe install
-        echo "using" $env:TOOLSET ":" $env:TOOLSET_VERSION ";" > $env:HOME/user-config.jam
+        "echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOME%/user-config.jam"
       displayName: Install B2
-    - powershell: |
-        cd $env:BUILD_SOURCESDIRECTORY/tests
-        b2 toolset=${TOOLSET} -j2
+    - batch: |
+        set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../build-develop
+        cd %BUILD_SOURCESDIRECTORY%/tests
+        "%BUILD_SOURCESDIRECTORY%/../build-develop/b2 toolset=%TOOLSET% -j2"
       displayName: Test
