@@ -288,10 +288,13 @@ stages:
     - script: |
         cd %BUILD_SOURCESDIRECTORY%/..
         curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
+      displayName: Download B2
     - task: ExtractFiles@1
       inputs:
         archiveFilePatterns: $(Build.SourcesDirectory)/../b2.zip
         destinationFolder: $(Build.SourcesDirectory)/..
+        cleanDestinationFolder: false
+      displayName: Extract B2
     - script: |
         cd %BUILD_SOURCESDIRECTORY%/../build-develop
         ./bootstrap.bat
