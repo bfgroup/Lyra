@@ -285,7 +285,7 @@ stages:
     pool:
       vmImage: $(VM_IMAGE)
     steps:
-    - batch: |
+    - script: |
         cd %BUILD_SOURCESDIRECTORY%/..
         curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
         7z x b2.zip
@@ -294,7 +294,7 @@ stages:
         ./b2.exe install
         "echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOME%/user-config.jam"
       displayName: Install B2
-    - batch: |
+    - script: |
         set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../build-develop
         cd %BUILD_SOURCESDIRECTORY%/tests
         "%BUILD_SOURCESDIRECTORY%/../build-develop/b2 toolset=%TOOLSET% -j2"
