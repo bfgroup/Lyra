@@ -264,43 +264,37 @@ stages:
     strategy:
       matrix:
         VS 2019:
-          TOOLSET: vc142
-          TEST_TOOLSET: msvc
+          TOOLSET: msvc
+          TOOLSET_VERSION: 14.2
           VM_IMAGE: 'windows-2019'
         VS 2017:
-          TOOLSET: vc141
-          TEST_TOOLSET: msvc
+          TOOLSET: msvc
+          TOOLSET_VERSION: 14.1
           VM_IMAGE: 'vs2017-win2016'
         VS 2015:
-          TOOLSET: vc14
-          TEST_TOOLSET: msvc
+          TOOLSET: msvc
+          TOOLSET_VERSION: 14.0
           VM_IMAGE: 'vs2015-win2012r2'
         VS 2013:
-          TOOLSET: vc12
-          TEST_TOOLSET: msvc
+          TOOLSET: msvc
+          TOOLSET_VERSION: 12.0
           VM_IMAGE: 'vs2015-win2012r2'
         MinGW 8.1.0:
-          TOOLSET: mingw
-          TEST_TOOLSET: gcc
+          TOOLSET: gcc
           VM_IMAGE: 'vs2017-win2016'
     pool:
       vmImage: $(VM_IMAGE)
     steps:
-    - bash: |
-        set -e
-        pushd ..
-        wget "https://github.com/boostorg/build/archive/develop.zip" -O b2.zip
-        unzip b2.zip
+    - powershell: |
+        cd $env:BUILD_SOURCESDIRECTORY/..
+        curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
+        7z x b2.zip
         cd build-develop
-        CXX= ./bootstrap.sh
-        CXX= sudo ./b2 install
-        popd
-        CXX_PATH=`which ${CXX}`
-        echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+        ./bootstrap.bat
+        ./b2.exe install
+        echo "using" $env:TOOLSET ":" $env:TOOLSET_VERSION ";" > $env:HOME/user-config.jam
       displayName: Install B2
-    - bash: |
-        set -e
-        pushd tests
-        b2 toolset=${TOOLSET} cxxstd=${CXXSTD} -j2
-        popd
+    - powershell: |
+        cd $env:BUILD_SOURCESDIRECTORY/tests
+        b2 toolset=${TOOLSET} -j2
       displayName: Test
