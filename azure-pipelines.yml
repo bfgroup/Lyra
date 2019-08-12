@@ -296,10 +296,10 @@ stages:
         cleanDestinationFolder: false
       displayName: Extract B2
     - script: |
-        cd %BUILD_SOURCESDIRECTORY%/../build-develop
-        ./bootstrap.bat
-        ./b2.exe install
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+        cd %BUILD_SOURCESDIRECTORY%/../build-develop
+        cmd.exe /c ./bootstrap.bat
+        ./b2.exe install
       displayName: Install B2
     - script: |
         set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../build-develop
