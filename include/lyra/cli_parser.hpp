@@ -149,7 +149,15 @@ class cli_parser : parser_base
                 return parse_result::runtimeError(
                     "Unrecognized token: " + result.value().remainingTokens()->name);
         }
-        // !TBD Check missing required options
+        // Check missing required options.
+        for (auto & parseInfo : parseInfos)
+        {
+            if (!parseInfo.parser->is_optional() && parseInfo.count == 0)
+            {
+                return parse_result::runtimeError(
+                    "Expected: " + parseInfo.parser->get_usage_text());
+            }
+        }
         return result;
     }
 
