@@ -21,8 +21,8 @@ int main()
     {
         auto result = p.parse({ "TestApp", "-q", "Pixie" });
         test
-            REQUIRE( result )
-            REQUIRE_FALSE( name.has_value() );
+            (REQUIRE( result ))
+            (REQUIRE( !name.has_value() ));
     }
     {
         auto result = p.parse({ "TestApp", "-n", "Pixie" });
