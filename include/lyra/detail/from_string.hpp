@@ -24,47 +24,74 @@ namespace lyra
 {
 namespace detail
 {
-    template <typename T>
-    inline bool from_string(std::string const& source, T& target)
-    {
-        std::stringstream ss;
-        ss << source;
-        ss >> target;
-        return !ss.fail();
-    }
+	template <typename T>
+	inline bool from_string(std::string const& source, T& target)
+	{
+		std::stringstream ss;
+		ss << source;
+		ss >> target;
+		return !ss.fail();
+	}
 
-    inline bool from_string(std::string const& source, std::string& target)
-    {
-        target = source;
-        return true;
-    }
+	inline bool from_string(std::string const& source, std::string& target)
+	{
+		target = source;
+		return true;
+	}
 
-    inline bool from_string(std::string const& source, bool& target)
-    {
-        std::string srcLC = source;
-        std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(), [](char c) {
-            return static_cast<char>(::tolower(c));
-        });
-        if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes" || srcLC == "on")
-            target = true;
-        else if (srcLC == "n" || srcLC == "0" || srcLC == "false" || srcLC == "no" || srcLC == "off")
-            target = false;
-        else
-            return false;
-        return true;
-    }
+	inline bool from_string(std::string const& source, bool& target)
+	{
+		std::string srcLC = source;
+		std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(), [](char c) {
+			return static_cast<char>(::tolower(c));
+		});
+		if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes" || srcLC == "on")
+			target = true;
+		else if (srcLC == "n" || srcLC == "0" || srcLC == "false" || srcLC == "no" || srcLC == "off")
+			target = false;
+		else
+			return false;
+		return true;
+	}
 
 #ifdef LYRA_CONFIG_OPTIONAL_TYPE
-    template <typename T>
-    inline bool from_string(std::string const& source, LYRA_CONFIG_OPTIONAL_TYPE<T>& target)
-    {
-        T temp;
-        auto result = from_string(source, temp);
-        if (result)
-            target = std::move(temp);
-        return result;
-    }
+	template <typename T>
+	inline bool from_string(std::string const& source, LYRA_CONFIG_OPTIONAL_TYPE<T>& target)
+	{
+		T temp;
+		auto result = from_string(source, temp);
+		if (result)
+			target = std::move(temp);
+		return result;
+	}
 #endif // LYRA_CONFIG_OPTIONAL_TYPE
+
+	template <typename T>
+	bool to_string(const T &source, std::string & target)
+	{
+		std::stringstream ss;
+		ss << source;
+		ss >> target;
+		return !ss.fail();
+	}
+
+	bool to_string(const std::string &source, std::string & target)
+	{
+		target = source;
+		return true;
+	}
+
+	bool to_string(const char * source, std::string & target)
+	{
+		target = source;
+		return true;
+	}
+
+	bool to_string(bool source, std::string & target)
+	{
+		target = source ? "true" : "false";
+		return true;
+	}
 
 } // namespace detail
 } // namespace lyra

@@ -76,6 +76,7 @@ Distributed under the highly permissive Boost Software License, Version 1.0.
 * Models POSIX standards for short and long opt behavior.
 * Customizable option syntax.
 * Specify cardinality of `arg`-s from one to many.
+* Limit option values to a specified set of values.
 
 == Using
 

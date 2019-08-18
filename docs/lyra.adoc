@@ -62,6 +62,7 @@ Distributed under the highly permissive Boost Software License, Version 1.0.
 * Models POSIX standards for short and long opt behavior.
 * Customizable option syntax.
 * Specify cardinality of `arg`-s from one to many.
+* Limit option values to a specified set of values.
 
 == Usage
 
@@ -120,7 +121,6 @@ width = 10, name = Lyra, doIt = 0
 == Help Option
 
 From the specified arguments parser we also get convenient help output.
-In addition to specifying the
 
 [source]
 ----
@@ -138,6 +138,28 @@ include::../examples/doc_example3.cpp[tag=part2]
 ----
 <1> We print out the help text on error.
 <2> And we also print it out when specified.
+
+== Option Value Choices
+
+For value options, i.e. `--name=value`, one can specify a set of allowed
+values. YOu can indicate the choices explicitly by specifying them to the
+`choices()` call:
+
+[source]
+----
+include::../examples/doc_example5.cpp[tag=part1]
+----
+
+Or you can specify a complex set of values by giving `choices()` a function
+that validates if a given value is allowed:
+
+[source]
+----
+include::../examples/doc_example6.cpp[tag=part1]
+----
+
+For either case the default, initial, value of the option is only modified
+if a valid value is given.
 
 == Reference
 
@@ -160,6 +182,15 @@ include::../include/lyra/args.hpp[tag=reference]
 :leveloffset: -2
 
 == History
+
+=== 1.1
+
+Changes:
+
+* Fix use of `required()` arguments such that the parse errors if they are
+	absent. -- _girstsf_
+* *New*: define argument value `choices()` as either a fixed set or checked
+	by a custom lambda function. -- _Rene Rivera_
 
 === 1.0
 
