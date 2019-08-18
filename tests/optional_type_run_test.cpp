@@ -13,8 +13,8 @@ int main()
     using namespace lyra;
     bfg::mini_test::scope test;
 
-    #if defined(CLARA_CONFIG_OPTIONAL_TYPE)
-    CLARA_CONFIG_OPTIONAL_TYPE<std::string> name;
+    #if defined(LYRA_CONFIG_OPTIONAL_TYPE)
+    LYRA_CONFIG_OPTIONAL_TYPE<std::string> name;
     auto p = opt(name, "name")
         ["-n"]["--name"]
         ("the name to use");
