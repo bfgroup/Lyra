@@ -4,12 +4,11 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 project /bfg_lyra_examples
-    : requirements
-        <use>/bfg_lyra
-        <cxxstd>11
-    ;
+	: requirements
+		<use>/bfg_lyra
+	;
 
 for local e in [ glob *.cpp ]
 {
-    exe $(e:B) : $(e) ;
+	exe $(e:B) : $(e) ;
 }

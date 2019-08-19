@@ -10,40 +10,54 @@ http://www.boost.org/LICENSE_1_0.txt)
 
 int main(int argc, const char ** argv)
 {
-    using namespace lyra;
-    bool show_help = false;
-    struct Config
-    {
-        int seed = 0;
-        std::string name;
-        std::vector<std::string> tests;
-        bool flag = false;
-        double value = 0;
-    } config;
-    auto parser
-        = help( show_help )
-        | opt( config.seed, "time|value" )
-            ["--rng-seed"]["-r"]
-            ("set a specific seed for random numbers" )
-            .required()
-        | opt( config.name, "name" )
-            ["-n"]["--name"]
-            ( "the name to use" )
-        | opt( config.flag )
-            ["-f"]["--flag"]
-            ( "a flag to set" )
-        | opt( [&]( double value ){ config.value = value; }, "number" )
-            ["-d"]["--double"]
-            ( "just some number" )
-        | arg( config.tests, "test name|tags|pattern" )
-            ( "which test or tests to use" );
+	using namespace lyra;
+	bool show_help = false;
+	struct Config
+	{
+		int seed = 0;
+		std::string name;
+		std::vector<std::string> tests;
+		bool flag = false;
+		double value = 0;
+		int choice = 5;
+		std::string color = "red";
+	} config;
+	auto parser
+		= help(show_help)
+		| opt(config.seed, "time|value")
+			["--rng-seed"]["-r"]
+			("Set a specific seed for random numbers.")
+			.required()
+		| opt(config.name, "name")
+			["-n"]["--name"]
+			("The name to use.")
+		| opt(config.flag)
+			["-f"]["--flag"]
+			("A flag to set.")
+		| opt([&](double value){ config.value = value; }, "number")
+			["-d"]["--double"]
+			("Just some number.")
+		| arg(config.tests, "test name|tags|pattern")
+			("Which test or tests to use.")
+		| opt(config.choice, "1-10")
+			["-c"]["--choice"]
+			("A choice from 1 to 10.")
+			.choices([](int value)->bool { return 1<=value && value<=10; })
+		| opt(config.color, "red|green|blue")
+			["-k"]["--color"]
+			("A primary color.")
+			.choices("red", "green", "blue");
 
-    parser.parse({argc, argv});
+	auto result = parser.parse({argc, argv});
 
-    if (show_help)
-    {
-        std::cout << parser << "\n";
-    }
+	if (!result)
+	{
+		std::cerr << result.errorMessage() << "\n\n";
+	}
+	if (show_help or !result)
+	{
+		std::cout << parser << "\n";
+	}
 
-    return 0;
+	return 0;
 }
