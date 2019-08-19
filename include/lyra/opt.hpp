@@ -15,10 +15,13 @@ namespace lyra
 {
 /* tag::reference[]
 
+[#lyra_opt]
 = `lyra::opt`
 
 A parser for one option with multiple possible names. The option value(s) are
 communicated through a reference to a variable, a container, or a callback.
+
+Is-a <<lyra_bound_parser>>.
 
 end::reference[] */
 class opt : public bound_parser<opt>
@@ -34,16 +37,10 @@ class opt : public bound_parser<opt>
 	explicit opt(LambdaT const& ref);
 
 	template <typename T>
-	opt(T& ref, std::string const& hint)
-		: bound_parser(ref, hint)
-	{
-	}
+	opt(T& ref, std::string const& hint);
 
 	template <typename LambdaT>
-	opt(LambdaT const& ref, std::string const& hint)
-		: bound_parser(ref, hint)
-	{
-	}
+	opt(LambdaT const& ref, std::string const& hint);
 
 	opt& operator[](std::string const& optName);
 
@@ -185,17 +182,25 @@ class opt : public bound_parser<opt>
 
 /* tag::reference[]
 
+[#lyra_opt_ctor]
 == Construction
 
 end::reference[] */
 
 /* tag::reference[]
+
+[#lyra_opt_ctor_flags]
+=== Flags
+
 [source]
 ----
-opt::opt(bool& ref);
+lyra::opt::opt(bool& ref);
 
 template <typename LambdaT>
-opt::opt(LambdaT const& ref);
+lyra::opt::opt(LambdaT const& ref);
+
+template <typename LambdaT>
+lyra::opt::opt(LambdaT const& ref, std::string const& hint)
 ----
 
 Constructs a flag option with a target `bool` to indicate if the flag is
@@ -216,14 +221,50 @@ opt::opt(LambdaT const& ref)
 
 /* tag::reference[]
 
+[#lyra_opt_ctor_values]
+=== Values
+
+[source]
+----
+template <typename T>
+lyra::opt::opt(T& ref, std::string const& hint);
+
+template <typename LambdaT>
+lyra::opt::opt(LambdaT const& ref, std::string const& hint)
+----
+
+Constructs a flag option with a target `bool` to indicate if the flag is
+present. The first form takes a reference to a variable to receive the
+`bool`. The second takes a callback that is called with `true` when the
+option is present.
+
+end::reference[] */
+template <typename T>
+opt::opt(T& ref, std::string const& hint)
+	: bound_parser(ref, hint)
+{
+}
+template <typename LambdaT>
+opt::opt(LambdaT const& ref, std::string const& hint)
+	: bound_parser(ref, hint)
+{
+}
+
+/* tag::reference[]
+
+[#lyra_opt_specification]
 == Specification
 
 end::reference[] */
 
 /* tag::reference[]
+
+[#lyra_opt_operator_array]
+=== `lyra::opt::operator[]`
+
 [source]
 ----
-opt& opt::operator[](std::string const& optName)
+lyra::opt& lyra::opt::operator[](std::string const& optName)
 ----
 
 Add a spelling for the option of the form `--<name>` or `-n`.
@@ -237,13 +278,17 @@ opt& opt::operator[](std::string const& optName)
 
 
 /* tag::reference[]
+
+[#lyra_opt_choices]
+=== `lyra::opt::choices`
+
 [source]
 ----
 template <typename T, typename... Rest>
-opt& choices(T val0, T val1, Rest... rest)
+lyra::opt& lyra::opt::choices(T val0, T val1, Rest... rest)
 
 template <typename Lambda>
-opt& choices(Lambda const &check_choice)
+lyra::opt& lyra::opt::choices(Lambda const &check_choice)
 ----
 
 Limit the allowed values of a value option. In the first form the value is

@@ -13,6 +13,7 @@ namespace lyra
 {
 /* tag::reference[]
 
+[#lyra_arg]
 = `lyra::arg`
 
 A parser for regular arguments, i.e. not `--` or `-` prefixed. This is simply
@@ -38,6 +39,8 @@ int main(int argc, const char** argv)
 	}
 }
 ----
+
+Is-a <<lyra_bound_parser>>.
 
 */ // end::reference[]
 class arg : public bound_parser<arg>

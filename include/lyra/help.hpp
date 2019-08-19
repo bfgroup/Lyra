@@ -13,6 +13,7 @@ namespace lyra
 {
 /* tag::reference[]
 
+[#lyra_help]
 = `lyra::help`
 
 Utility function that defines a default `--help` option. You can specify a `bool`

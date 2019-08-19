@@ -15,6 +15,7 @@ namespace lyra
 {
 /* tag::reference[]
 
+[#lyra_args]
 = `lyra::args`
 
 Transport for raw args (copied from main args, or supplied via init list).

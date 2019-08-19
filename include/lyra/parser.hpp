@@ -23,6 +23,7 @@ namespace lyra
 
 /* tag::reference[]
 
+[#lyra_parser_customization]
 = `lyra::parser_customization`
 
 Customization interface for parsing of options.
@@ -52,6 +53,7 @@ struct parser_customization
 
 /* tag::reference[]
 
+[#lyra_default_parser_customization]
 = `lyra::default_parser_customization`
 
 Is-a `lyra::parser_customization` that defines token delimiters as space (" ")
@@ -89,6 +91,7 @@ namespace detail
 
 /* tag::reference[]
 
+[#lyra_parser_base]
 = `lyra::parser_base`
 
 Base for all argument parser types.
@@ -157,6 +160,7 @@ parser_base::parse_result parser_base::parse(
 
 /* tag::reference[]
 
+[#lyra_composable_parser]
 = `lyra::composable_parser`
 
 A parser that can be composed with other parsers using `operator|`.
@@ -170,6 +174,7 @@ class composable_parser : public parser_base
 // Common code and state for args and Opts
 /* tag::reference[]
 
+[#lyra_bound_parser]
 = `lyra::bound_parser`
 
 Parser that binds a variable reference or callback to the value of an argument.
@@ -211,6 +216,7 @@ class bound_parser : public composable_parser<Derived>
 
 /* tag::reference[]
 
+[#lyra_bound_parser_ctor]
 == Construction
 
 end::reference[] */
@@ -255,11 +261,16 @@ bound_parser<Derived>::bound_parser(Lambda const& ref, std::string const& hint)
 
 /* tag::reference[]
 
+[#lyra_bound_parser_specification]
 == Specification
 
 end::reference[] */
 
 /* tag::reference[]
+
+[#lyra_bound_parser_description]
+=== `lyra::bound_parser::operator(description)`
+
 [source]
 ----
 template <typename Derived>
@@ -277,6 +288,10 @@ Derived& bound_parser<Derived>::operator()(std::string const& description)
 }
 
 /* tag::reference[]
+
+[#lyra_bound_parser_optional]
+=== `lyra::bound_parser::optional`
+
 [source]
 ----
 template <typename Derived>
@@ -294,6 +309,10 @@ Derived& bound_parser<Derived>::optional()
 }
 
 /* tag::reference[]
+
+[#lyra_bound_parser_required]
+=== `lyra::bound_parser::required(n)`
+
 [source]
 ----
 template <typename Derived>
@@ -311,6 +330,10 @@ Derived& bound_parser<Derived>::required(size_t n)
 }
 
 /* tag::reference[]
+
+[#lyra_bound_parser_cardinality]
+=== `lyra::bound_parser::cardinality(n, m)`
+
 [source]
 ----
 template <typename Derived>

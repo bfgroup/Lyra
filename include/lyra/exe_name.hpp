@@ -16,9 +16,12 @@ namespace lyra
 {
 /* tag::reference[]
 
+[#lyra_exe_name]
 = `lyra::exe_name`
 
 Specifies the name of the executable.
+
+Is-a <<lyra_composable_parser>>.
 
 end::reference[] */
 class exe_name : public composable_parser<exe_name>
@@ -57,6 +60,7 @@ class exe_name : public composable_parser<exe_name>
 
 /* tag::reference[]
 
+[#lyra_exe_name_ctor]
 == Construction
 
 end::reference[] */
@@ -97,11 +101,16 @@ exe_name::exe_name(LambdaT const& lambda)
 
 /* tag::reference[]
 
+[#lyra_exe_name_accessors]
 == Accessors
 
 end::reference[] */
 
 /* tag::reference[]
+
+[#lyra_exe_name_name]
+=== `lyra::exe_name::name`
+
 [source]
 ----
 std::string exe_name::name() const
@@ -117,6 +126,10 @@ std::string exe_name::name() const
 }
 
 /* tag::reference[]
+
+[#lyra_exe_name_set]
+=== `lyra::exe_name::set`
+
 [source]
 ----
 parser_result exe_name::set(std::string const& newName)
