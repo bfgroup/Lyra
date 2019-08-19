@@ -8,7 +8,6 @@
 #define LYRA_OPT_HPP
 
 #include "lyra/parser.hpp"
-#include "lyra/detail/choices.hpp"
 #include <memory>
 
 namespace lyra
@@ -28,7 +27,6 @@ class opt : public bound_parser<opt>
 {
 	protected:
 	std::vector<std::string> m_optNames;
-	std::shared_ptr<detail::choices_base> value_choices;
 
 	public:
 	explicit opt(bool& ref);
@@ -43,12 +41,6 @@ class opt : public bound_parser<opt>
 	opt(LambdaT const& ref, std::string const& hint);
 
 	opt& operator[](std::string const& optName);
-
-	template <typename T, typename... Rest>
-	opt& choices(T val0, T val1, Rest... rest);
-
-	template <typename Lambda>
-	opt& choices(Lambda const &check_choice);
 
 	virtual std::string get_usage_text() const override
 	{
@@ -273,41 +265,6 @@ end::reference[] */
 opt& opt::operator[](std::string const& optName)
 {
 	m_optNames.push_back(optName);
-	return *this;
-}
-
-
-/* tag::reference[]
-
-[#lyra_opt_choices]
-=== `lyra::opt::choices`
-
-[source]
-----
-template <typename T, typename... Rest>
-lyra::opt& lyra::opt::choices(T val0, T val1, Rest... rest)
-
-template <typename Lambda>
-lyra::opt& lyra::opt::choices(Lambda const &check_choice)
-----
-
-Limit the allowed values of a value option. In the first form the value is
-limited to the ones listed in the call (two or more values). In the second
-form the `check_choice` function is called with the parsed value and returns
-`true` if it's an allowed value.
-
-end::reference[] */
-template <typename T, typename... Rest>
-opt& opt::choices(T val0, T val1, Rest... rest)
-{
-	value_choices = std::make_shared<detail::choices_set<T>>(val0, val1, rest...);
-	return *this;
-}
-
-template <typename Lambda>
-opt& opt::choices(Lambda const &check_choice)
-{
-	value_choices = std::make_shared<detail::choices_check<Lambda>>(check_choice);
 	return *this;
 }
 

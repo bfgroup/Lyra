@@ -45,55 +45,64 @@ Is-a <<lyra_bound_parser>>.
 */ // end::reference[]
 class arg : public bound_parser<arg>
 {
-    public:
-    using bound_parser::bound_parser;
+	public:
+	using bound_parser::bound_parser;
 
-    virtual std::string get_usage_text() const override
-    {
-        if (!m_hint.empty())
-            return "<"+m_hint+">";
-        else
-            return "";
-    }
+	virtual std::string get_usage_text() const override
+	{
+		if (!m_hint.empty())
+			return "<"+m_hint+">";
+		else
+			return "";
+	}
 
-    virtual help_text get_help_text() const override
-    {
-        std::ostringstream oss;
-        if (!m_hint.empty())
-            oss << "<" << m_hint << ">";
-        if (cardinality_count() > 1)
-            oss << " ...";
-        return { { oss.str(), m_description } };
-    }
+	virtual help_text get_help_text() const override
+	{
+		std::ostringstream oss;
+		if (!m_hint.empty())
+			oss << "<" << m_hint << ">";
+		if (cardinality_count() > 1)
+			oss << " ...";
+		return { { oss.str(), m_description } };
+	}
 
-    auto parse(std::string const&, detail::token_iterator const& tokens, parser_customization const&) const
-        -> parse_result override
-    {
-        auto validationResult = validate();
-        if (!validationResult)
-            return parse_result(validationResult);
+	using parser_base::parse;
 
-        auto remainingTokens = tokens;
-        auto const& token = *remainingTokens;
-        if (token.type != detail::token_type::argument)
-            return parse_result::ok(
-                detail::parse_state(parser_result_type::no_match, remainingTokens));
+	auto parse(std::string const&, detail::token_iterator const& tokens, parser_customization const&) const
+		-> parse_result override
+	{
+		auto validationResult = validate();
+		if (!validationResult)
+			return parse_result(validationResult);
 
-        assert(!m_ref->isFlag());
-        auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());
+		auto remainingTokens = tokens;
+		auto const& token = *remainingTokens;
+		if (token.type != detail::token_type::argument)
+			return parse_result::ok(
+				detail::parse_state(parser_result_type::no_match, remainingTokens));
 
-        auto result = valueRef->setValue(remainingTokens->name);
-        if (!result)
-            return parse_result(result);
-        else
-            return parse_result::ok(
-                detail::parse_state(parser_result_type::matched, ++remainingTokens));
-    }
+		assert(!m_ref->isFlag());
+		auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());
 
-    virtual std::unique_ptr<parser_base> clone() const override
-    {
-        return std::unique_ptr<parser_base>(new arg(*this));
-    }
+		if (value_choices)
+		{
+			auto choice_result = value_choices->contains_value(token.name);
+			if (!choice_result)
+				return parse_result(choice_result);
+		}
+
+		auto result = valueRef->setValue(remainingTokens->name);
+		if (!result)
+			return parse_result(result);
+		else
+			return parse_result::ok(
+				detail::parse_state(parser_result_type::matched, ++remainingTokens));
+	}
+
+	virtual std::unique_ptr<parser_base> clone() const override
+	{
+		return std::unique_ptr<parser_base>(new arg(*this));
+	}
 };
 }
 

@@ -66,6 +66,15 @@ int main()
 			(REQUIRE(!result))
 			(REQUIRE(choice == 20));
 	}
+	{
+		std::string choice;
+		auto p = arg(choice, "choice")("the choice")
+			.choices("walk", "run", "jump");
+		auto result = p.parse( { "TestApp", "run" } );
+		test
+			(REQUIRE(result))
+			(REQUIRE(choice == "run"));
+	}
 
 	return test;
 }

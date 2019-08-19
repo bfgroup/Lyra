@@ -139,11 +139,11 @@ include::../examples/doc_example3.cpp[tag=part2]
 <1> We print out the help text on error.
 <2> And we also print it out when specified.
 
-== Option Value Choices
+== Value Choices
 
-For value options, i.e. `--name=value`, one can specify a set of allowed
-values. YOu can indicate the choices explicitly by specifying them to the
-`choices()` call:
+For value arguments, i.e. `--name=value` or positional arguments, one can
+specify a set of allowed values. YOu can indicate the choices explicitly by
+specifying them to the `choices()` call:
 
 [source]
 ----
@@ -158,8 +158,8 @@ that validates if a given value is allowed:
 include::../examples/doc_example6.cpp[tag=part1]
 ----
 
-For either case the default, initial, value of the option is only modified
-if a valid value is given.
+For either case the default, initial, value is only modified if a valid value
+is given.
 
 == Reference
 

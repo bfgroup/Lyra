@@ -9,6 +9,7 @@
 
 #include "lyra/args.hpp"
 #include "lyra/detail/bound.hpp"
+#include "lyra/detail/choices.hpp"
 #include "lyra/detail/from_string.hpp"
 #include "lyra/detail/result.hpp"
 #include "lyra/detail/tokens.hpp"
@@ -188,6 +189,7 @@ class bound_parser : public composable_parser<Derived>
 	std::string m_hint;
 	std::string m_description;
 	std::tuple<size_t, size_t> m_cardinality;
+	std::shared_ptr<detail::choices_base> value_choices;
 
 	explicit bound_parser(std::shared_ptr<detail::BoundRef> const& ref)
 		: m_ref(ref)
@@ -212,6 +214,11 @@ class bound_parser : public composable_parser<Derived>
 	Derived& cardinality(size_t n, size_t m);
 	std::tuple<size_t, size_t> cardinality() const override { return m_cardinality; }
 	std::string hint() const { return m_hint; }
+
+	template <typename T, typename... Rest>
+	Derived& choices(T val0, T val1, Rest... rest);
+	template <typename Lambda>
+	Derived& choices(Lambda const &check_choice);
 };
 
 /* tag::reference[]
@@ -345,7 +352,7 @@ Derived& bound_parser<Derived>::cardinality(size_t n, size_t m);
 
 Specifies the number of times the argument can and needs to appear in the list
 of arguments. In the first form the argument can appear exactly `n` times. In
-the second form is specifies that the argument can appear from `n` to `m` times
+the second form it specifies that the argument can appear from `n` to `m` times
 inclusive.
 
 end::reference[] */
@@ -360,6 +367,44 @@ template <typename Derived>
 Derived& bound_parser<Derived>::cardinality(size_t n, size_t m)
 {
 	m_cardinality = std::make_tuple(n, m);
+	return static_cast<Derived&>(*this);
+}
+
+/* tag::reference[]
+
+[#lyra_bound_parser_choices]
+=== `lyra::bound_parser::choices`
+
+[source]
+----
+template <typename Derived>
+template <typename T, typename... Rest>
+lyra::opt& lyra::bound_parser<Derived>::choices(T val0, T val1, Rest... rest)
+
+template <typename Derived>
+template <typename Lambda>
+lyra::opt& lyra::bound_parser<Derived>::choices(Lambda const &check_choice)
+----
+
+Limit the allowed values of an argument. In the first form the value is
+limited to the ones listed in the call (two or more values). In the second
+form the `check_choice` function is called with the parsed value and returns
+`true` if it's an allowed value.
+
+end::reference[] */
+template <typename Derived>
+template <typename T, typename... Rest>
+Derived& bound_parser<Derived>::choices(T val0, T val1, Rest... rest)
+{
+	value_choices = std::make_shared<detail::choices_set<T>>(val0, val1, rest...);
+	return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+template <typename Lambda>
+Derived& bound_parser<Derived>::choices(Lambda const &check_choice)
+{
+	value_choices = std::make_shared<detail::choices_check<Lambda>>(check_choice);
 	return static_cast<Derived&>(*this);
 }
 

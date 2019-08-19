@@ -464,7 +464,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_help_option">3. Help Option</a></li>
-<li><a href="#_option_value_choices">4. Option Value Choices</a></li>
+<li><a href="#_value_choices">4. Value Choices</a></li>
 <li><a href="#_reference">5. Reference</a>
 <ul class="sectlevel2">
 <li><a href="#lyra_parser_customization">5.1. <code>lyra::parser_customization</code></a></li>
@@ -480,6 +480,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#lyra_bound_parser_optional">5.5.2.2. <code>lyra::bound_parser::optional</code></a></li>
 <li><a href="#lyra_bound_parser_required">5.5.2.3. <code>lyra::bound_parser::required(n)</code></a></li>
 <li><a href="#lyra_bound_parser_cardinality">5.5.2.4. <code>lyra::bound_parser::cardinality(n, m)</code></a></li>
+<li><a href="#lyra_bound_parser_choices">5.5.2.5. <code>lyra::bound_parser::choices</code></a></li>
 </ul>
 </li>
 </ul>
@@ -496,7 +497,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#lyra_opt_specification">5.7.2. Specification</a>
 <ul class="sectlevel4">
 <li><a href="#lyra_opt_operator_array">5.7.2.1. <code>lyra::opt::operator[]</code></a></li>
-<li><a href="#lyra_opt_choices">5.7.2.2. <code>lyra::opt::choices</code></a></li>
 </ul>
 </li>
 </ul>
@@ -864,12 +864,12 @@ specified:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_option_value_choices"><a class="anchor" href="#_option_value_choices"></a>4. Option Value Choices</h2>
+<h2 id="_value_choices"><a class="anchor" href="#_value_choices"></a>4. Value Choices</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>For value options, i.e. <code>--name=value</code>, one can specify a set of allowed
-values. YOu can indicate the choices explicitly by specifying them to the
-<code>choices()</code> call:</p>
+<p>For value arguments, i.e. <code>--name=value</code> or positional arguments, one can
+specify a set of allowed values. YOu can indicate the choices explicitly by
+specifying them to the <code>choices()</code> call:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -924,8 +924,8 @@ that validates if a given value is allowed:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>For either case the default, initial, value of the option is only modified
-if a valid value is given.</p>
+<p>For either case the default, initial, value is only modified if a valid value
+is given.</p>
 </div>
 </div>
 </div>
@@ -1074,8 +1074,28 @@ contain all the specified values.</p>
 <div class="paragraph">
 <p>Specifies the number of times the argument can and needs to appear in the list
 of arguments. In the first form the argument can appear exactly <code>n</code> times. In
-the second form is specifies that the argument can appear from <code>n</code> to <code>m</code> times
+the second form it specifies that the argument can appear from <code>n</code> to <code>m</code> times
 inclusive.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="lyra_bound_parser_choices"><a class="anchor" href="#lyra_bound_parser_choices"></a>5.5.2.5. <code>lyra::bound_parser::choices</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
+<span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">T</span><span class="tok-p">,</span> <span class="tok-k">typename</span><span class="tok-p">...</span> <span class="tok-n">Rest</span><span class="tok-o">&gt;</span>
+<span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">bound_parser</span><span class="tok-o">&lt;</span><span class="tok-n">Derived</span><span class="tok-o">&gt;::</span><span class="tok-n">choices</span><span class="tok-p">(</span><span class="tok-n">T</span> <span class="tok-n">val0</span><span class="tok-p">,</span> <span class="tok-n">T</span> <span class="tok-n">val1</span><span class="tok-p">,</span> <span class="tok-n">Rest</span><span class="tok-p">...</span> <span class="tok-n">rest</span><span class="tok-p">)</span>
+
+<span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
+<span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Lambda</span><span class="tok-o">&gt;</span>
+<span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">bound_parser</span><span class="tok-o">&lt;</span><span class="tok-n">Derived</span><span class="tok-o">&gt;::</span><span class="tok-n">choices</span><span class="tok-p">(</span><span class="tok-n">Lambda</span> <span class="tok-k">const</span> <span class="tok-o">&amp;</span><span class="tok-n">check_choice</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Limit the allowed values of an argument. In the first form the value is
+limited to the ones listed in the call (two or more values). In the second
+form the <code>check_choice</code> function is called with the parsed value and returns
+<code>true</code> if it&#8217;s an allowed value.</p>
 </div>
 </div>
 </div>
@@ -1158,24 +1178,6 @@ option is present.</p>
 </div>
 <div class="paragraph">
 <p>Add a spelling for the option of the form <code>--&lt;name&gt;</code> or <code>-n</code>.</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="lyra_opt_choices"><a class="anchor" href="#lyra_opt_choices"></a>5.7.2.2. <code>lyra::opt::choices</code></h5>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">T</span><span class="tok-p">,</span> <span class="tok-k">typename</span><span class="tok-p">...</span> <span class="tok-n">Rest</span><span class="tok-o">&gt;</span>
-<span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">choices</span><span class="tok-p">(</span><span class="tok-n">T</span> <span class="tok-n">val0</span><span class="tok-p">,</span> <span class="tok-n">T</span> <span class="tok-n">val1</span><span class="tok-p">,</span> <span class="tok-n">Rest</span><span class="tok-p">...</span> <span class="tok-n">rest</span><span class="tok-p">)</span>
-
-<span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Lambda</span><span class="tok-o">&gt;</span>
-<span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">choices</span><span class="tok-p">(</span><span class="tok-n">Lambda</span> <span class="tok-k">const</span> <span class="tok-o">&amp;</span><span class="tok-n">check_choice</span><span class="tok-p">)</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Limit the allowed values of a value option. In the first form the value is
-limited to the ones listed in the call (two or more values). In the second
-form the <code>check_choice</code> function is called with the parsed value and returns
-<code>true</code> if it&#8217;s an allowed value.</p>
 </div>
 </div>
 </div>
