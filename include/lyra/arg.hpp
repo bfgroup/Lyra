@@ -81,7 +81,6 @@ class arg : public bound_parser<arg>
 			return parse_result::ok(
 				detail::parse_state(parser_result_type::no_match, remainingTokens));
 
-		assert(!m_ref->isFlag());
 		auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());
 
 		if (value_choices)

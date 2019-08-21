@@ -7,7 +7,6 @@
 #ifndef LYRA_DETAIL_TOKENS_HPP
 #define LYRA_DETAIL_TOKENS_HPP
 
-#include <cassert>
 #include <string>
 #include <vector>
 
@@ -60,16 +59,15 @@ namespace detail
 
 		auto count() const -> size_t { return m_tokenBuffer.size() + (itEnd - it); }
 
+		// UB if boot(*this) == false.
 		auto operator*() const -> token
 		{
-			assert(!m_tokenBuffer.empty());
-			return m_tokenBuffer.front();
+			return *(operator->());
 		}
 
 		auto operator-> () const -> token const*
 		{
-			assert(!m_tokenBuffer.empty());
-			return &m_tokenBuffer.front();
+			return !m_tokenBuffer.empty() ? &m_tokenBuffer.front() : nullptr;
 		}
 
 		auto operator++() -> token_iterator&
