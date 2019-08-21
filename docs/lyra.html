@@ -1301,12 +1301,27 @@ in the bound string reference or callback.</p>
 <div class="ulist">
 <ul>
 <li>
+<p><strong>New</strong>: define argument value <code>choices()</code> as either a fixed set or checked
+by a custom lambda function.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
 <p>Fix use of <code>required()</code> arguments such that the parse errors if they are
 absent.&#8201;&#8212;&#8201;<em>girstsf</em></p>
 </li>
 <li>
-<p><strong>New</strong>: define argument value <code>choices()</code> as either a fixed set or checked
-by a custom lambda function.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+<p>Remove uses of <code>assert</code> macro to avoid internal aborts and make it easier
+to use as a library.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p>Many documentation improvements.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p>Tested with
+Visual Studio 2015, VS 2017, VS2019,
+MinGW-64 (gcc 8.1),
+Linux (clang 3.5, 3.6, 3.7, 3.8, 3.9, 4, 5, 6, 7, 8; gcc 4.8, 4.9, 5, 6, 7, 8, 9),
+Xcode (9.0, 9.0.1, 9.1, 9.2, 9.3, 9.3.1, 9.4, 9.4.1, 10.0, 10.1, 10.2, 10.2.1),
+on Azure Pipelines.</p>
 </li>
 </ul>
 </div>

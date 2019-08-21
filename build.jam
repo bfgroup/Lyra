@@ -36,7 +36,7 @@ project /bfg_lyra
 if [ project.is-jamroot-module $(__name__) ]
 {
     local attributes = [ project.attributes $(__name__) ] ;
-    $(attributes).set "build-dir" : bin ;
+    $(attributes).set "build-dir" : .bin ;
 }
 
 alias libs ;

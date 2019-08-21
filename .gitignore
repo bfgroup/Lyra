@@ -1,4 +1,3 @@
-bin
-src/project-config.jam
+.bin
 .vscode/launch.json
 project-config.jam
