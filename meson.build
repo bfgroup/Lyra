@@ -1,24 +1,13 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Rene Rivera 2019.
+
 project('Lyra','cpp',
-        version: '0.0.1',
-        default_options : ['cpp_std=c++17'],
+        version: '1.0',
+        default_options : ['cpp_std=c++11', 'cpp_eh=none', 'b_lto=true', 'warning_level=3'],
         license: 'BSL-1.0')
-
-cpp_args = ['-Wall', '-Wextra', '-Wpedantic', '-flto', '-Wimplicit-fallthrough']
-
-# if meson.get_compiler('cpp').get_id() == 'clang'
-#   cpp_args += []
-# endif
-# if meson.get_compiler('cpp').get_id() == 'gcc'
-#   cpp_args += []
-# endif
-
-message('Build Type: ' + get_option('buildtype'))
-if get_option('buildtype').startswith('debug')
-  cpp_args += ['-g3']
-endif
-if get_option('buildtype').startswith('release')
-  cpp_args += ['-O3', '-frename-registers']
-endif
 
 src = ['include/lyra/arg.hpp',
       'include/lyra/args.hpp',
@@ -45,8 +34,7 @@ inc_dir = [include_directories('include'), include_directories('include/lyra/det
 lyra_lib = shared_library('lyra',
         sources : src,
         include_directories: inc_dir,
-        cpp_args : cpp_args,
         install: true,
         install_dir : '/usr/lib')
 
-lyra_dep = declare_dependency(include_directories : inc_dir, link_with : lyra_lib)
+lyra_dep = declare_dependency(include_directories: inc_dir, link_with: lyra_lib)
