@@ -4,6 +4,30 @@
 #
 # Copyright Rene Rivera 2019.
 
+# This Meson file provides support for using the Lyra library externally as
+# a standalone project or by embedding in your Meson project tree. To use
+# externally you would need a 'dependency' declaration and to use the
+# project as a dependency where needed:
+
+# ----
+# lyra_dep = dependency('lyra');
+
+# executable('yourproject',
+        # ...
+        # dependencies : lyra_dep)
+# ----
+
+# To use in your project tree you would only need to place the Lyra tree
+# in a subdirectory named 'subprojects' and add a dependency fallback
+
+# ----
+# lyra_dep = dependency('lyra', fallback : ['Lyra', 'lyra_dep'])
+
+# executable('yourproject',
+        # ...
+        # dependencies : lyra_dep)
+# ----
+
 project('Lyra','cpp',
         version: '1.0',
         default_options : ['cpp_std=c++11', 'cpp_eh=none', 'b_lto=true', 'warning_level=3'],
