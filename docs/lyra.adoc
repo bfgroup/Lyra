@@ -187,7 +187,9 @@ include::../include/lyra/args.hpp[tag=reference]
 
 Changes:
 
-* *New*: define argument value `choices()` as either a fixed set or checked
+* *New*: Add direct link:https://mesonbuild.com/[Meson Build] use support.
+	-- _Rémi Gastaldi_
+* *New*: Define argument value `choices()` as either a fixed set or checked
 	by a custom lambda function. -- _Rene Rivera_
 * Fix use of `required()` arguments such that the parse errors if they are
 	absent. -- _girstsf_
