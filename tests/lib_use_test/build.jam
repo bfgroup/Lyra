@@ -5,18 +5,10 @@
 
 import testing ;
 
-project /bfg_lyra_tests
+project
     : requirements
         <use>/bfg_lyra
     ;
 
-for local test in [ glob *_compile_test.cpp ]
-{
-    compile $(test) ;
-}
-for local test in [ glob *_run_test.cpp ]
-{
-    run $(test) ;
-}
-
-build-project lib_use_test ;
+lib base_lib : base_lib.cpp ;
+link base_exe.cpp base_lib/<link>static ;
