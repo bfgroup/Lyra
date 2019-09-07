@@ -201,7 +201,7 @@ present. The first form takes a reference to a variable to receive the
 option is present.
 
 end::reference[] */
-opt::opt(bool& ref)
+inline opt::opt(bool& ref)
 	: bound_parser(std::make_shared<detail::BoundFlagRef>(ref))
 {
 }
@@ -262,7 +262,7 @@ lyra::opt& lyra::opt::operator[](std::string const& optName)
 Add a spelling for the option of the form `--<name>` or `-n`.
 
 end::reference[] */
-opt& opt::operator[](std::string const& optName)
+inline opt& opt::operator[](std::string const& optName)
 {
 	m_optNames.push_back(optName);
 	return *this;

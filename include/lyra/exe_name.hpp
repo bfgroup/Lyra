@@ -75,7 +75,7 @@ Constructs with a target string to receive the name of the executable. When
 the `cli_parser` is run the target string will contain the exec name.
 
 end::reference[] */
-exe_name::exe_name(std::string& ref)
+inline exe_name::exe_name(std::string& ref)
 	: exe_name()
 {
 	m_ref = std::make_shared<detail::BoundValueRef<std::string>>(ref);
@@ -120,7 +120,7 @@ Returns the executable name when available. Otherwise it returns a default
 value.
 
 end::reference[] */
-std::string exe_name::name() const
+inline std::string exe_name::name() const
 {
 	return *m_name;
 }
@@ -139,7 +139,7 @@ Sets the executable name with the `newName` value. The new value is reflected
 in the bound string reference or callback.
 
 end::reference[] */
-parser_result exe_name::set(std::string const& newName)
+inline parser_result exe_name::set(std::string const& newName)
 {
 	auto lastSlash = newName.find_last_of("\\/");
 	auto filename = (lastSlash == std::string::npos)

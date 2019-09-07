@@ -153,7 +153,7 @@ it was. The state of variables bound to options is unspecified and any bound
 callbacks may have been called.
 
 end::reference[] */
-parser_base::parse_result parser_base::parse(
+inline parser_base::parse_result parser_base::parse(
 	args const& args, parser_customization const& customize) const
 {
 	return parse(args.exe_name(), detail::token_iterator(args, customize.token_delimiters(), customize.option_prefix()), customize);

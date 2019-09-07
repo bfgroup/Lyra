@@ -75,19 +75,19 @@ namespace detail
 		return !ss.fail();
 	}
 
-	bool to_string(const std::string &source, std::string & target)
+	inline bool to_string(const std::string &source, std::string & target)
 	{
 		target = source;
 		return true;
 	}
 
-	bool to_string(const char * source, std::string & target)
+	inline bool to_string(const char * source, std::string & target)
 	{
 		target = source;
 		return true;
 	}
 
-	bool to_string(bool source, std::string & target)
+	inline bool to_string(bool source, std::string & target)
 	{
 		target = source ? "true" : "false";
 		return true;
