@@ -510,7 +510,7 @@ h6 {
 }
 </style>
 <div class="paragraph tagline">
-<p>A simple to use, composing, command line parser for C++ 11 and beyond.</p>
+<p>A simple to use, composing, header only, command line arguments parser for C++ 11 and beyond.</p>
 </div>
 <div class="hdlist shields">
 <table>
@@ -569,8 +569,8 @@ Tests
 <h2 id="_license"><a class="anchor" href="#_license"></a>1. License</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Distributed under the highly permissive Boost Software License, Version 1.0.
-(See accompanying file LICENSE.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" class="bare">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
+<p>Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" class="bare">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div>
 </div>
 </div>
@@ -637,7 +637,7 @@ build with exceptions disabled, but that will be coming later)</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 <span class="tok-k">auto</span> <span class="tok-n">cli</span>
-    <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
+    <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
         <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
         <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">);</span></code></pre>
 </div>
