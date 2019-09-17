@@ -15,7 +15,7 @@ int main()
 
     {
         int number = 0;
-        auto cli = opt( number, "number" );
+        auto cli = cli_parser() | opt( number, "number" );
         auto result = cli.parse( { "TestApp", "-o", "filename" } );
         test
             (REQUIRE( !result ))
@@ -23,7 +23,7 @@ int main()
     }
     {
         int number = 0;
-        auto cli = opt( number, "number" )[""];
+        auto cli = cli_parser() | opt( number, "number" )[""];
         auto result = cli.parse( { "TestApp", "-o", "filename" } );
         test
             (REQUIRE( !result ))
@@ -31,7 +31,7 @@ int main()
     }
     {
         int number = 0;
-        auto cli = opt( number, "number" )["invalid"];
+        auto cli = cli_parser() | opt( number, "number" )["invalid"];
         auto result = cli.parse( { "TestApp", "-o", "filename" } );
         test
             (REQUIRE( !result ))

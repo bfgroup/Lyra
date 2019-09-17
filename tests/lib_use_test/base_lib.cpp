@@ -14,7 +14,7 @@ int lib_args(int argc, const char ** argv)
 {
 	using namespace lyra;
 	bool flag = false;
-	auto p = opt( flag, "true|false" )
+	auto p = cli_parser() | opt( flag, "true|false" )
 			["-f"]
 			("A flag");
 

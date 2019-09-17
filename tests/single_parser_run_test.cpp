@@ -13,7 +13,7 @@ int main()
     using namespace lyra;
     bfg::mini_test::scope test;
     std::string name;
-    auto p = opt(name, "name")["-n"]["--name"]("the name to use");
+    auto p = cli_parser() | opt(name, "name")["-n"]["--name"]("the name to use");
 
     name = "";
     p.parse( { "TestApp", "-n", "Vader" } );

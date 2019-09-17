@@ -17,7 +17,7 @@ for local e in [ glob example*.cpp ]
     exe $(e:B) : $(e) : <use>/bfg_lyra ;
 }
 
-html lyra.html : lyra.adoc ;
+html lyra.html : lyra.adoc : <dependency>../examples ;
 html index.html : index.adoc ;
 
 install html

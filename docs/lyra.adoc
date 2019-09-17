@@ -191,6 +191,11 @@ Changes:
 	-- _Rémi Gastaldi_
 * *New*: Define argument value `choices()` as either a fixed set or checked
 	by a custom lambda function. -- _Rene Rivera_
+* Fix being able to parse straight from `args` outside of `cli_parser`. Which
+	resulted in misleading parsing behavior. _Rene Rivera_
+* Fix use of `cardinality()` to correctly constrain bounded cardinality
+	ranges like `[0,n]`, `[n,m]`, `[n,n]`, and `[0,0]` (unbounded).
+	_Rene Rivera_
 * Fix use of `required()` arguments such that the parse errors if they are
 	absent. -- _girstsf_
 * Remove uses of `assert` macro to avoid internal aborts and make it easier

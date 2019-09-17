@@ -657,22 +657,21 @@ build with exceptions disabled, but that will be coming later)</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;cstdlib&gt;</span><span class="tok-cp"></span>
 <span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
-<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;cstdlib&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
 
-<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span> <span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
-    <span class="tok-c1">// Where we read in the argument value:</span>
-    <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+	<span class="tok-c1">// Where we read in the argument value:</span>
+	<span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 
-    <span class="tok-c1">// The parser with the one option argument:</span>
-    <span class="tok-k">auto</span> <span class="tok-n">cli</span>
-        <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
-            <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
-            <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">);</span>
+	<span class="tok-c1">// The parser with the one option argument:</span>
+	<span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">()</span>
+		<span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span><span class="tok-p">)</span>
+			  <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">);</span>
 
-    <span class="tok-c1">// ...</span></code></pre>
+	<span class="tok-c1">// ...</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -680,19 +679,19 @@ build with exceptions disabled, but that will be coming later)</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span>    <span class="tok-c1">// ...</span>
+<pre class="pygments highlight"><code data-lang="c++"><span></span>	<span class="tok-c1">// ...</span>
 
-    <span class="tok-c1">// Parse the program arguments:</span>
-    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">(</span> <span class="tok-p">{</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">}</span> <span class="tok-p">);</span>
+	<span class="tok-c1">// Parse the program arguments:</span>
+	<span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
 
-    <span class="tok-c1">// Check that the arguments where valid:</span>
-    <span class="tok-k">if</span><span class="tok-p">(</span> <span class="tok-o">!</span><span class="tok-n">result</span> <span class="tok-p">)</span>
-    <span class="tok-p">{</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
-    <span class="tok-p">}</span>
+	<span class="tok-c1">// Check that the arguments where valid:</span>
+	<span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
+	<span class="tok-p">{</span>
+		<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+		<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+	<span class="tok-p">}</span>
 
-    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+	<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -715,31 +714,28 @@ operator (<code>|</code>).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;cstdlib&gt;</span><span class="tok-cp"></span>
 <span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
-<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;cstdlib&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
 
-<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span> <span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
-    <span class="tok-c1">// Where we read in the argument values:</span>
-    <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
-    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">name</span><span class="tok-p">;</span>
-    <span class="tok-kt">bool</span> <span class="tok-n">doIt</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
+	<span class="tok-c1">// Where we read in the argument values:</span>
+	<span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+	<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">name</span><span class="tok-p">;</span>
+	<span class="tok-kt">bool</span> <span class="tok-n">doIt</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
 
-    <span class="tok-c1">// The parser with the multiple option arguments. They are composed</span>
-    <span class="tok-c1">// together by the &quot;|&quot; operator.</span>
-    <span class="tok-k">auto</span> <span class="tok-n">cli</span>
-        <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
-            <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
-            <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">)</span>
-        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">name</span><span class="tok-p">,</span> <span class="tok-s">&quot;name&quot;</span> <span class="tok-p">)</span>
-            <span class="tok-p">[</span><span class="tok-s">&quot;-n&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--name&quot;</span><span class="tok-p">]</span>
-            <span class="tok-p">(</span><span class="tok-s">&quot;By what name should I be known&quot;</span><span class="tok-p">)</span>
-        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">doIt</span> <span class="tok-p">)</span>
-            <span class="tok-p">[</span><span class="tok-s">&quot;-d&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--doit&quot;</span><span class="tok-p">]</span>
-            <span class="tok-p">(</span><span class="tok-s">&quot;Do the thing&quot;</span> <span class="tok-p">);</span>
+	<span class="tok-c1">// The parser with the multiple option arguments. They are composed</span>
+	<span class="tok-c1">// together by the &quot;|&quot; operator.</span>
+	<span class="tok-k">auto</span> <span class="tok-n">cli</span>
+		<span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span><span class="tok-p">)</span>
+			  <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">)</span>
+		<span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">name</span><span class="tok-p">,</span> <span class="tok-s">&quot;name&quot;</span><span class="tok-p">)</span>
+			  <span class="tok-p">[</span><span class="tok-s">&quot;-n&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--name&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;By what name should I be known&quot;</span><span class="tok-p">)</span>
+		<span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">doIt</span><span class="tok-p">)</span>
+			  <span class="tok-p">[</span><span class="tok-s">&quot;-d&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--doit&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;Do the thing&quot;</span><span class="tok-p">);</span>
 
-    <span class="tok-c1">// ...</span></code></pre>
+	<span class="tok-c1">// ...</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -747,19 +743,19 @@ operator (<code>|</code>).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span>    <span class="tok-c1">// ...</span>
+<pre class="pygments highlight"><code data-lang="c++"><span></span>	<span class="tok-c1">// ...</span>
 
-    <span class="tok-c1">// Parse the program arguments:</span>
-    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">(</span> <span class="tok-p">{</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">}</span> <span class="tok-p">);</span>
+	<span class="tok-c1">// Parse the program arguments:</span>
+	<span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
 
-    <span class="tok-c1">// Check that the arguments where valid:</span>
-    <span class="tok-k">if</span><span class="tok-p">(</span> <span class="tok-o">!</span><span class="tok-n">result</span> <span class="tok-p">)</span>
-    <span class="tok-p">{</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
-    <span class="tok-p">}</span>
+	<span class="tok-c1">// Check that the arguments where valid:</span>
+	<span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
+	<span class="tok-p">{</span>
+		<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+		<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+	<span class="tok-p">}</span>
 
-    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+	<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -783,28 +779,25 @@ operator (<code>|</code>).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span> <span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
-    <span class="tok-c1">// Where we read in the argument values:</span>
-    <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
-    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">name</span><span class="tok-p">;</span>
-    <span class="tok-kt">bool</span> <span class="tok-n">doIt</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
-    <span class="tok-kt">bool</span> <span class="tok-n">show_help</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+	<span class="tok-c1">// Where we read in the argument values:</span>
+	<span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+	<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">name</span><span class="tok-p">;</span>
+	<span class="tok-kt">bool</span> <span class="tok-n">doIt</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
+	<span class="tok-kt">bool</span> <span class="tok-n">show_help</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="tok-c1">// The parser with the multiple option arguments and help option.</span>
-    <span class="tok-k">auto</span> <span class="tok-n">cli</span>
-        <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span> <span class="tok-n">show_help</span> <span class="tok-p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
-            <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
-            <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">)</span>
-        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">name</span><span class="tok-p">,</span> <span class="tok-s">&quot;name&quot;</span> <span class="tok-p">)</span>
-            <span class="tok-p">[</span><span class="tok-s">&quot;-n&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--name&quot;</span><span class="tok-p">]</span>
-            <span class="tok-p">(</span><span class="tok-s">&quot;By what name should I be known&quot;</span><span class="tok-p">)</span>
-        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">doIt</span> <span class="tok-p">)</span>
-            <span class="tok-p">[</span><span class="tok-s">&quot;-d&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--doit&quot;</span><span class="tok-p">]</span>
-            <span class="tok-p">(</span><span class="tok-s">&quot;Do the thing&quot;</span> <span class="tok-p">);</span>
+	<span class="tok-c1">// The parser with the multiple option arguments and help option.</span>
+	<span class="tok-k">auto</span> <span class="tok-n">cli</span>
+		<span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
+		<span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span><span class="tok-p">)</span>
+			  <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">)</span>
+		<span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">name</span><span class="tok-p">,</span> <span class="tok-s">&quot;name&quot;</span><span class="tok-p">)</span>
+			  <span class="tok-p">[</span><span class="tok-s">&quot;-n&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--name&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;By what name should I be known&quot;</span><span class="tok-p">)</span>
+		<span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">doIt</span><span class="tok-p">)</span>
+			  <span class="tok-p">[</span><span class="tok-s">&quot;-d&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--doit&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;Do the thing&quot;</span><span class="tok-p">);</span>
 
-    <span class="tok-c1">// ...</span></code></pre>
+	<span class="tok-c1">// ...</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -825,27 +818,27 @@ specified:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span>    <span class="tok-c1">// ...</span>
+<pre class="pygments highlight"><code data-lang="c++"><span></span>	<span class="tok-c1">// ...</span>
 
-    <span class="tok-c1">// Parse the program arguments:</span>
-    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">(</span> <span class="tok-p">{</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">}</span> <span class="tok-p">);</span>
+	<span class="tok-c1">// Parse the program arguments:</span>
+	<span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
 
-    <span class="tok-c1">// Check that the arguments where valid:</span>
-    <span class="tok-k">if</span> <span class="tok-p">(</span> <span class="tok-o">!</span><span class="tok-n">result</span> <span class="tok-p">)</span>
-    <span class="tok-p">{</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
-    <span class="tok-p">}</span>
+	<span class="tok-c1">// Check that the arguments where valid:</span>
+	<span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
+	<span class="tok-p">{</span>
+		<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+		<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+		<span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+	<span class="tok-p">}</span>
 
-    <span class="tok-c1">// Show the help when asked for.</span>
-    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="tok-p">{</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
-        <span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">);</span>
-    <span class="tok-p">}</span>
+	<span class="tok-c1">// Show the help when asked for.</span>
+	<span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
+	<span class="tok-p">{</span>
+		<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+		<span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">);</span>
+	<span class="tok-p">}</span>
 
-    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+	<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -880,9 +873,9 @@ specifying them to the <code>choices()</code> call:</p>
 <span class="tok-p">{</span>
 	<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">choice</span><span class="tok-p">;</span>
 	<span class="tok-c1">// Ex: &lt;exe&gt; --choice=red</span>
-	<span class="tok-k">auto</span> <span class="tok-n">cli</span>
-		<span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">choice</span><span class="tok-p">,</span> <span class="tok-s">&quot;-c&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--choice&quot;</span><span class="tok-p">]</span>
-			<span class="tok-p">.</span><span class="tok-n">choices</span><span class="tok-p">(</span><span class="tok-s">&quot;red&quot;</span><span class="tok-p">,</span> <span class="tok-s">&quot;green&quot;</span><span class="tok-p">,</span> <span class="tok-s">&quot;blue&quot;</span><span class="tok-p">);</span>
+	<span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">()</span>
+		<span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">choice</span><span class="tok-p">,</span> <span class="tok-s">&quot;-c&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--choice&quot;</span><span class="tok-p">]</span>
+			  <span class="tok-p">.</span><span class="tok-n">choices</span><span class="tok-p">(</span><span class="tok-s">&quot;red&quot;</span><span class="tok-p">,</span> <span class="tok-s">&quot;green&quot;</span><span class="tok-p">,</span> <span class="tok-s">&quot;blue&quot;</span><span class="tok-p">);</span>
 	<span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
 	<span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">result</span><span class="tok-p">)</span>
 	<span class="tok-p">{</span>
@@ -908,9 +901,9 @@ that validates if a given value is allowed:</p>
 <span class="tok-p">{</span>
 	<span class="tok-kt">int</span> <span class="tok-n">choice</span> <span class="tok-o">=</span> <span class="tok-mi">5</span><span class="tok-p">;</span>
 	<span class="tok-c1">// Ex: &lt;exe&gt; --choice=3</span>
-	<span class="tok-k">auto</span> <span class="tok-n">cli</span>
-		<span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">choice</span><span class="tok-p">,</span> <span class="tok-s">&quot;-c&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--choice&quot;</span><span class="tok-p">]</span>
-			<span class="tok-p">.</span><span class="tok-n">choices</span><span class="tok-p">([](</span><span class="tok-kt">int</span> <span class="tok-n">value</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">return</span> <span class="tok-mi">1</span> <span class="tok-o">&lt;=</span> <span class="tok-n">value</span> <span class="tok-o">&amp;&amp;</span> <span class="tok-n">value</span> <span class="tok-o">&lt;=</span> <span class="tok-mi">10</span><span class="tok-p">;</span> <span class="tok-p">});</span>
+	<span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">()</span>
+		<span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">choice</span><span class="tok-p">,</span> <span class="tok-s">&quot;-c&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--choice&quot;</span><span class="tok-p">]</span>
+			  <span class="tok-p">.</span><span class="tok-n">choices</span><span class="tok-p">([](</span><span class="tok-kt">int</span> <span class="tok-n">value</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">return</span> <span class="tok-mi">1</span> <span class="tok-o">&lt;=</span> <span class="tok-n">value</span> <span class="tok-o">&amp;&amp;</span> <span class="tok-n">value</span> <span class="tok-o">&lt;=</span> <span class="tok-mi">10</span><span class="tok-p">;</span> <span class="tok-p">});</span>
 	<span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
 	<span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">result</span><span class="tok-p">)</span>
 	<span class="tok-p">{</span>
@@ -971,18 +964,6 @@ resulting in long options with <code>--</code> and short options with <code>-</c
 <h3 id="lyra_parser_base"><a class="anchor" href="#lyra_parser_base"></a>5.3. <code>lyra::parser_base</code></h3>
 <div class="paragraph">
 <p>Base for all argument parser types.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">parser_base</span><span class="tok-o">::</span><span class="tok-n">parse_result</span> <span class="tok-n">parser_base</span><span class="tok-o">::</span><span class="tok-n">parse</span><span class="tok-p">(</span>
-	<span class="tok-n">args</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">args</span><span class="tok-p">,</span> <span class="tok-n">parser_customization</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">customize</span><span class="tok-p">)</span> <span class="tok-k">const</span><span class="tok-p">;</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Parses given arguments <code>args</code> and optional parser customization <code>customize</code>.
-The result indicates success or failure, and if failure what kind of failure
-it was. The state of variables bound to options is unspecified and any bound
-callbacks may have been called.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1115,6 +1096,21 @@ one. For example:</p>
 <span class="tok-n">cli</span> <span class="tok-o">|=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">what</span><span class="tok-p">,</span> <span class="tok-s">&quot;what&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--make-it-so&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;Make it so.&quot;</span><span class="tok-p">).</span><span class="tok-n">required</span><span class="tok-p">();</span>
 <span class="tok-n">cli</span> <span class="tok-o">|=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">when</span><span class="tok-p">.</span> <span class="tok-s">&quot;when&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--time&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;When to do &lt;what&gt;.&quot;</span><span class="tok-p">).</span><span class="tok-n">optional</span><span class="tok-p">();</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>*/</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">parse_result</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">parse</span><span class="tok-p">(</span>
+	<span class="tok-n">args</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">args</span><span class="tok-p">,</span> <span class="tok-n">parser_customization</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">customize</span><span class="tok-p">)</span> <span class="tok-k">const</span><span class="tok-p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Parses given arguments <code>args</code> and optional parser customization <code>customize</code>.
+The result indicates success or failure, and if failure what kind of failure
+it was. The state of variables bound to options is unspecified and any bound
+callbacks may have been called.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1306,6 +1302,15 @@ in the bound string reference or callback.</p>
 <li>
 <p><strong>New</strong>: Define argument value <code>choices()</code> as either a fixed set or checked
 by a custom lambda function.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p>Fix being able to parse straight from <code>args</code> outside of <code>cli_parser</code>. Which
+resulted in misleading parsing behavior. <em>Rene Rivera</em></p>
+</li>
+<li>
+<p>Fix use of <code>cardinality()</code> to correctly constrain bounded cardinality
+ranges like <code>[0,n]</code>, <code>[n,m]</code>, <code>[n,n]</code>, and <code>[0,0]</code> (unbounded).
+<em>Rene Rivera</em></p>
 </li>
 <li>
 <p>Fix use of <code>required()</code> arguments such that the parse errors if they are

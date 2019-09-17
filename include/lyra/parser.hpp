@@ -17,7 +17,6 @@
 
 #include <memory>
 #include <string>
-#include <tuple>
 
 namespace lyra
 {
@@ -88,6 +87,35 @@ namespace detail
 		parser_result_type m_type;
 		token_iterator m_remainingTokens;
 	};
+
+	struct parser_cardinality
+	{
+		size_t minimum = 0;
+		size_t maximum = 0;
+
+		parser_cardinality() = default;
+
+		parser_cardinality(size_t a, size_t b)
+			: minimum(a)
+			, maximum(b)
+		{
+		}
+
+		bool is_optional() const
+		{
+			return (minimum == 0) && (maximum >= 0);
+		}
+
+		bool is_unbounded() const
+		{
+			return (minimum == 0) && (maximum == 0);
+		}
+
+		bool is_bounded() const
+		{
+			return !is_unbounded();
+		}
+	};
 } // namespace detail
 
 /* tag::reference[]
@@ -110,27 +138,23 @@ class parser_base
 	using help_text = std::vector<help_text_item>;
 	using parse_result = detail::basic_result<detail::parse_state>;
 
-	parse_result parse(args const& args, parser_customization const& customize = default_parser_customization()) const;
-
 	virtual ~parser_base() = default;
-	virtual auto validate() const -> result { return result::ok(); }
-	virtual auto parse(std::string const& exe_name, detail::token_iterator const& tokens, parser_customization const& customize) const
-		-> parse_result = 0;
-	virtual auto cardinality() const -> std::tuple<size_t, size_t>
-	{
-		return std::make_tuple(0, 1);
-	}
 
-	auto cardinality_count() const -> size_t
+	virtual auto validate() const -> result { return result::ok(); }
+
+	virtual parse_result parse(
+		std::string const& exe_name,
+		detail::token_iterator const& tokens,
+		parser_customization const& customize) const = 0;
+
+	virtual detail::parser_cardinality cardinality() const
 	{
-		auto c = cardinality();
-		return std::get<1>(c) - std::get<0>(c);
+		return { 0, 1 };
 	}
 
 	auto is_optional() const -> bool
 	{
-		auto c = cardinality();
-		return (std::get<0>(c) == 0) && (std::get<1>(c) > 0);
+		return cardinality().is_optional();
 	}
 
 	virtual std::string get_usage_text() const { return ""; }
@@ -139,25 +163,6 @@ class parser_base
 
 	virtual std::unique_ptr<parser_base> clone() const { return nullptr; }
 };
-
-/* tag::reference[]
-[source]
-----
-parser_base::parse_result parser_base::parse(
-	args const& args, parser_customization const& customize) const;
-----
-
-Parses given arguments `args` and optional parser customization `customize`.
-The result indicates success or failure, and if failure what kind of failure
-it was. The state of variables bound to options is unspecified and any bound
-callbacks may have been called.
-
-end::reference[] */
-inline parser_base::parse_result parser_base::parse(
-	args const& args, parser_customization const& customize) const
-{
-	return parse(args.exe_name(), detail::token_iterator(args, customize.token_delimiters(), customize.option_prefix()), customize);
-}
 
 /* tag::reference[]
 
@@ -188,16 +193,16 @@ class bound_parser : public composable_parser<Derived>
 	std::shared_ptr<detail::BoundRef> m_ref;
 	std::string m_hint;
 	std::string m_description;
-	std::tuple<size_t, size_t> m_cardinality;
+	detail::parser_cardinality m_cardinality;
 	std::shared_ptr<detail::choices_base> value_choices;
 
 	explicit bound_parser(std::shared_ptr<detail::BoundRef> const& ref)
 		: m_ref(ref)
 	{
 		if (m_ref->isContainer())
-			m_cardinality = std::make_tuple(0, 0);
+			m_cardinality = { 0, 0 };
 		else
-			m_cardinality = std::make_tuple(0, 1);
+			m_cardinality = { 0, 1 };
 	}
 
 	public:
@@ -212,13 +217,13 @@ class bound_parser : public composable_parser<Derived>
 	Derived& required(size_t n = 1);
 	Derived& cardinality(size_t n);
 	Derived& cardinality(size_t n, size_t m);
-	std::tuple<size_t, size_t> cardinality() const override { return m_cardinality; }
+	detail::parser_cardinality cardinality() const override { return m_cardinality; }
 	std::string hint() const { return m_hint; }
 
 	template <typename T, typename... Rest>
 	Derived& choices(T val0, T val1, Rest... rest);
 	template <typename Lambda>
-	Derived& choices(Lambda const &check_choice);
+	Derived& choices(Lambda const& check_choice);
 };
 
 /* tag::reference[]
@@ -359,14 +364,14 @@ end::reference[] */
 template <typename Derived>
 Derived& bound_parser<Derived>::cardinality(size_t n)
 {
-	m_cardinality = std::make_tuple(n, n);
+	m_cardinality = { n, n };
 	return static_cast<Derived&>(*this);
 }
 
 template <typename Derived>
 Derived& bound_parser<Derived>::cardinality(size_t n, size_t m)
 {
-	m_cardinality = std::make_tuple(n, m);
+	m_cardinality = { n, m };
 	return static_cast<Derived&>(*this);
 }
 
@@ -402,7 +407,7 @@ Derived& bound_parser<Derived>::choices(T val0, T val1, Rest... rest)
 
 template <typename Derived>
 template <typename Lambda>
-Derived& bound_parser<Derived>::choices(Lambda const &check_choice)
+Derived& bound_parser<Derived>::choices(Lambda const& check_choice)
 {
 	value_choices = std::make_shared<detail::choices_check<Lambda>>(check_choice);
 	return static_cast<Derived&>(*this);

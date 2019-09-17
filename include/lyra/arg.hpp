@@ -61,7 +61,7 @@ class arg : public bound_parser<arg>
 		std::ostringstream oss;
 		if (!m_hint.empty())
 			oss << "<" << m_hint << ">";
-		if (cardinality_count() > 1)
+		if (cardinality().is_unbounded())
 			oss << " ...";
 		return { { oss.str(), m_description } };
 	}

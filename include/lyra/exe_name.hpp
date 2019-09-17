@@ -42,7 +42,10 @@ class exe_name : public composable_parser<exe_name>
 
 	// The exe name is not parsed out of the normal tokens, but is handled
 	// specially
-	parse_result parse(std::string const&, detail::token_iterator const& tokens, parser_customization const&) const override
+	virtual parse_result parse(
+		std::string const&,
+		detail::token_iterator const& tokens,
+		parser_customization const&) const override
 	{
 		return parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));

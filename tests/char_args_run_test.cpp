@@ -10,28 +10,28 @@ http://www.boost.org/LICENSE_1_0.txt)
 
 int main()
 {
-    using namespace lyra;
-    bfg::mini_test::scope test;
+	using namespace lyra;
+	bfg::mini_test::scope test;
 
-    std::string value;
-    auto cli = cli_parser() | arg( value, "value" );
+	std::string value;
+	auto cli = cli_parser() | arg( value, "value" );
 
-    value = "";
-    {
-        char* args[] = { (char*)"TestApp", (char*)"hello" };
-        auto result = cli.parse( { 2, args } );
-        test
-            (REQUIRE( result ))
-            (REQUIRE( value == "hello" ));
-    }
-    value = "";
-    {
-        const char* args[] = { "TestApp", "hello" };
-        auto result = cli.parse( { 2, args } );
-        test
-            (REQUIRE( result ))
-            (REQUIRE( value == "hello" ));
-    }
+	value = "";
+	{
+		char* args[] = { (char*)"TestApp", (char*)"hello" };
+		auto result = cli.parse( { 2, args } );
+		test
+			(REQUIRE( result ))
+			(REQUIRE( value == "hello" ));
+	}
+	value = "";
+	{
+		const char* args[] = { "TestApp", "hello" };
+		auto result = cli.parse( { 2, args } );
+		test
+			(REQUIRE( result ))
+			(REQUIRE( value == "hello" ));
+	}
 
-    return test;
+	return test;
 }

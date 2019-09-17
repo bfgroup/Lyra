@@ -5,10 +5,10 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <lyra/lyra.hpp>
 #include <iostream>
+#include <lyra/lyra.hpp>
 
-int main(int argc, const char ** argv)
+int main(int argc, const char** argv)
 {
 	using namespace lyra;
 	bool show_help = false;
@@ -25,30 +25,23 @@ int main(int argc, const char ** argv)
 	auto parser
 		= help(show_help)
 		| opt(config.seed, "time|value")
-			["--rng-seed"]["-r"]
-			("Set a specific seed for random numbers.")
-			.required()
+			  ["--rng-seed"]["-r"]("Set a specific seed for random numbers.")
+				  .required()
 		| opt(config.name, "name")
-			["-n"]["--name"]
-			("The name to use.")
+			  ["-n"]["--name"]("The name to use.")
 		| opt(config.flag)
-			["-f"]["--flag"]
-			("A flag to set.")
-		| opt([&](double value){ config.value = value; }, "number")
-			["-d"]["--double"]
-			("Just some number.")
-		| arg(config.tests, "test name|tags|pattern")
-			("Which test or tests to use.")
+			  ["-f"]["--flag"]("A flag to set.")
+		| opt([&](double value) { config.value = value; }, "number")
+			  ["-d"]["--double"]("Just some number.")
+		| arg(config.tests, "test name|tags|pattern")("Which test or tests to use.")
 		| opt(config.choice, "1-10")
-			["-c"]["--choice"]
-			("A choice from 1 to 10.")
-			.choices([](int value)->bool { return 1<=value && value<=10; })
+			  ["-c"]["--choice"]("A choice from 1 to 10.")
+				  .choices([](int value) -> bool { return 1 <= value && value <= 10; })
 		| opt(config.color, "red|green|blue")
-			["-k"]["--color"]
-			("A primary color.")
-			.choices("red", "green", "blue");
+			  ["-k"]["--color"]("A primary color.")
+				  .choices("red", "green", "blue");
 
-	auto result = parser.parse({argc, argv});
+	auto result = parser.parse({ argc, argv });
 
 	if (!result)
 	{

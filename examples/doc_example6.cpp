@@ -13,9 +13,9 @@ int main(int argc, const char** argv)
 {
 	int choice = 5;
 	// Ex: <exe> --choice=3
-	auto cli
-		= lyra::opt(choice, "-c")["--choice"]
-			.choices([](int value) { return 1 <= value && value <= 10; });
+	auto cli = lyra::cli_parser()
+		| lyra::opt(choice, "-c")["--choice"]
+			  .choices([](int value) { return 1 <= value && value <= 10; });
 	auto result = cli.parse({ argc, argv });
 	if (result)
 	{

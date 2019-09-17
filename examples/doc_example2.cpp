@@ -6,45 +6,42 @@ http://www.boost.org/LICENSE_1_0.txt)
 */
 
 // tag::part1[]
-#include <lyra/lyra.hpp>
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
+#include <lyra/lyra.hpp>
 
-int main(int argc, const char ** argv)
+int main(int argc, const char** argv)
 {
-    // Where we read in the argument values:
-    int width = 0;
-    std::string name;
-    bool doIt = false;
+	// Where we read in the argument values:
+	int width = 0;
+	std::string name;
+	bool doIt = false;
 
-    // The parser with the multiple option arguments. They are composed
-    // together by the "|" operator.
-    auto cli
-        = lyra::opt( width, "width" )
-            ["-w"]["--width"]
-            ("How wide should it be?")
-        | lyra::opt( name, "name" )
-            ["-n"]["--name"]
-            ("By what name should I be known")
-        | lyra::opt( doIt )
-            ["-d"]["--doit"]
-            ("Do the thing" );
+	// The parser with the multiple option arguments. They are composed
+	// together by the "|" operator.
+	auto cli
+		= lyra::opt(width, "width")
+			  ["-w"]["--width"]("How wide should it be?")
+		| lyra::opt(name, "name")
+			  ["-n"]["--name"]("By what name should I be known")
+		| lyra::opt(doIt)
+			  ["-d"]["--doit"]("Do the thing");
 
-    // ...
-    // end::part1[]
-    // tag::part2[]
-    // ...
+	// ...
+	// end::part1[]
+	// tag::part2[]
+	// ...
 
-    // Parse the program arguments:
-    auto result = cli.parse( { argc, argv } );
+	// Parse the program arguments:
+	auto result = cli.parse({ argc, argv });
 
-    // Check that the arguments where valid:
-    if( !result )
-    {
-        std::cerr << "Error in command line: " << result.errorMessage() << std::endl;
-        std::exit(1);
-    }
+	// Check that the arguments where valid:
+	if (!result)
+	{
+		std::cerr << "Error in command line: " << result.errorMessage() << std::endl;
+		std::exit(1);
+	}
 
-    std::cout << "width = " << width << ", name = " << name << ", doIt = " << doIt << "\n";
+	std::cout << "width = " << width << ", name = " << name << ", doIt = " << doIt << "\n";
 }
 // end::part2[]

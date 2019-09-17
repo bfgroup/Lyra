@@ -19,7 +19,7 @@ int main(int argc, const char** argv)
 		| lyra::arg(message, "message");
 	if (cli.parse({ argc, argv }))
 	{
-		for (int count= 0; count < repeat; ++count)
+		for (int count = 0; count < repeat; ++count)
 			std::cout << message << "\n";
 	}
 }
