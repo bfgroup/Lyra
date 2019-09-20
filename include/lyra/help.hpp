@@ -16,27 +16,27 @@ namespace lyra
 [#lyra_help]
 = `lyra::help`
 
-Utility function that defines a default `--help` option. You can specify a `bool`
-flag to indicate if the help option was specified and that you could display
-a help message.
+Utility function that defines a default `--help` option. You can specify a
+`bool` flag to indicate if the help option was specified and that you could
+display a help message.
 
 The option accepts `-?`, `-h`, and `--help` as allowed option names.
 
 */ // end::reference[]
 class help : public opt
 {
-    public:
-    help(bool& showHelpFlag)
-        : opt([&](bool flag) {
-            showHelpFlag = flag;
-            return parser_result::ok(parser_result_type::short_circuit_all);
-        })
-    {
-        static_cast<opt&> (*this)(
-            "Display usage information.")["-?"]["-h"]["--help"]
-            .optional();
-    }
+	public:
+	help(bool& showHelpFlag)
+		: opt([&](bool flag) {
+			showHelpFlag = flag;
+			return parser_result::ok(parser_result_type::short_circuit_all);
+		})
+	{
+		static_cast<opt&> (*this)(
+			"Display usage information.")["-?"]["-h"]["--help"]
+			.optional();
+	}
 };
-}
+} // namespace lyra
 
 #endif

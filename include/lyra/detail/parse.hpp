@@ -16,15 +16,16 @@ namespace lyra
 {
 namespace detail
 {
-    template <typename T>
-    parser_result parse_string(std::string const& source, T& target)
-    {
-        if (from_string(source, target))
-            return parser_result::ok(parser_result_type::matched);
-        else
-            return parser_result::runtimeError("Unable to convert '" + source + "' to destination type");
-    }
-}
+	template <typename T>
+	parser_result parse_string(std::string const& source, T& target)
+	{
+		if (from_string(source, target))
+			return parser_result::ok(parser_result_type::matched);
+		else
+			return parser_result::runtimeError(
+				"Unable to convert '" + source + "' to destination type");
+	}
+} // namespace detail
 } // namespace lyra
 
 #endif

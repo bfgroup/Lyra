@@ -23,33 +23,38 @@ Transport for raw args (copied from main args, or supplied via init list).
 */ // end::reference[]
 class args
 {
-    public:
+	public:
+	// Construct from usual main() function arguments.
+	args(int argc, char const* const* argv)
+		: m_exeName(argv[0])
+		, m_args(argv + 1, argv + argc)
+	{
+	}
 
-    // Construct from usual main() function arguments.
-    args(int argc, char const* const* argv)
-        : m_exeName(argv[0])
-        , m_args(argv + 1, argv + argc)
-    {
-    }
+	// Construct directly from an initializer '{}'.
+	args(std::initializer_list<std::string> args)
+		: m_exeName(*args.begin())
+		, m_args(args.begin() + 1, args.end())
+	{
+	}
 
-    // Construct directly from an initializer '{}'.
-    args(std::initializer_list<std::string> args)
-        : m_exeName(*args.begin())
-        , m_args(args.begin() + 1, args.end())
-    {
-    }
+	// The executable name taken from argument zero.
+	std::string exe_name() const { return m_exeName; }
 
-    // The executable name taken from argument zero.
-    std::string exe_name() const { return m_exeName; }
+	// Arguments, excluding the exe name.
+	std::vector<std::string>::const_iterator begin() const
+	{
+		return m_args.begin();
+	}
 
-    // Arguments, excluding the exe name.
-    std::vector<std::string>::const_iterator begin() const { return m_args.begin(); }
-    std::vector<std::string>::const_iterator end() const { return m_args.end(); }
+	std::vector<std::string>::const_iterator end() const
+	{
+		return m_args.end();
+	}
 
-    private:
-
-    std::string m_exeName;
-    std::vector<std::string> m_args;
+	private:
+	std::string m_exeName;
+	std::vector<std::string> m_args;
 };
 } // namespace lyra
 

@@ -43,8 +43,7 @@ class exe_name : public composable_parser<exe_name>
 	// The exe name is not parsed out of the normal tokens, but is handled
 	// specially
 	virtual parse_result parse(
-		std::string const&,
-		detail::token_iterator const& tokens,
+		std::string const&, detail::token_iterator const& tokens,
 		parser_customization const&) const override
 	{
 		return parse_result::ok(
@@ -123,10 +122,7 @@ Returns the executable name when available. Otherwise it returns a default
 value.
 
 end::reference[] */
-inline std::string exe_name::name() const
-{
-	return *m_name;
-}
+inline std::string exe_name::name() const { return *m_name; }
 
 /* tag::reference[]
 

@@ -14,9 +14,9 @@ namespace lyra
 {
 namespace detail
 {
-	// Wraps a token coming from a token stream. These may not directly correspond
-	// to strings as a single string may encode an option + its argument if the : or
-	// = form is used
+	// Wraps a token coming from a token stream. These may not directly
+	// correspond to strings as a single string may encode an option + its
+	// argument if the : or = form is used
 	enum class token_type
 	{
 		unknown,
@@ -28,9 +28,16 @@ namespace detail
 		token_type type;
 		std::string name;
 
-		token() : type(token_type::unknown) {}
+		token()
+			: type(token_type::unknown)
+		{
+		}
 		token(const token& other) = default;
-		token(token_type t, const std::string& n) : type(t), name(n) {}
+		token(token_type t, const std::string& n)
+			: type(t)
+			, name(n)
+		{
+		}
 	};
 
 	// Abstracts iterators into args with option arguments uniformly handled
@@ -38,12 +45,17 @@ namespace detail
 	{
 		public:
 		template <typename Span>
-		explicit token_iterator(Span const& args, std::string const& dels, std::string const& opt_prefix)
+		explicit token_iterator(
+			Span const& args, std::string const& dels,
+			std::string const& opt_prefix)
 			: token_iterator(args.begin(), args.end(), dels, opt_prefix)
 		{
 		}
 
-		token_iterator(std::vector<std::string>::const_iterator it, std::vector<std::string>::const_iterator itEnd, std::string const& dels, std::string const& opt_prefix)
+		token_iterator(
+			std::vector<std::string>::const_iterator it,
+			std::vector<std::string>::const_iterator itEnd,
+			std::string const& dels, std::string const& opt_prefix)
 			: it(it)
 			, itEnd(itEnd)
 			, delimiters(dels)
@@ -57,13 +69,13 @@ namespace detail
 			return !m_tokenBuffer.empty() || it != itEnd;
 		}
 
-		auto count() const -> size_t { return m_tokenBuffer.size() + (itEnd - it); }
+		auto count() const -> size_t
+		{
+			return m_tokenBuffer.size() + (itEnd - it);
+		}
 
 		// UB if boot(*this) == false.
-		auto operator*() const -> token
-		{
-			return *(operator->());
-		}
+		auto operator*() const -> token { return *(operator->()); }
 
 		auto operator-> () const -> token const*
 		{
@@ -78,8 +90,7 @@ namespace detail
 			}
 			else
 			{
-				if (it != itEnd)
-					++it;
+				if (it != itEnd) ++it;
 				loadBuffer();
 			}
 			return *this;
@@ -97,8 +108,7 @@ namespace detail
 			m_tokenBuffer.resize(0);
 
 			// Skip any empty strings
-			while (it != itEnd && it->empty())
-				++it;
+			while (it != itEnd && it->empty()) ++it;
 
 			if (it != itEnd)
 			{
@@ -111,7 +121,8 @@ namespace detail
 						m_tokenBuffer.emplace_back(
 							token_type::option, next.substr(0, delimiterPos));
 						m_tokenBuffer.emplace_back(
-							token_type::argument, next.substr(delimiterPos + 1));
+							token_type::argument,
+							next.substr(delimiterPos + 1));
 					}
 					else
 					{
@@ -123,12 +134,14 @@ namespace detail
 							for (size_t i = 1; i < next.size(); ++i)
 							{
 								opt[1] = next[i];
-								m_tokenBuffer.emplace_back(token_type::option, opt);
+								m_tokenBuffer.emplace_back(
+									token_type::option, opt);
 							}
 						}
 						else
 						{
-							m_tokenBuffer.emplace_back(token_type::option, next);
+							m_tokenBuffer.emplace_back(
+								token_type::option, next);
 						}
 					}
 				}

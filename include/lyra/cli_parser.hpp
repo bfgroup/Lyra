@@ -101,19 +101,18 @@ class cli_parser : parser_base
 		for (auto const& p : m_parsers)
 		{
 			auto result = p->validate();
-			if (!result)
-				return result;
+			if (!result) return result;
 		}
 		return result::ok();
 	}
 
 	parse_result parse(
 		args const& args,
-		parser_customization const& customize = default_parser_customization()) const;
+		parser_customization const& customize
+		= default_parser_customization()) const;
 
 	parse_result parse(
-		std::string const& exe_name,
-		detail::token_iterator const& tokens,
+		std::string const& exe_name, detail::token_iterator const& tokens,
 		parser_customization const& customize) const override
 	{
 		struct ParserInfo
@@ -124,8 +123,7 @@ class cli_parser : parser_base
 		std::vector<ParserInfo> parseInfos(m_parsers.size());
 		{
 			size_t i = 0;
-			for (auto const& p : m_parsers)
-				parseInfos[i++].parser = p.get();
+			for (auto const& p : m_parsers) parseInfos[i++].parser = p.get();
 		}
 
 		m_exeName.set(exe_name);
@@ -139,12 +137,12 @@ class cli_parser : parser_base
 			for (auto& parseInfo : parseInfos)
 			{
 				auto parser_cardinality = parseInfo.parser->cardinality();
-				if (parser_cardinality.is_unbounded() || parseInfo.count < parser_cardinality.maximum)
+				if (parser_cardinality.is_unbounded()
+					|| parseInfo.count < parser_cardinality.maximum)
 				{
 					result = parseInfo.parser->parse(
 						exe_name, result.value().remainingTokens(), customize);
-					if (!result)
-						return result;
+					if (!result) return result;
 					if (result.value().type() != parser_result_type::no_match)
 					{
 						tokenParsed = true;
@@ -158,13 +156,16 @@ class cli_parser : parser_base
 				return result;
 			if (!tokenParsed)
 				return parse_result::runtimeError(
-					"Unrecognized token: " + result.value().remainingTokens()->name);
+					"Unrecognized token: "
+					+ result.value().remainingTokens()->name);
 		}
 		// Check missing required options.
 		for (auto& parseInfo : parseInfos)
 		{
 			auto parser_cardinality = parseInfo.parser->cardinality();
-			if (parser_cardinality.is_bounded() && (parseInfo.count < parser_cardinality.minimum || parser_cardinality.maximum < parseInfo.count))
+			if (parser_cardinality.is_bounded()
+				&& (parseInfo.count < parser_cardinality.minimum
+					|| parser_cardinality.maximum < parseInfo.count))
 			{
 				return parse_result::runtimeError(
 					"Expected: " + parseInfo.parser->get_usage_text());
@@ -229,11 +230,14 @@ it was. The state of variables bound to options is unspecified and any bound
 callbacks may have been called.
 
 end::reference[] */
-inline cli_parser::parse_result cli_parser::parse(
-	args const& args,
-	parser_customization const& customize) const
+inline cli_parser::parse_result
+cli_parser::parse(args const& args, parser_customization const& customize) const
 {
-	return parse(args.exe_name(), detail::token_iterator(args, customize.token_delimiters(), customize.option_prefix()), customize);
+	return parse(
+		args.exe_name(),
+		detail::token_iterator(
+			args, customize.token_delimiters(), customize.option_prefix()),
+		customize);
 }
 
 } // namespace lyra

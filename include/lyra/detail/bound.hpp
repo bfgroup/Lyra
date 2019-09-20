@@ -7,8 +7,8 @@
 #ifndef LYRA_DETAIL_BOUND_HPP
 #define LYRA_DETAIL_BOUND_HPP
 
-#include "lyra/detail/parse.hpp"
 #include "lyra/detail/invoke_lambda.hpp"
+#include "lyra/detail/parse.hpp"
 #include "lyra/detail/unary_lambda_traits.hpp"
 #include <string>
 
@@ -73,8 +73,7 @@ namespace detail
 		{
 			T temp;
 			auto result = parse_string(arg, temp);
-			if (result)
-				m_ref.push_back(temp);
+			if (result) m_ref.push_back(temp);
 			return result;
 		}
 	};
@@ -100,7 +99,9 @@ namespace detail
 	{
 		L m_lambda;
 
-		static_assert(unary_lambda_traits<L>::isValid, "Supplied lambda must take exactly one argument");
+		static_assert(
+			unary_lambda_traits<L>::isValid,
+			"Supplied lambda must take exactly one argument");
 		explicit BoundLambda(L const& lambda)
 			: m_lambda(lambda)
 		{
@@ -108,7 +109,8 @@ namespace detail
 
 		auto setValue(std::string const& arg) -> parser_result override
 		{
-			return invokeLambda<typename unary_lambda_traits<L>::ArgType>(m_lambda, arg);
+			return invokeLambda<typename unary_lambda_traits<L>::ArgType>(
+				m_lambda, arg);
 		}
 	};
 
@@ -117,7 +119,9 @@ namespace detail
 	{
 		L m_lambda;
 
-		static_assert(unary_lambda_traits<L>::isValid, "Supplied lambda must take exactly one argument");
+		static_assert(
+			unary_lambda_traits<L>::isValid,
+			"Supplied lambda must take exactly one argument");
 		static_assert(
 			std::is_same<typename unary_lambda_traits<L>::ArgType, bool>::value,
 			"flags must be boolean");
@@ -129,8 +133,8 @@ namespace detail
 
 		auto setFlag(bool flag) -> parser_result override
 		{
-			return LambdaInvoker<typename unary_lambda_traits<L>::ReturnType>::invoke(
-				m_lambda, flag);
+			return LambdaInvoker<typename unary_lambda_traits<L>::ReturnType>::
+				invoke(m_lambda, flag);
 		}
 	};
 } // namespace detail

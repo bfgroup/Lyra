@@ -7,10 +7,10 @@
 #ifndef LYRA_DETAIL_CHOICES_HPP
 #define LYRA_DETAIL_CHOICES_HPP
 
-#include "lyra/parser_result.hpp"
-#include "lyra/detail/result.hpp"
 #include "lyra/detail/from_string.hpp"
+#include "lyra/detail/result.hpp"
 #include "lyra/detail/unary_lambda_traits.hpp"
+#include "lyra/parser_result.hpp"
 #include <algorithm>
 #include <initializer_list>
 #include <string>
@@ -42,7 +42,7 @@ namespace detail
 
 		template <typename... Vals>
 		explicit choices_set(Vals... vals)
-			: choices_set({vals...})
+			: choices_set({ vals... })
 		{
 		}
 
@@ -63,15 +63,15 @@ namespace detail
 			}
 			// We consider not finding a choice a parse error.
 			return parser_result::runtimeError(
-				"Value '"+val+"' not expected. Allowed values are: "
-				+this->to_string());
+				"Value '" + val
+				+ "' not expected. Allowed values are: " + this->to_string());
 		}
 
 		// Returns a comma separated list of the allowed values.
 		std::string to_string() const
 		{
 			std::string result;
-			for (const T & val: values)
+			for (const T& val : values)
 			{
 				if (!result.empty()) result += ", ";
 				std::string val_string;
@@ -88,15 +88,14 @@ namespace detail
 		}
 
 		protected:
-
-		explicit choices_set(std::initializer_list<T> const &vals)
+		explicit choices_set(std::initializer_list<T> const& vals)
 			: values(vals)
 		{
 		}
 	};
 
 	template <>
-	struct choices_set<const char *> : choices_set<std::string>
+	struct choices_set<const char*> : choices_set<std::string>
 	{
 		template <typename... Vals>
 		explicit choices_set(Vals... vals)
@@ -115,13 +114,14 @@ namespace detail
 			unary_lambda_traits<Lambda>::isValid,
 			"Supplied lambda must take exactly one argument");
 		static_assert(
-			std::is_same<bool, typename unary_lambda_traits<Lambda>::ReturnType>::value,
+			std::is_same<
+				bool, typename unary_lambda_traits<Lambda>::ReturnType>::value,
 			"Supplied lambda must return bool");
 
 		Lambda checker;
 		using value_type = typename unary_lambda_traits<Lambda>::ArgType;
 
-		explicit choices_check(Lambda const &checker)
+		explicit choices_check(Lambda const& checker)
 			: checker(checker)
 		{
 		}
@@ -142,7 +142,7 @@ namespace detail
 			}
 			// We consider not finding a choice a parse error.
 			return parser_result::runtimeError(
-				"Value '"+val+"' not expected.");
+				"Value '" + val + "' not expected.");
 		}
 	};
 } // namespace detail

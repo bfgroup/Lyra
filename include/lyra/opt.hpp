@@ -65,26 +65,29 @@ class opt : public bound_parser<opt>
 				oss << ", ";
 			oss << opt;
 		}
-		if (!m_hint.empty())
-			oss << " <" << m_hint << ">";
+		if (!m_hint.empty()) oss << " <" << m_hint << ">";
 		return { { oss.str(), m_description } };
 	}
 
-	bool isMatch(std::string const& optToken, parser_customization const& customize) const
+	bool isMatch(
+		std::string const& optToken,
+		parser_customization const& customize) const
 	{
 		auto normalisedToken = normaliseOpt(optToken, customize);
 		for (auto const& name : m_optNames)
 		{
-			if (normaliseOpt(name, customize) == normalisedToken)
-				return true;
+			if (normaliseOpt(name, customize) == normalisedToken) return true;
 		}
 		return false;
 	}
 
-	std::string normaliseOpt(std::string const& optName, parser_customization const& customize) const
+	std::string normaliseOpt(
+		std::string const& optName, parser_customization const& customize) const
 	{
-		auto is_prefix_char_0 = customize.option_prefix().find(optName[0]) != std::string::npos;
-		auto is_prefix_char_1 = customize.option_prefix().find(optName[1]) != std::string::npos;
+		auto is_prefix_char_0
+			= customize.option_prefix().find(optName[0]) != std::string::npos;
+		auto is_prefix_char_1
+			= customize.option_prefix().find(optName[1]) != std::string::npos;
 		if (is_prefix_char_0)
 		{
 			if (is_prefix_char_1)
@@ -98,31 +101,34 @@ class opt : public bound_parser<opt>
 
 	using parser_base::parse;
 
-	parse_result parse(std::string const&, detail::token_iterator const& tokens, parser_customization const& customize) const override
+	parse_result parse(
+		std::string const&, detail::token_iterator const& tokens,
+		parser_customization const& customize) const override
 	{
 		auto validationResult = validate();
-		if (!validationResult)
-			return parse_result(validationResult);
+		if (!validationResult) return parse_result(validationResult);
 
 		auto remainingTokens = tokens;
-		if (remainingTokens && remainingTokens->type == detail::token_type::option)
+		if (remainingTokens
+			&& remainingTokens->type == detail::token_type::option)
 		{
 			auto const& token = *remainingTokens;
 			if (isMatch(token.name, customize))
 			{
 				if (m_ref->isFlag())
 				{
-					auto flagRef = static_cast<detail::BoundFlagRefBase*>(m_ref.get());
+					auto flagRef
+						= static_cast<detail::BoundFlagRefBase*>(m_ref.get());
 					auto result = flagRef->setFlag(true);
-					if (!result)
-						return parse_result(result);
+					if (!result) return parse_result(result);
 					if (result.value() == parser_result_type::short_circuit_all)
-						return parse_result::ok(
-							detail::parse_state(result.value(), remainingTokens));
+						return parse_result::ok(detail::parse_state(
+							result.value(), remainingTokens));
 				}
 				else
 				{
-					auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());
+					auto valueRef
+						= static_cast<detail::BoundValueRefBase*>(m_ref.get());
 					++remainingTokens;
 					if (!remainingTokens)
 						return parse_result::runtimeError(
@@ -133,19 +139,18 @@ class opt : public bound_parser<opt>
 							"Expected argument following " + token.name);
 					if (value_choices)
 					{
-						auto choice_result = value_choices->contains_value(argToken.name);
-						if (!choice_result)
-							return parse_result(choice_result);
+						auto choice_result
+							= value_choices->contains_value(argToken.name);
+						if (!choice_result) return parse_result(choice_result);
 					}
 					auto result = valueRef->setValue(argToken.name);
-					if (!result)
-						return parse_result(result);
+					if (!result) return parse_result(result);
 					if (result.value() == parser_result_type::short_circuit_all)
-						return parse_result::ok(
-							detail::parse_state(result.value(), remainingTokens));
+						return parse_result::ok(detail::parse_state(
+							result.value(), remainingTokens));
 				}
-				return parse_result::ok(
-					detail::parse_state(parser_result_type::matched, ++remainingTokens));
+				return parse_result::ok(detail::parse_state(
+					parser_result_type::matched, ++remainingTokens));
 			}
 		}
 		return parse_result::ok(

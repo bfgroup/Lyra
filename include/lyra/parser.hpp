@@ -74,14 +74,18 @@ namespace detail
 	class parse_state
 	{
 		public:
-		parse_state(parser_result_type type, token_iterator const& remainingTokens)
+		parse_state(
+			parser_result_type type, token_iterator const& remainingTokens)
 			: m_type(type)
 			, m_remainingTokens(remainingTokens)
 		{
 		}
 
 		auto type() const -> parser_result_type { return m_type; }
-		auto remainingTokens() const -> token_iterator { return m_remainingTokens; }
+		auto remainingTokens() const -> token_iterator
+		{
+			return m_remainingTokens;
+		}
 
 		private:
 		parser_result_type m_type;
@@ -101,20 +105,11 @@ namespace detail
 		{
 		}
 
-		bool is_optional() const
-		{
-			return (minimum == 0) && (maximum >= 0);
-		}
+		bool is_optional() const { return (minimum == 0) && (maximum >= 0); }
 
-		bool is_unbounded() const
-		{
-			return (minimum == 0) && (maximum == 0);
-		}
+		bool is_unbounded() const { return (minimum == 0) && (maximum == 0); }
 
-		bool is_bounded() const
-		{
-			return !is_unbounded();
-		}
+		bool is_bounded() const { return !is_unbounded(); }
 	};
 } // namespace detail
 
@@ -143,19 +138,12 @@ class parser_base
 	virtual auto validate() const -> result { return result::ok(); }
 
 	virtual parse_result parse(
-		std::string const& exe_name,
-		detail::token_iterator const& tokens,
+		std::string const& exe_name, detail::token_iterator const& tokens,
 		parser_customization const& customize) const = 0;
 
-	virtual detail::parser_cardinality cardinality() const
-	{
-		return { 0, 1 };
-	}
+	virtual detail::parser_cardinality cardinality() const { return { 0, 1 }; }
 
-	auto is_optional() const -> bool
-	{
-		return cardinality().is_optional();
-	}
+	auto is_optional() const -> bool { return cardinality().is_optional(); }
 
 	virtual std::string get_usage_text() const { return ""; }
 
@@ -217,7 +205,10 @@ class bound_parser : public composable_parser<Derived>
 	Derived& required(size_t n = 1);
 	Derived& cardinality(size_t n);
 	Derived& cardinality(size_t n, size_t m);
-	detail::parser_cardinality cardinality() const override { return m_cardinality; }
+	detail::parser_cardinality cardinality() const override
+	{
+		return m_cardinality;
+	}
 	std::string hint() const { return m_hint; }
 
 	template <typename T, typename... Rest>
@@ -401,7 +392,8 @@ template <typename Derived>
 template <typename T, typename... Rest>
 Derived& bound_parser<Derived>::choices(T val0, T val1, Rest... rest)
 {
-	value_choices = std::make_shared<detail::choices_set<T>>(val0, val1, rest...);
+	value_choices
+		= std::make_shared<detail::choices_set<T>>(val0, val1, rest...);
 	return static_cast<Derived&>(*this);
 }
 
@@ -409,7 +401,8 @@ template <typename Derived>
 template <typename Lambda>
 Derived& bound_parser<Derived>::choices(Lambda const& check_choice)
 {
-	value_choices = std::make_shared<detail::choices_check<Lambda>>(check_choice);
+	value_choices
+		= std::make_shared<detail::choices_check<Lambda>>(check_choice);
 	return static_cast<Derived&>(*this);
 }
 
