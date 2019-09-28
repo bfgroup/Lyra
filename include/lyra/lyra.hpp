@@ -14,5 +14,6 @@
 #include "lyra/opt.hpp"
 #include "lyra/parser.hpp"
 #include "lyra/parser_result.hpp"
+#include "lyra/version.hpp"
 
 #endif // LYRA_HPP_INCLUDED
