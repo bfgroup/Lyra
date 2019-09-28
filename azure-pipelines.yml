@@ -65,6 +65,12 @@ stages:
         #   CXX: g++-4.7
         #   PACKAGES: g++-4.7
         #   CXXSTD: 11
+        Clang 9:
+          TOOLSET: clang
+          CXX: clang++-9
+          PACKAGES: clang-9
+          LLVM_REPO: llvm-toolchain-xenial-9
+          CXXSTD: 11,14,17,2a
         Clang 8:
           TOOLSET: clang
           CXX: clang++-8
