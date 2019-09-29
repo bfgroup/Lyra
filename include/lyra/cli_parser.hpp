@@ -29,8 +29,7 @@ cli |= lyra::opt(what, "what")["--make-it-so"]("Make it so.").required();
 cli |= lyra::opt(when. "when")["--time"]("When to do <what>.").optional();
 ----
 
-*/
-// end::reference[]
+*/ // end::reference[]
 class cli_parser : parser_base
 {
 	public:

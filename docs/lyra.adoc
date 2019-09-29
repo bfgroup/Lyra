@@ -2,7 +2,7 @@
 :copyright: Copyright 2019 Rene Rivera
 :author: Rene Rivera
 :email: grafikrobot@gmail.com
-:revnumber: 1.0
+:revnumber: 1.1
 :revremark: First official release.
 :version-label!:
 :reproducible:
@@ -142,7 +142,7 @@ include::../examples/doc_example3.cpp[tag=part2]
 == Value Choices
 
 For value arguments, i.e. `--name=value` or positional arguments, one can
-specify a set of allowed values. YOu can indicate the choices explicitly by
+specify a set of allowed values. You can indicate the choices explicitly by
 specifying them to the `choices()` call:
 
 [source]
