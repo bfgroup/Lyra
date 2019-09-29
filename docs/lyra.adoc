@@ -3,7 +3,6 @@
 :author: Rene Rivera
 :email: grafikrobot@gmail.com
 :revnumber: 1.1
-:revremark: First official release.
 :version-label!:
 :reproducible:
 :nofooter:
