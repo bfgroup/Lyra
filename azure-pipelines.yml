@@ -160,6 +160,18 @@ stages:
   - job: 'macOS'
     strategy:
       matrix:
+        Xcode 11.0:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_11.app
+          VM_IMAGE: 'macOS-10.14'
+          CXXSTD: 11,14,17,2a
+        Xcode 10.3:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Applications/Xcode_10.3.app
+          VM_IMAGE: 'macOS-10.14'
+          CXXSTD: 11,14,17,2a
         Xcode 10.2.1:
           TOOLSET: clang
           CXX: clang++
