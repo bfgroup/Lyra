@@ -71,6 +71,21 @@ int main()
 				(REQUIRE(!result));
 		}
 	}
+	{
+		std::vector<int> numbers;
+		auto cli = cli_parser() |
+				arg(numbers, "number").required();
+		{
+			auto result = cli.parse({ "TestApp", "42", "33", "1" });
+			test
+				(REQUIRE(result));
+		}
+		{
+			auto result = cli.parse({ "TestApp" });
+			test
+				(REQUIRE(!result));
+		}
+	}
 
 	return test;
 }

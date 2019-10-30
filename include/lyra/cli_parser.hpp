@@ -158,13 +158,21 @@ class cli_parser : parser_base
 					"Unrecognized token: "
 					+ result.value().remainingTokens()->name);
 		}
-		// Check missing required options.
+		// Check missing required options. For bounded arguments we check
+		// bound min and max bounds against what we parsed. For the looset
+		// required arguments we check for only the minimum. As the upper
+		// bound could be infinite.
 		for (auto& parseInfo : parseInfos)
 		{
 			auto parser_cardinality = parseInfo.parser->cardinality();
-			if (parser_cardinality.is_bounded()
-				&& (parseInfo.count < parser_cardinality.minimum
+			if (
+				(parser_cardinality.is_bounded() &&
+					(parseInfo.count < parser_cardinality.minimum
 					|| parser_cardinality.maximum < parseInfo.count))
+				||
+				(parser_cardinality.is_required() &&
+					(parseInfo.count < parser_cardinality.minimum))
+			)
 			{
 				return parse_result::runtimeError(
 					"Expected: " + parseInfo.parser->get_usage_text());

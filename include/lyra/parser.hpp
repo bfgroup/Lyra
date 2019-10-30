@@ -105,11 +105,16 @@ namespace detail
 		{
 		}
 
+		// If zero or more are accepted, it's optional.
 		bool is_optional() const { return (minimum == 0) && (maximum >= 0); }
 
-		bool is_unbounded() const { return (minimum == 0) && (maximum == 0); }
+		// Anything that doesn't have an upper bound is considered unbounded.
+		bool is_unbounded() const { return (maximum == 0); }
 
 		bool is_bounded() const { return !is_unbounded(); }
+
+		// If one or more values are expected, it's required.
+		bool is_required() const { return (minimum > 0); }
 	};
 } // namespace detail
 
@@ -329,7 +334,10 @@ end::reference[] */
 template <typename Derived>
 Derived& bound_parser<Derived>::required(size_t n)
 {
-	return this->cardinality(n);
+	if (m_ref->isContainer())
+		return this->cardinality(1,0);
+	else
+		return this->cardinality(n);
 }
 
 /* tag::reference[]
