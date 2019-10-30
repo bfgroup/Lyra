@@ -2,7 +2,7 @@
 :copyright: Copyright 2019 Rene Rivera
 :author: Rene Rivera
 :email: grafikrobot@gmail.com
-:revnumber: 1.1
+:revnumber: 1.2
 :version-label!:
 :reproducible:
 :nofooter:
@@ -181,6 +181,14 @@ include::../include/lyra/args.hpp[tag=reference]
 :leveloffset: -2
 
 == History
+
+=== 1.2
+
+Changes:
+
+* *New*: One can now accept 1-or-more on bound container arguments by only
+	specifying `required()` on such arguments.
+	-- _Rene Rivera_
 
 === 1.1
 
