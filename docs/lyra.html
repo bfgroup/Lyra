@@ -1216,6 +1216,16 @@ display a help message.</p>
 <div class="paragraph">
 <p>The option accepts <code>-?</code>, <code>-h</code>, and <code>--help</code> as allowed option names.</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">help</span> <span class="tok-o">&amp;</span> <span class="tok-n">help</span><span class="tok-o">::</span><span class="tok-n">description</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-o">&amp;</span><span class="tok-n">text</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sets the given <code>text</code> as the general description to show with the help and
+usage output for CLI parser. This text is displayed between the "Usage"
+and "Options, arguments" sections.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="lyra_exe_name"><a class="anchor" href="#lyra_exe_name"></a>5.10. <code>lyra::exe_name</code></h3>
@@ -1296,6 +1306,13 @@ in the bound string reference or callback.</p>
 <li>
 <p><strong>New</strong>: One can now accept 1-or-more on bound container arguments by only
 specifying <code>required()</code> on such arguments.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p><strong>New</strong>: One can now define a <code>description</code> text to display as general command
+information with the <code>help::description</code> method.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p>Improve help for arguments that specify a cardinality.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
 </li>
 </ul>
 </div>

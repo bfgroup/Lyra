@@ -23,7 +23,9 @@ int main(int argc, const char** argv)
 		std::string color = "red";
 	} config;
 	auto parser
-		= help(show_help)
+		= help(show_help).description(
+			"This is a combined sample CLI parser. It takes varied options"
+			"and arguments.")
 		| opt(config.seed, "time|value")
 			  ["--rng-seed"]["-r"]("Set a specific seed for random numbers.")
 				  .required()

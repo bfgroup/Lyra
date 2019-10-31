@@ -189,6 +189,11 @@ Changes:
 * *New*: One can now accept 1-or-more on bound container arguments by only
 	specifying `required()` on such arguments.
 	-- _Rene Rivera_
+* *New*: One can now define a `description` text to display as general command
+	information with the `help::description` method.
+	-- _Rene Rivera_
+* Improve help for arguments that specify a cardinality.
+	-- _Rene Rivera_
 
 === 1.1
 

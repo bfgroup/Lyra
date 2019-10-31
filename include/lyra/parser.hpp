@@ -154,6 +154,8 @@ class parser_base
 
 	virtual help_text get_help_text() const { return {}; }
 
+	virtual std::string get_description_text() const { return ""; }
+
 	virtual std::unique_ptr<parser_base> clone() const { return nullptr; }
 };
 

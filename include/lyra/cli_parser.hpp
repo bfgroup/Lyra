@@ -210,6 +210,13 @@ class cli_parser : parser_base
 			os << "\n\n";
 		}
 
+		for (auto const& p : m_parsers)
+		{
+			auto child_description = p->get_description_text();
+			if (!child_description.empty())
+				os << child_description << "\n\n";
+		}
+
 		os << "Options, arguments:";
 		for (auto const& cols : get_help_text())
 		{
