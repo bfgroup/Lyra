@@ -475,7 +475,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#lyra_bound_parser_ctor">5.5.1. Construction</a></li>
 <li><a href="#lyra_bound_parser_specification">5.5.2. Specification</a>
 <ul class="sectlevel4">
-<li><a href="#lyra_bound_parser_description">5.5.2.1. <code>lyra::bound_parser::operator(description)</code></a></li>
+<li><a href="#lyra_bound_parser_help">5.5.2.1. <code>lyra::bound_parser::help</code>, <code>lyra""bound_parser::operator(help)</code></a></li>
 <li><a href="#lyra_bound_parser_optional">5.5.2.2. <code>lyra::bound_parser::optional</code></a></li>
 <li><a href="#lyra_bound_parser_required">5.5.2.3. <code>lyra::bound_parser::required(n)</code></a></li>
 <li><a href="#lyra_bound_parser_cardinality">5.5.2.4. <code>lyra::bound_parser::cardinality(n, m)</code></a></li>
@@ -484,7 +484,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_lyracli_parser">5.6. <code>lyra::cli_parser</code></a></li>
+<li><a href="#lyra_cli_parser">5.6. <code>lyra::cli_parser</code></a>
+<ul class="sectlevel3">
+<li><a href="#lyra_cli_parser_ctor">5.6.1. Construction</a>
+<ul class="sectlevel4">
+<li><a href="#lyra_cli_parser_ctor_default">5.6.1.1. Default</a></li>
+<li><a href="#lyra_cli_parser_ctor_copy">5.6.1.2. Copy</a></li>
+</ul>
+</li>
+<li><a href="#lyra_cli_parser_specification">5.6.2. Specification</a>
+<ul class="sectlevel4">
+<li><a href="#lyra_cli_parser_add_argument">5.6.2.1. <code>lyra::cli_parser::add_argument</code></a></li>
+<li><a href="#lyra_cli_parser_parse">5.6.2.2. <code>lyra::cli_parser::parse</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#lyra_opt">5.7. <code>lyra::opt</code></a>
 <ul class="sectlevel3">
 <li><a href="#lyra_opt_ctor">5.7.1. Construction</a>
@@ -495,7 +510,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#lyra_opt_specification">5.7.2. Specification</a>
 <ul class="sectlevel4">
-<li><a href="#lyra_opt_operator_array">5.7.2.1. <code>lyra::opt::operator[]</code></a></li>
+<li><a href="#lyra_opt_name">5.7.2.1. <code>lyra::opt::name</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1004,11 +1019,13 @@ contain all the specified values.</p>
 <div class="sect3">
 <h4 id="lyra_bound_parser_specification"><a class="anchor" href="#lyra_bound_parser_specification"></a>5.5.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_bound_parser_description"><a class="anchor" href="#lyra_bound_parser_description"></a>5.5.2.1. <code>lyra::bound_parser::operator(description)</code></h5>
+<h5 id="lyra_bound_parser_help"><a class="anchor" href="#lyra_bound_parser_help"></a>5.5.2.1. <code>lyra::bound_parser::help</code>, <code>lyra""bound_parser::operator(help)</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
-<span class="tok-n">Derived</span><span class="tok-o">&amp;</span> <span class="tok-n">bound_parser</span><span class="tok-o">&lt;</span><span class="tok-n">Derived</span><span class="tok-o">&gt;::</span><span class="tok-k">operator</span><span class="tok-p">()(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">description</span><span class="tok-p">);</span></code></pre>
+<span class="tok-n">Derived</span><span class="tok-o">&amp;</span> <span class="tok-n">bound_parser</span><span class="tok-o">&lt;</span><span class="tok-n">Derived</span><span class="tok-o">&gt;::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">text</span><span class="tok-p">);</span>
+<span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
+<span class="tok-n">Derived</span><span class="tok-o">&amp;</span> <span class="tok-n">bound_parser</span><span class="tok-o">&lt;</span><span class="tok-n">Derived</span><span class="tok-o">&gt;::</span><span class="tok-k">operator</span><span class="tok-p">()(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">help</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1082,7 +1099,7 @@ form the <code>check_choice</code> function is called with the parsed value and 
 </div>
 </div>
 <div class="sect2">
-<h3 id="_lyracli_parser"><a class="anchor" href="#_lyracli_parser"></a>5.6. <code>lyra::cli_parser</code></h3>
+<h3 id="lyra_cli_parser"><a class="anchor" href="#lyra_cli_parser"></a>5.6. <code>lyra::cli_parser</code></h3>
 <div class="paragraph">
 <p>A Combined parser made up of any two or more other parsers. Creating and using
 one of these as a basis one can incrementally compose other parsers into this
@@ -1093,10 +1110,59 @@ one. For example:</p>
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">();</span>
 <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">what</span><span class="tok-p">;</span>
 <span class="tok-kt">float</span> <span class="tok-n">when</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">where</span><span class="tok-p">;</span>
 <span class="tok-n">cli</span> <span class="tok-o">|=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">what</span><span class="tok-p">,</span> <span class="tok-s">&quot;what&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--make-it-so&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;Make it so.&quot;</span><span class="tok-p">).</span><span class="tok-n">required</span><span class="tok-p">();</span>
-<span class="tok-n">cli</span> <span class="tok-o">|=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">when</span><span class="tok-p">.</span> <span class="tok-s">&quot;when&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--time&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;When to do &lt;what&gt;.&quot;</span><span class="tok-p">).</span><span class="tok-n">optional</span><span class="tok-p">();</span></code></pre>
+<span class="tok-n">cli</span> <span class="tok-o">|=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">when</span><span class="tok-p">.</span> <span class="tok-s">&quot;when&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--time&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;When to do &lt;what&gt;.&quot;</span><span class="tok-p">).</span><span class="tok-n">optional</span><span class="tok-p">();</span>
+<span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">where</span><span class="tok-p">,</span> <span class="tok-s">&quot;where&quot;</span><span class="tok-p">).</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;--where&quot;</span><span class="tok-p">)</span>
+	<span class="tok-p">.</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;There you are.&quot;</span><span class="tok-p">).</span><span class="tok-n">optional</span><span class="tok-p">());</span></code></pre>
 </div>
 </div>
+<div class="sect3">
+<h4 id="lyra_cli_parser_ctor"><a class="anchor" href="#lyra_cli_parser_ctor"></a>5.6.1. Construction</h4>
+<div class="sect4">
+<h5 id="lyra_cli_parser_ctor_default"><a class="anchor" href="#lyra_cli_parser_ctor_default"></a>5.6.1.1. Default</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli_parser</span><span class="tok-p">()</span> <span class="tok-o">=</span> <span class="tok-k">default</span><span class="tok-p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Default constructing a <code>cli_parser</code> is the starting point to adding arguments
+and options for parsing a command line.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="lyra_cli_parser_ctor_copy"><a class="anchor" href="#lyra_cli_parser_ctor_copy"></a>5.6.1.2. Copy</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">cli_parser</span><span class="tok-o">&amp;</span> <span class="tok-n">other</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="lyra_cli_parser_specification"><a class="anchor" href="#lyra_cli_parser_specification"></a>5.6.2. Specification</h4>
+<div class="sect4">
+<h5 id="lyra_cli_parser_add_argument"><a class="anchor" href="#lyra_cli_parser_add_argument"></a>5.6.2.1. <code>lyra::cli_parser::add_argument</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli_parser</span><span class="tok-o">&amp;</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">exe_name</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">exe_name</span><span class="tok-p">);</span>
+<span class="tok-n">cli_parser</span><span class="tok-o">&amp;</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-k">operator</span><span class="tok-o">|=</span><span class="tok-p">(</span><span class="tok-n">exe_name</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">exe_name</span><span class="tok-p">);</span>
+<span class="tok-n">cli_parser</span><span class="tok-o">&amp;</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">parser_base</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">p</span><span class="tok-p">);</span>
+<span class="tok-n">cli_parser</span><span class="tok-o">&amp;</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-k">operator</span><span class="tok-o">|=</span><span class="tok-p">(</span><span class="tok-n">parser_base</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">p</span><span class="tok-p">);</span>
+<span class="tok-n">cli_parser</span><span class="tok-o">&amp;</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">cli_parser</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">other</span><span class="tok-p">);</span>
+<span class="tok-n">cli_parser</span><span class="tok-o">&amp;</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-k">operator</span><span class="tok-o">|=</span><span class="tok-p">(</span><span class="tok-n">cli_parser</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">other</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Adds the given argument parser to the considered arguments for this
+<code>cli_parser</code>. Depending on the parser given it will be: recorded as the exe
+name (for <code>exe_name</code> parser), directly added as an argument (for
+<code>parser_base</code>), or add the parsers from another <code>cli_parser</code> to this one.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="lyra_cli_parser_parse"><a class="anchor" href="#lyra_cli_parser_parse"></a>5.6.2.2. <code>lyra::cli_parser::parse</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">parse_result</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">parse</span><span class="tok-p">(</span>
@@ -1108,6 +1174,8 @@ one. For example:</p>
 The result indicates success or failure, and if failure what kind of failure
 it was. The state of variables bound to options is unspecified and any bound
 callbacks may have been called.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1153,20 +1221,20 @@ option is present.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Constructs a flag option with a target <code>bool</code> to indicate if the flag is
-present. The first form takes a reference to a variable to receive the
-<code>bool</code>. The second takes a callback that is called with <code>true</code> when the
-option is present.</p>
+<p>Constructs a value option with a target <code>ref</code>. The first form takes a reference
+to a variable to receive the value. The second takes a callback that is called
+with the value when the option is present.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="lyra_opt_specification"><a class="anchor" href="#lyra_opt_specification"></a>5.7.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_opt_operator_array"><a class="anchor" href="#lyra_opt_operator_array"></a>5.7.2.1. <code>lyra::opt::operator[]</code></h5>
+<h5 id="lyra_opt_name"><a class="anchor" href="#lyra_opt_name"></a>5.7.2.1. <code>lyra::opt::name</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-k">operator</span><span class="tok-p">[](</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">optName</span><span class="tok-p">)</span></code></pre>
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-o">&amp;</span><span class="tok-n">opt_name</span><span class="tok-p">)</span>
+<span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-k">operator</span><span class="tok-p">[](</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-o">&amp;</span><span class="tok-n">optName</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1310,6 +1378,10 @@ specifying <code>required()</code> on such arguments.&#8201;&#8212;&#8201;<em>Re
 <li>
 <p><strong>New</strong>: One can now define a <code>description</code> text to display as general command
 information with the <code>help::description</code> method.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p><strong>New</strong>: Add named methods as alternates for operators to add and specify
+arguments. They follow the familiar Python <code>argparse</code> nomenclature.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
 </li>
 <li>
 <p>Improve help for arguments that specify a cardinality.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>

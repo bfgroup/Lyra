@@ -207,6 +207,7 @@ class bound_parser : public composable_parser<Derived>
 	template <typename Lambda>
 	bound_parser(Lambda const& ref, std::string const& hint);
 
+	Derived& help(const std::string& text);
 	Derived& operator()(std::string const& description);
 	Derived& optional();
 	Derived& required(size_t n = 1);
@@ -278,23 +279,30 @@ end::reference[] */
 
 /* tag::reference[]
 
-[#lyra_bound_parser_description]
-=== `lyra::bound_parser::operator(description)`
+[#lyra_bound_parser_help]
+=== `lyra::bound_parser::help`, `lyra""bound_parser::operator(help)`
 
 [source]
 ----
 template <typename Derived>
-Derived& bound_parser<Derived>::operator()(std::string const& description);
+Derived& bound_parser<Derived>::help(std::string const& text);
+template <typename Derived>
+Derived& bound_parser<Derived>::operator()(std::string const& help);
 ----
 
 Defines the help description of an argument.
 
 end::reference[] */
 template <typename Derived>
-Derived& bound_parser<Derived>::operator()(std::string const& description)
+Derived& bound_parser<Derived>::help(const std::string& text)
 {
-	m_description = description;
+	m_description = text;
 	return static_cast<Derived&>(*this);
+}
+template <typename Derived>
+Derived& bound_parser<Derived>::operator()(std::string const& help_text)
+{
+	return this->help(help_text);
 }
 
 /* tag::reference[]
@@ -337,7 +345,7 @@ template <typename Derived>
 Derived& bound_parser<Derived>::required(size_t n)
 {
 	if (m_ref->isContainer())
-		return this->cardinality(1,0);
+		return this->cardinality(1, 0);
 	else
 		return this->cardinality(n);
 }

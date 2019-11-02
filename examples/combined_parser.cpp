@@ -38,10 +38,13 @@ int main(int argc, const char** argv)
 		| arg(config.tests, "test name|tags|pattern")("Which test or tests to use.").required()
 		| opt(config.choice, "1-10")
 			  ["-c"]["--choice"]("A choice from 1 to 10.")
-				  .choices([](int value) -> bool { return 1 <= value && value <= 10; })
-		| opt(config.color, "red|green|blue")
-			  ["-k"]["--color"]("A primary color.")
-				  .choices("red", "green", "blue");
+				  .choices([](int value) -> bool { return 1 <= value && value <= 10; });
+	parser.add_argument(
+		opt(config.color, "red|green|blue")
+			.name("-k")
+			.name("--color")
+			.help("A primary color.")
+			.choices("red", "green", "blue"));
 
 	auto result = parser.parse({ argc, argv });
 

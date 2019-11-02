@@ -26,13 +26,17 @@ end::reference[] */
 class opt : public bound_parser<opt>
 {
 	protected:
-	std::vector<std::string> m_optNames;
+	std::vector<std::string> opt_names;
 
 	public:
+	// Flag option ctors..
+
 	explicit opt(bool& ref);
 
 	template <typename LambdaT>
 	explicit opt(LambdaT const& ref);
+
+	// Value option ctors..
 
 	template <typename T>
 	opt(T& ref, std::string const& hint);
@@ -40,15 +44,20 @@ class opt : public bound_parser<opt>
 	template <typename LambdaT>
 	opt(LambdaT const& ref, std::string const& hint);
 
-	opt& operator[](std::string const& optName);
+	// Option specifications..
+
+	opt& name(const std::string& opt_name);
+	opt& operator[](std::string const& opt_name);
+
+	// Internal..
 
 	virtual std::string get_usage_text() const override
 	{
 		std::string result;
-		for (std::size_t o = 0; o < m_optNames.size(); ++o)
+		for (std::size_t o = 0; o < opt_names.size(); ++o)
 		{
 			if (o > 0) result += "|";
-			result += m_optNames[o];
+			result += opt_names[o];
 		}
 		return result;
 	}
@@ -57,7 +66,7 @@ class opt : public bound_parser<opt>
 	{
 		std::ostringstream oss;
 		bool first = true;
-		for (auto const& opt : m_optNames)
+		for (auto const& opt : opt_names)
 		{
 			if (first)
 				first = false;
@@ -74,7 +83,7 @@ class opt : public bound_parser<opt>
 		parser_customization const& customize) const
 	{
 		auto normalisedToken = normaliseOpt(optToken, customize);
-		for (auto const& name : m_optNames)
+		for (auto const& name : opt_names)
 		{
 			if (normaliseOpt(name, customize) == normalisedToken) return true;
 		}
@@ -159,9 +168,9 @@ class opt : public bound_parser<opt>
 
 	result validate() const override
 	{
-		if (m_optNames.empty())
+		if (opt_names.empty())
 			return result::logicError("No options supplied to opt");
-		for (auto const& name : m_optNames)
+		for (auto const& name : opt_names)
 		{
 			if (name.empty())
 				return result::logicError("Option name cannot be empty");
@@ -171,7 +180,7 @@ class opt : public bound_parser<opt>
 		return bound_parser::validate();
 	}
 
-	virtual std::unique_ptr<parser_base> clone() const override
+	std::unique_ptr<parser_base> clone() const override
 	{
 		return std::unique_ptr<parser_base>(new opt(*this));
 	}
@@ -230,10 +239,9 @@ template <typename LambdaT>
 lyra::opt::opt(LambdaT const& ref, std::string const& hint)
 ----
 
-Constructs a flag option with a target `bool` to indicate if the flag is
-present. The first form takes a reference to a variable to receive the
-`bool`. The second takes a callback that is called with `true` when the
-option is present.
+Constructs a value option with a target `ref`. The first form takes a reference
+to a variable to receive the value. The second takes a callback that is called
+with the value when the option is present.
 
 end::reference[] */
 template <typename T>
@@ -256,21 +264,26 @@ end::reference[] */
 
 /* tag::reference[]
 
-[#lyra_opt_operator_array]
-=== `lyra::opt::operator[]`
+[#lyra_opt_name]
+=== `lyra::opt::name`
 
 [source]
 ----
-lyra::opt& lyra::opt::operator[](std::string const& optName)
+lyra::opt& lyra::opt::name(const std::string &opt_name)
+lyra::opt& lyra::opt::operator[](const std::string &optName)
 ----
 
 Add a spelling for the option of the form `--<name>` or `-n`.
 
 end::reference[] */
-inline opt& opt::operator[](std::string const& optName)
+inline opt& opt::name(const std::string& opt_name)
 {
-	m_optNames.push_back(optName);
+	opt_names.push_back(opt_name);
 	return *this;
+}
+inline opt& opt::operator[](const std::string& opt_name)
+{
+	return this->name(opt_name);
 }
 
 } // namespace lyra

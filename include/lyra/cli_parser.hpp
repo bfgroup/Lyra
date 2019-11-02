@@ -14,6 +14,7 @@ namespace lyra
 {
 /* tag::reference[]
 
+[#lyra_cli_parser]
 = `lyra::cli_parser`
 
 A Combined parser made up of any two or more other parsers. Creating and using
@@ -25,8 +26,11 @@ one. For example:
 auto cli = lyra::cli_parser();
 std::string what;
 float when = 0;
+std::string where;
 cli |= lyra::opt(what, "what")["--make-it-so"]("Make it so.").required();
 cli |= lyra::opt(when. "when")["--time"]("When to do <what>.").optional();
+cli.add_argument(lyra::opt(where, "where").name("--where")
+	.help("There you are.").optional());
 ----
 
 */ // end::reference[]
@@ -36,38 +40,19 @@ class cli_parser : parser_base
 	cli_parser() = default;
 
 	// Copy construction, needs to copy the exe name and the composed parsers.
-	cli_parser(const cli_parser& other)
-		: m_exeName(other.m_exeName)
-	{
-		for (auto& other_parser : other.m_parsers)
-		{
-			m_parsers.push_back(other_parser->clone());
-		}
-	}
+	cli_parser(const cli_parser& other);
 
 	// Compose the `exe_name` parser.
-	cli_parser& operator|=(exe_name const& exe_name)
-	{
-		m_exeName = exe_name;
-		return *this;
-	}
+	cli_parser& add_argument(exe_name const& exe_name);
+	cli_parser& operator|=(exe_name const& exe_name);
 
 	// Compose a regular parser.
-	cli_parser& operator|=(parser_base const& p)
-	{
-		m_parsers.push_back(p.clone());
-		return *this;
-	}
+	cli_parser& add_argument(parser_base const& p);
+	cli_parser& operator|=(parser_base const& p);
 
 	// Compose the parsers from another `cli_parser`.
-	cli_parser& operator|=(cli_parser const& other)
-	{
-		for (auto& p : other.m_parsers)
-		{
-			m_parsers.push_back(p->clone());
-		}
-		return *this;
-	}
+	cli_parser& add_argument(cli_parser const& other);
+	cli_parser& operator|=(cli_parser const& other);
 
 	// Concat composition.
 	template <typename T>
@@ -75,6 +60,22 @@ class cli_parser : parser_base
 	{
 		return cli_parser(*this) |= other;
 	}
+
+	// Stream out generates the help output.
+	friend auto operator<<(std::ostream& os, cli_parser const& parser)
+		-> std::ostream&
+	{
+		parser.writeToStream(os);
+		return os;
+	}
+
+	// Parse from arguments.
+	parse_result parse(
+		args const& args,
+		parser_customization const& customize
+		= default_parser_customization()) const;
+
+	// Internal..
 
 	// Return a container of the individual help text for the composed parsers.
 	virtual help_text get_help_text() const override
@@ -88,13 +89,6 @@ class cli_parser : parser_base
 		return text;
 	}
 
-	friend auto operator<<(std::ostream& os, cli_parser const& parser)
-		-> std::ostream&
-	{
-		parser.writeToStream(os);
-		return os;
-	}
-
 	auto validate() const -> result override
 	{
 		for (auto const& p : m_parsers)
@@ -104,11 +98,6 @@ class cli_parser : parser_base
 		}
 		return result::ok();
 	}
-
-	parse_result parse(
-		args const& args,
-		parser_customization const& customize
-		= default_parser_customization()) const;
 
 	parse_result parse(
 		std::string const& exe_name, detail::token_iterator const& tokens,
@@ -165,14 +154,11 @@ class cli_parser : parser_base
 		for (auto& parseInfo : parseInfos)
 		{
 			auto parser_cardinality = parseInfo.parser->cardinality();
-			if (
-				(parser_cardinality.is_bounded() &&
-					(parseInfo.count < parser_cardinality.minimum
-					|| parser_cardinality.maximum < parseInfo.count))
-				||
-				(parser_cardinality.is_required() &&
-					(parseInfo.count < parser_cardinality.minimum))
-			)
+			if ((parser_cardinality.is_bounded()
+				 && (parseInfo.count < parser_cardinality.minimum
+					 || parser_cardinality.maximum < parseInfo.count))
+				|| (parser_cardinality.is_required()
+					&& (parseInfo.count < parser_cardinality.minimum)))
 			{
 				return parse_result::runtimeError(
 					"Expected: " + parseInfo.parser->get_usage_text());
@@ -213,8 +199,7 @@ class cli_parser : parser_base
 		for (auto const& p : m_parsers)
 		{
 			auto child_description = p->get_description_text();
-			if (!child_description.empty())
-				os << child_description << "\n\n";
+			if (!child_description.empty()) os << child_description << "\n\n";
 		}
 
 		os << "Options, arguments:";
@@ -225,6 +210,108 @@ class cli_parser : parser_base
 	}
 };
 
+/* tag::reference[]
+
+[#lyra_cli_parser_ctor]
+== Construction
+
+end::reference[] */
+
+/* tag::reference[]
+
+[#lyra_cli_parser_ctor_default]
+=== Default
+
+[source]
+----
+cli_parser() = default;
+----
+
+Default constructing a `cli_parser` is the starting point to adding arguments
+and options for parsing a command line.
+
+end::reference[] */
+
+/* tag::reference[]
+
+[#lyra_cli_parser_ctor_copy]
+=== Copy
+
+[source]
+----
+cli_parser::cli_parser(const cli_parser& other);
+----
+
+end::reference[] */
+inline cli_parser::cli_parser(const cli_parser& other)
+	: m_exeName(other.m_exeName)
+{
+	for (auto& other_parser : other.m_parsers)
+	{
+		m_parsers.push_back(other_parser->clone());
+	}
+}
+
+/* tag::reference[]
+
+[#lyra_cli_parser_specification]
+== Specification
+
+end::reference[] */
+
+// ==
+
+/* tag::reference[]
+[#lyra_cli_parser_add_argument]
+=== `lyra::cli_parser::add_argument`
+
+[source]
+----
+cli_parser& cli_parser::add_argument(exe_name const& exe_name);
+cli_parser& cli_parser::operator|=(exe_name const& exe_name);
+cli_parser& cli_parser::add_argument(parser_base const& p);
+cli_parser& cli_parser::operator|=(parser_base const& p);
+cli_parser& cli_parser::add_argument(cli_parser const& other);
+cli_parser& cli_parser::operator|=(cli_parser const& other);
+----
+
+Adds the given argument parser to the considered arguments for this
+`cli_parser`. Depending on the parser given it will be: recorded as the exe
+name (for `exe_name` parser), directly added as an argument (for
+`parser_base`), or add the parsers from another `cli_parser` to this one.
+
+end::reference[] */
+inline cli_parser& cli_parser::add_argument(exe_name const& exe_name)
+{
+	m_exeName = exe_name;
+	return *this;
+}
+inline cli_parser& cli_parser::operator|=(exe_name const& exe_name)
+{
+	return this->add_argument(exe_name);
+}
+inline cli_parser& cli_parser::add_argument(parser_base const& p)
+{
+	m_parsers.push_back(p.clone());
+	return *this;
+}
+inline cli_parser& cli_parser::operator|=(parser_base const& p)
+{
+	return this->add_argument(p);
+}
+inline cli_parser& cli_parser::add_argument(cli_parser const& other)
+{
+	for (auto& p : other.m_parsers)
+	{
+		m_parsers.push_back(p->clone());
+	}
+	return *this;
+}
+inline cli_parser& cli_parser::operator|=(cli_parser const& other)
+{
+	return this->add_argument(other);
+}
+
 template <typename DerivedT, typename T>
 cli_parser operator|(composable_parser<DerivedT> const& thing, T const& other)
 {
@@ -232,6 +319,9 @@ cli_parser operator|(composable_parser<DerivedT> const& thing, T const& other)
 }
 
 /* tag::reference[]
+[#lyra_cli_parser_parse]
+=== `lyra::cli_parser::parse`
+
 [source]
 ----
 cli_parser::parse_result cli_parser::parse(

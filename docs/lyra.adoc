@@ -192,6 +192,9 @@ Changes:
 * *New*: One can now define a `description` text to display as general command
 	information with the `help::description` method.
 	-- _Rene Rivera_
+* *New*: Add named methods as alternates for operators to add and specify
+	arguments. They follow the familiar Python `argparse` nomenclature.
+	-- _Rene Rivera_
 * Improve help for arguments that specify a cardinality.
 	-- _Rene Rivera_
 
