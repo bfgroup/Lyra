@@ -144,11 +144,12 @@ class cli_parser : parser_base
 				return result;
 			if (!tokenParsed)
 				return parse_result::runtimeError(
+					result.value(),
 					"Unrecognized token: "
-					+ result.value().remainingTokens()->name);
+						+ result.value().remainingTokens()->name);
 		}
 		// Check missing required options. For bounded arguments we check
-		// bound min and max bounds against what we parsed. For the looset
+		// bound min and max bounds against what we parsed. For the loosest
 		// required arguments we check for only the minimum. As the upper
 		// bound could be infinite.
 		for (auto& parseInfo : parseInfos)
@@ -161,6 +162,7 @@ class cli_parser : parser_base
 					&& (parseInfo.count < parser_cardinality.minimum)))
 			{
 				return parse_result::runtimeError(
+					result.value(),
 					"Expected: " + parseInfo.parser->get_usage_text());
 			}
 		}
@@ -324,7 +326,7 @@ cli_parser operator|(composable_parser<DerivedT> const& thing, T const& other)
 
 [source]
 ----
-cli_parser::parse_result cli_parser::parse(
+parse_result cli_parser::parse(
 	args const& args, parser_customization const& customize) const;
 ----
 
@@ -334,7 +336,7 @@ it was. The state of variables bound to options is unspecified and any bound
 callbacks may have been called.
 
 end::reference[] */
-inline cli_parser::parse_result
+inline parse_result
 cli_parser::parse(args const& args, parser_customization const& customize) const
 {
 	return parse(

@@ -25,51 +25,6 @@ namespace lyra
 namespace detail
 {
 	template <typename T>
-	inline bool from_string(std::string const& source, T& target)
-	{
-		std::stringstream ss;
-		ss << source;
-		ss >> target;
-		return !ss.fail();
-	}
-
-	inline bool from_string(std::string const& source, std::string& target)
-	{
-		target = source;
-		return true;
-	}
-
-	inline bool from_string(std::string const& source, bool& target)
-	{
-		std::string srcLC = source;
-		std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(), [](char c) {
-			return static_cast<char>(::tolower(c));
-		});
-		if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes"
-			|| srcLC == "on")
-			target = true;
-		else if (
-			srcLC == "n" || srcLC == "0" || srcLC == "false" || srcLC == "no"
-			|| srcLC == "off")
-			target = false;
-		else
-			return false;
-		return true;
-	}
-
-#ifdef LYRA_CONFIG_OPTIONAL_TYPE
-	template <typename T>
-	inline bool
-	from_string(std::string const& source, LYRA_CONFIG_OPTIONAL_TYPE<T>& target)
-	{
-		T temp;
-		auto result = from_string(source, temp);
-		if (result) target = std::move(temp);
-		return result;
-	}
-#endif // LYRA_CONFIG_OPTIONAL_TYPE
-
-	template <typename T>
 	bool to_string(const T& source, std::string& target)
 	{
 		std::stringstream ss;
@@ -95,6 +50,54 @@ namespace detail
 		target = source ? "true" : "false";
 		return true;
 	}
+
+	template <typename S, typename T>
+	inline bool from_string(S const& source, T& target)
+	{
+		std::stringstream ss;
+		ss << source;
+		ss >> target;
+		return !ss.fail();
+	}
+
+	template <typename S, typename... C>
+	inline bool from_string(S const& source, std::basic_string<C...>& target)
+	{
+		to_string(source, target);
+		return true;
+	}
+
+	template <typename S>
+	inline bool from_string(S const& source, bool& target)
+	{
+		std::string srcLC;
+		to_string(source, srcLC);
+		std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(), [](char c) {
+			return static_cast<char>(::tolower(c));
+		});
+		if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes"
+			|| srcLC == "on")
+			target = true;
+		else if (
+			srcLC == "n" || srcLC == "0" || srcLC == "false" || srcLC == "no"
+			|| srcLC == "off")
+			target = false;
+		else
+			return false;
+		return true;
+	}
+
+#ifdef LYRA_CONFIG_OPTIONAL_TYPE
+	template <typename S, typename T>
+	inline bool
+	from_string(S const& source, LYRA_CONFIG_OPTIONAL_TYPE<T>& target)
+	{
+		T temp;
+		auto result = from_string(source, temp);
+		if (result) target = std::move(temp);
+		return result;
+	}
+#endif // LYRA_CONFIG_OPTIONAL_TYPE
 
 } // namespace detail
 } // namespace lyra

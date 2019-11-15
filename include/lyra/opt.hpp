@@ -141,10 +141,12 @@ class opt : public bound_parser<opt>
 					++remainingTokens;
 					if (!remainingTokens)
 						return parse_result::runtimeError(
+							{ parser_result_type::no_match, remainingTokens },
 							"Expected argument following " + token.name);
 					auto const& argToken = *remainingTokens;
 					if (argToken.type != detail::token_type::argument)
 						return parse_result::runtimeError(
+							{ parser_result_type::no_match, remainingTokens },
 							"Expected argument following " + token.name);
 					if (value_choices)
 					{

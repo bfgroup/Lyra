@@ -121,6 +121,29 @@ namespace detail
 /* tag::reference[]
 
 [#lyra_parser_base]
+= `lyra::parser_result`
+
+The result of parsing arguments.
+
+end::reference[] */
+class parse_result : public detail::basic_result<detail::parse_state>
+{
+	public:
+	using base = detail::basic_result<detail::parse_state>;
+	using base::basic_result;
+	using base::logicError;
+	using base::ok;
+	using base::runtimeError;
+
+	parse_result(const base& other)
+		: base(other)
+	{
+	}
+};
+
+/* tag::reference[]
+
+[#lyra_parser_base]
 = `lyra::parser_base`
 
 Base for all argument parser types.
@@ -136,7 +159,6 @@ class parser_base
 	};
 
 	using help_text = std::vector<help_text_item>;
-	using parse_result = detail::basic_result<detail::parse_state>;
 
 	virtual ~parser_base() = default;
 

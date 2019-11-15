@@ -32,7 +32,9 @@ int main()
               ["-n"]
           | opt( [&]( int i ) {
                     if (i < 0 || i > 10)
-                        return parser_result::runtimeError("index must be between 0 and 10");
+                        return parser_result::runtimeError(
+							parser_result_type::no_match,
+							"index must be between 0 and 10");
                     else {
                         config.index = i;
                         return parser_result::ok( parser_result_type::matched );

@@ -7,6 +7,7 @@
 #ifndef LYRA_DETAIL_RESULT_HPP
 #define LYRA_DETAIL_RESULT_HPP
 
+#include <memory>
 #include <string>
 
 namespace lyra
@@ -51,68 +52,96 @@ namespace detail
 	class result_value_base : public result_base
 	{
 		public:
-		T const& value() const { return m_value; }
+		using value_type = T;
+
+		value_type const& value() const { return *m_value; }
+		bool has_value() const { return m_value; }
 
 		protected:
-		union
-		{
-			T m_value;
-		};
+		std::unique_ptr<value_type> m_value;
 
 		explicit result_value_base(Type type, const std::string& message = "")
 			: result_base(type, message)
 		{
 		}
 
-		explicit result_value_base(Type type, T const& value)
-			: result_base(type)
+		explicit result_value_base(
+			Type type, const value_type& val, const std::string& message = "")
+			: result_base(type, message)
 		{
-			new (&m_value) T(value);
+			m_value.reset(new value_type(val));
 		}
 
 		explicit result_value_base(result_value_base const& other)
 			: result_base(other)
 		{
-			if (this->m_type == result_base::Ok)
-				new (&m_value) T(other.m_value);
+			if (other.m_value) m_value.reset(new value_type(*other.m_value));
 		}
 
 		result_value_base& operator=(result_value_base const& other)
 		{
-			if (this->m_type == result_base::Ok) m_value.~T();
 			result_base::operator=(other);
-			if (this->m_type == result_base::Ok)
-				new (&m_value) T(other.m_value);
+			if (other.m_value) m_value.reset(new T(*other.m_value));
 			return *this;
-		}
-
-		~result_value_base() override
-		{
-			if (this->m_type == Ok) m_value.~T();
 		}
 	};
 
 	template <>
 	class result_value_base<void> : public result_base
 	{
+		public:
+		using value_type = void;
+
 		protected:
 		using result_base::result_base;
 	};
 
-	template <typename T = void>
+	template <typename T>
 	class basic_result : public result_value_base<T>
 	{
 		public:
+		using value_type = typename result_value_base<T>::value_type;
+
 		explicit basic_result(result_base const& other)
 			: result_value_base<T>(other.type(), other.errorMessage())
 		{
 		}
 
-		template <typename U>
-		static basic_result ok(U const& value)
+		// With-value results..
+
+		static basic_result ok(value_type const& val)
 		{
-			return basic_result(result_base::Ok, value);
+			return basic_result(result_base::Ok, val);
 		}
+
+		static basic_result
+		logicError(value_type const& val, std::string const& message)
+		{
+			return basic_result(result_base::LogicError, val, message);
+		}
+
+		static basic_result
+		runtimeError(value_type const& val, const std::string& message)
+		{
+			return basic_result(result_base::RuntimeError, val, message);
+		}
+
+		protected:
+		using result_value_base<T>::result_value_base;
+	};
+
+	template <>
+	class basic_result<void> : public result_value_base<void>
+	{
+		public:
+		using value_type = typename result_value_base<void>::value_type;
+
+		explicit basic_result(result_base const& other)
+			: result_value_base<void>(other.type(), other.errorMessage())
+		{
+		}
+
+		// Value-less results.. (only kind as void is a value-less type)
 
 		static basic_result ok() { return basic_result(result_base::Ok); }
 
@@ -127,7 +156,7 @@ namespace detail
 		}
 
 		protected:
-		using result_value_base<T>::result_value_base;
+		using result_value_base<void>::result_value_base;
 	};
 } // namespace detail
 } // namespace lyra

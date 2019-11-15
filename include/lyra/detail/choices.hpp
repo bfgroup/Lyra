@@ -54,17 +54,19 @@ namespace detail
 			auto parse = parse_string(val, value);
 			if (!parse)
 			{
-				return parser_result::runtimeError(parse.errorMessage());
+				return parser_result::runtimeError(
+					parser_result_type::no_match, parse.errorMessage());
 			}
 			bool result = std::count(values.begin(), values.end(), value) > 0;
 			if (result)
 			{
-				return parser_result::ok();
+				return parser_result::ok(parser_result_type::matched);
 			}
 			// We consider not finding a choice a parse error.
 			return parser_result::runtimeError(
-				"Value '" + val
-				+ "' not expected. Allowed values are: " + this->to_string());
+				parser_result_type::no_match,
+				"Value '" + val + "' not expected. Allowed values are: "
+					+ this->to_string());
 		}
 
 		// Returns a comma separated list of the allowed values.
@@ -134,14 +136,16 @@ namespace detail
 			auto parse = parse_string(val, value);
 			if (!parse)
 			{
-				return parser_result::runtimeError(parse.errorMessage());
+				return parser_result::runtimeError(
+					parser_result_type::no_match, parse.errorMessage());
 			}
 			if (checker(value))
 			{
-				return parser_result::ok();
+				return parser_result::ok(parser_result_type::matched);
 			}
 			// We consider not finding a choice a parse error.
 			return parser_result::runtimeError(
+				parser_result_type::no_match,
 				"Value '" + val + "' not expected.");
 		}
 	};

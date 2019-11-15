@@ -23,17 +23,93 @@ namespace detail
 		option,
 		argument
 	};
+
+	template <typename Char, class Traits = std::char_traits<Char>>
+	class basic_token_name
+	{
+		public:
+		using traits_type = Traits;
+		using value_type = Char;
+		using pointer = value_type*;
+		using const_pointer = const value_type*;
+		using reference = value_type&;
+		using const_reference = const value_type&;
+		using size_type = std::size_t;
+		using difference_type = std::ptrdiff_t;
+		using const_iterator = const_pointer;
+		using iterator = const_iterator;
+		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+		using reverse_iterator = const_reverse_iterator;
+		using string_type = std::basic_string<value_type, traits_type>;
+
+		basic_token_name() noexcept
+			: str { nullptr }
+			, len { 0 }
+		{
+		}
+
+		basic_token_name(const basic_token_name&) noexcept = default;
+
+		basic_token_name(const_pointer s) noexcept
+			: str { s }
+			, len { traits_type::length(s) }
+		{
+		}
+
+		basic_token_name(const_pointer s, size_type count) noexcept
+			: str { s }
+			, len { count }
+		{
+		}
+
+		basic_token_name& operator=(const basic_token_name&) noexcept = default;
+
+		void swap(basic_token_name& other) noexcept
+		{
+			auto tmp = *this;
+			*this = other;
+			other = tmp;
+		}
+
+		const_iterator begin() const noexcept { return this->str; }
+		const_iterator end() const noexcept { return this->str + this->len; }
+		const_iterator cbegin() const noexcept { return this->str; }
+		const_iterator cend() const noexcept { return this->str + this->len; }
+
+		size_type size() const noexcept { return this->len; }
+		size_type length() const noexcept { return this->len; }
+		bool empty() const noexcept { return this->len == 0; }
+
+		friend string_type to_string(const basic_token_name& t)
+		{
+			return { t.str, t.len };
+		}
+
+		friend string_type
+		operator+(const_pointer lhs, const basic_token_name& rhs)
+		{
+			return lhs + to_string(rhs);
+		}
+
+		private:
+		const_pointer str;
+		size_type len;
+	};
+
+	// using token_name = basic_token_name<std::string::value_type>;
+	using token_name = std::string;
+
 	struct token
 	{
 		token_type type;
-		std::string name;
+		token_name name;
 
 		token()
 			: type(token_type::unknown)
 		{
 		}
 		token(const token& other) = default;
-		token(token_type t, const std::string& n)
+		token(token_type t, const token_name& n)
 			: type(t)
 			, name(n)
 		{
