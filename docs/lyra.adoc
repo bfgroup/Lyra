@@ -118,6 +118,68 @@ Which could be used as:
 width = 10, name = Lyra, doIt = 0
 ----
 
+== Alternate Specification
+
+Using operators for specifying the parser argument is not everyone's
+"cut of tea". Like all such interface choices there are advantages and
+disadvantages to any particular API one chooses. Because of this Lyra supports
+both the preceding `operator` model and a "named arguments using methods"
+model for specifying the arguments. Below are the various specification
+operations and corresponding operator and method call equivalents:
+
+[cols="3*"]
+|===
+
+| Help description
+| `parser("Help")`
+| `parser.help("Help")`
+
+| Optional argument
+| `parser.optional()`
+| `parser.optional()`
+
+| Required argument
+| `parser.required()`
+| `parser.required()`
+
+| Range of arguments
+| `parser.cardinality(n,m)`
+| `parser.cardinality(n,m)`
+
+| Value choices
+| `parser.choices(a,b,c)`
+| `parser.choices(a,b,c)`
+
+| Add argument
+| `parser \|= argument`
+| `parser.add_argument(argument)`
+
+| Add option name
+| `option["--name"]`
+| `option.name("--name")`
+
+| Help option description
+| `help.description("Description")`
+| `help.description("Description")`
+
+|===
+
+The method names try to follow the well known Python `argparse` nomenclature
+for familiarity. Using the alternative methods one could rewrite the previous
+two examples. The first one with the single option would be:
+
+[source]
+----
+include::../examples/doc_example1_alt.cpp[tag=doc]
+----
+
+And the second with multiple options would the become:
+
+[source]
+----
+include::../examples/doc_example2_alt.cpp[tag=doc]
+----
+
 == Help Option
 
 From the specified arguments parser we also get convenient help output.
@@ -205,6 +267,11 @@ Changes:
 	arguments. They follow the familiar Python `argparse` nomenclature.
 	-- _Rene Rivera_
 * Improve help for arguments that specify a cardinality.
+	-- _Rene Rivera_
+* Addition of more complicated use cases to demonstrate flexibility of library.
+	-- _Rene Rivera_
+* Continued internal clean up of code for stability and easier future
+	enhancements.
 	-- _Rene Rivera_
 
 === 1.1

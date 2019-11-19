@@ -462,34 +462,35 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_multiple_options">2.2. Multiple Options</a></li>
 </ul>
 </li>
-<li><a href="#_help_option">3. Help Option</a></li>
-<li><a href="#_value_choices">4. Value Choices</a></li>
-<li><a href="#_use_cases">5. Use Cases</a>
+<li><a href="#_alternate_specification">3. Alternate Specification</a></li>
+<li><a href="#_help_option">4. Help Option</a></li>
+<li><a href="#_value_choices">5. Value Choices</a></li>
+<li><a href="#_use_cases">6. Use Cases</a>
 <ul class="sectlevel2">
-<li><a href="#_sub_commands">5.1. Sub-commands</a></li>
+<li><a href="#_sub_commands">6.1. Sub-commands</a></li>
 </ul>
 </li>
-<li><a href="#_reference">6. Reference</a>
+<li><a href="#_reference">7. Reference</a>
 <ul class="sectlevel2">
-<li><a href="#lyra_parser_customization">6.1. <code>lyra::parser_customization</code></a></li>
-<li><a href="#lyra_default_parser_customization">6.2. <code>lyra::default_parser_customization</code></a></li>
-<li><a href="#lyra_parser_result">6.3. <code>lyra::parser_result</code></a></li>
-<li><a href="#lyra_parser_base">6.4. <code>lyra::parser_base</code></a></li>
-<li><a href="#lyra_composable_parser">6.5. <code>lyra::composable_parser</code></a></li>
-<li><a href="#lyra_bound_parser">6.6. <code>lyra::bound_parser</code></a></li>
-<li><a href="#lyra_cli_parser">6.7. <code>lyra::cli_parser</code></a></li>
-<li><a href="#lyra_opt">6.8. <code>lyra::opt</code></a></li>
-<li><a href="#lyra_arg">6.9. <code>lyra::arg</code></a></li>
-<li><a href="#lyra_help">6.10. <code>lyra::help</code></a></li>
-<li><a href="#lyra_exe_name">6.11. <code>lyra::exe_name</code></a></li>
-<li><a href="#lyra_args">6.12. <code>lyra::args</code></a></li>
+<li><a href="#lyra_parser_customization">7.1. <code>lyra::parser_customization</code></a></li>
+<li><a href="#lyra_default_parser_customization">7.2. <code>lyra::default_parser_customization</code></a></li>
+<li><a href="#lyra_parser_result">7.3. <code>lyra::parser_result</code></a></li>
+<li><a href="#lyra_parser_base">7.4. <code>lyra::parser_base</code></a></li>
+<li><a href="#lyra_composable_parser">7.5. <code>lyra::composable_parser</code></a></li>
+<li><a href="#lyra_bound_parser">7.6. <code>lyra::bound_parser</code></a></li>
+<li><a href="#lyra_cli_parser">7.7. <code>lyra::cli_parser</code></a></li>
+<li><a href="#lyra_opt">7.8. <code>lyra::opt</code></a></li>
+<li><a href="#lyra_arg">7.9. <code>lyra::arg</code></a></li>
+<li><a href="#lyra_help">7.10. <code>lyra::help</code></a></li>
+<li><a href="#lyra_exe_name">7.11. <code>lyra::exe_name</code></a></li>
+<li><a href="#lyra_args">7.12. <code>lyra::args</code></a></li>
 </ul>
 </li>
-<li><a href="#_history">7. History</a>
+<li><a href="#_history">8. History</a>
 <ul class="sectlevel2">
-<li><a href="#_1_2">7.1. 1.2</a></li>
-<li><a href="#_1_1">7.2. 1.1</a></li>
-<li><a href="#_1_0">7.3. 1.0</a></li>
+<li><a href="#_1_2">8.1. 1.2</a></li>
+<li><a href="#_1_1">8.2. 1.1</a></li>
+<li><a href="#_1_0">8.3. 1.0</a></li>
 </ul>
 </li>
 </ul>
@@ -741,7 +742,147 @@ operator (<code>|</code>).</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_help_option"><a class="anchor" href="#_help_option"></a>3. Help Option</h2>
+<h2 id="_alternate_specification"><a class="anchor" href="#_alternate_specification"></a>3. Alternate Specification</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Using operators for specifying the parser argument is not everyone&#8217;s
+"cut of tea". Like all such interface choices there are advantages and
+disadvantages to any particular API one chooses. Because of this Lyra supports
+both the preceding <code>operator</code> model and a "named arguments using methods"
+model for specifying the arguments. Below are the various specification
+operations and corresponding operator and method call equivalents:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Help description</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser("Help")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.help("Help")</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional argument</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.optional()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.optional()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Required argument</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.required()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.required()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Range of arguments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.cardinality(n,m)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.cardinality(n,m)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Value choices</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.choices(a,b,c)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.choices(a,b,c)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add argument</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser |= argument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parser.add_argument(argument)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add option name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>option["--name"]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>option.name("--name")</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Help option description</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>help.description("Description")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>help.description("Description")</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The method names try to follow the well known Python <code>argparse</code> nomenclature
+for familiarity. Using the alternative methods one could rewrite the previous
+two examples. The first one with the single option would be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;cstdlib&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
+
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-c1">// Where we read in the argument value:</span>
+    <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+
+    <span class="tok-c1">// The parser with the one option argument:</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">();</span>
+    <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span>
+        <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span><span class="tok-p">)</span>
+            <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">)</span>
+            <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">)</span>
+            <span class="tok-p">.</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">));</span>
+
+    <span class="tok-c1">// Parse the program arguments:</span>
+    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
+
+    <span class="tok-c1">// Check that the arguments where valid:</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the second with multiple options would the become:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;cstdlib&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
+
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-c1">// Where we read in the argument values:</span>
+    <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">name</span><span class="tok-p">;</span>
+    <span class="tok-kt">bool</span> <span class="tok-n">doIt</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
+
+    <span class="tok-c1">// The parser with the multiple option arguments. They are composed</span>
+    <span class="tok-c1">// together by the &quot;|&quot; operator.</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">();</span>
+    <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span><span class="tok-p">)</span>
+        <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">).</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">).</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">));</span>
+    <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">name</span><span class="tok-p">,</span> <span class="tok-s">&quot;name&quot;</span><span class="tok-p">)</span>
+        <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;-n&quot;</span><span class="tok-p">).</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;--name&quot;</span><span class="tok-p">).</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;By what name should I be known&quot;</span><span class="tok-p">));</span>
+    <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">doIt</span><span class="tok-p">)</span>
+        <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;-d&quot;</span><span class="tok-p">).</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;--doit&quot;</span><span class="tok-p">).</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;Do the thing&quot;</span><span class="tok-p">));</span>
+
+    <span class="tok-c1">// Parse the program arguments:</span>
+    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
+
+    <span class="tok-c1">// Check that the arguments where valid:</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_help_option"><a class="anchor" href="#_help_option"></a>4. Help Option</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>From the specified arguments parser we also get convenient help output.</p>
@@ -826,7 +967,7 @@ specified:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_value_choices"><a class="anchor" href="#_value_choices"></a>4. Value Choices</h2>
+<h2 id="_value_choices"><a class="anchor" href="#_value_choices"></a>5. Value Choices</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>For value arguments, i.e. <code>--name=value</code> or positional arguments, one can
@@ -892,10 +1033,10 @@ is given.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_use_cases"><a class="anchor" href="#_use_cases"></a>5. Use Cases</h2>
+<h2 id="_use_cases"><a class="anchor" href="#_use_cases"></a>6. Use Cases</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_sub_commands"><a class="anchor" href="#_sub_commands"></a>5.1. Sub-commands</h3>
+<h3 id="_sub_commands"><a class="anchor" href="#_sub_commands"></a>6.1. Sub-commands</h3>
 <div class="paragraph">
 <p>A common program structure is to have a "wrapper" or "shell" that performs
 various sub-commands. Even though Lyra doesn&#8217;t have a direct specification
@@ -1039,10 +1180,10 @@ arguments. And re-parse with the full recognized sub-command arguments.</td>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_reference"><a class="anchor" href="#_reference"></a>6. Reference</h2>
+<h2 id="_reference"><a class="anchor" href="#_reference"></a>7. Reference</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="lyra_parser_customization"><a class="anchor" href="#lyra_parser_customization"></a>6.1. <code>lyra::parser_customization</code></h3>
+<h3 id="lyra_parser_customization"><a class="anchor" href="#lyra_parser_customization"></a>7.1. <code>lyra::parser_customization</code></h3>
 <div class="paragraph">
 <p>Customization interface for parsing of options.</p>
 </div>
@@ -1066,7 +1207,7 @@ for all options.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_default_parser_customization"><a class="anchor" href="#lyra_default_parser_customization"></a>6.2. <code>lyra::default_parser_customization</code></h3>
+<h3 id="lyra_default_parser_customization"><a class="anchor" href="#lyra_default_parser_customization"></a>7.2. <code>lyra::default_parser_customization</code></h3>
 <div class="paragraph">
 <p>Is-a <code>lyra::parser_customization</code> that defines token delimiters as space (" ")
 or equal ("="). And specifies the option prefix character as dash ("-")
@@ -1077,30 +1218,30 @@ resulting in long options with <code>--</code> and short options with <code>-</c
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_parser_result"><a class="anchor" href="#lyra_parser_result"></a>6.3. <code>lyra::parser_result</code></h3>
+<h3 id="lyra_parser_result"><a class="anchor" href="#lyra_parser_result"></a>7.3. <code>lyra::parser_result</code></h3>
 <div class="paragraph">
 <p>The result of parsing arguments.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_parser_base"><a class="anchor" href="#lyra_parser_base"></a>6.4. <code>lyra::parser_base</code></h3>
+<h3 id="lyra_parser_base"><a class="anchor" href="#lyra_parser_base"></a>7.4. <code>lyra::parser_base</code></h3>
 <div class="paragraph">
 <p>Base for all argument parser types.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_composable_parser"><a class="anchor" href="#lyra_composable_parser"></a>6.5. <code>lyra::composable_parser</code></h3>
+<h3 id="lyra_composable_parser"><a class="anchor" href="#lyra_composable_parser"></a>7.5. <code>lyra::composable_parser</code></h3>
 <div class="paragraph">
 <p>A parser that can be composed with other parsers using <code>operator|</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_bound_parser"><a class="anchor" href="#lyra_bound_parser"></a>6.6. <code>lyra::bound_parser</code></h3>
+<h3 id="lyra_bound_parser"><a class="anchor" href="#lyra_bound_parser"></a>7.6. <code>lyra::bound_parser</code></h3>
 <div class="paragraph">
 <p>Parser that binds a variable reference or callback to the value of an argument.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_bound_parser_ctor"><a class="anchor" href="#lyra_bound_parser_ctor"></a>6.6.1. Construction</h4>
+<h4 id="lyra_bound_parser_ctor"><a class="anchor" href="#lyra_bound_parser_ctor"></a>7.6.1. Construction</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1124,9 +1265,9 @@ contain all the specified values.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_bound_parser_specification"><a class="anchor" href="#lyra_bound_parser_specification"></a>6.6.2. Specification</h4>
+<h4 id="lyra_bound_parser_specification"><a class="anchor" href="#lyra_bound_parser_specification"></a>7.6.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_bound_parser_help"><a class="anchor" href="#lyra_bound_parser_help"></a>6.6.2.1. <code>lyra::bound_parser::help</code>, <code>lyra::bound_parser::operator(help)</code></h5>
+<h5 id="lyra_bound_parser_help"><a class="anchor" href="#lyra_bound_parser_help"></a>7.6.2.1. <code>lyra::bound_parser::help</code>, <code>lyra::bound_parser::operator(help)</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1140,7 +1281,7 @@ contain all the specified values.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_bound_parser_optional"><a class="anchor" href="#lyra_bound_parser_optional"></a>6.6.2.2. <code>lyra::bound_parser::optional</code></h5>
+<h5 id="lyra_bound_parser_optional"><a class="anchor" href="#lyra_bound_parser_optional"></a>7.6.2.2. <code>lyra::bound_parser::optional</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1153,7 +1294,7 @@ contain all the specified values.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_bound_parser_required"><a class="anchor" href="#lyra_bound_parser_required"></a>6.6.2.3. <code>lyra::bound_parser::required(n)</code></h5>
+<h5 id="lyra_bound_parser_required"><a class="anchor" href="#lyra_bound_parser_required"></a>7.6.2.3. <code>lyra::bound_parser::required(n)</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1166,7 +1307,7 @@ contain all the specified values.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_bound_parser_cardinality"><a class="anchor" href="#lyra_bound_parser_cardinality"></a>6.6.2.4. <code>lyra::bound_parser::cardinality(n, m)</code></h5>
+<h5 id="lyra_bound_parser_cardinality"><a class="anchor" href="#lyra_bound_parser_cardinality"></a>7.6.2.4. <code>lyra::bound_parser::cardinality(n, m)</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1184,7 +1325,7 @@ inclusive.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_bound_parser_choices"><a class="anchor" href="#lyra_bound_parser_choices"></a>6.6.2.5. <code>lyra::bound_parser::choices</code></h5>
+<h5 id="lyra_bound_parser_choices"><a class="anchor" href="#lyra_bound_parser_choices"></a>7.6.2.5. <code>lyra::bound_parser::choices</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1206,7 +1347,7 @@ form the <code>check_choice</code> function is called with the parsed value and 
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_cli_parser"><a class="anchor" href="#lyra_cli_parser"></a>6.7. <code>lyra::cli_parser</code></h3>
+<h3 id="lyra_cli_parser"><a class="anchor" href="#lyra_cli_parser"></a>7.7. <code>lyra::cli_parser</code></h3>
 <div class="paragraph">
 <p>A Combined parser made up of any two or more other parsers. Creating and using
 one of these as a basis one can incrementally compose other parsers into this
@@ -1225,9 +1366,9 @@ one. For example:</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_cli_parser_ctor"><a class="anchor" href="#lyra_cli_parser_ctor"></a>6.7.1. Construction</h4>
+<h4 id="lyra_cli_parser_ctor"><a class="anchor" href="#lyra_cli_parser_ctor"></a>7.7.1. Construction</h4>
 <div class="sect4">
-<h5 id="lyra_cli_parser_ctor_default"><a class="anchor" href="#lyra_cli_parser_ctor_default"></a>6.7.1.1. Default</h5>
+<h5 id="lyra_cli_parser_ctor_default"><a class="anchor" href="#lyra_cli_parser_ctor_default"></a>7.7.1.1. Default</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli_parser</span><span class="tok-p">()</span> <span class="tok-o">=</span> <span class="tok-k">default</span><span class="tok-p">;</span></code></pre>
@@ -1239,7 +1380,7 @@ and options for parsing a command line.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_cli_parser_ctor_copy"><a class="anchor" href="#lyra_cli_parser_ctor_copy"></a>6.7.1.2. Copy</h5>
+<h5 id="lyra_cli_parser_ctor_copy"><a class="anchor" href="#lyra_cli_parser_ctor_copy"></a>7.7.1.2. Copy</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">cli_parser</span><span class="tok-o">&amp;</span> <span class="tok-n">other</span><span class="tok-p">);</span></code></pre>
@@ -1248,9 +1389,9 @@ and options for parsing a command line.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_cli_parser_specification"><a class="anchor" href="#lyra_cli_parser_specification"></a>6.7.2. Specification</h4>
+<h4 id="lyra_cli_parser_specification"><a class="anchor" href="#lyra_cli_parser_specification"></a>7.7.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_cli_parser_add_argument"><a class="anchor" href="#lyra_cli_parser_add_argument"></a>6.7.2.1. <code>lyra::cli_parser::add_argument</code></h5>
+<h5 id="lyra_cli_parser_add_argument"><a class="anchor" href="#lyra_cli_parser_add_argument"></a>7.7.2.1. <code>lyra::cli_parser::add_argument</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli_parser</span><span class="tok-o">&amp;</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">exe_name</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">exe_name</span><span class="tok-p">);</span>
@@ -1269,7 +1410,7 @@ name (for <code>exe_name</code> parser), directly added as an argument (for
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_cli_parser_parse"><a class="anchor" href="#lyra_cli_parser_parse"></a>6.7.2.2. <code>lyra::cli_parser::parse</code></h5>
+<h5 id="lyra_cli_parser_parse"><a class="anchor" href="#lyra_cli_parser_parse"></a>7.7.2.2. <code>lyra::cli_parser::parse</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">parse_result</span> <span class="tok-n">cli_parser</span><span class="tok-o">::</span><span class="tok-n">parse</span><span class="tok-p">(</span>
@@ -1286,7 +1427,7 @@ callbacks may have been called.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_opt"><a class="anchor" href="#lyra_opt"></a>6.8. <code>lyra::opt</code></h3>
+<h3 id="lyra_opt"><a class="anchor" href="#lyra_opt"></a>7.8. <code>lyra::opt</code></h3>
 <div class="paragraph">
 <p>A parser for one option with multiple possible names. The option value(s) are
 communicated through a reference to a variable, a container, or a callback.</p>
@@ -1295,9 +1436,9 @@ communicated through a reference to a variable, a container, or a callback.</p>
 <p>Is-a <a href="#lyra_bound_parser"><code>lyra::bound_parser</code></a>.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_opt_ctor"><a class="anchor" href="#lyra_opt_ctor"></a>6.8.1. Construction</h4>
+<h4 id="lyra_opt_ctor"><a class="anchor" href="#lyra_opt_ctor"></a>7.8.1. Construction</h4>
 <div class="sect4">
-<h5 id="lyra_opt_ctor_flags"><a class="anchor" href="#lyra_opt_ctor_flags"></a>6.8.1.1. Flags</h5>
+<h5 id="lyra_opt_ctor_flags"><a class="anchor" href="#lyra_opt_ctor_flags"></a>7.8.1.1. Flags</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-kt">bool</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">);</span>
@@ -1317,7 +1458,7 @@ option is present.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_opt_ctor_values"><a class="anchor" href="#lyra_opt_ctor_values"></a>6.8.1.2. Values</h5>
+<h5 id="lyra_opt_ctor_values"><a class="anchor" href="#lyra_opt_ctor_values"></a>7.8.1.2. Values</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">T</span><span class="tok-o">&gt;</span>
@@ -1335,9 +1476,9 @@ with the value when the option is present.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_opt_specification"><a class="anchor" href="#lyra_opt_specification"></a>6.8.2. Specification</h4>
+<h4 id="lyra_opt_specification"><a class="anchor" href="#lyra_opt_specification"></a>7.8.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_opt_name"><a class="anchor" href="#lyra_opt_name"></a>6.8.2.1. <code>lyra::opt::name</code></h5>
+<h5 id="lyra_opt_name"><a class="anchor" href="#lyra_opt_name"></a>7.8.2.1. <code>lyra::opt::name</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-o">&amp;</span><span class="tok-n">opt_name</span><span class="tok-p">)</span>
@@ -1351,7 +1492,7 @@ with the value when the option is present.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_arg"><a class="anchor" href="#lyra_arg"></a>6.9. <code>lyra::arg</code></h3>
+<h3 id="lyra_arg"><a class="anchor" href="#lyra_arg"></a>7.9. <code>lyra::arg</code></h3>
 <div class="paragraph">
 <p>A parser for regular arguments, i.e. not <code>--</code> or <code>-</code> prefixed. This is simply
 a way to get values of arguments directly specified in the cli. For example:</p>
@@ -1382,7 +1523,7 @@ a way to get values of arguments directly specified in the cli. For example:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_help"><a class="anchor" href="#lyra_help"></a>6.10. <code>lyra::help</code></h3>
+<h3 id="lyra_help"><a class="anchor" href="#lyra_help"></a>7.10. <code>lyra::help</code></h3>
 <div class="paragraph">
 <p>Utility function that defines a default <code>--help</code> option. You can specify a
 <code>bool</code> flag to indicate if the help option was specified and that you could
@@ -1403,7 +1544,7 @@ and "Options, arguments" sections.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_exe_name"><a class="anchor" href="#lyra_exe_name"></a>6.11. <code>lyra::exe_name</code></h3>
+<h3 id="lyra_exe_name"><a class="anchor" href="#lyra_exe_name"></a>7.11. <code>lyra::exe_name</code></h3>
 <div class="paragraph">
 <p>Specifies the name of the executable.</p>
 </div>
@@ -1411,7 +1552,7 @@ and "Options, arguments" sections.</p>
 <p>Is-a <a href="#lyra_composable_parser"><code>lyra::composable_parser</code></a>.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_exe_name_ctor"><a class="anchor" href="#lyra_exe_name_ctor"></a>6.11.1. Construction</h4>
+<h4 id="lyra_exe_name_ctor"><a class="anchor" href="#lyra_exe_name_ctor"></a>7.11.1. Construction</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">exe_name</span><span class="tok-p">(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">)</span></code></pre>
@@ -1433,9 +1574,9 @@ when the <code>cli_parser</code> runs.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_exe_name_accessors"><a class="anchor" href="#lyra_exe_name_accessors"></a>6.11.2. Accessors</h4>
+<h4 id="lyra_exe_name_accessors"><a class="anchor" href="#lyra_exe_name_accessors"></a>7.11.2. Accessors</h4>
 <div class="sect4">
-<h5 id="lyra_exe_name_name"><a class="anchor" href="#lyra_exe_name_name"></a>6.11.2.1. <code>lyra::exe_name::name</code></h5>
+<h5 id="lyra_exe_name_name"><a class="anchor" href="#lyra_exe_name_name"></a>7.11.2.1. <code>lyra::exe_name::name</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">name</span><span class="tok-p">()</span> <span class="tok-k">const</span></code></pre>
@@ -1447,7 +1588,7 @@ value.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_exe_name_set"><a class="anchor" href="#lyra_exe_name_set"></a>6.11.2.2. <code>lyra::exe_name::set</code></h5>
+<h5 id="lyra_exe_name_set"><a class="anchor" href="#lyra_exe_name_set"></a>7.11.2.2. <code>lyra::exe_name::set</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">parser_result</span> <span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">set</span><span class="tok-p">(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">newName</span><span class="tok-p">)</span></code></pre>
@@ -1461,7 +1602,7 @@ in the bound string reference or callback.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_args"><a class="anchor" href="#lyra_args"></a>6.12. <code>lyra::args</code></h3>
+<h3 id="lyra_args"><a class="anchor" href="#lyra_args"></a>7.12. <code>lyra::args</code></h3>
 <div class="paragraph">
 <p>Transport for raw args (copied from main args, or supplied via init list).</p>
 </div>
@@ -1469,10 +1610,10 @@ in the bound string reference or callback.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_history"><a class="anchor" href="#_history"></a>7. History</h2>
+<h2 id="_history"><a class="anchor" href="#_history"></a>8. History</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_2"><a class="anchor" href="#_1_2"></a>7.1. 1.2</h3>
+<h3 id="_1_2"><a class="anchor" href="#_1_2"></a>8.1. 1.2</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -1493,11 +1634,18 @@ arguments. They follow the familiar Python <code>argparse</code> nomenclature.&#
 <li>
 <p>Improve help for arguments that specify a cardinality.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
 </li>
+<li>
+<p>Addition of more complicated use cases to demonstrate flexibility of library.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p>Continued internal clean up of code for stability and easier future
+enhancements.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
 </ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_1"><a class="anchor" href="#_1_1"></a>7.2. 1.1</h3>
+<h3 id="_1_1"><a class="anchor" href="#_1_1"></a>8.2. 1.1</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -1542,7 +1690,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>7.3. 1.0</h3>
+<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>8.3. 1.0</h3>
 <div class="paragraph">
 <p>This is the initial base version based on Clara library. Changes from that
 library:</p>
