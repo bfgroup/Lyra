@@ -120,7 +120,7 @@ namespace detail
 
 /* tag::reference[]
 
-[#lyra_parser_base]
+[#lyra_parser_result]
 = `lyra::parser_result`
 
 The result of parsing arguments.
@@ -302,7 +302,7 @@ end::reference[] */
 /* tag::reference[]
 
 [#lyra_bound_parser_help]
-=== `lyra::bound_parser::help`, `lyra""bound_parser::operator(help)`
+=== `lyra::bound_parser::help`, `lyra::bound_parser::operator(help)`
 
 [source]
 ----

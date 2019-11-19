@@ -13,7 +13,7 @@
 :source-highlighter: pygments
 :source-language: c++
 :toc: left
-:toclevels: 5
+:toclevels: 2
 :caution-caption: ⚑
 :important-caption: ‼
 :note-caption: ℹ
@@ -22,6 +22,7 @@
 :CPP: C++
 :PP: ++
 :P: +
+:tabsize: 4
 
 ifdef::backend-html5[]
 ++++
@@ -159,6 +160,14 @@ include::../examples/doc_example6.cpp[tag=part1]
 
 For either case the default, initial, value is only modified if a valid value
 is given.
+
+== Use Cases
+
+:leveloffset: +2
+
+include::../examples/doc_commands.cpp[tag=doc]
+
+:leveloffset: -2
 
 == Reference
 
