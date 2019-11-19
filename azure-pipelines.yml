@@ -58,13 +58,13 @@ stages:
           CXX: g++-4.9
           PACKAGES: g++-4.9
           CXXSTD: 11
-          VM_IMAGE: 'ubuntu-18.04'
+          VM_IMAGE: 'ubuntu-16.04'
         GCC 4.8:
           TOOLSET: gcc
           CXX: g++-4.8
           PACKAGES: g++-4.8
           CXXSTD: 11
-          VM_IMAGE: 'ubuntu-18.04'
+          VM_IMAGE: 'ubuntu-16.04'
         Clang 9:
           TOOLSET: clang
           CXX: clang++-9
