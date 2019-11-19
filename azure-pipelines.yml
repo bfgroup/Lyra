@@ -21,8 +21,6 @@ stages:
   jobs:
 
   - job: 'Linux'
-    pool:
-      vmImage: 'ubuntu-18.04'
     strategy:
       matrix:
         GCC 9:
@@ -30,102 +28,117 @@ stages:
           CXX: g++-9
           PACKAGES: g++-9
           CXXSTD: 11,14,17,2a
+          VM_IMAGE: 'ubuntu-18.04'
         GCC 8:
           TOOLSET: gcc
           CXX: g++-8
           PACKAGES: g++-8
           CXXSTD: 11,14,17,2a
+          VM_IMAGE: 'ubuntu-18.04'
         GCC 7:
           TOOLSET: gcc
           CXX: g++-7
           PACKAGES: g++-7
           CXXSTD: 11,14,17
+          VM_IMAGE: 'ubuntu-18.04'
         GCC 6:
           TOOLSET: gcc
           CXX: g++-6
           PACKAGES: g++-6
           CXXSTD: 11,14,17
+          VM_IMAGE: 'ubuntu-18.04'
         GCC 5:
           TOOLSET: gcc
           CXX: g++-5
           PACKAGES: g++-5
           CXXSTD: 11,14
+          VM_IMAGE: 'ubuntu-18.04'
         GCC 4.9:
           TOOLSET: gcc
           CXX: g++-4.9
           PACKAGES: g++-4.9
           CXXSTD: 11
+          VM_IMAGE: 'ubuntu-18.04'
         GCC 4.8:
           TOOLSET: gcc
           CXX: g++-4.8
           PACKAGES: g++-4.8
           CXXSTD: 11
-        # GCC 4.7:
-        #   TOOLSET: gcc
-        #   CXX: g++-4.7
-        #   PACKAGES: g++-4.7
-        #   CXXSTD: 11
+          VM_IMAGE: 'ubuntu-18.04'
         Clang 9:
           TOOLSET: clang
           CXX: clang++-9
           PACKAGES: clang-9
           LLVM_REPO: llvm-toolchain-xenial-9
           CXXSTD: 11,14,17,2a
+          VM_IMAGE: 'ubuntu-18.04'
         Clang 8:
           TOOLSET: clang
           CXX: clang++-8
           PACKAGES: clang-8
           LLVM_REPO: llvm-toolchain-xenial-8
           CXXSTD: 11,14,17,2a
+          VM_IMAGE: 'ubuntu-18.04'
         Clang 7:
           TOOLSET: clang
           CXX: clang++-7
           PACKAGES: clang-7
           LLVM_REPO: llvm-toolchain-xenial-7
           CXXSTD: 11,14,17,2a
+          VM_IMAGE: 'ubuntu-18.04'
         Clang 6:
           TOOLSET: clang
           CXX: clang++-6.0
           PACKAGES: clang-6.0
           LLVM_REPO: llvm-toolchain-xenial-6.0
           CXXSTD: 11,14,17,2a
+          VM_IMAGE: 'ubuntu-18.04'
         Clang 5:
           TOOLSET: clang
           CXX: clang++-5.0
           PACKAGES: clang-5.0
           LLVM_REPO: llvm-toolchain-xenial-5.0
           CXXSTD: 11,14,17
+          VM_IMAGE: 'ubuntu-18.04'
         Clang 4:
           TOOLSET: clang
           CXX: clang++-4.0
           PACKAGES: clang-4.0
           LLVM_REPO: llvm-toolchain-xenial-4.0
           CXXSTD: 11,14
+          VM_IMAGE: 'ubuntu-18.04'
         Clang 3.9:
           TOOLSET: clang
           CXX: clang++-3.9
           PACKAGES: clang-3.9
           CXXSTD: 11
+          VM_IMAGE: 'ubuntu-18.04'
         Clang 3.8:
           TOOLSET: clang
           CXX: clang++-3.8
           PACKAGES: clang-3.8
           CXXSTD: 11
+          VM_IMAGE: 'ubuntu-16.04'
         Clang 3.7:
           TOOLSET: clang
           CXX: clang++-3.7
           PACKAGES: clang-3.7
           CXXSTD: 11
+          VM_IMAGE: 'ubuntu-16.04'
         Clang 3.6:
           TOOLSET: clang
           CXX: clang++-3.6
           PACKAGES: clang-3.6
           CXXSTD: 11
+          VM_IMAGE: 'ubuntu-16.04'
         Clang 3.5:
           TOOLSET: clang
           CXX: clang++-3.5
           PACKAGES: clang-3.5
           CXXSTD: 11
+          VM_IMAGE: 'ubuntu-16.04'
+    pool:
+      vmImage: $(VM_IMAGE)
     steps:
     - bash: |
         set -e
@@ -163,19 +176,19 @@ stages:
         Xcode 11.2.1:
           TOOLSET: clang
           CXX: clang++
-          XCODE_APP: /Xcode_11.2.1.app
+          XCODE_APP: /Applications/Xcode_11.2.1.app
           VM_IMAGE: 'macOS-10.14'
           CXXSTD: 11,14,17,2a
         Xcode 11.2:
           TOOLSET: clang
           CXX: clang++
-          XCODE_APP: /Xcode_11.2.app
+          XCODE_APP: /Applications/Xcode_11.2.app
           VM_IMAGE: 'macOS-10.14'
           CXXSTD: 11,14,17,2a
         Xcode 11.1:
           TOOLSET: clang
           CXX: clang++
-          XCODE_APP: /Xcode_11.1.app
+          XCODE_APP: /Applications/Xcode_11.1.app
           VM_IMAGE: 'macOS-10.14'
           CXXSTD: 11,14,17,2a
         Xcode 11.0:
