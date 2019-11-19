@@ -22,7 +22,7 @@ stages:
 
   - job: 'Linux'
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-18.04'
     strategy:
       matrix:
         GCC 9:
@@ -160,6 +160,24 @@ stages:
   - job: 'macOS'
     strategy:
       matrix:
+        Xcode 11.2.1:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Xcode_11.2.1.app
+          VM_IMAGE: 'macOS-10.14'
+          CXXSTD: 11,14,17,2a
+        Xcode 11.2:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Xcode_11.2.app
+          VM_IMAGE: 'macOS-10.14'
+          CXXSTD: 11,14,17,2a
+        Xcode 11.1:
+          TOOLSET: clang
+          CXX: clang++
+          XCODE_APP: /Xcode_11.1.app
+          VM_IMAGE: 'macOS-10.14'
+          CXXSTD: 11,14,17,2a
         Xcode 11.0:
           TOOLSET: clang
           CXX: clang++
