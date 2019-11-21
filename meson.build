@@ -42,7 +42,8 @@ src = ['include/lyra/arg.hpp',
       'include/lyra/opt.hpp',
       'include/lyra/parser_result.hpp',
       'include/lyra/parser.hpp',
-      
+      'include/lyra/version.hpp',
+
       'include/lyra/detail/bound.hpp',
       'include/lyra/detail/choices.hpp',
       'include/lyra/detail/from_string.hpp',
