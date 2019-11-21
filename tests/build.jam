@@ -6,17 +6,18 @@
 import testing ;
 
 project /bfg_lyra_tests
-    : requirements
-        <use>/bfg_lyra
     ;
 
 for local test in [ glob *_compile_test.cpp ]
 {
-    compile $(test) ;
+    compile $(test) : requirements <use>/bfg_lyra  ;
 }
 for local test in [ glob *_run_test.cpp ]
 {
-    run $(test) ;
+    run $(test) : requirements <use>/bfg_lyra ;
 }
+
+compile-fail single_include_test.cpp : :  single_include_test_fail ;
+compile single_include_test.cpp : <include>$(BFG_LYRA_DATA)/single_include ;
 
 build-project lib_use_test ;

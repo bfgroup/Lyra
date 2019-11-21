@@ -1495,28 +1495,7 @@ with the value when the option is present.</p>
 <h3 id="lyra_arg"><a class="anchor" href="#lyra_arg"></a>7.9. <code>lyra::arg</code></h3>
 <div class="paragraph">
 <p>A parser for regular arguments, i.e. not <code>--</code> or <code>-</code> prefixed. This is simply
-a way to get values of arguments directly specified in the cli. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
-<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
-
-<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
-<span class="tok-p">{</span>
-    <span class="tok-kt">int</span> <span class="tok-n">repeat</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
-    <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">message</span><span class="tok-p">;</span>
-    <span class="tok-c1">// Ex: &lt;exe&gt; --repeat=10 &quot;Hello world.&quot;</span>
-    <span class="tok-k">auto</span> <span class="tok-n">cli</span>
-        <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">repeat</span><span class="tok-p">,</span> <span class="tok-s">&quot;-repeat&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--repeat&quot;</span><span class="tok-p">]</span>
-        <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">arg</span><span class="tok-p">(</span><span class="tok-n">message</span><span class="tok-p">,</span> <span class="tok-s">&quot;message&quot;</span><span class="tok-p">);</span>
-    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">}))</span>
-    <span class="tok-p">{</span>
-        <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">count</span><span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">count</span> <span class="tok-o">&lt;</span> <span class="tok-n">repeat</span><span class="tok-p">;</span> <span class="tok-o">++</span><span class="tok-n">count</span><span class="tok-p">)</span>
-            <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">message</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
-    <span class="tok-p">}</span>
-<span class="tok-p">}</span></code></pre>
-</div>
+a way to get values of arguments directly specified in the cli.</p>
 </div>
 <div class="paragraph">
 <p>Is-a <a href="#lyra_bound_parser"><code>lyra::bound_parser</code></a>.</p>
@@ -1630,6 +1609,10 @@ information with the <code>help::description</code> method.&#8201;&#8212;&#8201;
 <li>
 <p><strong>New</strong>: Add named methods as alternates for operators to add and specify
 arguments. They follow the familiar Python <code>argparse</code> nomenclature.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p><strong>New</strong>: Single header file alternative version of the library. For those that
+need or want such a thing.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
 </li>
 <li>
 <p>Improve help for arguments that specify a cardinality.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>

@@ -132,5 +132,15 @@ specified using the `help` parser, which just takes a boolean to bind to.
 
 == More
 
+There is a single-header version that is generated from the source files.
+You can find it at `data/single_include/lyra/lyra.hpp`. Some caveats for it:
+
+* It's not the preferred method of using the library.
+* It's not thoroughly tested.
+* It's intended for use cases like Compiler Explorer. Where it allows for
+    immediate experimentation.
+* Support for it will not be a priority.
+* Hence prefer to use the regular multi-file sources in your projects.
+
 For more information and documentation see the
 link:https://bfgroup.github.io/Lyra/[web site].

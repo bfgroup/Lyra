@@ -28,6 +28,7 @@ import project ;
 
 path-constant BFG_LYRA_ROOT : . ;
 path-constant BFG_LYRA_INCLUDE : include ;
+path-constant BFG_LYRA_DATA : data ;
 
 project /bfg_lyra
     : usage-requirements

@@ -266,6 +266,9 @@ Changes:
 * *New*: Add named methods as alternates for operators to add and specify
 	arguments. They follow the familiar Python `argparse` nomenclature.
 	-- _Rene Rivera_
+* *New*: Single header file alternative version of the library. For those that
+	need or want such a thing.
+	-- _Rene Rivera_
 * Improve help for arguments that specify a cardinality.
 	-- _Rene Rivera_
 * Addition of more complicated use cases to demonstrate flexibility of library.
