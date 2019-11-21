@@ -29,7 +29,7 @@
 # ----
 
 project('Lyra','cpp',
-        version: '1.0',
+        version: '1.2',
         default_options : ['cpp_std=c++11', 'cpp_eh=none', 'b_lto=true', 'warning_level=3'],
         license: 'BSL-1.0')
 
