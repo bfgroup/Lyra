@@ -63,7 +63,7 @@ To use, just `#include <lyra/lyra.hpp>`
 
 A parser for a single option can be created like this:
 
-[source]
+[source,cpp]
 ----
 int width = 0;
 auto cli = cli_parser()
@@ -74,7 +74,7 @@ auto cli = cli_parser()
 
 You can use this parser directly like this:
 
-[source]
+[source,cpp]
 ----
 auto result = cli.parse( { argc, argv } );
 if ( !result )
@@ -90,7 +90,7 @@ Note that exceptions are not used for error handling.
 
 You can combine parsers by composing with `|`, like this:
 
-[source]
+[source,cpp]
 ----
 int width = 0;
 std::string name;
