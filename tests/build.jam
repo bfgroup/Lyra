@@ -6,6 +6,7 @@
 import testing ;
 
 project /bfg_lyra_tests
+	: requirements <toolset>clang:<cxxflags>-fcolor-diagnostics
     ;
 
 for local test in [ glob *_compile_test.cpp ]

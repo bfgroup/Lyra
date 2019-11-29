@@ -64,9 +64,6 @@ class arg : public bound_parser<arg>
 
 		auto remainingTokens = tokens;
 		auto const& token = *remainingTokens;
-		if (token.type != detail::token_type::argument)
-			return parse_result::ok(detail::parse_state(
-				parser_result_type::no_match, remainingTokens));
 
 		auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());
 
