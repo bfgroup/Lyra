@@ -3,10 +3,13 @@
 # (See accompanying file LICENSE.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
+local lyra_headers = [ glob $(BFG_LYRA_INCLUDE)/lyra/*.hpp $(BFG_LYRA_INCLUDE)/lyra/*/*.hpp ] ;
+
 make lyra.hpp
 	: $(BFG_LYRA_INCLUDE)/lyra/lyra.hpp
 	: @gen_lyra_hpp
-	: <dependency>$(BFG_LYRA_ROOT)/tools/gen_single_include.py
+	:	<dependency>$(BFG_LYRA_ROOT)/tools/gen_single_include.py
+		<dependency>$(lyra_headers)
 	;
 
 rule gen_lyra_hpp

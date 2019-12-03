@@ -114,6 +114,8 @@ namespace detail
 			, name(n)
 		{
 		}
+
+		explicit operator bool() const { return type != token_type::unknown; }
 	};
 
 	// Abstracts iterators into args with option arguments uniformly handled
@@ -124,113 +126,142 @@ namespace detail
 		explicit token_iterator(
 			Span const& args, std::string const& dels,
 			std::string const& opt_prefix)
-			: token_iterator(args.begin(), args.end(), dels, opt_prefix)
+			: delimiters(dels)
+			, option_prefix(opt_prefix)
+			, args_i(args.begin())
+			, args_e(args.end())
+			, args_i_sub(1)
 		{
 		}
 
-		token_iterator(
-			std::vector<std::string>::const_iterator it,
-			std::vector<std::string>::const_iterator itEnd,
-			std::string const& dels, std::string const& opt_prefix)
-			: it(it)
-			, itEnd(itEnd)
-			, delimiters(dels)
-			, optionPrefix(opt_prefix)
-		{
-			loadBuffer();
-		}
+		explicit operator bool() const noexcept { return args_i != args_e; }
 
-		explicit operator bool() const
+		token_iterator& pop(const token& arg_or_opt)
 		{
-			return !m_tokenBuffer.empty() || it != itEnd;
-		}
-
-		auto count() const -> size_t
-		{
-			return m_tokenBuffer.size() + (itEnd - it);
-		}
-
-		// UB if boot(*this) == false.
-		auto operator*() const -> token { return *(operator->()); }
-
-		auto operator-> () const -> token const*
-		{
-			return !m_tokenBuffer.empty() ? &m_tokenBuffer.front() : nullptr;
-		}
-
-		auto operator++() -> token_iterator&
-		{
-			if (m_tokenBuffer.size() >= 2)
+			if (arg_or_opt.type == token_type::option
+				&& has_short_option_prefix())
 			{
-				m_tokenBuffer.erase(m_tokenBuffer.begin());
+				// Multiple short options argument (-abc). Advance to the next
+				// short option possible, or the next arg entirely.
+				if (++args_i_sub >= args_i->size())
+				{
+					++args_i;
+					args_i_sub = 1;
+				}
 			}
 			else
 			{
-				if (it != itEnd) ++it;
-				loadBuffer();
+				// Regular arg or long option, just advance to the next arg.
+				++args_i;
+				args_i_sub = 1;
 			}
 			return *this;
 		}
 
-		private:
-		std::vector<std::string>::const_iterator it;
-		std::vector<std::string>::const_iterator itEnd;
-		std::vector<token> m_tokenBuffer;
-		std::string delimiters;
-		std::string optionPrefix;
-
-		void loadBuffer()
+		token_iterator& pop(const token& opt, const token& val)
 		{
-			m_tokenBuffer.resize(0);
-
-			// Skip any empty strings
-			while (it != itEnd && it->empty()) ++it;
-
-			if (it != itEnd)
-			{
-				auto const& next = *it;
-				if (isOptPrefix(next[0]))
-				{
-					auto delimiterPos = next.find_first_of(delimiters);
-					if (delimiterPos != std::string::npos)
-					{
-						m_tokenBuffer.emplace_back(
-							token_type::option, next.substr(0, delimiterPos));
-						m_tokenBuffer.emplace_back(
-							token_type::argument,
-							next.substr(delimiterPos + 1));
-					}
-					else
-					{
-						if (!isOptPrefix(next[1]) && next.size() > 2)
-						{
-							std::string opt;
-							opt += optionPrefix[0];
-							opt += " ";
-							for (size_t i = 1; i < next.size(); ++i)
-							{
-								opt[1] = next[i];
-								m_tokenBuffer.emplace_back(
-									token_type::option, opt);
-							}
-						}
-						else
-						{
-							m_tokenBuffer.emplace_back(
-								token_type::option, next);
-						}
-					}
-				}
-				else
-				{
-					m_tokenBuffer.emplace_back(token_type::argument, next);
-				}
-			}
+			if (has_short_option_prefix() && args_i->size() > 2)
+				++args_i;
+			else if (!has_value_delimiter())
+				args_i += 2;
+			else
+				++args_i;
+			args_i_sub = 1;
+			return *this;
 		}
 
-		inline auto isOptPrefix(char c) -> bool
+		// Current arg looks like an option, short or long.
+		bool has_option_prefix() const noexcept
 		{
-			auto r = optionPrefix.find(c) != std::string::npos;
+			return (args_i != args_e) && is_opt_prefix((*args_i)[0]);
+		}
+
+		// Current arg looks like a short option (-o).
+		bool has_short_option_prefix() const noexcept
+		{
+			return (args_i != args_e) && is_opt_prefix((*args_i)[0])
+				&& !is_opt_prefix((*args_i)[1]);
+		}
+
+		// Current arg looks like a long option (--option).
+		bool has_long_option_prefix() const noexcept
+		{
+			return (args_i != args_e) && is_opt_prefix((*args_i)[0])
+				&& is_opt_prefix((*args_i)[1]);
+		}
+
+		// Current arg looks like a delimited option+value (--option=x, -o=x)
+		bool has_value_delimiter() const noexcept
+		{
+			return (args_i != args_e)
+				&& (args_i->find_first_of(delimiters) != std::string::npos);
+		}
+
+		// Extract the current option token.
+		token option() const
+		{
+			if (has_long_option_prefix())
+			{
+				if (has_value_delimiter())
+					// --option=x
+					return token(
+						token_type::option,
+						args_i->substr(0, args_i->find_first_of(delimiters)));
+				else
+					// --option
+					return token(token_type::option, *args_i);
+			}
+			else if (has_short_option_prefix())
+			{
+				// -o (or possibly -abco)
+				token t { token_type::option, option_prefix.substr(0,1) };
+				t.name += (*args_i)[args_i_sub];
+				return t;
+			}
+			return token();
+		}
+
+		// Extracts the option value if available. This will do any needed
+		// lookahead through the args for the value.
+		token value() const
+		{
+			if (has_option_prefix() && has_value_delimiter())
+				// --option=x, -o=x
+				return token(
+					token_type::argument,
+					args_i->substr(args_i->find_first_of(delimiters) + 1));
+			else if (has_long_option_prefix())
+			{
+				if (args_i + 1 != args_e)
+					// --option x
+					return token(token_type::argument, *(args_i + 1));
+			}
+			else if (has_short_option_prefix())
+			{
+				if (args_i_sub + 1 < args_i->size())
+					// -ox
+					return token(
+						token_type::argument, args_i->substr(args_i_sub + 1));
+				else if (args_i + 1 != args_e)
+					// -o x
+					return token(token_type::argument, *(args_i + 1));
+			}
+			return token();
+		}
+
+		token argument() const { return token(token_type::argument, *args_i); }
+
+		private:
+		std::string delimiters;
+		std::string option_prefix;
+
+		std::vector<std::string>::const_iterator args_i;
+		std::vector<std::string>::const_iterator args_e;
+		std::string::size_type args_i_sub;
+
+		inline bool is_opt_prefix(char c) const noexcept
+		{
+			auto r = option_prefix.find(c) != std::string::npos;
 			return r;
 		}
 	};

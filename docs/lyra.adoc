@@ -2,7 +2,7 @@
 :copyright: Copyright 2019 Rene Rivera
 :author: Rene Rivera
 :email: grafikrobot@gmail.com
-:revnumber: 1.2
+:revnumber: 1.3
 :version-label!:
 :reproducible:
 :nofooter:
@@ -223,6 +223,25 @@ include::../examples/doc_example6.cpp[tag=part1]
 For either case the default, initial, value is only modified if a valid value
 is given.
 
+== Option Values
+
+For options that are bound to values, and hence that accept a user value on the
+command line, various styles of option+value syntax is allowed for the user as
+follows:
+
+[cols="3*"]
+|===
+
+|Long options
+|`opt(v, "value").name("--option")`
+|`--option VALUE`, `--option=VALUE`
+
+|Short options
+|`opt(v, "value").name("-o")`
+|`-o VALUE`, `--o=VALUE`, `-oVALUE`
+
+|===
+
 == Use Cases
 
 :leveloffset: +2
@@ -252,6 +271,27 @@ include::../include/lyra/args.hpp[tag=reference]
 :leveloffset: -2
 
 == History
+
+=== 1.3
+
+Changes:
+
+* *New*: Accept `-o2` style option+value arguments.
+	-- _Rene Rivera_
+* Fixed inconsistent handling of option values that look like options, like
+	negative numbers.
+	-- _Rene Rivera_
+* Rewrote argument token parsing for clarity, to avoid extra token buffer
+	allocation, and to allow for more option & value variations.
+	-- _Rene Rivera_
+* Tested with
+	Visual Studio 2015, VS 2017, VS 2019,
+	MinGW-64 (gcc 8.1),
+	Linux (clang 3.5, 3.6, 3.7, 3.8, 3.9, 4, 5, 6, 7, 8, 9; gcc 4.8, 4.9, 5,
+	6, 7, 8, 9),
+	Xcode (9.0, 9.0.1, 9.1, 9.2, 9.3, 9.3.1, 9.4, 9.4.1, 10.0, 10.1, 10.2,
+	10.2.1, 10.3, 11.0, 11.1, 11.2, 11.2.1),
+	on Azure Pipelines.
 
 === 1.2
 

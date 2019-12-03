@@ -146,7 +146,7 @@ class cli_parser : parser_base
 				return parse_result::runtimeError(
 					result.value(),
 					"Unrecognized token: "
-						+ result.value().remainingTokens()->name);
+						+ result.value().remainingTokens().argument().name);
 		}
 		// Check missing required options. For bounded arguments we check
 		// bound min and max bounds against what we parsed. For the loosest

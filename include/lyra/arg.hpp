@@ -62,8 +62,7 @@ class arg : public bound_parser<arg>
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
 
-		auto remainingTokens = tokens;
-		auto const& token = *remainingTokens;
+		auto const& token = tokens.argument();
 
 		auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());
 
@@ -73,12 +72,16 @@ class arg : public bound_parser<arg>
 			if (!choice_result) return parse_result(choice_result);
 		}
 
-		auto result = valueRef->setValue(remainingTokens->name);
+		auto result = valueRef->setValue(token.name);
 		if (!result)
 			return parse_result(result);
 		else
+		{
+			auto remainingTokens = tokens;
+			remainingTokens.pop(token);
 			return parse_result::ok(detail::parse_state(
-				parser_result_type::matched, ++remainingTokens));
+				parser_result_type::matched, remainingTokens));
+		}
 	}
 
 	virtual std::unique_ptr<parser_base> clone() const override

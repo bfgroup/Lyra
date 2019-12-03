@@ -118,14 +118,14 @@ class opt : public bound_parser<opt>
 		if (!validationResult) return parse_result(validationResult);
 
 		auto remainingTokens = tokens;
-		if (remainingTokens
-			&& remainingTokens->type == detail::token_type::option)
+		if (remainingTokens && remainingTokens.has_option_prefix())
 		{
-			auto const& token = *remainingTokens;
+			auto const& token = remainingTokens.option();
 			if (isMatch(token.name, customize))
 			{
 				if (m_ref->isFlag())
 				{
+					remainingTokens.pop(token);
 					auto flagRef
 						= static_cast<detail::BoundFlagRefBase*>(m_ref.get());
 					auto result = flagRef->setFlag(true);
@@ -136,14 +136,14 @@ class opt : public bound_parser<opt>
 				}
 				else
 				{
-					auto valueRef
-						= static_cast<detail::BoundValueRefBase*>(m_ref.get());
-					++remainingTokens;
-					if (!remainingTokens)
+					auto const& argToken = remainingTokens.value();
+					if (argToken.type == detail::token_type::unknown)
 						return parse_result::runtimeError(
 							{ parser_result_type::no_match, remainingTokens },
 							"Expected argument following " + token.name);
-					auto const& argToken = *remainingTokens;
+					remainingTokens.pop(token, argToken);
+					auto valueRef
+						= static_cast<detail::BoundValueRefBase*>(m_ref.get());
 					if (value_choices)
 					{
 						auto choice_result
@@ -157,7 +157,7 @@ class opt : public bound_parser<opt>
 							result.value(), remainingTokens));
 				}
 				return parse_result::ok(detail::parse_state(
-					parser_result_type::matched, ++remainingTokens));
+					parser_result_type::matched, remainingTokens));
 			}
 		}
 		return parse_result::ok(
