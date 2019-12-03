@@ -9,8 +9,6 @@ project /bfg_lyra_tests
 	: requirements <toolset>clang:<cxxflags>-fcolor-diagnostics
     ;
 
-build-project ../data ;
-
 for local test in [ glob *_compile_test.cpp ]
 {
     compile $(test) : requirements <use>/bfg_lyra  ;
