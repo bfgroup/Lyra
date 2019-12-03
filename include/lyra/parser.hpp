@@ -106,7 +106,7 @@ namespace detail
 		}
 
 		// If zero or more are accepted, it's optional.
-		bool is_optional() const { return (minimum == 0) && (maximum >= 0); }
+		bool is_optional() const { return (minimum == 0); }
 
 		// Anything that doesn't have an upper bound is considered unbounded.
 		bool is_unbounded() const { return (maximum == 0); }

@@ -158,7 +158,7 @@ namespace detail
 			return *this;
 		}
 
-		token_iterator& pop(const token& opt, const token& val)
+		token_iterator& pop(const token& /* opt */, const token& /* val */)
 		{
 			if (has_short_option_prefix() && args_i->size() > 2)
 				++args_i;
@@ -214,7 +214,7 @@ namespace detail
 			else if (has_short_option_prefix())
 			{
 				// -o (or possibly -abco)
-				token t { token_type::option, option_prefix.substr(0,1) };
+				token t { token_type::option, option_prefix.substr(0, 1) };
 				t.name += (*args_i)[args_i_sub];
 				return t;
 			}

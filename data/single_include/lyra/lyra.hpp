@@ -956,7 +956,7 @@ namespace detail
 			return *this;
 		}
 
-		token_iterator& pop(const token& opt, const token& val)
+		token_iterator& pop(const token& /* opt */, const token& /* val */)
 		{
 			if (has_short_option_prefix() && args_i->size() > 2)
 				++args_i;
@@ -1012,7 +1012,7 @@ namespace detail
 			else if (has_short_option_prefix())
 			{
 				// -o (or possibly -abco)
-				token t { token_type::option, option_prefix.substr(0,1) };
+				token t { token_type::option, option_prefix.substr(0, 1) };
 				t.name += (*args_i)[args_i_sub];
 				return t;
 			}
@@ -1159,7 +1159,7 @@ namespace detail
 		}
 
 		// If zero or more are accepted, it's optional.
-		bool is_optional() const { return (minimum == 0) && (maximum >= 0); }
+		bool is_optional() const { return (minimum == 0); }
 
 		// Anything that doesn't have an upper bound is considered unbounded.
 		bool is_unbounded() const { return (maximum == 0); }
