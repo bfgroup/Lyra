@@ -278,11 +278,15 @@ Changes:
 
 * *New*: Accept `-o2` style option+value arguments.
 	-- _Rene Rivera_
+* *New*: Accept `-abc` option name spelling as shorthand for `-a`, `-b`, `-c`.
+	-- _Rene Rivera_
 * Fixed inconsistent handling of option values that look like options, like
 	negative numbers.
 	-- _Rene Rivera_
 * Rewrote argument token parsing for clarity, to avoid extra token buffer
 	allocation, and to allow for more option & value variations.
+	-- _Rene Rivera_
+* Fixed allowing junk extra characters after a non-string option value.
 	-- _Rene Rivera_
 * Tested with
 	Visual Studio 2015, VS 2017, VS 2019,

@@ -1517,7 +1517,8 @@ with the value when the option is present.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Add a spelling for the option of the form <code>--&lt;name&gt;</code> or <code>-n</code>.</p>
+<p>Add a spelling for the option of the form <code>--&lt;name&gt;</code> or <code>-n</code>.
+One can add multiple short spellings at once with <code>-abc</code>.</p>
 </div>
 </div>
 </div>
@@ -1633,12 +1634,18 @@ in the bound string reference or callback.</p>
 <p><strong>New</strong>: Accept <code>-o2</code> style option+value arguments.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
 </li>
 <li>
+<p><strong>New</strong>: Accept <code>-abc</code> option name spelling as shorthand for <code>-a</code>, <code>-b</code>, <code>-c</code>.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
 <p>Fixed inconsistent handling of option values that look like options, like
 negative numbers.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
 </li>
 <li>
 <p>Rewrote argument token parsing for clarity, to avoid extra token buffer
 allocation, and to allow for more option &amp; value variations.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p>Fixed allowing junk extra characters after a non-string option value.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
 </li>
 <li>
 <p>Tested with

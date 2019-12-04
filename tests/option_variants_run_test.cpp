@@ -15,9 +15,11 @@ int main()
 	bool a = false, b = false, c = false;
 	int x = 10;
 	float y = 3.14f;
+	bool sdf = false;
 	auto cli = opt(a)["-a"]["--flag-a"] | opt(b)["-b"]["--flag-b"]
 		| opt(c)["-c"]["--flag-c"] | opt(x, "int-x")["-x"]["--int-x"]
-		| opt(y, "float-y")["-y"]["--float-y"];
+		| opt(y, "float-y")["-y"]["--float-y"]
+		| opt(sdf)["-sdf"];
 
 	a = false, b = false, c = false;
 	test(REQUIRE(
@@ -53,6 +55,9 @@ int main()
 	x = 0;
 	test(REQUIRE(!cli.parse({ "TestApp", "-x", "3garbage" })));
 	test(REQUIRE(x == 0));
+	test(REQUIRE(cli.parse({ "TestApp", "-s" })));
+	test(REQUIRE(cli.parse({ "TestApp", "-d" })));
+	test(REQUIRE(cli.parse({ "TestApp", "-f" })));
 
 	return test;
 }

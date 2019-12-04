@@ -272,11 +272,16 @@ lyra::opt& lyra::opt::operator[](const std::string &optName)
 ----
 
 Add a spelling for the option of the form `--<name>` or `-n`.
+One can add multiple short spellings at once with `-abc`.
 
 end::reference[] */
 inline opt& opt::name(const std::string& opt_name)
 {
-	opt_names.push_back(opt_name);
+	if (opt_name.size() > 2 && opt_name[0] != opt_name[1])
+		for (auto o : opt_name.substr(1))
+			opt_names.push_back(std::string(1, opt_name[0]) + o);
+	else
+		opt_names.push_back(opt_name);
 	return *this;
 }
 inline opt& opt::operator[](const std::string& opt_name)
