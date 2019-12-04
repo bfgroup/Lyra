@@ -44,6 +44,15 @@ int main()
 	x = 0;
 	test(REQUIRE(!cli.parse({ "TestApp", "--int-x3" })));
 	test(REQUIRE(x == 0));
+	x = 0;
+	test(REQUIRE(!cli.parse({ "TestApp", "-x3garbage" })));
+	test(REQUIRE(x == 0));
+	x = 0;
+	test(REQUIRE(!cli.parse({ "TestApp", "-x=3garbage" })));
+	test(REQUIRE(x == 0));
+	x = 0;
+	test(REQUIRE(!cli.parse({ "TestApp", "-x", "3garbage" })));
+	test(REQUIRE(x == 0));
 
 	return test;
 }

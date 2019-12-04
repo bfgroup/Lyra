@@ -56,8 +56,10 @@ namespace detail
 	{
 		std::stringstream ss;
 		ss << source;
-		ss >> target;
-		return !ss.fail();
+		T temp;
+		ss >> temp;
+		if (!ss.fail() && ss.eof()) { target = temp; return true; }
+		return false;
 	}
 
 	template <typename S, typename... C>
