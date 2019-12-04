@@ -27,17 +27,23 @@ int main()
 	test(REQUIRE(cli.parse({ "TestApp", "-abc", "-x", "3", "-y", "6.6" })));
 	test(REQUIRE(a))(REQUIRE(b))(REQUIRE(c));
 	x = 0;
-	test(REQUIRE(cli.parse({ "TestApp", "-x", "3" })))(REQUIRE(x == 3));
+	test(REQUIRE(cli.parse({ "TestApp", "-x", "3" })));
+	test(REQUIRE(x == 3));
 	x = 0;
-	test(REQUIRE(cli.parse({ "TestApp", "-x=3" })))(REQUIRE(x == 3));
+	test(REQUIRE(cli.parse({ "TestApp", "-x=3" })));
+	test(REQUIRE(x == 3));
 	x = 0;
-	test(REQUIRE(cli.parse({ "TestApp", "-x3" })))(REQUIRE(x == 3));
+	test(REQUIRE(cli.parse({ "TestApp", "-x3" })));
+	test(REQUIRE(x == 3));
 	x = 0;
-	test(REQUIRE(cli.parse({ "TestApp", "--int-x", "3" })))(REQUIRE(x == 3));
+	test(REQUIRE(cli.parse({ "TestApp", "--int-x", "3" })));
+	test(REQUIRE(x == 3));
 	x = 0;
-	test(REQUIRE(cli.parse({ "TestApp", "--int-x=3" })))(REQUIRE(x == 3));
+	test(REQUIRE(cli.parse({ "TestApp", "--int-x=3" })));
+	test(REQUIRE(x == 3));
 	x = 0;
-	test(REQUIRE(!cli.parse({ "TestApp", "--int-x3" })))(REQUIRE(x == 0));
+	test(REQUIRE(!cli.parse({ "TestApp", "--int-x3" })));
+	test(REQUIRE(x == 0));
 
 	return test;
 }
