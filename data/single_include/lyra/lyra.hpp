@@ -7,29 +7,14 @@
 #ifndef LYRA_LYRA_HPP
 #define LYRA_LYRA_HPP
 
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_ARG_HPP
 #define LYRA_ARG_HPP
 
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_PARSER_HPP
 #define LYRA_PARSER_HPP
 
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_ARGS_HPP
 #define LYRA_ARGS_HPP
@@ -51,24 +36,20 @@ Transport for raw args (copied from main args, or supplied via init list).
 class args
 {
 	public:
-	// Construct from usual main() function arguments.
 	args(int argc, char const* const* argv)
 		: m_exeName(argv[0])
 		, m_args(argv + 1, argv + argc)
 	{
 	}
 
-	// Construct directly from an initializer '{}'.
 	args(std::initializer_list<std::string> args)
 		: m_exeName(*args.begin())
 		, m_args(args.begin() + 1, args.end())
 	{
 	}
 
-	// The executable name taken from argument zero.
 	std::string exe_name() const { return m_exeName; }
 
-	// Arguments, excluding the exe name.
 	std::vector<std::string>::const_iterator begin() const
 	{
 		return m_args.begin();
@@ -86,38 +67,18 @@ class args
 } // namespace lyra
 
 #endif
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_DETAIL_BOUND_HPP
 #define LYRA_DETAIL_BOUND_HPP
 
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_DETAIL_INVOKE_LAMBDA_HPP
 #define LYRA_DETAIL_INVOKE_LAMBDA_HPP
 
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_DETAIL_PARSE_HPP
 #define LYRA_DETAIL_PARSE_HPP
 
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_DETAIL_FROM_STRING_HPP
 #define LYRA_DETAIL_FROM_STRING_HPP
@@ -220,20 +181,10 @@ namespace detail
 } // namespace lyra
 
 #endif
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_PARSER_RESULT_HPP
 #define LYRA_PARSER_RESULT_HPP
 
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_DETAIL_RESULT_HPP
 #define LYRA_DETAIL_RESULT_HPP
@@ -338,7 +289,6 @@ namespace detail
 		{
 		}
 
-		// With-value results..
 
 		static basic_result ok(value_type const& val)
 		{
@@ -372,7 +322,6 @@ namespace detail
 		{
 		}
 
-		// Value-less results.. (only kind as void is a value-less type)
 
 		static basic_result ok() { return basic_result(result_base::Ok); }
 
@@ -397,7 +346,6 @@ namespace detail
 namespace lyra
 {
 
-// enum of result types from a parse
 enum class parser_result_type
 {
 	matched,
@@ -408,7 +356,6 @@ enum class parser_result_type
 
 using result = detail::basic_result<void>;
 
-// Result type for parser operation
 using parser_result = detail::basic_result<parser_result_type>;
 
 } // namespace lyra
@@ -435,11 +382,6 @@ namespace detail
 } // namespace lyra
 
 #endif
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_DETAIL_UNARY_LAMBDA_TRAITS_HPP
 #define LYRA_DETAIL_UNARY_LAMBDA_TRAITS_HPP
@@ -450,8 +392,6 @@ namespace lyra
 {
 namespace detail
 {
-	// Traits for extracting arg and return type of lambdas (for single argument
-	// lambdas)
 	template <typename L>
 	struct unary_lambda_traits : unary_lambda_traits<decltype(&L::operator())>
 	{
@@ -647,11 +587,6 @@ namespace detail
 } // namespace lyra
 
 #endif
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_DETAIL_CHOICES_HPP
 #define LYRA_DETAIL_CHOICES_HPP
@@ -682,7 +617,6 @@ namespace detail
 	template <typename T>
 	struct choices_set : choices_base
 	{
-		// The allowed values.
 		std::vector<T> values;
 
 		template <typename... Vals>
@@ -691,8 +625,6 @@ namespace detail
 		{
 		}
 
-		// Checks if the given string val exists in the set of
-		// values. Returns a parsing error if the value is not present.
 		parser_result contains_value(std::string const& val) const override
 		{
 			T value;
@@ -707,14 +639,12 @@ namespace detail
 			{
 				return parser_result::ok(parser_result_type::matched);
 			}
-			// We consider not finding a choice a parse error.
 			return parser_result::runtimeError(
 				parser_result_type::no_match,
 				"Value '" + val + "' not expected. Allowed values are: "
 					+ this->to_string());
 		}
 
-		// Returns a comma separated list of the allowed values.
 		std::string to_string() const
 		{
 			std::string result;
@@ -773,8 +703,6 @@ namespace detail
 		{
 		}
 
-		// Checks if the given string val exists in the set of
-		// values. Returns a parsing error if the value is not present.
 		parser_result contains_value(std::string const& val) const override
 		{
 			value_type value;
@@ -788,7 +716,6 @@ namespace detail
 			{
 				return parser_result::ok(parser_result_type::matched);
 			}
-			// We consider not finding a choice a parse error.
 			return parser_result::runtimeError(
 				parser_result_type::no_match,
 				"Value '" + val + "' not expected.");
@@ -798,11 +725,6 @@ namespace detail
 } // namespace lyra
 
 #endif
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_DETAIL_TOKENS_HPP
 #define LYRA_DETAIL_TOKENS_HPP
@@ -814,9 +736,6 @@ namespace lyra
 {
 namespace detail
 {
-	// Wraps a token coming from a token stream. These may not directly
-	// correspond to strings as a single string may encode an option + its
-	// argument if the : or = form is used
 	enum class token_type
 	{
 		unknown,
@@ -896,7 +815,6 @@ namespace detail
 		size_type len;
 	};
 
-	// using token_name = basic_token_name<std::string::value_type>;
 	using token_name = std::string;
 
 	struct token
@@ -918,7 +836,6 @@ namespace detail
 		explicit operator bool() const { return type != token_type::unknown; }
 	};
 
-	// Abstracts iterators into args with option arguments uniformly handled
 	class token_iterator
 	{
 		public:
@@ -941,8 +858,6 @@ namespace detail
 			if (arg_or_opt.type == token_type::option
 				&& has_short_option_prefix())
 			{
-				// Multiple short options argument (-abc). Advance to the next
-				// short option possible, or the next arg entirely.
 				if (++args_i_sub >= args_i->size())
 				{
 					++args_i;
@@ -951,7 +866,6 @@ namespace detail
 			}
 			else
 			{
-				// Regular arg or long option, just advance to the next arg.
 				++args_i;
 				args_i_sub = 1;
 			}
@@ -970,50 +884,42 @@ namespace detail
 			return *this;
 		}
 
-		// Current arg looks like an option, short or long.
 		bool has_option_prefix() const noexcept
 		{
 			return (args_i != args_e) && is_opt_prefix((*args_i)[0]);
 		}
 
-		// Current arg looks like a short option (-o).
 		bool has_short_option_prefix() const noexcept
 		{
 			return (args_i != args_e) && is_opt_prefix((*args_i)[0])
 				&& !is_opt_prefix((*args_i)[1]);
 		}
 
-		// Current arg looks like a long option (--option).
 		bool has_long_option_prefix() const noexcept
 		{
 			return (args_i != args_e) && is_opt_prefix((*args_i)[0])
 				&& is_opt_prefix((*args_i)[1]);
 		}
 
-		// Current arg looks like a delimited option+value (--option=x, -o=x)
 		bool has_value_delimiter() const noexcept
 		{
 			return (args_i != args_e)
 				&& (args_i->find_first_of(delimiters) != std::string::npos);
 		}
 
-		// Extract the current option token.
 		token option() const
 		{
 			if (has_long_option_prefix())
 			{
 				if (has_value_delimiter())
-					// --option=x
 					return token(
 						token_type::option,
 						args_i->substr(0, args_i->find_first_of(delimiters)));
 				else
-					// --option
 					return token(token_type::option, *args_i);
 			}
 			else if (has_short_option_prefix())
 			{
-				// -o (or possibly -abco)
 				token t { token_type::option, option_prefix.substr(0, 1) };
 				t.name += (*args_i)[args_i_sub];
 				return t;
@@ -1021,29 +927,23 @@ namespace detail
 			return token();
 		}
 
-		// Extracts the option value if available. This will do any needed
-		// lookahead through the args for the value.
 		token value() const
 		{
 			if (has_option_prefix() && has_value_delimiter())
-				// --option=x, -o=x
 				return token(
 					token_type::argument,
 					args_i->substr(args_i->find_first_of(delimiters) + 1));
 			else if (has_long_option_prefix())
 			{
 				if (args_i + 1 != args_e)
-					// --option x
 					return token(token_type::argument, *(args_i + 1));
 			}
 			else if (has_short_option_prefix())
 			{
 				if (args_i_sub + 1 < args_i->size())
-					// -ox
 					return token(
 						token_type::argument, args_i->substr(args_i_sub + 1));
 				else if (args_i + 1 != args_e)
-					// -o x
 					return token(token_type::argument, *(args_i + 1));
 			}
 			return token();
@@ -1160,15 +1060,12 @@ namespace detail
 		{
 		}
 
-		// If zero or more are accepted, it's optional.
 		bool is_optional() const { return (minimum == 0); }
 
-		// Anything that doesn't have an upper bound is considered unbounded.
 		bool is_unbounded() const { return (maximum == 0); }
 
 		bool is_bounded() const { return !is_unbounded(); }
 
-		// If one or more values are expected, it's required.
 		bool is_required() const { return (minimum > 0); }
 	};
 } // namespace detail
@@ -1249,7 +1146,6 @@ class composable_parser : public parser_base
 {
 };
 
-// Common code and state for args and Opts
 /* tag::reference[]
 
 [#lyra_bound_parser]
@@ -1588,20 +1484,10 @@ class arg : public bound_parser<arg>
 } // namespace lyra
 
 #endif
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_CLI_PARSER_HPP
 #define LYRA_CLI_PARSER_HPP
 
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_EXE_NAME_HPP
 #define LYRA_EXE_NAME_HPP
@@ -1635,8 +1521,6 @@ class exe_name : public composable_parser<exe_name>
 	std::string name() const;
 	parser_result set(std::string const& newName);
 
-	// The exe name is not parsed out of the normal tokens, but is handled
-	// specially
 	virtual parse_result parse(
 		std::string const&, detail::token_iterator const& tokens,
 		parser_customization const&) const override
@@ -1780,29 +1664,23 @@ class cli_parser : parser_base
 	public:
 	cli_parser() = default;
 
-	// Copy construction, needs to copy the exe name and the composed parsers.
 	cli_parser(const cli_parser& other);
 
-	// Compose the `exe_name` parser.
 	cli_parser& add_argument(exe_name const& exe_name);
 	cli_parser& operator|=(exe_name const& exe_name);
 
-	// Compose a regular parser.
 	cli_parser& add_argument(parser_base const& p);
 	cli_parser& operator|=(parser_base const& p);
 
-	// Compose the parsers from another `cli_parser`.
 	cli_parser& add_argument(cli_parser const& other);
 	cli_parser& operator|=(cli_parser const& other);
 
-	// Concat composition.
 	template <typename T>
 	cli_parser operator|(T const& other) const
 	{
 		return cli_parser(*this) |= other;
 	}
 
-	// Stream out generates the help output.
 	friend auto operator<<(std::ostream& os, cli_parser const& parser)
 		-> std::ostream&
 	{
@@ -1810,15 +1688,12 @@ class cli_parser : parser_base
 		return os;
 	}
 
-	// Parse from arguments.
 	parse_result parse(
 		args const& args,
 		parser_customization const& customize
 		= default_parser_customization()) const;
 
-	// Internal..
 
-	// Return a container of the individual help text for the composed parsers.
 	virtual help_text get_help_text() const override
 	{
 		help_text text;
@@ -1889,10 +1764,6 @@ class cli_parser : parser_base
 					"Unrecognized token: "
 						+ result.value().remainingTokens().argument().name);
 		}
-		// Check missing required options. For bounded arguments we check
-		// bound min and max bounds against what we parsed. For the loosest
-		// required arguments we check for only the minimum. As the upper
-		// bound could be infinite.
 		for (auto& parseInfo : parseInfos)
 		{
 			auto parser_cardinality = parseInfo.parser->cardinality();
@@ -2002,7 +1873,6 @@ inline cli_parser::cli_parser(const cli_parser& other)
 
 end::reference[] */
 
-// ==
 
 /* tag::reference[]
 [#lyra_cli_parser_add_argument]
@@ -2090,20 +1960,10 @@ cli_parser::parse(args const& args, parser_customization const& customize) const
 } // namespace lyra
 
 #endif
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_HELP_HPP
 #define LYRA_HELP_HPP
 
-// Copyright 2018-2019 Rene Rivera
-// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_OPT_HPP
 #define LYRA_OPT_HPP
@@ -2129,14 +1989,12 @@ class opt : public bound_parser<opt>
 	std::vector<std::string> opt_names;
 
 	public:
-	// Flag option ctors..
 
 	explicit opt(bool& ref);
 
 	template <typename LambdaT>
 	explicit opt(LambdaT const& ref);
 
-	// Value option ctors..
 
 	template <typename T>
 	opt(T& ref, std::string const& hint);
@@ -2144,12 +2002,10 @@ class opt : public bound_parser<opt>
 	template <typename LambdaT>
 	opt(LambdaT const& ref, std::string const& hint);
 
-	// Option specifications..
 
 	opt& name(const std::string& opt_name);
 	opt& operator[](std::string const& opt_name);
 
-	// Internal..
 
 	virtual std::string get_usage_text() const override
 	{
@@ -2457,10 +2313,6 @@ inline help & help::description(const std::string &text)
 
 
 #endif
-// Copyright 2019 Rene Rivera
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LYRA_VERSION_HPP
 #define LYRA_VERSION_HPP

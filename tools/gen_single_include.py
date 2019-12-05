@@ -28,6 +28,13 @@ class GenSingleInclude(object):
 
 	def run(self):
 		with open(self.args.dst_include, "w", encoding="UTF8") as dst_file:
+			dst_file.write('''\
+// Copyright 2018-2019 Rene Rivera
+// Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+''')
 			self.cpp(dst_file, None, self.args.src_include)
 
 	def resolve_include(self, cur_dir, include_name):
@@ -46,10 +53,13 @@ class GenSingleInclude(object):
 			self.parsed.add(src_i)
 			with open(src_i, "r", encoding="UTF8") as src_file:
 				for line in src_file:
-					match = self.pp_re.fullmatch(line)
+					if line.strip().startswith('//'):
+						continue
+					pp_match = self.pp_re.fullmatch(line)
 					src_n = None
-					if match:
-						src_n = self.cpp(dst_file, os.path.dirname(src_i), match.group(1)) 
+					if pp_match:
+						src_n = self.cpp(dst_file, os.path.dirname(
+							src_i), pp_match.group(1))
 					if not src_n:
 						dst_file.writelines([line])
 		return src_i
