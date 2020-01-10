@@ -56,7 +56,7 @@ namespace detail
 	{
 		std::stringstream ss;
 		ss << source;
-		T temp;
+		T temp{};
 		ss >> temp;
 		if (!ss.fail() && ss.eof()) { target = temp; return true; }
 		return false;
