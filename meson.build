@@ -51,6 +51,7 @@ src = ['include/lyra/arg.hpp',
       'include/lyra/detail/parse.hpp',
       'include/lyra/detail/result.hpp',
       'include/lyra/detail/tokens.hpp',
+      'include/lyra/detail/trait_utils.hpp',
       'include/lyra/detail/unary_lambda_traits.hpp'
 ]
 
