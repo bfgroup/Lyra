@@ -132,7 +132,7 @@ namespace detail
 	{
 		std::stringstream ss;
 		ss << source;
-		T temp;
+		T temp{};
 		ss >> temp;
 		if (!ss.fail() && ss.eof()) { target = temp; return true; }
 		return false;
@@ -970,8 +970,49 @@ namespace detail
 
 #endif
 
+#ifndef LYRA_DETAIL_TRAIT_UTILS_HPP
+#define LYRA_DETAIL_TRAIT_UTILS_HPP
+
+#include <type_traits>
+#include <utility>
+
+namespace lyra
+{
+namespace detail
+{
+	template <class F, class... Args>
+	struct is_callable
+	{
+		template <class U>
+		static auto test(U* p) -> decltype(
+			(*p)(std::declval<Args>()...), void(), std::true_type());
+
+		template <class U>
+		static auto test(...) -> decltype(std::false_type());
+
+		static constexpr bool value = decltype(test<F>(0))::value;
+	};
+
+	template <class F>
+	struct is_invocable
+	{
+		template <class U>
+		static auto test(U* p) -> decltype(
+			(&U::operator()), void(), std::true_type());
+
+		template <class U>
+		static auto test(...) -> decltype(std::false_type());
+
+		static constexpr bool value = decltype(test<F>(0))::value;
+	};
+} // namespace detail
+} // namespace lyra
+
+#endif
+
 #include <memory>
 #include <string>
+#include <type_traits>
 
 namespace lyra
 {
@@ -1192,9 +1233,18 @@ class bound_parser : public composable_parser<Derived>
 	}
 	std::string hint() const { return m_hint; }
 
-	template <typename T, typename... Rest>
-	Derived& choices(T val0, T val1, Rest... rest);
-	template <typename Lambda>
+	template <
+		typename T,
+		typename... Rest,
+		typename std::enable_if<
+			!detail::is_invocable<T>::value,
+			int>::type = 0>
+	Derived& choices(T val0, Rest... rest);
+	template <
+		typename Lambda,
+		typename std::enable_if<
+			detail::is_invocable<Lambda>::value,
+			int>::type = 1>
 	Derived& choices(Lambda const& check_choice);
 };
 
@@ -1366,7 +1416,7 @@ Derived& bound_parser<Derived>::cardinality(size_t n, size_t m)
 ----
 template <typename Derived>
 template <typename T, typename... Rest>
-lyra::opt& lyra::bound_parser<Derived>::choices(T val0, T val1, Rest... rest)
+lyra::opt& lyra::bound_parser<Derived>::choices(T val0, Rest... rest)
 
 template <typename Derived>
 template <typename Lambda>
@@ -1380,16 +1430,25 @@ form the `check_choice` function is called with the parsed value and returns
 
 end::reference[] */
 template <typename Derived>
-template <typename T, typename... Rest>
-Derived& bound_parser<Derived>::choices(T val0, T val1, Rest... rest)
+template <
+	typename T,
+	typename... Rest,
+	typename std::enable_if<
+		!detail::is_invocable<T>::value,
+		int>::type>
+Derived& bound_parser<Derived>::choices(T val0, Rest... rest)
 {
 	value_choices
-		= std::make_shared<detail::choices_set<T>>(val0, val1, rest...);
+		= std::make_shared<detail::choices_set<T>>(val0, rest...);
 	return static_cast<Derived&>(*this);
 }
 
 template <typename Derived>
-template <typename Lambda>
+template <
+	typename Lambda,
+	typename std::enable_if<
+		detail::is_invocable<Lambda>::value,
+		int>::type>
 Derived& bound_parser<Derived>::choices(Lambda const& check_choice)
 {
 	value_choices

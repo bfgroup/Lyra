@@ -49,6 +49,15 @@ int main()
 			(REQUIRE(choice == 0));
 	}
 	{
+		int choice = 0;
+		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+			.choices(1);
+		auto result = p.parse( { "TestApp", "-c", "1" } );
+		test
+			(REQUIRE(result))
+			(REQUIRE(choice == 1));
+	}
+	{
 		int choice = 20;
 		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
 			.choices([](int value) -> bool { return 10 <= value && value <= 20; });
