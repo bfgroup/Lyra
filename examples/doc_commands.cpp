@@ -97,11 +97,13 @@ int main(int argc, const char** argv)
 	if (!result) // <9>
 	{
 		std::cerr << result.errorMessage() << "\n";
+		return 1;
 	}
 	if (show_help)
 	{
 		std::cout << cli;
 	}
+	return 0;
 }
 // end::doc[]
 /* tag::doc[]
