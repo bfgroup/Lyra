@@ -16,6 +16,16 @@ int main()
 	bfg::mini_test::scope test;
 	{
 		TEST_MAIN(test, "doc_commands_run_test", "--help");
+		TEST_MAIN(test, "doc_commands_run_test", "run", "foo");
+		TEST_MAIN(test, "doc_commands_run_test", "kill", "foo");
+		TEST_MAIN(test, "doc_commands_run_test", "run", "-v", "foo");
+		TEST_MAIN(test, "doc_commands_run_test", "kill", "-s", "9", "foo");
+		TEST_MAIN_FAIL(test, "doc_commands_run_test");
+		TEST_MAIN_FAIL(test, "doc_commands_run_test", "jump");
+		TEST_MAIN_FAIL(test, "doc_commands_run_test", "run");
+		TEST_MAIN_FAIL(test, "doc_commands_run_test", "kill");
+		TEST_MAIN_FAIL(test, "doc_commands_run_test", "kill", "-s", "foo");
+		TEST_MAIN(test, "doc_commands_run_test", "kill", "--help");
 	}
 	return test;
 }

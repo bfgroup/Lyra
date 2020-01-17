@@ -36,7 +36,7 @@ struct run_command // <1>
 	run_command(lyra::cli_parser& cli) // <4>
 	{
 		cli.add_argument(
-			lyra::opt(verbose, "verbose")
+			lyra::opt(verbose)
 				.name("-v")
 				.name("--verbose")
 				.optional()
@@ -80,30 +80,27 @@ int main(int argc, const char** argv)
 						 .choices(run_command::name(), kill_command::name())
 						 .required()
 						 .help("Command to perform."));
-	auto result = cli.parse({ argc, argv }); // <7>
-	if (result)
+	if (show_help)
 	{
-		if (command == run_command::name())
-		{
-			run_command run_cmd(cli); // <8>
-			result = cli.parse({ argc, argv });
-		}
-		else if (command == kill_command::name())
-		{
-			kill_command kill_cmd(cli);
-			result = cli.parse({ argc, argv });
-		}
+		std::cout << cli;
+		return 0;
+	}
+	auto result = cli.parse({ argc, argv }); // <7>
+	if (command == run_command::name())
+	{
+		run_command run_cmd(cli); // <8>
+		result = cli.parse({ argc, argv });
+	}
+	else if (command == kill_command::name())
+	{
+		kill_command kill_cmd(cli);
+		result = cli.parse({ argc, argv });
 	}
 	if (!result) // <9>
 	{
 		std::cerr << result.errorMessage() << "\n";
-		return 1;
 	}
-	if (show_help)
-	{
-		std::cout << cli;
-	}
-	return 0;
+	return result ? 0 : 1;
 }
 // end::doc[]
 /* tag::doc[]
@@ -121,5 +118,5 @@ int main(int argc, const char** argv)
 	limits what users see to just the sub-commands when they ask for help.
 <8> Once we have a valid sub-command we set, and hence add, the sub-command
 	arguments. And re-parse with the full recognized sub-command arguments.
-<9> At the end we can do the regular error and help handling.
+<9> At the end we can do the regular error handling.
 */ // end::doc[]
