@@ -23,6 +23,21 @@ stages:
   - job: 'Linux'
     strategy:
       matrix:
+        GCC 9 Warn-All:
+          TOOLSET: gcc
+          CXX: g++-9
+          PACKAGES: g++-9
+          CXXSTD: 11,14,17,2a
+          B2_ARGS: warnings=all warnings-as-errors=on
+          VM_IMAGE: 'ubuntu-18.04'
+        Clang 9 Warn-All:
+          TOOLSET: clang
+          CXX: clang++-9
+          PACKAGES: clang-9
+          LLVM_REPO: llvm-toolchain-xenial-9
+          CXXSTD: 11,14,17,2a
+          B2_ARGS: warnings=all warnings-as-errors=on
+          VM_IMAGE: 'ubuntu-18.04'
         GCC 9:
           TOOLSET: gcc
           CXX: g++-9
@@ -166,7 +181,7 @@ stages:
     - bash: |
         set -e
         pushd tests
-        b2 toolset=${TOOLSET} cxxstd=${CXXSTD} -j2
+        b2 toolset=${TOOLSET} cxxstd=${CXXSTD} ${B2_ARGS} -j2
         popd
       displayName: Test
 
