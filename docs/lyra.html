@@ -660,10 +660,11 @@ build with exceptions disabled, but that will be coming later)</p>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
 
     <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -724,10 +725,11 @@ operator (<code>|</code>).</p>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
 
     <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -834,10 +836,11 @@ two examples. The first one with the single option would be:</p>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
 
     <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -874,10 +877,11 @@ two examples. The first one with the single option would be:</p>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
 
     <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -940,17 +944,18 @@ specified:</p>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
 
     <span class="tok-c1">// Show the help when asked for.</span>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
-        <span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
 
     <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;width = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, name = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">name</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;, doIt = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">doIt</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -992,10 +997,12 @@ specifying them to the <code>choices()</code> call:</p>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">result</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Your preferred color is &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">choice</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
     <span class="tok-k">else</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
@@ -1020,10 +1027,12 @@ that validates if a given value is allowed:</p>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">result</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Your number between one and ten is &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">choice</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
     <span class="tok-k">else</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
@@ -1645,6 +1654,14 @@ allocation, and to allow for more option &amp; value variations.&#8201;&#8212;&#
 </li>
 <li>
 <p>Fixed allowing junk extra characters after a non-string option value.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p>Support specifying a single value for choices of an argument.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
+</li>
+<li>
+<p>Fix various problems with the commands example program. Also now the
+examples for the documentation are unit tested along with the
+regular unit tests.&#8201;&#8212;&#8201;<em>Rene Rivera</em></p>
 </li>
 <li>
 <p>Tested with

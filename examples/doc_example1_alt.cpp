@@ -30,9 +30,10 @@ int main(int argc, const char** argv)
 	if (!result)
 	{
 		std::cerr << "Error in command line: " << result.errorMessage() << std::endl;
-		std::exit(1);
+		return 1;
 	}
 
 	std::cout << "width = " << width << "\n";
+	return 0;
 }
 // end::doc[]

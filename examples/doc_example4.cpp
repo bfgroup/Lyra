@@ -22,5 +22,6 @@ int main(int argc, const char** argv)
 		for (int count = 0; count < repeat; ++count)
 			std::cout << message << "\n";
 	}
+	return 0;
 }
 // end::part1[]

@@ -41,16 +41,17 @@ int main(int argc, const char** argv)
 	{
 		std::cerr << "Error in command line: " << result.errorMessage() << std::endl;
 		std::cerr << cli << "\n"; // <1>
-		exit(1);
+		return 1;
 	}
 
 	// Show the help when asked for.
 	if (show_help) // <2>
 	{
 		std::cout << cli << "\n";
-		exit(0);
+		return 0;
 	}
 
 	std::cout << "width = " << width << ", name = " << name << ", doIt = " << doIt << "\n";
+	return 0;
 }
 // end::part2[]

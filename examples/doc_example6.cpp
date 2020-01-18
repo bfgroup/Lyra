@@ -20,10 +20,12 @@ int main(int argc, const char** argv)
 	if (result)
 	{
 		std::cout << "Your number between one and ten is " << choice << "\n";
+		return 0;
 	}
 	else
 	{
 		std::cerr << result.errorMessage() << "\n";
+		return 1;
 	}
 }
 // end::part1[]

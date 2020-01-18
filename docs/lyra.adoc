@@ -288,6 +288,12 @@ Changes:
 	-- _Rene Rivera_
 * Fixed allowing junk extra characters after a non-string option value.
 	-- _Rene Rivera_
+* Support specifying a single value for choices of an argument.
+	-- _Rene Rivera_
+* Fix various problems with the commands example program. Also now the
+	examples for the documentation are unit tested along with the
+	regular unit tests.
+	-- _Rene Rivera_
 * Tested with
 	Visual Studio 2015, VS 2017, VS 2019,
 	MinGW-64 (gcc 8.1),
