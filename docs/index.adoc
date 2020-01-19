@@ -1,5 +1,5 @@
 = Lyra -- CLI C++11 Parsing Library
-:copyright: Copyright 2019 Rene Rivera
+:copyright: Copyright 2019-2020 Rene Rivera
 :version-label!:
 :reproducible:
 :nofooter:

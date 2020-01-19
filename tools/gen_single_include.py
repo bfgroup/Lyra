@@ -1,4 +1,4 @@
-# Copyright Rene Rivera 2019
+# Copyright Rene Rivera 2019-2020
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -29,7 +29,7 @@ class GenSingleInclude(object):
 	def run(self):
 		with open(self.args.dst_include, "w", encoding="UTF8") as dst_file:
 			dst_file.write('''\
-// Copyright 2018-2019 Rene Rivera
+// Copyright 2018-2020 Rene Rivera
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying

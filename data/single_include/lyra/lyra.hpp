@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Rene Rivera
+// Copyright 2018-2020 Rene Rivera
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -2377,7 +2377,7 @@ inline help & help::description(const std::string &text)
 #define LYRA_VERSION_HPP
 
 #define LYRA_VERSION_MAJOR 1
-#define LYRA_VERSION_MINOR 3
+#define LYRA_VERSION_MINOR 4
 #define LYRA_VERSION_PATCH 0
 
 #define LYRA_VERSION \
