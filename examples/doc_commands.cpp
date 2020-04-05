@@ -80,12 +80,12 @@ int main(int argc, const char** argv)
 						 .choices(run_command::name(), kill_command::name())
 						 .required()
 						 .help("Command to perform."));
+	auto result = cli.parse({ argc, argv }); // <7>
 	if (show_help)
 	{
 		std::cout << cli;
 		return 0;
 	}
-	auto result = cli.parse({ argc, argv }); // <7>
 	if (command == run_command::name())
 	{
 		run_command run_cmd(cli); // <8>
