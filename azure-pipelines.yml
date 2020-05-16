@@ -150,7 +150,7 @@ stages:
         wget "https://github.com/boostorg/build/archive/develop.zip" -O b2.zip
         unzip b2.zip
         cd build-develop
-        CXX= ./bootstrap.sh
+        CXX= ./bootstrap.sh clang
         CXX= sudo ./b2 install
         popd
         CXX_PATH=`which ${CXX}`
