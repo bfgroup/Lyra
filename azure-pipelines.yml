@@ -172,7 +172,7 @@ stages:
         popd
       displayName: Test
 
-  - job: 'Visual Studio'
+  - job: 'Visual_Studio'
     strategy:
       matrix:
         VS 2019: {
