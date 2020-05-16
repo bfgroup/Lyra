@@ -143,6 +143,7 @@ stages:
         export 'XCODE_INSTALL_USER=$(DEV_APPLE_USER)'
         export 'XCODE_INSTALL_PASSWORD=$(DEV_APPLE_PASSWORD)'
         ./.ci/macos-xcode-install.sh
+        ${CXX} --version
       displayName: Install Toolset
     - bash: |
         set -e
