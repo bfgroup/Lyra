@@ -10,6 +10,14 @@ trigger:
     - develop
     - master
     - feature/*
+  paths:
+    exclude:
+    - .circleci/*
+    - .drone.star
+    - .github/workflows/*
+    - .semaphore/*
+    - .travis.yml
+    - appveyor.yml
 pr:
   branches:
     include:

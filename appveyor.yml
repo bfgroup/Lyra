@@ -1,0 +1,66 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE.txt)
+#
+# Copyright Rene Rivera 2020.
+
+branches:
+  include:
+  - develop
+  - master
+  - feature/*
+
+skip_commits:
+  files:
+    - .circleci/*
+    - .drone.star
+    - .github/workflows/*
+    - .semaphore/*
+    - .travis.yml
+    - azure-pipelines.yml
+
+environment:
+  matrix:
+  - { job_name: 'VS 2015', COMPILER: "MSVC", CXX: cl.exe, VSWHERE_LEGACY: '[14.0,15.0)', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
+      TOOLSET: 'msvc', TOOLSET_VERSION: '14.0' }
+  - { job_name: 'VS 2013', COMPILER: "MSVC", CXX: cl.exe, VSWHERE_LEGACY: '[12.0,13.0)', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
+      TOOLSET: 'msvc', TOOLSET_VERSION: '12.0' }
+  - { job_name: 'MinGW-w64 7.3', COMPILER: "WIN-MINGW", CXX: 'g++.exe', CXXPATH: 'C:\\mingw-w64\\x86_64-7.3.0-posix-seh-rt_v5-rev0\\mingw64\\bin', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
+      TOOLSET: 'gcc' }
+  - { job_name: 'MinGW-w64 6.3', COMPILER: "WIN-MINGW", CXX: 'g++.exe', CXXPATH: 'C:\\mingw-w64\\x86_64-6.3.0-posix-seh-rt_v5-rev1\\mingw64\\bin', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
+      TOOLSET: 'gcc' }
+
+for:
+- matrix:
+    only:
+      - COMPILER: 'MSVC'
+      - COMPILER: 'WIN-MINGW'
+  install:
+    - cmd: |
+        choco install vswhere
+        cd "%APPVEYOR_BUILD_FOLDER%/.."
+        curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
+        7z e b2.zip
+        cd build-develop
+        cmd.exe /c bootstrap.bat
+        b2.exe install
+        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+        cd "%APPVEYOR_BUILD_FOLDER%"
+- matrix:
+    only:
+      - COMPILER: 'MSVC'
+  test_script:
+    - cmd: |
+        CALL .ci_playground/windows-msvc-setup.cmd
+        set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
+        cd %APPVEYOR_BUILD_FOLDER%/tests
+        %APPVEYOR_BUILD_FOLDER%/../build-develop/b2.exe --debug-configuration toolset=%TOOLSET%
+- matrix:
+    only:
+      - COMPILER: 'WIN-MINGW'
+  test_script:
+    - cmd: |
+        set PATH=%CXXPATH%;%PATH%
+        set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
+        cd %APPVEYOR_BUILD_FOLDER%/tests
+        %APPVEYOR_BUILD_FOLDER%/../build-develop/b2.exe --debug-configuration toolset=%TOOLSET%
