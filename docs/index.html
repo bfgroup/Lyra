@@ -558,7 +558,9 @@ Tests
 </td>
 <td class="hdlist2">
 <p><span class="image"><a class="image" href="https://dev.azure.com/grafikrobot/Lyra"><img src="https://img.shields.io/azure-devops/build/grafikrobot/2f2d3ca3-ffa0-4d88-badb-ae498a04660f/9/master?label=master&amp;logo=azuredevops" alt="Azure DevOps"></a></span>
-<span class="image"><a class="image" href="https://dev.azure.com/grafikrobot/Lyra"><img src="https://img.shields.io/azure-devops/build/grafikrobot/2f2d3ca3-ffa0-4d88-badb-ae498a04660f/9/develop?label=develop&amp;logo=azuredevops" alt="Azure DevOps"></a></span></p>
+<span class="image"><a class="image" href="https://dev.azure.com/grafikrobot/Lyra"><img src="https://img.shields.io/azure-devops/build/grafikrobot/2f2d3ca3-ffa0-4d88-badb-ae498a04660f/9/develop?label=develop&amp;logo=azuredevops" alt="Azure DevOps"></a></span>
+<span class="image"><img src="https://img.shields.io/appveyor/build/grafikrobot/lyra/master?label=master&amp;logo=appveyor" alt="AppVeyor" width="link:"https://ci.appveyor.com/project/grafikrobot/lyra""></span>
+<span class="image"><img src="https://img.shields.io/appveyor/build/grafikrobot/lyra/develop?label=develop&amp;logo=appveyor" alt="AppVeyor" width="link:"https://ci.appveyor.com/project/grafikrobot/lyra""></span></p>
 </td>
 </tr>
 </table>
@@ -636,7 +638,7 @@ build with exceptions disabled, but that will be coming later)</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
-<span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">cli_parser</span><span class="tok-p">()</span>
+<span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">()</span>
     <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
         <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
         <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">);</span></code></pre>

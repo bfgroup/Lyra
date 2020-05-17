@@ -1147,12 +1147,12 @@ of argument specifications.</p>
                          <span class="tok-p">.</span><span class="tok-n">choices</span><span class="tok-p">(</span><span class="tok-n">run_command</span><span class="tok-o">::</span><span class="tok-n">name</span><span class="tok-p">(),</span> <span class="tok-n">kill_command</span><span class="tok-o">::</span><span class="tok-n">name</span><span class="tok-p">())</span>
                          <span class="tok-p">.</span><span class="tok-n">required</span><span class="tok-p">()</span>
                          <span class="tok-p">.</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;Command to perform.&quot;</span><span class="tok-p">));</span>
+    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span> <i class="conum" data-value="7"></i><b>(7)</b>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span><span class="tok-p">;</span>
         <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
-    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span> <i class="conum" data-value="7"></i><b>(7)</b>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">command</span> <span class="tok-o">==</span> <span class="tok-n">run_command</span><span class="tok-o">::</span><span class="tok-n">name</span><span class="tok-p">())</span>
     <span class="tok-p">{</span>
         <span class="tok-n">run_command</span> <span class="tok-n">run_cmd</span><span class="tok-p">(</span><span class="tok-n">cli</span><span class="tok-p">);</span> <i class="conum" data-value="8"></i><b>(8)</b>
