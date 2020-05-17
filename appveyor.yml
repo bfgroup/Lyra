@@ -34,7 +34,6 @@ for:
 - matrix:
     only:
       - COMPILER: 'MSVC'
-      - COMPILER: 'WIN-MINGW'
   install:
     - cmd: |
         choco install vswhere
@@ -44,7 +43,7 @@ for:
         cd build-develop
         set CXX_S=%CXX%
         set CXX=
-        cmd.exe /c bootstrap.bat
+        bootstrap.bat
         set CXX=%CXX_S%
         b2.exe install
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
@@ -52,9 +51,6 @@ for:
   build_script:
     - cmd: |
         echo .
-- matrix:
-    only:
-      - COMPILER: 'MSVC'
   test_script:
     - cmd: |
         echo TEST..
@@ -65,6 +61,23 @@ for:
 - matrix:
     only:
       - COMPILER: 'WIN-MINGW'
+  install:
+    - cmd: |
+        choco install vswhere
+        cd "%APPVEYOR_BUILD_FOLDER%/.."
+        curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
+        7z x b2.zip
+        cd build-develop
+        set CXX_S=%CXX%
+        set CXX=
+        bootstrap.bat
+        set CXX=%CXX_S%
+        b2.exe install
+        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+        cd "%APPVEYOR_BUILD_FOLDER%"
+  build_script:
+    - cmd: |
+        echo .
   test_script:
     - cmd: |
         echo TEST..
