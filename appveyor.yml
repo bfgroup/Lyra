@@ -54,7 +54,7 @@ for:
   test_script:
     - cmd: |
         echo TEST..
-        CALL .ci_playground/windows-msvc-setup.cmd
+        CALL .ci/windows-msvc-setup.cmd
         set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
         cd %APPVEYOR_BUILD_FOLDER%/tests
         %APPVEYOR_BUILD_FOLDER%/../build-develop/b2.exe --debug-configuration toolset=%TOOLSET%
