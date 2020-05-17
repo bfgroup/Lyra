@@ -21,13 +21,11 @@ skip_commits:
 
 environment:
   matrix:
-  - { job_name: 'VS 2015', COMPILER: "MSVC", CXX: cl.exe, VSWHERE_LEGACY: '[14.0,15.0)', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
+  - { job_name: 'VS 2015', COMPILER: "MSVC", VSWHERE_LEGACY: '[14.0,15.0)', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
       TOOLSET: 'msvc', TOOLSET_VERSION: '14.0' }
-  - { job_name: 'VS 2013', COMPILER: "MSVC", CXX: cl.exe, VSWHERE_LEGACY: '[12.0,13.0)', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
-      TOOLSET: 'msvc', TOOLSET_VERSION: '12.0' }
-  - { job_name: 'MinGW-w64 7.3', COMPILER: "WIN-MINGW", CXX: 'g++.exe', CXXPATH: 'C:\\mingw-w64\\x86_64-7.3.0-posix-seh-rt_v5-rev0\\mingw64\\bin', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
+  - { job_name: 'MinGW-w64 7.3', COMPILER: "WIN-MINGW", CXXPATH: 'C:\\mingw-w64\\x86_64-7.3.0-posix-seh-rt_v5-rev0\\mingw64\\bin', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
       TOOLSET: 'gcc' }
-  - { job_name: 'MinGW-w64 6.3', COMPILER: "WIN-MINGW", CXX: 'g++.exe', CXXPATH: 'C:\\mingw-w64\\x86_64-6.3.0-posix-seh-rt_v5-rev1\\mingw64\\bin', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
+  - { job_name: 'MinGW-w64 6.3', COMPILER: "WIN-MINGW", CXXPATH: 'C:\\mingw-w64\\x86_64-6.3.0-posix-seh-rt_v5-rev1\\mingw64\\bin', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
       TOOLSET: 'gcc' }
 
 for:
@@ -41,10 +39,7 @@ for:
         curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
         7z x b2.zip
         cd build-develop
-        set CXX_S=%CXX%
-        set CXX=
         bootstrap.bat
-        set CXX=%CXX_S%
         b2.exe install
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
         cd "%APPVEYOR_BUILD_FOLDER%"
