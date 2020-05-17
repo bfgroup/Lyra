@@ -40,7 +40,7 @@ for:
         7z x b2.zip
         cd build-develop
         bootstrap.bat
-        b2.exe install
+        b2.exe install -d0
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
         cd "%APPVEYOR_BUILD_FOLDER%"
   build_script:
@@ -67,7 +67,7 @@ for:
         set CXX=
         bootstrap.bat
         set CXX=%CXX_S%
-        b2.exe install
+        b2.exe install -d0
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
         cd "%APPVEYOR_BUILD_FOLDER%"
   build_script:
