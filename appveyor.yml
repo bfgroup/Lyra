@@ -43,6 +43,7 @@ for:
         7z x b2.zip
         cd build-develop
         set CXX_S=%CXX%
+        set CXX=
         cmd.exe /c bootstrap.bat
         set CXX=%CXX_S%
         b2.exe install
