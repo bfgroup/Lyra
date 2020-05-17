@@ -40,7 +40,7 @@ for:
         choco install vswhere
         cd "%APPVEYOR_BUILD_FOLDER%/.."
         curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
-        7z e b2.zip
+        7z x b2.zip
         cd build-develop
         cmd.exe /c bootstrap.bat
         b2.exe install
