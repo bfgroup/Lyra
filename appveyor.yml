@@ -5,10 +5,10 @@
 # Copyright Rene Rivera 2020.
 
 branches:
-  include:
+  only:
   - develop
   - master
-  - feature/*
+  - /feature[/].*/
 
 skip_commits:
   files:
