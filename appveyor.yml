@@ -42,7 +42,9 @@ for:
         curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
         7z x b2.zip
         cd build-develop
+        set CXX_S=%CXX%
         cmd.exe /c bootstrap.bat
+        set CXX=%CXX_S%
         b2.exe install
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
         cd "%APPVEYOR_BUILD_FOLDER%"
@@ -54,6 +56,7 @@ for:
       - COMPILER: 'MSVC'
   test_script:
     - cmd: |
+        echo TEST..
         CALL .ci_playground/windows-msvc-setup.cmd
         set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
         cd %APPVEYOR_BUILD_FOLDER%/tests
@@ -63,6 +66,7 @@ for:
       - COMPILER: 'WIN-MINGW'
   test_script:
     - cmd: |
+        echo TEST..
         set PATH=%CXXPATH%;%PATH%
         set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
         cd %APPVEYOR_BUILD_FOLDER%/tests
