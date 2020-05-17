@@ -46,6 +46,9 @@ for:
         b2.exe install
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
         cd "%APPVEYOR_BUILD_FOLDER%"
+  build_script:
+    - cmd: |
+        echo .
 - matrix:
     only:
       - COMPILER: 'MSVC'
