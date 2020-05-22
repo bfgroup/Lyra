@@ -625,6 +625,11 @@ namespace detail
 		{
 		}
 
+		explicit choices_set(const std::vector<T> & vals)
+			: values(vals)
+		{
+		}
+
 		parser_result contains_value(std::string const& val) const override
 		{
 			T value;
@@ -1246,6 +1251,8 @@ class bound_parser : public composable_parser<Derived>
 			detail::is_invocable<Lambda>::value,
 			int>::type = 1>
 	Derived& choices(Lambda const& check_choice);
+	template <typename T, std::size_t N>
+	Derived& choices(const T (& choice_values)[N]);
 };
 
 /* tag::reference[]
@@ -1453,6 +1460,16 @@ Derived& bound_parser<Derived>::choices(Lambda const& check_choice)
 {
 	value_choices
 		= std::make_shared<detail::choices_check<Lambda>>(check_choice);
+	return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+template <typename T, std::size_t N>
+Derived& bound_parser<Derived>::choices(const T (& choice_values)[N])
+{
+	value_choices
+		= std::make_shared<detail::choices_set<T>>(
+			std::vector<T>{choice_values, choice_values+N});
 	return static_cast<Derived&>(*this);
 }
 

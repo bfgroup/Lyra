@@ -46,6 +46,11 @@ namespace detail
 		{
 		}
 
+		explicit choices_set(const std::vector<T> & vals)
+			: values(vals)
+		{
+		}
+
 		// Checks if the given string val exists in the set of
 		// values. Returns a parsing error if the value is not present.
 		parser_result contains_value(std::string const& val) const override

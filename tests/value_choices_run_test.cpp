@@ -84,6 +84,16 @@ int main()
 			(REQUIRE(result))
 			(REQUIRE(choice == "run"));
 	}
+	{
+		std::string choice;
+		const std::string choices[] = { "one", "two", "other" };
+		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+			.choices(choices);
+		auto result = p.parse( { "TestApp", "-c", "two" } );
+		test
+			(REQUIRE(result))
+			(REQUIRE(choice == "two"));
+	}
 
 	return test;
 }
