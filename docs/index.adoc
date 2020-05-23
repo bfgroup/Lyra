@@ -25,8 +25,8 @@ ifdef::backend-html5[]
 <style>
 include::std.css[]
 #toctitle {
-	padding: 200px 0 0 0;
-	background: url(logo-black-190x.png) no-repeat center;
+	padding: 400px 0 0 0;
+	background: url(logo-color-300.png) no-repeat center/90%;
 	height: 0;
 	overflow: hidden;
 }
