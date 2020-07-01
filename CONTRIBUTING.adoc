@@ -1,0 +1,86 @@
+== Structure
+
+This project follows the general Pitchfork organization guidelines
+(image:https://img.shields.io/badge/standard-PFL-orange.svg["Pitchfork Layout", link="https://github.com/vector-of-bool/pitchfork"]).
+
+=== `include`
+
+All the C++ header files are in here under the `include/lyra` directory.
+
+=== `examples`
+
+Various examples on using the library. Most of them are directly included in
+the documentation.
+
+=== `tests`
+
+All the testing source files. The source files are named according to the type
+of test they are:
+
+`*_run_test.cpp`:: An executable test that when run will indicate a success
+(`0`) if the checks in it all work. Or will return failure (`>0`) if any
+of the checks in it do not work.
+
+`*-compile_test.cpp`:: A source that is only compiled, i.e. not linked and
+doesn't produce an executable. If the source file compiles it's considered
+a successful test.
+
+=== `data`
+
+Contains generated public data files. In particular...
+
+==== `single_include/lyra/lyra.hpp`
+
+This is the generated coalesced single header version of the library. Running
+`b2` in the `data` directory will regenerate the file if needed.
+
+== Testing
+
+The preferred way to run tests is using the B2 build system. But manually
+running tests is straightforward also.
+
+=== Testing With B2
+
+==== First
+
+If you don't already have it, install a recent B2 release. If there's a
+package available for you platform you can use it. Any version >= 4 should work
+You can also use a source B2 release >= 4.3. Using portable layout option to install it someplace in your path:
+
+. Download and unpack a link:https://github.com/boostorg/build/releases/latest[release archive].
+. Build it per it's instructions.
+. Use the portable install instead of the default (standard) install:
+  `b2 install b2-install-layout=portable --prefix=/usr/local/bin`
+
+==== Second
+
+Go to the tests directory and run:
+
+```
+> b2
+```
+
+You should see a bunch of targets being compiled, and hopefully they all
+say `passed`. To check on C++ language compatibility you should check that
+all tests pass for all current C++ standard version from 11 onwards. You can
+do that directly with B2 with:
+
+```
+> b2 cxxstd=11,14,17,20
+```
+
+=== Testing Manually
+
+It should be easy enough to use whatever build system you prefer to run the
+tests. The key is to:
+
+. Add the `include` directory to your build system as an include search location.
+. Add the `examples` directory to your build system as an include search
+  location. This is needed as there are tests that check if the examples are
+  working as expected. This ensures that the code that ends up in the
+  documentation works.
+. Add executable targets for each of the `tests/*_run_test.cpp` files.
+. Add compile only targets for each of the `tests/*_compile_test.cpp` files.
+
+There are additional tests that doesn't account for. But they are optional for
+main development of the library.
