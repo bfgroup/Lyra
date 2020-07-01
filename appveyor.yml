@@ -40,7 +40,7 @@ for:
         7z x b2.zip
         cd build-develop
         bootstrap.bat
-        b2.exe install -d0
+        b2.exe install -d0 b2-install-layout=portable --prefix=%APPVEYOR_BUILD_FOLDER%/../bin
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
         cd "%APPVEYOR_BUILD_FOLDER%"
   build_script:
@@ -50,9 +50,8 @@ for:
     - cmd: |
         echo TEST..
         CALL .ci/windows-msvc-setup.cmd
-        set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
         cd %APPVEYOR_BUILD_FOLDER%/tests
-        %APPVEYOR_BUILD_FOLDER%/../build-develop/b2.exe --debug-configuration toolset=%TOOLSET%
+        %APPVEYOR_BUILD_FOLDER%/../bin/b2.exe --debug-configuration toolset=%TOOLSET%
 - matrix:
     only:
       - COMPILER: 'WIN-MINGW'
@@ -67,7 +66,7 @@ for:
         set CXX=
         bootstrap.bat
         set CXX=%CXX_S%
-        b2.exe install -d0
+        b2.exe install -d0 b2-install-layout=portable --prefix=%APPVEYOR_BUILD_FOLDER%/../bin
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
         cd "%APPVEYOR_BUILD_FOLDER%"
   build_script:
@@ -77,6 +76,5 @@ for:
     - cmd: |
         echo TEST..
         set PATH=%CXXPATH%;%PATH%
-        set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
         cd %APPVEYOR_BUILD_FOLDER%/tests
-        %APPVEYOR_BUILD_FOLDER%/../build-develop/b2.exe --debug-configuration toolset=%TOOLSET%
+        %APPVEYOR_BUILD_FOLDER%/../bin/b2.exe --debug-configuration toolset=%TOOLSET%
