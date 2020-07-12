@@ -38,11 +38,15 @@ class arg : public bound_parser<arg>
 				for (size_t i = 0; i < c.minimum; ++i)
 					oss << (i > 0 ? " " : "") << "<" << m_hint << ">";
 				if (c.is_unbounded())
-					oss << (c.is_required() ? " " : "") << "[<" << m_hint << ">" << "...]";
+					oss << (c.is_required() ? " " : "") << "[<" << m_hint << ">...]";
 			}
 			else if (c.is_unbounded())
 			{
-				oss << "[<" << m_hint << ">" << "...]";
+				oss << "[<" << m_hint << ">...]";
+			}
+			else
+			{
+				oss << "<" << m_hint << ">";
 			}
 		}
 		return oss.str();
