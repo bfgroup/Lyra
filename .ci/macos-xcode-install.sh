@@ -35,4 +35,4 @@ xcversion select ${XCODE_VERSION} --symlink
 # subject to the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE.txt)
 #
-# Copyright Rene Rivera 2020.
+# Copyright 2020 René Ferdinand Rivera Morell.

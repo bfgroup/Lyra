@@ -28,4 +28,4 @@ REM Use, modification, and distribution are
 REM subject to the Boost Software License, Version 1.0. (See accompanying
 REM file LICENSE.txt)
 REM
-REM Copyright Rene Rivera 2020.
+REM Copyright 2020 René Ferdinand Rivera Morell.

@@ -27,4 +27,4 @@ sudo -E apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-rec
 # subject to the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE.txt)
 #
-# Copyright Rene Rivera 2020.
+# Copyright 2020 René Ferdinand Rivera Morell.

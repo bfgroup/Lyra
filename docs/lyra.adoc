@@ -1,6 +1,6 @@
 = Lyra
-:copyright: Copyright 2019 Rene Rivera
-:author: Rene Rivera
+:copyright: Copyright 2019 René Ferdinand Rivera Morell
+:author: René Ferdinand Rivera Morell
 :email: grafikrobot@gmail.com
 :revnumber: 1.5
 :version-label!:
@@ -282,7 +282,7 @@ include::../include/lyra/args.hpp[tag=reference]
 Changes:
 
 * *New* Allow passing option value choices as an array.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Fix sample code in README to be correctly namespaced.
 	-- _Jayesh Badwaik_
 * Fix commands example to actually show help when specified.
@@ -306,23 +306,23 @@ Changes:
 Changes:
 
 * *New*: Accept `-o2` style option+value arguments.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * *New*: Accept `-abc` option name spelling as shorthand for `-a`, `-b`, `-c`.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Fixed inconsistent handling of option values that look like options, like
 	negative numbers.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Rewrote argument token parsing for clarity, to avoid extra token buffer
 	allocation, and to allow for more option & value variations.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Fixed allowing junk extra characters after a non-string option value.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Support specifying a single value for choices of an argument.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Fix various problems with the commands example program. Also now the
 	examples for the documentation are unit tested along with the
 	regular unit tests.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Tested with
 	Visual Studio 2015, VS 2017, VS 2019,
 	MinGW-64 (gcc 8.1),
@@ -338,23 +338,23 @@ Changes:
 
 * *New*: One can now accept 1-or-more on bound container arguments by only
 	specifying `required()` on such arguments.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * *New*: One can now define a `description` text to display as general command
 	information with the `help::description` method.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * *New*: Add named methods as alternates for operators to add and specify
 	arguments. They follow the familiar Python `argparse` nomenclature.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * *New*: Single header file alternative version of the library. For those that
 	need or want such a thing.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Improve help for arguments that specify a cardinality.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Addition of more complicated use cases to demonstrate flexibility of library.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Continued internal clean up of code for stability and easier future
 	enhancements.
-	-- _Rene Rivera_
+	-- _René Ferdinand Rivera Morell_
 * Tested with
 	Visual Studio 2015, VS 2017, VS 2019,
 	MinGW-64 (gcc 8.1),
@@ -371,17 +371,17 @@ Changes:
 * *New*: Add direct link:https://mesonbuild.com/[Meson Build] use support.
 	-- _Rémi Gastaldi_
 * *New*: Define argument value `choices()` as either a fixed set or checked
-	by a custom lambda function. -- _Rene Rivera_
+	by a custom lambda function. -- _René Ferdinand Rivera Morell_
 * Fix being able to parse straight from `args` outside of `cli_parser`. Which
-	resulted in misleading parsing behavior. _Rene Rivera_
+	resulted in misleading parsing behavior. _René Ferdinand Rivera Morell_
 * Fix use of `cardinality()` to correctly constrain bounded cardinality
 	ranges like `[0,n]`, `[n,m]`, `[n,n]`, and `[0,0]` (unbounded).
-	_Rene Rivera_
+	_René Ferdinand Rivera Morell_
 * Fix use of `required()` arguments such that the parse errors if they are
 	absent. -- _girstsf_
 * Remove uses of `assert` macro to avoid internal aborts and make it easier
-	to use as a library. -- _Rene Rivera_
-* Many documentation improvements. -- _Rene Rivera_
+	to use as a library. -- _René Ferdinand Rivera Morell_
+* Many documentation improvements. -- _René Ferdinand Rivera Morell_
 * Tested with
 	Visual Studio 2015, VS 2017, VS 2019,
 	MinGW-64 (gcc 8.1),

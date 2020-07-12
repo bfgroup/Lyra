@@ -2,7 +2,7 @@
 # subject to the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-# Copyright Rémi Gastaldi 2019.
+# Copyright 2019 Rémi Gastaldi.
 
 # This Meson file provides support for using the Lyra library externally as
 # a standalone project or by embedding in your Meson project tree. To use
