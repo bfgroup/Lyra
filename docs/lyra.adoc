@@ -2,7 +2,7 @@
 :copyright: Copyright 2019 Rene Rivera
 :author: Rene Rivera
 :email: grafikrobot@gmail.com
-:revnumber: 1.4
+:revnumber: 1.5
 :version-label!:
 :reproducible:
 :nofooter:
@@ -271,6 +271,11 @@ include::../include/lyra/args.hpp[tag=reference]
 :leveloffset: -2
 
 == History
+
+=== 1.5
+
+* Fix missing hint text for optional, `lyra::arg`, arguments.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.4
 

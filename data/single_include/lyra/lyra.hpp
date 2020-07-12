@@ -1506,11 +1506,15 @@ class arg : public bound_parser<arg>
 				for (size_t i = 0; i < c.minimum; ++i)
 					oss << (i > 0 ? " " : "") << "<" << m_hint << ">";
 				if (c.is_unbounded())
-					oss << (c.is_required() ? " " : "") << "[<" << m_hint << ">" << "...]";
+					oss << (c.is_required() ? " " : "") << "[<" << m_hint << ">...]";
 			}
 			else if (c.is_unbounded())
 			{
-				oss << "[<" << m_hint << ">" << "...]";
+				oss << "[<" << m_hint << ">...]";
+			}
+			else
+			{
+				oss << "<" << m_hint << ">";
 			}
 		}
 		return oss.str();
@@ -2394,7 +2398,7 @@ inline help & help::description(const std::string &text)
 #define LYRA_VERSION_HPP
 
 #define LYRA_VERSION_MAJOR 1
-#define LYRA_VERSION_MINOR 4
+#define LYRA_VERSION_MINOR 5
 #define LYRA_VERSION_PATCH 0
 
 #define LYRA_VERSION \
