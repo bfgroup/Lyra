@@ -276,6 +276,8 @@ include::../include/lyra/args.hpp[tag=reference]
 
 * Fix missing hint text for optional, `lyra::arg`, arguments.
 	-- _René Ferdinand Rivera Morell_
+* Bring back some cleaner and compact formatting of the help text.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.4
 

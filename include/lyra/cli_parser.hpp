@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2020 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -182,7 +182,7 @@ class cli_parser : parser_base
 	{
 		if (!m_exeName.name().empty())
 		{
-			os << "Usage:\n"
+			os << "USAGE:\n"
 			   << "  " << m_exeName.name();
 			for (auto const& p : m_parsers)
 			{
@@ -204,10 +204,18 @@ class cli_parser : parser_base
 			if (!child_description.empty()) os << child_description << "\n\n";
 		}
 
-		os << "Options, arguments:";
+		os << "OPTIONS, ARGUMENTS:";
+		const std::string::size_type left_col_size = 26-3;
+		const std::string left_pad(left_col_size, ' ');
 		for (auto const& cols : get_help_text())
 		{
-			os << "\n  " << cols.option << "\n\n  " << cols.description << "\n";
+			if (cols.option.size() > left_pad.size())
+				os << "\n  " << cols.option << "\n  " << left_pad
+					<< " " << cols.description;
+			else
+				os << "\n  " << cols.option
+					<< left_pad.substr(0, left_pad.size()-cols.option.size())
+					<< " " << cols.description;
 		}
 	}
 };
