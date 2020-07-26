@@ -16,7 +16,7 @@ int main(int argc, const char** argv)
 	int width = 0;
 
 	// The parser with the one option argument:
-	auto cli = lyra::cli_parser();
+	auto cli = lyra::cli();
 	cli.add_argument(
 		lyra::opt(width, "width")
 			.name("-w")

@@ -644,7 +644,7 @@ build with exceptions disabled, but that will be coming later)</p>
     <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 
     <span class="tok-c1">// The parser with the one option argument:</span>
-    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">()</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span><span class="tok-p">()</span>
         <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span><span class="tok-p">)</span>
               <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">](</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">);</span>
 
@@ -827,7 +827,7 @@ two examples. The first one with the single option would be:</p>
     <span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 
     <span class="tok-c1">// The parser with the one option argument:</span>
-    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">();</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span><span class="tok-p">();</span>
     <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span>
         <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span><span class="tok-p">)</span>
             <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">)</span>
@@ -867,7 +867,7 @@ two examples. The first one with the single option would be:</p>
 
     <span class="tok-c1">// The parser with the multiple option arguments. They are composed</span>
     <span class="tok-c1">// together by the &quot;|&quot; operator.</span>
-    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">();</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span><span class="tok-p">();</span>
     <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span><span class="tok-p">)</span>
         <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">).</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">).</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">));</span>
     <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">name</span><span class="tok-p">,</span> <span class="tok-s">&quot;name&quot;</span><span class="tok-p">)</span>
@@ -995,7 +995,7 @@ specifying them to the <code>choices()</code> call:</p>
 <span class="tok-p">{</span>
     <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">choice</span><span class="tok-p">;</span>
     <span class="tok-c1">// Ex: &lt;exe&gt; --choice=red</span>
-    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">()</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span><span class="tok-p">()</span>
         <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">choice</span><span class="tok-p">,</span> <span class="tok-s">&quot;-c&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--choice&quot;</span><span class="tok-p">]</span>
               <span class="tok-p">.</span><span class="tok-n">choices</span><span class="tok-p">(</span><span class="tok-s">&quot;red&quot;</span><span class="tok-p">,</span> <span class="tok-s">&quot;green&quot;</span><span class="tok-p">,</span> <span class="tok-s">&quot;blue&quot;</span><span class="tok-p">);</span>
     <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
@@ -1025,7 +1025,7 @@ that validates if a given value is allowed:</p>
 <span class="tok-p">{</span>
     <span class="tok-kt">int</span> <span class="tok-n">choice</span> <span class="tok-o">=</span> <span class="tok-mi">5</span><span class="tok-p">;</span>
     <span class="tok-c1">// Ex: &lt;exe&gt; --choice=3</span>
-    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli_parser</span><span class="tok-p">()</span>
+    <span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span><span class="tok-p">()</span>
         <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">choice</span><span class="tok-p">,</span> <span class="tok-s">&quot;-c&quot;</span><span class="tok-p">)[</span><span class="tok-s">&quot;--choice&quot;</span><span class="tok-p">]</span>
               <span class="tok-p">.</span><span class="tok-n">choices</span><span class="tok-p">([](</span><span class="tok-kt">int</span> <span class="tok-n">value</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">return</span> <span class="tok-mi">1</span> <span class="tok-o">&lt;=</span> <span class="tok-n">value</span> <span class="tok-o">&amp;&amp;</span> <span class="tok-n">value</span> <span class="tok-o">&lt;=</span> <span class="tok-mi">10</span><span class="tok-p">;</span> <span class="tok-p">});</span>
     <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
@@ -1684,7 +1684,7 @@ and "Options, arguments" sections.</p>
 </div>
 <div class="paragraph">
 <p>Constructs with a target string to receive the name of the executable. When
-the <code>cli_parser</code> is run the target string will contain the exec name.</p>
+the <code>cli</code> is run the target string will contain the exec name.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1694,7 +1694,7 @@ the <code>cli_parser</code> is run the target string will contain the exec name.
 </div>
 <div class="paragraph">
 <p>Construct with a callback that is called with the value of the executable name
-when the <code>cli_parser</code> runs.</p>
+when the <code>cli</code> runs.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1835,6 +1835,13 @@ this one.</p>
 <div class="sect2">
 <h3 id="lyra_group"><a class="anchor" href="#lyra_group"></a>8.15. <code>lyra::group</code></h3>
 <div class="paragraph">
+<p>A group of arguments provides for parsing, optionally, a set of arguments
+together. The group itself is considered successfully parsed only when the
+arguments int he group are parsed without errors. A common use case for this
+are sub-commands. This implementation is recursive. And hence allows groups
+with groups for describing branching argument parsing.</p>
+</div>
+<div class="paragraph">
 <p>Is-a <a href="#lyra_arguments"><code>lyra::arguments</code></a>.</p>
 </div>
 <div class="sect3">
@@ -1879,10 +1886,19 @@ function is called with the group to facilitate customization.</p>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_1_5"><a class="anchor" href="#_1_5"></a>9.1. 1.5</h3>
-<div class="paragraph">
-<p>Warning: The <code>cli_parser</code> type was renamed to <code>cli</code>. Both the <code>cli_parser</code> type
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="⚠"></i>
+</td>
+<td class="content">
+The <code>cli_parser</code> type was renamed to <code>cli</code>. Both the <code>cli_parser</code> type
 and the <code>lyra/cli_parser.hpp</code> header are deprecated and will be removed in a
-future release.</p>
+future release.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Changes:</p>
@@ -1891,6 +1907,9 @@ future release.</p>
 <ul>
 <li>
 <p><strong>New</strong>: Grouped arguments to specify and handle sub-command parsers.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p><strong>New</strong>: <code>literal</code> parser to directly match an argument.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
 <p>Fix missing hint text for optional, <code>lyra::arg</code>, arguments.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>

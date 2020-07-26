@@ -70,7 +70,7 @@ A parser for a single option can be created like this:
 [source,cpp]
 ----
 int width = 0;
-auto cli = lyra::cli_parser()
+auto cli = lyra::cli()
     | lyra::opt( width, "width" )
         ["-w"]["--width"]
         ("How wide should it be?");

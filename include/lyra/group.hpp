@@ -15,6 +15,12 @@ namespace lyra {
 [#lyra_group]
 = `lyra::group`
 
+A group of arguments provides for parsing, optionally, a set of arguments
+together. The group itself is considered successfully parsed only when the
+arguments int he group are parsed without errors. A common use case for this
+are sub-commands. This implementation is recursive. And hence allows groups
+with groups for describing branching argument parsing.
+
 Is-a <<lyra_arguments>>.
 
 end::reference[] */
@@ -23,7 +29,7 @@ class group : public arguments
 	public:
 	group() = default;
 	group(const group & other);
-	group(const std::function<void(const group &)> & f);
+	explicit group(const std::function<void(const group &)> & f);
 
 	virtual bool is_group() const override { return true; }
 

@@ -280,13 +280,15 @@ include::../include/lyra/group.hpp[tag=reference]
 
 === 1.5
 
-Warning: The `cli_parser` type was renamed to `cli`. Both the `cli_parser` type
+WARNING: The `cli_parser` type was renamed to `cli`. Both the `cli_parser` type
 and the `lyra/cli_parser.hpp` header are deprecated and will be removed in a
 future release.
 
 Changes:
 
 * *New*: Grouped arguments to specify and handle sub-command parsers.
+	-- _René Ferdinand Rivera Morell_
+* *New*: `literal` parser to directly match an argument.
 	-- _René Ferdinand Rivera Morell_
 * Fix missing hint text for optional, `lyra::arg`, arguments.
 	-- _René Ferdinand Rivera Morell_

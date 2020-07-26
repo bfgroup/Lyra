@@ -1710,7 +1710,7 @@ exe_name::exe_name(std::string& ref)
 ----
 
 Constructs with a target string to receive the name of the executable. When
-the `cli_parser` is run the target string will contain the exec name.
+the `cli` is run the target string will contain the exec name.
 
 end::reference[] */
 inline exe_name::exe_name(std::string& ref)
@@ -1727,7 +1727,7 @@ exe_name::exe_name(LambdaT const& lambda)
 ----
 
 Construct with a callback that is called with the value of the executable name
-when the `cli_parser` runs.
+when the `cli` runs.
 
 end::reference[] */
 template <typename LambdaT>
@@ -2080,6 +2080,12 @@ namespace lyra {
 [#lyra_group]
 = `lyra::group`
 
+A group of arguments provides for parsing, optionally, a set of arguments
+together. The group itself is considered successfully parsed only when the
+arguments int he group are parsed without errors. A common use case for this
+are sub-commands. This implementation is recursive. And hence allows groups
+with groups for describing branching argument parsing.
+
 Is-a <<lyra_arguments>>.
 
 end::reference[] */
@@ -2088,7 +2094,7 @@ class group : public arguments
 	public:
 	group() = default;
 	group(const group & other);
-	group(const std::function<void(const group &)> & f);
+	explicit group(const std::function<void(const group &)> & f);
 
 	virtual bool is_group() const override { return true; }
 

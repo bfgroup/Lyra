@@ -15,7 +15,7 @@ int main()
 
 	{
 		std::string choice;
-		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+		auto p = cli() | opt(choice, "choice")["-c"]["--choice"]("the choice")
 			.choices("one", "two", "other");
 		auto result = p.parse( { "TestApp", "-c", "two" } );
 		test
@@ -24,7 +24,7 @@ int main()
 	}
 	{
 		std::string choice;
-		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+		auto p = cli() | opt(choice, "choice")["-c"]["--choice"]("the choice")
 			.choices("one", "two", "other");
 		auto result = p.parse( { "TestApp", "-c", "foo" } );
 		test
@@ -32,7 +32,7 @@ int main()
 	}
 	{
 		int choice = 0;
-		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+		auto p = cli() | opt(choice, "choice")["-c"]["--choice"]("the choice")
 			.choices(1, 2, 3);
 		auto result = p.parse( { "TestApp", "-c", "2" } );
 		test
@@ -41,7 +41,7 @@ int main()
 	}
 	{
 		int choice = 0;
-		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+		auto p = cli() | opt(choice, "choice")["-c"]["--choice"]("the choice")
 			.choices(1, 2, 3);
 		auto result = p.parse( { "TestApp", "-c", "5" } );
 		test
@@ -50,7 +50,7 @@ int main()
 	}
 	{
 		int choice = 0;
-		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+		auto p = cli() | opt(choice, "choice")["-c"]["--choice"]("the choice")
 			.choices(1);
 		auto result = p.parse( { "TestApp", "-c", "1" } );
 		test
@@ -59,7 +59,7 @@ int main()
 	}
 	{
 		int choice = 20;
-		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+		auto p = cli() | opt(choice, "choice")["-c"]["--choice"]("the choice")
 			.choices([](int value) -> bool { return 10 <= value && value <= 20; });
 		auto result = p.parse( { "TestApp", "-c", "15" } );
 		test
@@ -68,7 +68,7 @@ int main()
 	}
 	{
 		int choice = 20;
-		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+		auto p = cli() | opt(choice, "choice")["-c"]["--choice"]("the choice")
 			.choices([](int value) -> bool { return 10 <= value && value <= 20; });
 		auto result = p.parse( { "TestApp", "-c", "40" } );
 		test
@@ -77,7 +77,7 @@ int main()
 	}
 	{
 		std::string choice;
-		auto p = cli_parser() | arg(choice, "choice")("the choice")
+		auto p = cli() | arg(choice, "choice")("the choice")
 			.choices("walk", "run", "jump");
 		auto result = p.parse( { "TestApp", "run" } );
 		test
@@ -87,7 +87,7 @@ int main()
 	{
 		std::string choice;
 		const std::string choices[] = { "one", "two", "other" };
-		auto p = cli_parser() | opt(choice, "choice")["-c"]["--choice"]("the choice")
+		auto p = cli() | opt(choice, "choice")["-c"]["--choice"]("the choice")
 			.choices(choices);
 		auto result = p.parse( { "TestApp", "-c", "two" } );
 		test

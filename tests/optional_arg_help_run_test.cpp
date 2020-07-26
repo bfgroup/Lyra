@@ -20,7 +20,7 @@ int main(int argc, const char** argv)
 		std::string message;
 		// Ex: <exe> --repeat=10 "Hello world."
 		auto cli
-			= cli_parser()
+			= lyra::cli()
 			| help(show_help)
 			| lyra::arg(message, "++message++").help("**message**");
 		std::ostringstream help_text;
@@ -35,7 +35,7 @@ int main(int argc, const char** argv)
 		std::string message;
 		// Ex: <exe> --repeat=10 "Hello world."
 		auto cli
-			= cli_parser()
+			= lyra::cli()
 			| help(show_help)
 			| lyra::arg(message, "++message++").help("**message**").required();
 		std::ostringstream help_text;

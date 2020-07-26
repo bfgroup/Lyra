@@ -16,7 +16,7 @@ int main()
 
 	{
 		bool a = false;
-		auto cli = cli_parser() | opt( a )["-a"];
+		auto cli = lyra::cli() | opt( a )["-a"];
 		auto result = cli.parse( { "TestApp", "-b" } );
 		test
 			(REQUIRE( !result ))
@@ -27,7 +27,7 @@ int main()
 	{
 		bool o = false;
 		std::string a;
-		auto cli = cli_parser()
+		auto cli = cli()
 			.add_argument(opt( o )["--option"].optional())
 			.add_argument(arg(a, "argument"));
 		auto result = cli.parse( { "TestApp", "--function", "arg" } );

@@ -14,7 +14,7 @@ int main()
 	bfg::mini_test::scope test;
 
 	std::string value;
-	auto cli = cli_parser() | arg( value, "value" );
+	auto cli = lyra::cli() | arg( value, "value" );
 
 	value = "";
 	{

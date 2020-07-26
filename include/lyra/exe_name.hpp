@@ -74,7 +74,7 @@ exe_name::exe_name(std::string& ref)
 ----
 
 Constructs with a target string to receive the name of the executable. When
-the `cli_parser` is run the target string will contain the exec name.
+the `cli` is run the target string will contain the exec name.
 
 end::reference[] */
 inline exe_name::exe_name(std::string& ref)
@@ -91,7 +91,7 @@ exe_name::exe_name(LambdaT const& lambda)
 ----
 
 Construct with a callback that is called with the value of the executable name
-when the `cli_parser` runs.
+when the `cli` runs.
 
 end::reference[] */
 template <typename LambdaT>

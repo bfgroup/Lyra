@@ -19,7 +19,7 @@ int main(int argc, const char** argv)
 
 	// The parser with the multiple option arguments. They are composed
 	// together by the "|" operator.
-	auto cli = lyra::cli_parser();
+	auto cli = lyra::cli();
 	cli.add_argument(lyra::opt(width, "width")
 		.name("-w").name("--width").help("How wide should it be?"));
 	cli.add_argument(lyra::opt(name, "name")

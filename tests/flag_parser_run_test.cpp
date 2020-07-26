@@ -13,7 +13,7 @@ int main()
     using namespace lyra;
     bfg::mini_test::scope test;
     bool flag = false;
-    auto p = cli_parser() | opt( flag, "true|false" )
+    auto p = cli() | opt( flag, "true|false" )
             ["-f"]
             ("A flag");
 

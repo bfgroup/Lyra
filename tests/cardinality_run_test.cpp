@@ -16,7 +16,7 @@ int main()
 
 	{
 		int number = 1;
-		auto cli = cli_parser()
+		auto cli = lyra::cli()
 				| opt(number, "number")["--number"];
 		auto result = cli.parse({ "TestApp", "--number", "42" });
 		test
@@ -25,7 +25,7 @@ int main()
 	}
 	{
 		std::vector<int> numbers;
-		auto cli = cli_parser() |
+		auto cli = lyra::cli() |
 				opt(numbers, "number")["--number"].cardinality(0);
 		auto result = cli.parse({ "TestApp", "--number", "42", "--number", "33" });
 		test
@@ -35,7 +35,7 @@ int main()
 	}
 	{
 		std::vector<int> numbers;
-		auto cli = cli_parser() |
+		auto cli = lyra::cli() |
 				opt(numbers, "number")["--number"].cardinality(0, 2);
 		{
 			auto result = cli.parse({ "TestApp" });
@@ -58,7 +58,7 @@ int main()
 	}
 	{
 		std::vector<int> numbers;
-		auto cli = cli_parser() |
+		auto cli = lyra::cli() |
 				opt(numbers, "number")["--number"].cardinality(2, 3);
 		{
 			auto result = cli.parse({ "TestApp", "--number", "42", "--number", "33", "--number", "1" });
@@ -73,7 +73,7 @@ int main()
 	}
 	{
 		std::vector<int> numbers;
-		auto cli = cli_parser() |
+		auto cli = lyra::cli() |
 				arg(numbers, "number").required();
 		{
 			auto result = cli.parse({ "TestApp", "42", "33", "1" });

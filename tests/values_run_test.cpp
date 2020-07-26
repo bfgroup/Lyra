@@ -17,7 +17,7 @@ void test_val(bfg::mini_test::scope& test, Value test_value, Value default_value
 	lyra::detail::to_string(test_value, test_value_s);
 	{
 		Value arg_value { default_value };
-		auto cli = cli_parser() | arg(arg_value, "value");
+		auto cli = lyra::cli() | arg(arg_value, "value");
 		char* args[] = { (char*)"TestApp", (char*)test_value_s.c_str() };
 		auto result = cli.parse({ 2, args });
 		if (!result) std::cerr << result.errorMessage() << '\n';
@@ -26,7 +26,7 @@ void test_val(bfg::mini_test::scope& test, Value test_value, Value default_value
 	}
 	{
 		Value arg_value { default_value };
-		auto cli = cli_parser() | opt(arg_value, "value").name("--value");
+		auto cli = lyra::cli() | opt(arg_value, "value").name("--value");
 		char* args[]
 			= { (char*)"TestApp", (char*)"--value", (char*)test_value_s.c_str() };
 		auto result = cli.parse({ 3, args });
@@ -36,7 +36,7 @@ void test_val(bfg::mini_test::scope& test, Value test_value, Value default_value
 	}
 	{
 		Value arg_value { default_value };
-		auto cli = cli_parser() | opt(arg_value, "value").name("--value");
+		auto cli = lyra::cli() | opt(arg_value, "value").name("--value");
 		std::string value_arg = "--value=" + test_value_s;
 		char* args[]
 			= { (char*)"TestApp", (char*)value_arg.c_str() };

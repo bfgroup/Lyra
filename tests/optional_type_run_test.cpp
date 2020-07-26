@@ -15,7 +15,7 @@ int main()
 
 	#if defined(LYRA_CONFIG_OPTIONAL_TYPE)
 	LYRA_CONFIG_OPTIONAL_TYPE<std::string> name;
-	auto p = cli_parser()
+	auto p = cli()
 		| opt(name, "name")
 			["-n"]["--name"]
 			("the name to use");
