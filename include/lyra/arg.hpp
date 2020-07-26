@@ -38,7 +38,8 @@ class arg : public bound_parser<arg>
 				for (size_t i = 0; i < c.minimum; ++i)
 					oss << (i > 0 ? " " : "") << "<" << m_hint << ">";
 				if (c.is_unbounded())
-					oss << (c.is_required() ? " " : "") << "[<" << m_hint << ">...]";
+					oss << (c.is_required() ? " " : "") << "[<" << m_hint
+						<< ">...]";
 			}
 			else if (c.is_unbounded())
 			{
@@ -57,11 +58,11 @@ class arg : public bound_parser<arg>
 		return { { get_usage_text(), m_description } };
 	}
 
-	using parser_base::parse;
+	using parser::parse;
 
-	auto parse(
-		std::string const&, detail::token_iterator const& tokens,
-		parser_customization const&) const -> parse_result override
+	parse_result parse(
+		detail::token_iterator const& tokens,
+		parser_customization const&) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
@@ -86,11 +87,6 @@ class arg : public bound_parser<arg>
 			return parse_result::ok(detail::parse_state(
 				parser_result_type::matched, remainingTokens));
 		}
-	}
-
-	virtual std::unique_ptr<parser_base> clone() const override
-	{
-		return std::unique_ptr<parser_base>(new arg(*this));
 	}
 };
 } // namespace lyra

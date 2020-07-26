@@ -121,7 +121,7 @@ width = 10, name = Lyra, doIt = 0
 == Alternate Specification
 
 Using operators for specifying the parser argument is not everyone's
-"cut of tea". Like all such interface choices there are advantages and
+"cup of tea". Like all such interface choices there are advantages and
 disadvantages to any particular API one chooses. Because of this Lyra supports
 both the preceding `operator` model and a "named arguments using methods"
 model for specifying the arguments. Below are the various specification
@@ -256,7 +256,7 @@ include::../examples/doc_commands.cpp[tag=doc]
 
 include::../include/lyra/parser.hpp[tag=reference]
 
-include::../include/lyra/cli_parser.hpp[tag=reference]
+include::../include/lyra/cli.hpp[tag=reference]
 
 include::../include/lyra/opt.hpp[tag=reference]
 
@@ -268,12 +268,26 @@ include::../include/lyra/exe_name.hpp[tag=reference]
 
 include::../include/lyra/args.hpp[tag=reference]
 
+include::../include/lyra/arguments.hpp[tag=reference]
+
+include::../include/lyra/literal.hpp[tag=reference]
+
+include::../include/lyra/group.hpp[tag=reference]
+
 :leveloffset: -2
 
 == History
 
 === 1.5
 
+Warning: The `cli_parser` type was renamed to `cli`. Both the `cli_parser` type
+and the `lyra/cli_parser.hpp` header are deprecated and will be removed in a
+future release.
+
+Changes:
+
+* *New*: Grouped arguments to specify and handle sub-command parsers.
+	-- _René Ferdinand Rivera Morell_
 * Fix missing hint text for optional, `lyra::arg`, arguments.
 	-- _René Ferdinand Rivera Morell_
 * Bring back some cleaner and compact formatting of the help text.
@@ -283,7 +297,7 @@ include::../include/lyra/args.hpp[tag=reference]
 
 Changes:
 
-* *New* Allow passing option value choices as an array.
+* *New*: Allow passing option value choices as an array.
 	-- _René Ferdinand Rivera Morell_
 * Fix sample code in README to be correctly namespaced.
 	-- _Jayesh Badwaik_
@@ -374,7 +388,7 @@ Changes:
 	-- _Rémi Gastaldi_
 * *New*: Define argument value `choices()` as either a fixed set or checked
 	by a custom lambda function. -- _René Ferdinand Rivera Morell_
-* Fix being able to parse straight from `args` outside of `cli_parser`. Which
+* Fix being able to parse straight from `args` outside of `cli`. Which
 	resulted in misleading parsing behavior. _René Ferdinand Rivera Morell_
 * Fix use of `cardinality()` to correctly constrain bounded cardinality
 	ranges like `[0,n]`, `[n,m]`, `[n,n]`, and `[0,0]` (unbounded).

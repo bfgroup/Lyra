@@ -44,9 +44,9 @@ class help : public opt
 		return description_text;
 	}
 
-	virtual std::unique_ptr<parser_base> clone() const override
+	virtual std::unique_ptr<parser> clone() const override
 	{
-		return std::unique_ptr<parser_base>(new help(*this));
+		return make_clone<help>(this);
 	}
 
 	private:

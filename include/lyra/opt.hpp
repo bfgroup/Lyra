@@ -108,10 +108,10 @@ class opt : public bound_parser<opt>
 			return optName;
 	}
 
-	using parser_base::parse;
+	using parser::parse;
 
 	parse_result parse(
-		std::string const&, detail::token_iterator const& tokens,
+		detail::token_iterator const& tokens,
 		parser_customization const& customize) const override
 	{
 		auto validationResult = validate();
@@ -178,9 +178,9 @@ class opt : public bound_parser<opt>
 		return bound_parser::validate();
 	}
 
-	std::unique_ptr<parser_base> clone() const override
+	std::unique_ptr<parser> clone() const override
 	{
-		return std::unique_ptr<parser_base>(new opt(*this));
+		return make_clone<opt>(this);
 	}
 };
 

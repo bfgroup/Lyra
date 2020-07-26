@@ -54,6 +54,8 @@ file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 * Customizable option syntax.
 * Specify cardinality of `arg`-s from one to many.
 * Limit option values to a specified set of values.
+* Recursive argument groups with callback for detection. This allows for
+  easy and generic sub-command specifications.
 
 // end::features[]
 
