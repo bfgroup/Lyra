@@ -1107,10 +1107,9 @@ the subcommands.</p>
     <span class="tok-n">run_command</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span> <span class="tok-o">&amp;</span> <span class="tok-n">cli</span><span class="tok-p">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
     <span class="tok-p">{</span>
         <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span>
-            <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">()</span> <i class="conum" data-value="4"></i><b>(4)</b>
-                <span class="tok-p">.</span><span class="tok-n">on_success</span><span class="tok-p">(</span> <i class="conum" data-value="5"></i><b>(5)</b>
-                    <span class="tok-p">[</span><span class="tok-k">this</span><span class="tok-p">](</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">this</span><span class="tok-o">-&gt;</span><span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-n">g</span><span class="tok-p">);</span> <span class="tok-p">})</span>
-                <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span> <i class="conum" data-value="6"></i><b>(6)</b>
+            <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">(</span>
+                <span class="tok-p">[</span><span class="tok-k">this</span><span class="tok-p">](</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">this</span><span class="tok-o">-&gt;</span><span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-n">g</span><span class="tok-p">);</span> <span class="tok-p">})</span> <i class="conum" data-value="4"></i><b>(4)</b>
+                <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span> <i class="conum" data-value="5"></i><b>(5)</b>
                     <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">literal</span><span class="tok-p">(</span><span class="tok-s">&quot;run&quot;</span><span class="tok-p">).</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;Execute the given command.&quot;</span><span class="tok-p">))</span>
                 <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">))</span>
                 <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span>
@@ -1129,7 +1128,7 @@ the subcommands.</p>
 
     <span class="tok-kt">void</span> <span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
-        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">g</span><span class="tok-p">;</span> <i class="conum" data-value="7"></i><b>(7)</b>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">g</span><span class="tok-p">;</span> <i class="conum" data-value="6"></i><b>(6)</b>
         <span class="tok-k">else</span>
         <span class="tok-p">{</span>
             <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;RUN: &quot;</span>
@@ -1141,7 +1140,7 @@ the subcommands.</p>
 <span class="tok-p">};</span>
 
 <span class="tok-c1">// Kill a named process, sub-command data.</span>
-<span class="tok-k">struct</span> <span class="tok-n">kill_command</span> <i class="conum" data-value="8"></i><b>(8)</b>
+<span class="tok-k">struct</span> <span class="tok-n">kill_command</span> <i class="conum" data-value="7"></i><b>(7)</b>
 <span class="tok-p">{</span>
     <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">process_name</span><span class="tok-p">;</span>
     <span class="tok-kt">int</span> <span class="tok-n">signal</span> <span class="tok-o">=</span> <span class="tok-mi">9</span><span class="tok-p">;</span>
@@ -1150,9 +1149,7 @@ the subcommands.</p>
     <span class="tok-n">kill_command</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span> <span class="tok-o">&amp;</span> <span class="tok-n">cli</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span>
-            <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">()</span>
-                <span class="tok-p">.</span><span class="tok-n">on_success</span><span class="tok-p">(</span>
-                    <span class="tok-p">[</span><span class="tok-k">this</span><span class="tok-p">](</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">this</span><span class="tok-o">-&gt;</span><span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-n">g</span><span class="tok-p">);</span> <span class="tok-p">})</span>
+            <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">([</span><span class="tok-k">this</span><span class="tok-p">](</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">this</span><span class="tok-o">-&gt;</span><span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-n">g</span><span class="tok-p">);</span> <span class="tok-p">})</span>
                 <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">literal</span><span class="tok-p">(</span><span class="tok-s">&quot;kill&quot;</span><span class="tok-p">).</span><span class="tok-n">help</span><span class="tok-p">(</span>
                     <span class="tok-s">&quot;Terminate the process with the given name.&quot;</span><span class="tok-p">))</span>
                 <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">))</span>
@@ -1188,13 +1185,13 @@ the subcommands.</p>
     <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">));</span>
     <span class="tok-n">kill_command</span> <span class="tok-n">kill</span> <span class="tok-p">{</span> <span class="tok-n">cli</span> <span class="tok-p">};</span>
     <span class="tok-n">run_command</span> <span class="tok-n">run</span> <span class="tok-p">{</span> <span class="tok-n">cli</span> <span class="tok-p">};</span>
-    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span> <i class="conum" data-value="9"></i><b>(9)</b>
+    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span> <i class="conum" data-value="8"></i><b>(8)</b>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span><span class="tok-p">;</span>
         <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
-    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span> <i class="conum" data-value="10"></i><b>(10)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span> <i class="conum" data-value="9"></i><b>(9)</b>
     <span class="tok-p">{</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span> <span class="tok-p">}</span>
     <span class="tok-k">return</span> <span class="tok-n">result</span> <span class="tok-o">?</span> <span class="tok-mi">0</span> <span class="tok-o">:</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
@@ -1220,35 +1217,31 @@ the given <code>cli</code></td>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>Each sub-command is added as a parameter sub-group. Which indicates that
 the all the arguments within it get parsed together instead of as part of
-the <code>cli</code> itself.</td>
+the <code>cli</code> itself. We set a callback for when the group is successfully
+parsed which tells us we have a valid command to respond to.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>We set a callback for when the group is successfully parsed which tells us
-we have a valid command to respond to.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
 <td>For the name of the command we use a <code>literal</code>. Which will only match is
 that specific argument value is present.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
 <td>We specified a sub-command specific help option. Here we can check for it
 and print out the help for the <code>group</code> only. This help will look similar
 to the full help output, but only contains the <code>group</code> arguments.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
 <td>And now the information for our <code>kill</code> sub-comand.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
 <td>We go ahead and parse the top-level <code>cli</code> which will also parse the
 sub-command groups.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
 <td>At the end we can do the regular error handling.</td>
 </tr>
 </table>
@@ -1845,12 +1838,31 @@ this one.</p>
 <p>Is-a <a href="#lyra_arguments"><code>lyra::arguments</code></a>.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_group_specification"><a class="anchor" href="#lyra_group_specification"></a>8.15.1. Specification</h4>
+<h4 id="lyra_group_ctor"><a class="anchor" href="#lyra_group_ctor"></a>8.15.1. Construction</h4>
 <div class="sect4">
-<h5 id="lyra_group_on_success"><a class="anchor" href="#lyra_group_on_success"></a>8.15.1.1. <code>lyra::group::on_success</code></h5>
+<h5 id="lyra_group_ctor_default"><a class="anchor" href="#lyra_group_ctor_default"></a>8.15.1.1. Default</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">group</span><span class="tok-o">&amp;</span> <span class="tok-n">group</span><span class="tok-o">::</span><span class="tok-n">on_success</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">function</span><span class="tok-o">&lt;</span><span class="tok-kt">void</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">group</span><span class="tok-o">&amp;</span><span class="tok-p">)</span><span class="tok-o">&gt;&amp;</span> <span class="tok-n">f</span><span class="tok-p">)</span></code></pre>
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">group</span><span class="tok-p">()</span> <span class="tok-o">=</span> <span class="tok-k">default</span><span class="tok-p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Default constructing a <code>group</code> does not register the success callback.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="lyra_group_ctor_copy"><a class="anchor" href="#lyra_group_ctor_copy"></a>8.15.1.2. Copy</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">group</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">group</span><span class="tok-o">&amp;</span> <span class="tok-n">other</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="lyra_group_ctor_success"><a class="anchor" href="#lyra_group_ctor_success"></a>8.15.1.3. Success Handler</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">group</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">function</span><span class="tok-o">&lt;</span><span class="tok-kt">void</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">group</span> <span class="tok-o">&amp;</span><span class="tok-p">)</span><span class="tok-o">&gt;</span> <span class="tok-o">&amp;</span> <span class="tok-n">f</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">

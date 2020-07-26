@@ -2074,8 +2074,7 @@ inline arguments& arguments::operator|=(arguments const& other)
 
 #include <functional>
 
-namespace lyra
-{
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_group]
@@ -2087,21 +2086,14 @@ end::reference[] */
 class group : public arguments
 {
 	public:
-	group() { }
-
-	group(const group& other)
-		: arguments(other)
-		, success_signal(other.success_signal)
-	{
-	}
-
-	group& on_success(const std::function<void(const group&)>& f);
+	group() = default;
+	group(const group & other);
+	group(const std::function<void(const group &)> & f);
 
 	virtual bool is_group() const override { return true; }
 
-	parse_result parse(
-		detail::token_iterator const& tokens,
-		parser_customization const& customize) const override
+	parse_result parse(detail::token_iterator const & tokens,
+		parser_customization const & customize) const override
 	{
 		parse_result result = arguments::parse(tokens, customize);
 		if (result && result.value().type() != parser_result_type::no_match
@@ -2118,35 +2110,63 @@ class group : public arguments
 	}
 
 	private:
-	std::function<void(const group&)> success_signal;
+	std::function<void(const group &)> success_signal;
 };
 
 /* tag::reference[]
 
-[#lyra_group_specification]
-== Specification
+[#lyra_group_ctor]
+== Construction
 
 end::reference[] */
 
 /* tag::reference[]
 
-[#lyra_group_on_success]
-=== `lyra::group::on_success`
+[#lyra_group_ctor_default]
+=== Default
 
 [source]
 ----
-group& group::on_success(const std::function<void(const group&)>& f)
+group() = default;
+----
+
+Default constructing a `group` does not register the success callback.
+
+end::reference[] */
+
+/* tag::reference[]
+
+[#lyra_group_ctor_copy]
+=== Copy
+
+[source]
+----
+group::group(const group& other);
+----
+
+end::reference[] */
+inline group::group(const group & other)
+	: arguments(other)
+	, success_signal(other.success_signal)
+{}
+
+/* tag::reference[]
+
+[#lyra_group_ctor_success]
+=== Success Handler
+
+[source]
+----
+group::group(const std::function<void(const group &)> & f)
 ----
 
 Registers a function to call when the group is successfully parsed. The
 function is called with the group to facilitate customization.
 
 end::reference[] */
-inline group& group::on_success(const std::function<void(const group&)>& f)
-{
-	success_signal = f;
-	return *this;
-}
+inline group::group(const std::function<void(const group &)> & f)
+	: success_signal(f)
+{}
 
 } // namespace lyra
 

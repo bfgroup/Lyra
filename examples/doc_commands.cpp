@@ -36,10 +36,9 @@ struct run_command // <1>
 	run_command(lyra::cli & cli) // <3>
 	{
 		cli.add_argument(
-			lyra::group() // <4>
-				.on_success( // <5>
-					[this](const lyra::group & g) { this->do_command(g); })
-				.add_argument( // <6>
+			lyra::group(
+				[this](const lyra::group & g) { this->do_command(g); }) // <4>
+				.add_argument( // <5>
 					lyra::literal("run").help("Execute the given command."))
 				.add_argument(lyra::help(show_help))
 				.add_argument(
@@ -58,7 +57,7 @@ struct run_command // <1>
 
 	void do_command(const lyra::group & g)
 	{
-		if (show_help) std::cout << g; // <7>
+		if (show_help) std::cout << g; // <6>
 		else
 		{
 			std::cout << "RUN: "
@@ -70,7 +69,7 @@ struct run_command // <1>
 };
 
 // Kill a named process, sub-command data.
-struct kill_command // <8>
+struct kill_command // <7>
 {
 	std::string process_name;
 	int signal = 9;
@@ -79,9 +78,7 @@ struct kill_command // <8>
 	kill_command(lyra::cli & cli)
 	{
 		cli.add_argument(
-			lyra::group()
-				.on_success(
-					[this](const lyra::group & g) { this->do_command(g); })
+			lyra::group([this](const lyra::group & g) { this->do_command(g); })
 				.add_argument(lyra::literal("kill").help(
 					"Terminate the process with the given name."))
 				.add_argument(lyra::help(show_help))
@@ -117,13 +114,13 @@ int main(int argc, const char ** argv)
 	cli.add_argument(lyra::help(show_help));
 	kill_command kill { cli };
 	run_command run { cli };
-	auto result = cli.parse({ argc, argv }); // <9>
+	auto result = cli.parse({ argc, argv }); // <8>
 	if (show_help)
 	{
 		std::cout << cli;
 		return 0;
 	}
-	if (!result) // <10>
+	if (!result) // <9>
 	{ std::cerr << result.errorMessage() << "\n"; }
 	return result ? 0 : 1;
 }
@@ -137,16 +134,15 @@ int main(int argc, const char ** argv)
 	the given `cli`
 <4> Each sub-command is added as a parameter sub-group. Which indicates that
 	the all the arguments within it get parsed together instead of as part of
-	the `cli` itself.
-<5> We set a callback for when the group is successfully parsed which tells us
-	we have a valid command to respond to.
-<6> For the name of the command we use a `literal`. Which will only match is
+	the `cli` itself. We set a callback for when the group is successfully
+	parsed which tells us we have a valid command to respond to.
+<5> For the name of the command we use a `literal`. Which will only match is
 	that specific argument value is present.
-<7> We specified a sub-command specific help option. Here we can check for it
+<6> We specified a sub-command specific help option. Here we can check for it
 	and print out the help for the `group` only. This help will look similar
 	to the full help output, but only contains the `group` arguments.
-<8> And now the information for our `kill` sub-comand.
-<9> We go ahead and parse the top-level `cli` which will also parse the
+<7> And now the information for our `kill` sub-comand.
+<8> We go ahead and parse the top-level `cli` which will also parse the
 	sub-command groups.
-<10> At the end we can do the regular error handling.
+<9> At the end we can do the regular error handling.
 */ // end::doc[]
