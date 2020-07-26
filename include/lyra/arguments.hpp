@@ -70,7 +70,7 @@ class arguments : public parser
 			std::string usage_text = p->get_usage_text();
 			if (usage_text.size() > 0)
 			{
-				if (os.tellp() != 0) os << " ";
+				if (os.tellp() != std::ostringstream::pos_type(0)) os << " ";
 				if (p->is_group())
 					os << "{ " << usage_text << " }";
 				else if (p->is_optional())
