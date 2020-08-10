@@ -9,8 +9,7 @@
 #include "lyra/parser.hpp"
 #include <string>
 
-namespace lyra
-{
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_literal]
@@ -24,10 +23,12 @@ end::reference[] */
 class literal : public parser
 {
 	public:
-	literal(std::string const& n);
+	// Construction.
+	literal(std::string const & n);
 
-	literal& help(const std::string& text);
-	literal& operator()(std::string const& description);
+	// Help description.
+	literal & help(const std::string & text);
+	literal & operator()(std::string const & description);
 
 	// Singular argument allowed and required.
 	virtual detail::parser_cardinality cardinality() const override
@@ -35,25 +36,29 @@ class literal : public parser
 		return { 1, 1 };
 	}
 
+	// Internal.
+
 	virtual std::string get_usage_text() const override { return name; }
+
 	virtual std::string get_description_text() const override
 	{
 		return description;
 	}
+
 	virtual help_text get_help_text() const override
 	{
 		return { { name, description } };
 	}
 
 	using parser::parse;
-	virtual parse_result parse(
-		detail::token_iterator const& tokens,
-		parser_customization const&) const override
+
+	virtual parse_result parse(detail::token_iterator const & tokens,
+		parser_customization const &) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
 
-		auto const& token = tokens.argument();
+		auto const & token = tokens.argument();
 		if (name == token.name)
 		{
 			auto remainingTokens = tokens;
@@ -99,10 +104,9 @@ inline literal::literal(std::string const& n)
 Constructs the literal with the name of the token to match.
 
 end::reference[] */
-inline literal::literal(std::string const& n)
+inline literal::literal(std::string const & n)
 	: name(n)
-{
-}
+{}
 
 /* tag::reference[]
 
@@ -125,12 +129,12 @@ literal& literal::operator()(std::string const& description)
 Specify a help description for the literal.
 
 end::reference[] */
-inline literal& literal::help(const std::string& text)
+inline literal & literal::help(const std::string & text)
 {
 	description = text;
 	return *this;
 }
-inline literal& literal::operator()(std::string const& description)
+inline literal & literal::operator()(std::string const & description)
 {
 	return this->help(description);
 }

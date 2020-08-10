@@ -242,13 +242,13 @@ follows:
 
 |===
 
-== Use Cases
-
-:leveloffset: +2
+:leveloffset: +1
 
 include::../examples/doc_commands.cpp[tag=doc]
 
-:leveloffset: -2
+include::../examples/doc_groups.cpp[tag=doc]
+
+:leveloffset: -1
 
 == Reference
 
@@ -274,6 +274,8 @@ include::../include/lyra/literal.hpp[tag=reference]
 
 include::../include/lyra/group.hpp[tag=reference]
 
+include::../include/lyra/command.hpp[tag=reference]
+
 :leveloffset: -2
 
 == History
@@ -286,6 +288,10 @@ future release.
 
 Changes:
 
+* *New*: Command argument to make it easy to specify sub-commands.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Alternative sequential argument parsing mode.
+	-- _René Ferdinand Rivera Morell_
 * *New*: Grouped arguments to specify and handle sub-command parsers.
 	-- _René Ferdinand Rivera Morell_
 * *New*: `literal` parser to directly match an argument.

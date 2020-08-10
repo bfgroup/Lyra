@@ -21,8 +21,8 @@ int main()
 		TEST_MAIN(test, "doc_commands_run_test", "run", "-v", "foo");
 		TEST_MAIN(test, "doc_commands_run_test", "kill", "-s", "9", "foo");
 		TEST_MAIN_FAIL(test, "doc_commands_run_test", "jump");
-		TEST_MAIN_FAIL(test, "doc_commands_run_test", "run");
-		TEST_MAIN_FAIL(test, "doc_commands_run_test", "kill");
+		TEST_MAIN(test, "doc_commands_run_test", "run");
+		TEST_MAIN(test, "doc_commands_run_test", "kill");
 		TEST_MAIN_FAIL(test, "doc_commands_run_test", "kill", "-s", "foo");
 		TEST_MAIN(test, "doc_commands_run_test", "kill", "--help");
 	}

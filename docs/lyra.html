@@ -466,38 +466,36 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_help_option">4. Help Option</a></li>
 <li><a href="#_value_choices">5. Value Choices</a></li>
 <li><a href="#_option_values">6. Option Values</a></li>
-<li><a href="#_use_cases">7. Use Cases</a>
+<li><a href="#_sub_commands">7. Sub-commands</a></li>
+<li><a href="#_argument_groups">8. Argument Groups</a></li>
+<li><a href="#_reference">9. Reference</a>
 <ul class="sectlevel2">
-<li><a href="#_sub_commands">7.1. Sub-commands</a></li>
+<li><a href="#lyra_parser_customization">9.1. <code>lyra::parser_customization</code></a></li>
+<li><a href="#lyra_default_parser_customization">9.2. <code>lyra::default_parser_customization</code></a></li>
+<li><a href="#lyra_parser_result">9.3. <code>lyra::parser_result</code></a></li>
+<li><a href="#lyra_parser">9.4. <code>lyra::parser</code></a></li>
+<li><a href="#lyra_composable_parser">9.5. <code>lyra::composable_parser</code></a></li>
+<li><a href="#lyra_bound_parser">9.6. <code>lyra::bound_parser</code></a></li>
+<li><a href="#lyra_cli">9.7. <code>lyra::cli</code></a></li>
+<li><a href="#lyra_opt">9.8. <code>lyra::opt</code></a></li>
+<li><a href="#lyra_arg">9.9. <code>lyra::arg</code></a></li>
+<li><a href="#lyra_help">9.10. <code>lyra::help</code></a></li>
+<li><a href="#lyra_exe_name">9.11. <code>lyra::exe_name</code></a></li>
+<li><a href="#lyra_args">9.12. <code>lyra::args</code></a></li>
+<li><a href="#lyra_arguments">9.13. <code>lyra::arguments</code></a></li>
+<li><a href="#lyra_literal">9.14. <code>lyra::literal</code></a></li>
+<li><a href="#lyra_group">9.15. <code>lyra::group</code></a></li>
+<li><a href="#lyra_command">9.16. <code>lyra::command</code></a></li>
 </ul>
 </li>
-<li><a href="#_reference">8. Reference</a>
+<li><a href="#_history">10. History</a>
 <ul class="sectlevel2">
-<li><a href="#lyra_parser_customization">8.1. <code>lyra::parser_customization</code></a></li>
-<li><a href="#lyra_default_parser_customization">8.2. <code>lyra::default_parser_customization</code></a></li>
-<li><a href="#lyra_parser_result">8.3. <code>lyra::parser_result</code></a></li>
-<li><a href="#lyra_parser">8.4. <code>lyra::parser</code></a></li>
-<li><a href="#lyra_composable_parser">8.5. <code>lyra::composable_parser</code></a></li>
-<li><a href="#lyra_bound_parser">8.6. <code>lyra::bound_parser</code></a></li>
-<li><a href="#lyra_cli">8.7. <code>lyra::cli</code></a></li>
-<li><a href="#lyra_opt">8.8. <code>lyra::opt</code></a></li>
-<li><a href="#lyra_arg">8.9. <code>lyra::arg</code></a></li>
-<li><a href="#lyra_help">8.10. <code>lyra::help</code></a></li>
-<li><a href="#lyra_exe_name">8.11. <code>lyra::exe_name</code></a></li>
-<li><a href="#lyra_args">8.12. <code>lyra::args</code></a></li>
-<li><a href="#lyra_arguments">8.13. <code>lyra::arguments</code></a></li>
-<li><a href="#lyra_literal">8.14. <code>lyra::literal</code></a></li>
-<li><a href="#lyra_group">8.15. <code>lyra::group</code></a></li>
-</ul>
-</li>
-<li><a href="#_history">9. History</a>
-<ul class="sectlevel2">
-<li><a href="#_1_5">9.1. 1.5</a></li>
-<li><a href="#_1_4">9.2. 1.4</a></li>
-<li><a href="#_1_3">9.3. 1.3</a></li>
-<li><a href="#_1_2">9.4. 1.2</a></li>
-<li><a href="#_1_1">9.5. 1.1</a></li>
-<li><a href="#_1_0">9.6. 1.0</a></li>
+<li><a href="#_1_5">10.1. 1.5</a></li>
+<li><a href="#_1_4">10.2. 1.4</a></li>
+<li><a href="#_1_3">10.3. 1.3</a></li>
+<li><a href="#_1_2">10.4. 1.2</a></li>
+<li><a href="#_1_1">10.5. 1.1</a></li>
+<li><a href="#_1_0">10.6. 1.0</a></li>
 </ul>
 </li>
 </ul>
@@ -1078,16 +1076,19 @@ follows:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_use_cases"><a class="anchor" href="#_use_cases"></a>7. Use Cases</h2>
+<h2 id="_sub_commands"><a class="anchor" href="#_sub_commands"></a>7. Sub-commands</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_sub_commands"><a class="anchor" href="#_sub_commands"></a>7.1. Sub-commands</h3>
 <div class="paragraph">
-<p>A common program structure is to have a "wrapper" or "shell" that performs
-various sub-commands. Even though Lyra doesn&#8217;t have a direct specification
-for sub-commands, it is possible to support this use case. In this example
-we use group parameters to specify the sub-commands and a lambda to execute
-the subcommands.</p>
+<p>A common program pattern is to have a single "shell" program that performs
+various independent commands. For example you have <code>git commit..</code>,
+<code>git push..</code>, and so on. It&#8217;s possible to create such sub-command parsers in
+Lyra with the use of <code>arguments</code>, <code>group</code> and <code>literal</code> parsers manually. But
+as this is a very common use case the library provides a convenience group
+parser for the occasion.</p>
+</div>
+<div class="paragraph">
+<p>In this example we use two <code>command</code> parameters to specify the sub-commands and
+a lambda to execute the subcommands.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1107,10 +1108,9 @@ the subcommands.</p>
     <span class="tok-n">run_command</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span> <span class="tok-o">&amp;</span> <span class="tok-n">cli</span><span class="tok-p">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
     <span class="tok-p">{</span>
         <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span>
-            <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">(</span>
+            <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">command</span><span class="tok-p">(</span><span class="tok-s">&quot;run&quot;</span><span class="tok-p">,</span>
                 <span class="tok-p">[</span><span class="tok-k">this</span><span class="tok-p">](</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">this</span><span class="tok-o">-&gt;</span><span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-n">g</span><span class="tok-p">);</span> <span class="tok-p">})</span> <i class="conum" data-value="4"></i><b>(4)</b>
-                <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span> <i class="conum" data-value="5"></i><b>(5)</b>
-                    <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">literal</span><span class="tok-p">(</span><span class="tok-s">&quot;run&quot;</span><span class="tok-p">).</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;Execute the given command.&quot;</span><span class="tok-p">))</span>
+                <span class="tok-p">.</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;Execute the given command.&quot;</span><span class="tok-p">)</span>
                 <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">))</span>
                 <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span>
                     <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">verbose</span><span class="tok-p">)</span>
@@ -1128,7 +1128,8 @@ the subcommands.</p>
 
     <span class="tok-kt">void</span> <span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
-        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">g</span><span class="tok-p">;</span> <i class="conum" data-value="6"></i><b>(6)</b>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span>
+            <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">g</span><span class="tok-p">;</span> <i class="conum" data-value="5"></i><b>(5)</b>
         <span class="tok-k">else</span>
         <span class="tok-p">{</span>
             <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;RUN: &quot;</span>
@@ -1140,7 +1141,7 @@ the subcommands.</p>
 <span class="tok-p">};</span>
 
 <span class="tok-c1">// Kill a named process, sub-command data.</span>
-<span class="tok-k">struct</span> <span class="tok-n">kill_command</span> <i class="conum" data-value="7"></i><b>(7)</b>
+<span class="tok-k">struct</span> <span class="tok-n">kill_command</span> <i class="conum" data-value="6"></i><b>(6)</b>
 <span class="tok-p">{</span>
     <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">process_name</span><span class="tok-p">;</span>
     <span class="tok-kt">int</span> <span class="tok-n">signal</span> <span class="tok-o">=</span> <span class="tok-mi">9</span><span class="tok-p">;</span>
@@ -1149,9 +1150,9 @@ the subcommands.</p>
     <span class="tok-n">kill_command</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span> <span class="tok-o">&amp;</span> <span class="tok-n">cli</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span>
-            <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">([</span><span class="tok-k">this</span><span class="tok-p">](</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">this</span><span class="tok-o">-&gt;</span><span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-n">g</span><span class="tok-p">);</span> <span class="tok-p">})</span>
-                <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">literal</span><span class="tok-p">(</span><span class="tok-s">&quot;kill&quot;</span><span class="tok-p">).</span><span class="tok-n">help</span><span class="tok-p">(</span>
-                    <span class="tok-s">&quot;Terminate the process with the given name.&quot;</span><span class="tok-p">))</span>
+            <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">command</span><span class="tok-p">(</span>
+                <span class="tok-s">&quot;kill&quot;</span><span class="tok-p">,</span> <span class="tok-p">[</span><span class="tok-k">this</span><span class="tok-p">](</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-k">this</span><span class="tok-o">-&gt;</span><span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-n">g</span><span class="tok-p">);</span> <span class="tok-p">})</span>
+                <span class="tok-p">.</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;Terminate the process with the given name.&quot;</span><span class="tok-p">)</span>
                 <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">))</span>
                 <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span>
                     <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">signal</span><span class="tok-p">,</span> <span class="tok-s">&quot;signal&quot;</span><span class="tok-p">)</span>
@@ -1169,7 +1170,8 @@ the subcommands.</p>
 
     <span class="tok-kt">void</span> <span class="tok-n">do_command</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
-        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">g</span><span class="tok-p">;</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span>
+            <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">g</span><span class="tok-p">;</span>
         <span class="tok-k">else</span>
             <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;KILL:&quot;</span>
                       <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot; signal=&quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">signal</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot; process=&quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">process_name</span>
@@ -1185,14 +1187,16 @@ the subcommands.</p>
     <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">));</span>
     <span class="tok-n">kill_command</span> <span class="tok-n">kill</span> <span class="tok-p">{</span> <span class="tok-n">cli</span> <span class="tok-p">};</span>
     <span class="tok-n">run_command</span> <span class="tok-n">run</span> <span class="tok-p">{</span> <span class="tok-n">cli</span> <span class="tok-p">};</span>
-    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span> <i class="conum" data-value="8"></i><b>(8)</b>
+    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span> <i class="conum" data-value="7"></i><b>(7)</b>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_help</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span><span class="tok-p">;</span>
         <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
     <span class="tok-p">}</span>
-    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span> <i class="conum" data-value="9"></i><b>(9)</b>
-    <span class="tok-p">{</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span> <span class="tok-p">}</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span> <i class="conum" data-value="8"></i><b>(8)</b>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
     <span class="tok-k">return</span> <span class="tok-n">result</span> <span class="tok-o">?</span> <span class="tok-mi">0</span> <span class="tok-o">:</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
@@ -1211,49 +1215,156 @@ sub-command.</td>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>The constructor defines the additional arguments for the sub-command in
-the given <code>cli</code></td>
+the given <code>cli</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Each sub-command is added as a parameter sub-group. Which indicates that
-the all the arguments within it get parsed together instead of as part of
-the <code>cli</code> itself. We set a callback for when the group is successfully
+<td>Each sub-command sets a callback for when the group is successfully
 parsed which tells us we have a valid command to respond to.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>For the name of the command we use a <code>literal</code>. Which will only match is
-that specific argument value is present.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
 <td>We specified a sub-command specific help option. Here we can check for it
 and print out the help for the <code>group</code> only. This help will look similar
 to the full help output, but only contains the <code>group</code> arguments.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
 <td>And now the information for our <code>kill</code> sub-comand.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
 <td>We go ahead and parse the top-level <code>cli</code> which will also parse the
 sub-command groups.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
 <td>At the end we can do the regular error handling.</td>
 </tr>
 </table>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_argument_groups"><a class="anchor" href="#_argument_groups"></a>8. Argument Groups</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are times when some CLI arguments only make sense when considered as a
+collection. A common case for this are commands. But it also comes up in any
+case where some arguments are all required, but only if one of them is present.
+Lets take the example of specifying the dimension of a window. For example one
+could expect both <code>--width=X</code> and <code>--height=Y</code> options. But you could make them
+optional, as a group, in favor of an automatic screen sized window of a
+particular aspect ratio with a <code>--aspect=R</code> option. In such a case we would
+want to allow either one of these to be specified:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">exec</span> <span class="tok-o">--</span><span class="tok-n">width</span><span class="tok-o">=</span><span class="tok-mi">1440</span> <span class="tok-o">--</span><span class="tok-n">height</span><span class="tok-o">=</span><span class="tok-mi">720</span>
+<span class="tok-n">exec</span> <span class="tok-o">--</span><span class="tok-n">aspect</span><span class="tok-o">=</span><span class="tok-mf">1.78</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With argument groups we can allow such an arrangement.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;lyra/lyra.hpp&gt;</span><span class="tok-cp"></span>
+
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;string&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;vector&gt;</span><span class="tok-cp"></span>
+
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-kt">char</span> <span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-c1">// Default to showing a full screen 4/3 aspect</span>
+    <span class="tok-kt">bool</span> <span class="tok-n">show_full_screen</span> <span class="tok-o">=</span> <span class="tok-nb">true</span><span class="tok-p">;</span>
+    <span class="tok-kt">float</span> <span class="tok-n">aspect</span> <span class="tok-o">=</span> <span class="tok-mf">4.0f</span> <span class="tok-o">/</span> <span class="tok-mf">3.0f</span><span class="tok-p">;</span>
+
+    <span class="tok-c1">// If it&#39;s not full screen the size will be specified.</span>
+    <span class="tok-kt">unsigned</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-kt">unsigned</span> <span class="tok-n">height</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+
+    <span class="tok-c1">// Did the user ask for help?</span>
+    <span class="tok-kt">bool</span> <span class="tok-n">get_help</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
+
+    <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span> <span class="tok-n">cli</span><span class="tok-p">;</span>
+    <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-n">get_help</span><span class="tok-p">))</span>
+        <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">aspect</span><span class="tok-p">,</span> <span class="tok-s">&quot;aspect&quot;</span><span class="tok-p">)</span> <i class="conum" data-value="1"></i><b>(1)</b>
+                          <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;--aspect&quot;</span><span class="tok-p">)</span>
+                          <span class="tok-p">.</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;Full-screen aspect ratio window.&quot;</span><span class="tok-p">))</span>
+        <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">([</span><span class="tok-o">&amp;</span><span class="tok-p">](</span><span class="tok-k">const</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                          <span class="tok-n">show_full_screen</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
+                      <span class="tok-p">})</span> <i class="conum" data-value="2"></i><b>(2)</b>
+                          <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span><span class="tok-p">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
+                                            <span class="tok-p">.</span><span class="tok-n">required</span><span class="tok-p">()</span>
+                                            <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">)</span>
+                                            <span class="tok-p">.</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;Width of window.&quot;</span><span class="tok-p">))</span>
+                          <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-n">height</span><span class="tok-p">,</span> <span class="tok-s">&quot;height&quot;</span><span class="tok-p">)</span>
+                                            <span class="tok-p">.</span><span class="tok-n">required</span><span class="tok-p">()</span> <i class="conum" data-value="4"></i><b>(4)</b>
+                                            <span class="tok-p">.</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-s">&quot;--height&quot;</span><span class="tok-p">)</span>
+                                            <span class="tok-p">.</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-s">&quot;Height of window.&quot;</span><span class="tok-p">)));</span>
+
+    <span class="tok-c1">// Parse the program arguments.</span>
+    <span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">({</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">});</span>
+
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">get_help</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">cli</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-c1">// Check that the arguments where valid.</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">result</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span>
+                  <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">show_full_screen</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Full screen aspect = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">aspect</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+    <span class="tok-k">else</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Window size = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot; x &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">height</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>ratio</code> option is a regular value argument.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The group for the window size turns off the full screen mode when the size
+options are fully specified.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>We add the <code>width</code> and <code>height</code> options to the group.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>We specify both the <code>width</code> and <code>height</code> as required to ensure we get only
+a valid specification when both are present. Otherwise the group is
+ignored as optional.</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 <div class="sect1">
-<h2 id="_reference"><a class="anchor" href="#_reference"></a>8. Reference</h2>
+<h2 id="_reference"><a class="anchor" href="#_reference"></a>9. Reference</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="lyra_parser_customization"><a class="anchor" href="#lyra_parser_customization"></a>8.1. <code>lyra::parser_customization</code></h3>
+<h3 id="lyra_parser_customization"><a class="anchor" href="#lyra_parser_customization"></a>9.1. <code>lyra::parser_customization</code></h3>
 <div class="paragraph">
 <p>Customization interface for parsing of options.</p>
 </div>
@@ -1277,7 +1388,7 @@ for all options.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_default_parser_customization"><a class="anchor" href="#lyra_default_parser_customization"></a>8.2. <code>lyra::default_parser_customization</code></h3>
+<h3 id="lyra_default_parser_customization"><a class="anchor" href="#lyra_default_parser_customization"></a>9.2. <code>lyra::default_parser_customization</code></h3>
 <div class="paragraph">
 <p>Is-a <code>lyra::parser_customization</code> that defines token delimiters as space (" ")
 or equal (<code>=</code>). And specifies the option prefix character as dash (<code>-</code>)
@@ -1288,20 +1399,20 @@ resulting in long options with <code>--</code> and short options with <code>-</c
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_parser_result"><a class="anchor" href="#lyra_parser_result"></a>8.3. <code>lyra::parser_result</code></h3>
+<h3 id="lyra_parser_result"><a class="anchor" href="#lyra_parser_result"></a>9.3. <code>lyra::parser_result</code></h3>
 <div class="paragraph">
 <p>The result of parsing arguments.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_parser"><a class="anchor" href="#lyra_parser"></a>8.4. <code>lyra::parser</code></h3>
+<h3 id="lyra_parser"><a class="anchor" href="#lyra_parser"></a>9.4. <code>lyra::parser</code></h3>
 <div class="paragraph">
 <p>Base for all argument parser types.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_parser_specification"><a class="anchor" href="#lyra_parser_specification"></a>8.4.1. Specification</h4>
+<h4 id="lyra_parser_specification"><a class="anchor" href="#lyra_parser_specification"></a>9.4.1. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_parser_help_text_item"><a class="anchor" href="#lyra_parser_help_text_item"></a>8.4.1.1. <code>lyra::parser::help_text_item</code></h5>
+<h5 id="lyra_parser_help_text_item"><a class="anchor" href="#lyra_parser_help_text_item"></a>9.4.1.1. <code>lyra::parser::help_text_item</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">struct</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">parser</span><span class="tok-o">::</span><span class="tok-n">help_text_item</span>
@@ -1319,7 +1430,7 @@ method.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_parser_help_text"><a class="anchor" href="#lyra_parser_help_text"></a>8.4.1.2. <code>lyra::parser::help_text</code></h5>
+<h5 id="lyra_parser_help_text"><a class="anchor" href="#lyra_parser_help_text"></a>9.4.1.2. <code>lyra::parser::help_text</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">using</span> <span class="tok-n">help_text</span> <span class="tok-o">=</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">vector</span><span class="tok-o">&lt;</span><span class="tok-n">help_text_item</span><span class="tok-o">&gt;</span><span class="tok-p">;</span></code></pre>
@@ -1330,7 +1441,7 @@ method.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_parser_get_help_text"><a class="anchor" href="#lyra_parser_get_help_text"></a>8.4.1.3. <code>lyra::parser::get_help_text</code></h5>
+<h5 id="lyra_parser_get_help_text"><a class="anchor" href="#lyra_parser_get_help_text"></a>9.4.1.3. <code>lyra::parser::get_help_text</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">virtual</span> <span class="tok-n">help_text</span> <span class="tok-nf">get_help_text</span><span class="tok-p">()</span> <span class="tok-k">const</span><span class="tok-p">;</span></code></pre>
@@ -1345,7 +1456,7 @@ the stream operator.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_parser_get_usage_text"><a class="anchor" href="#lyra_parser_get_usage_text"></a>8.4.1.4. <code>lyra::parser::get_usage_text</code></h5>
+<h5 id="lyra_parser_get_usage_text"><a class="anchor" href="#lyra_parser_get_usage_text"></a>9.4.1.4. <code>lyra::parser::get_usage_text</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">virtual</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">get_usage_text</span><span class="tok-p">()</span> <span class="tok-k">const</span><span class="tok-p">;</span></code></pre>
@@ -1357,7 +1468,7 @@ sub-parsers. This is called to print out the help text from the stream operator.
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_parser_get_description_text"><a class="anchor" href="#lyra_parser_get_description_text"></a>8.4.1.5. <code>lyra::parser::get_description_text</code></h5>
+<h5 id="lyra_parser_get_description_text"><a class="anchor" href="#lyra_parser_get_description_text"></a>9.4.1.5. <code>lyra::parser::get_description_text</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">virtual</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">get_description_text</span><span class="tok-p">()</span> <span class="tok-k">const</span><span class="tok-p">;</span></code></pre>
@@ -1371,19 +1482,19 @@ called to print out the help text from the stream operator.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_composable_parser"><a class="anchor" href="#lyra_composable_parser"></a>8.5. <code>lyra::composable_parser</code></h3>
+<h3 id="lyra_composable_parser"><a class="anchor" href="#lyra_composable_parser"></a>9.5. <code>lyra::composable_parser</code></h3>
 <div class="paragraph">
 <p>A parser that can be composed with other parsers using <code>operator|</code>. Composing
 two <code>composable_parser</code> instances generates a <code>cli</code> parser.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_bound_parser"><a class="anchor" href="#lyra_bound_parser"></a>8.6. <code>lyra::bound_parser</code></h3>
+<h3 id="lyra_bound_parser"><a class="anchor" href="#lyra_bound_parser"></a>9.6. <code>lyra::bound_parser</code></h3>
 <div class="paragraph">
 <p>Parser that binds a variable reference or callback to the value of an argument.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_bound_parser_ctor"><a class="anchor" href="#lyra_bound_parser_ctor"></a>8.6.1. Construction</h4>
+<h4 id="lyra_bound_parser_ctor"><a class="anchor" href="#lyra_bound_parser_ctor"></a>9.6.1. Construction</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1407,9 +1518,9 @@ contain all the specified values.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_bound_parser_specification"><a class="anchor" href="#lyra_bound_parser_specification"></a>8.6.2. Specification</h4>
+<h4 id="lyra_bound_parser_specification"><a class="anchor" href="#lyra_bound_parser_specification"></a>9.6.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_bound_parser_help"><a class="anchor" href="#lyra_bound_parser_help"></a>8.6.2.1. <code>lyra::bound_parser::help</code>, <code>lyra::bound_parser::operator(help)</code></h5>
+<h5 id="lyra_bound_parser_help"><a class="anchor" href="#lyra_bound_parser_help"></a>9.6.2.1. <code>lyra::bound_parser::help</code>, <code>lyra::bound_parser::operator(help)</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1423,7 +1534,7 @@ contain all the specified values.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_bound_parser_optional"><a class="anchor" href="#lyra_bound_parser_optional"></a>8.6.2.2. <code>lyra::bound_parser::optional</code></h5>
+<h5 id="lyra_bound_parser_optional"><a class="anchor" href="#lyra_bound_parser_optional"></a>9.6.2.2. <code>lyra::bound_parser::optional</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1436,7 +1547,7 @@ contain all the specified values.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_bound_parser_required"><a class="anchor" href="#lyra_bound_parser_required"></a>8.6.2.3. <code>lyra::bound_parser::required(n)</code></h5>
+<h5 id="lyra_bound_parser_required"><a class="anchor" href="#lyra_bound_parser_required"></a>9.6.2.3. <code>lyra::bound_parser::required(n)</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1449,7 +1560,7 @@ contain all the specified values.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_bound_parser_cardinality"><a class="anchor" href="#lyra_bound_parser_cardinality"></a>8.6.2.4. <code>lyra::bound_parser::cardinality(n, m)</code></h5>
+<h5 id="lyra_bound_parser_cardinality"><a class="anchor" href="#lyra_bound_parser_cardinality"></a>9.6.2.4. <code>lyra::bound_parser::cardinality(n, m)</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1467,7 +1578,7 @@ inclusive.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_bound_parser_choices"><a class="anchor" href="#lyra_bound_parser_choices"></a>8.6.2.5. <code>lyra::bound_parser::choices</code></h5>
+<h5 id="lyra_bound_parser_choices"><a class="anchor" href="#lyra_bound_parser_choices"></a>9.6.2.5. <code>lyra::bound_parser::choices</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">Derived</span><span class="tok-o">&gt;</span>
@@ -1489,7 +1600,7 @@ form the <code>check_choice</code> function is called with the parsed value and 
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_cli"><a class="anchor" href="#lyra_cli"></a>8.7. <code>lyra::cli</code></h3>
+<h3 id="lyra_cli"><a class="anchor" href="#lyra_cli"></a>9.7. <code>lyra::cli</code></h3>
 <div class="paragraph">
 <p>A Combined parser made up of any two or more other parsers. Creating and using
 one of these as a basis one can incrementally compose other parsers into this
@@ -1508,9 +1619,9 @@ one. For example:</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_cli_ctor"><a class="anchor" href="#lyra_cli_ctor"></a>8.7.1. Construction</h4>
+<h4 id="lyra_cli_ctor"><a class="anchor" href="#lyra_cli_ctor"></a>9.7.1. Construction</h4>
 <div class="sect4">
-<h5 id="lyra_cli_ctor_default"><a class="anchor" href="#lyra_cli_ctor_default"></a>8.7.1.1. Default</h5>
+<h5 id="lyra_cli_ctor_default"><a class="anchor" href="#lyra_cli_ctor_default"></a>9.7.1.1. Default</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli</span><span class="tok-p">()</span> <span class="tok-o">=</span> <span class="tok-k">default</span><span class="tok-p">;</span></code></pre>
@@ -1522,7 +1633,7 @@ and options for parsing a command line.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_cli_ctor_copy"><a class="anchor" href="#lyra_cli_ctor_copy"></a>8.7.1.2. Copy</h5>
+<h5 id="lyra_cli_ctor_copy"><a class="anchor" href="#lyra_cli_ctor_copy"></a>9.7.1.2. Copy</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli</span><span class="tok-o">::</span><span class="tok-n">cli</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">cli</span><span class="tok-o">&amp;</span> <span class="tok-n">other</span><span class="tok-p">);</span></code></pre>
@@ -1531,9 +1642,9 @@ and options for parsing a command line.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_cli_specification"><a class="anchor" href="#lyra_cli_specification"></a>8.7.2. Specification</h4>
+<h4 id="lyra_cli_specification"><a class="anchor" href="#lyra_cli_specification"></a>9.7.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_cli_add_argument"><a class="anchor" href="#lyra_cli_add_argument"></a>8.7.2.1. <code>lyra::cli::add_argument</code></h5>
+<h5 id="lyra_cli_add_argument"><a class="anchor" href="#lyra_cli_add_argument"></a>9.7.2.1. <code>lyra::cli::add_argument</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">cli</span><span class="tok-o">&amp;</span> <span class="tok-n">cli</span><span class="tok-o">::</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">exe_name</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">exe_name</span><span class="tok-p">);</span>
@@ -1554,7 +1665,7 @@ name (for <code>exe_name</code> parser), directly added as an argument (for
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_cli_parse"><a class="anchor" href="#lyra_cli_parse"></a>8.7.2.2. <code>lyra::cli::parse</code></h5>
+<h5 id="lyra_cli_parse"><a class="anchor" href="#lyra_cli_parse"></a>9.7.2.2. <code>lyra::cli::parse</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">parse_result</span> <span class="tok-n">cli</span><span class="tok-o">::</span><span class="tok-n">parse</span><span class="tok-p">(</span>
@@ -1571,7 +1682,7 @@ callbacks may have been called.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_opt"><a class="anchor" href="#lyra_opt"></a>8.8. <code>lyra::opt</code></h3>
+<h3 id="lyra_opt"><a class="anchor" href="#lyra_opt"></a>9.8. <code>lyra::opt</code></h3>
 <div class="paragraph">
 <p>A parser for one option with multiple possible names. The option value(s) are
 communicated through a reference to a variable, a container, or a callback.</p>
@@ -1580,9 +1691,9 @@ communicated through a reference to a variable, a container, or a callback.</p>
 <p>Is-a <a href="#lyra_bound_parser"><code>lyra::bound_parser</code></a>.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_opt_ctor"><a class="anchor" href="#lyra_opt_ctor"></a>8.8.1. Construction</h4>
+<h4 id="lyra_opt_ctor"><a class="anchor" href="#lyra_opt_ctor"></a>9.8.1. Construction</h4>
 <div class="sect4">
-<h5 id="lyra_opt_ctor_flags"><a class="anchor" href="#lyra_opt_ctor_flags"></a>8.8.1.1. Flags</h5>
+<h5 id="lyra_opt_ctor_flags"><a class="anchor" href="#lyra_opt_ctor_flags"></a>9.8.1.1. Flags</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span><span class="tok-kt">bool</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">);</span>
@@ -1602,7 +1713,7 @@ option is present.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_opt_ctor_values"><a class="anchor" href="#lyra_opt_ctor_values"></a>8.8.1.2. Values</h5>
+<h5 id="lyra_opt_ctor_values"><a class="anchor" href="#lyra_opt_ctor_values"></a>9.8.1.2. Values</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">T</span><span class="tok-o">&gt;</span>
@@ -1620,9 +1731,9 @@ with the value when the option is present.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_opt_specification"><a class="anchor" href="#lyra_opt_specification"></a>8.8.2. Specification</h4>
+<h4 id="lyra_opt_specification"><a class="anchor" href="#lyra_opt_specification"></a>9.8.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_opt_name"><a class="anchor" href="#lyra_opt_name"></a>8.8.2.1. <code>lyra::opt::name</code></h5>
+<h5 id="lyra_opt_name"><a class="anchor" href="#lyra_opt_name"></a>9.8.2.1. <code>lyra::opt::name</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">&amp;</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-o">::</span><span class="tok-n">name</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-o">&amp;</span><span class="tok-n">opt_name</span><span class="tok-p">)</span>
@@ -1637,7 +1748,7 @@ One can add multiple short spellings at once with <code>-abc</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_arg"><a class="anchor" href="#lyra_arg"></a>8.9. <code>lyra::arg</code></h3>
+<h3 id="lyra_arg"><a class="anchor" href="#lyra_arg"></a>9.9. <code>lyra::arg</code></h3>
 <div class="paragraph">
 <p>A parser for regular arguments, i.e. not <code>--</code> or <code>-</code> prefixed. This is simply
 a way to get values of arguments directly specified in the cli.</p>
@@ -1647,7 +1758,7 @@ a way to get values of arguments directly specified in the cli.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_help"><a class="anchor" href="#lyra_help"></a>8.10. <code>lyra::help</code></h3>
+<h3 id="lyra_help"><a class="anchor" href="#lyra_help"></a>9.10. <code>lyra::help</code></h3>
 <div class="paragraph">
 <p>Utility function that defines a default <code>--help</code> option. You can specify a
 <code>bool</code> flag to indicate if the help option was specified and that you could
@@ -1668,7 +1779,7 @@ and "Options, arguments" sections.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_exe_name"><a class="anchor" href="#lyra_exe_name"></a>8.11. <code>lyra::exe_name</code></h3>
+<h3 id="lyra_exe_name"><a class="anchor" href="#lyra_exe_name"></a>9.11. <code>lyra::exe_name</code></h3>
 <div class="paragraph">
 <p>Specifies the name of the executable.</p>
 </div>
@@ -1676,7 +1787,7 @@ and "Options, arguments" sections.</p>
 <p>Is-a <a href="#lyra_composable_parser"><code>lyra::composable_parser</code></a>.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_exe_name_ctor"><a class="anchor" href="#lyra_exe_name_ctor"></a>8.11.1. Construction</h4>
+<h4 id="lyra_exe_name_ctor"><a class="anchor" href="#lyra_exe_name_ctor"></a>9.11.1. Construction</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">exe_name</span><span class="tok-p">(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span><span class="tok-o">&amp;</span> <span class="tok-n">ref</span><span class="tok-p">)</span></code></pre>
@@ -1698,9 +1809,9 @@ when the <code>cli</code> runs.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_exe_name_accessors"><a class="anchor" href="#lyra_exe_name_accessors"></a>8.11.2. Accessors</h4>
+<h4 id="lyra_exe_name_accessors"><a class="anchor" href="#lyra_exe_name_accessors"></a>9.11.2. Accessors</h4>
 <div class="sect4">
-<h5 id="lyra_exe_name_name"><a class="anchor" href="#lyra_exe_name_name"></a>8.11.2.1. <code>lyra::exe_name::name</code></h5>
+<h5 id="lyra_exe_name_name"><a class="anchor" href="#lyra_exe_name_name"></a>9.11.2.1. <code>lyra::exe_name::name</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">name</span><span class="tok-p">()</span> <span class="tok-k">const</span></code></pre>
@@ -1712,7 +1823,7 @@ value.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_exe_name_set"><a class="anchor" href="#lyra_exe_name_set"></a>8.11.2.2. <code>lyra::exe_name::set</code></h5>
+<h5 id="lyra_exe_name_set"><a class="anchor" href="#lyra_exe_name_set"></a>9.11.2.2. <code>lyra::exe_name::set</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">parser_result</span> <span class="tok-n">exe_name</span><span class="tok-o">::</span><span class="tok-n">set</span><span class="tok-p">(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">newName</span><span class="tok-p">)</span></code></pre>
@@ -1726,13 +1837,13 @@ in the bound string reference or callback.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_args"><a class="anchor" href="#lyra_args"></a>8.12. <code>lyra::args</code></h3>
+<h3 id="lyra_args"><a class="anchor" href="#lyra_args"></a>9.12. <code>lyra::args</code></h3>
 <div class="paragraph">
 <p>Transport for raw args (copied from main args, or supplied via init list).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_arguments"><a class="anchor" href="#lyra_arguments"></a>8.13. <code>lyra::arguments</code></h3>
+<h3 id="lyra_arguments"><a class="anchor" href="#lyra_arguments"></a>9.13. <code>lyra::arguments</code></h3>
 <div class="paragraph">
 <p>A Combined parser made up of any number of parsers. Creating and using
 one of these as a basis one can incrementally compose other parsers into this
@@ -1751,9 +1862,9 @@ one. For example:</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_arguments_ctor"><a class="anchor" href="#lyra_arguments_ctor"></a>8.13.1. Construction</h4>
+<h4 id="lyra_arguments_ctor"><a class="anchor" href="#lyra_arguments_ctor"></a>9.13.1. Construction</h4>
 <div class="sect4">
-<h5 id="lyra_arguments_ctor_default"><a class="anchor" href="#lyra_arguments_ctor_default"></a>8.13.1.1. Default</h5>
+<h5 id="lyra_arguments_ctor_default"><a class="anchor" href="#lyra_arguments_ctor_default"></a>9.13.1.1. Default</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">arguments</span><span class="tok-p">()</span> <span class="tok-o">=</span> <span class="tok-k">default</span><span class="tok-p">;</span></code></pre>
@@ -1765,7 +1876,7 @@ and options for parsing a arguments line.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_arguments_ctor_copy"><a class="anchor" href="#lyra_arguments_ctor_copy"></a>8.13.1.2. Copy</h5>
+<h5 id="lyra_arguments_ctor_copy"><a class="anchor" href="#lyra_arguments_ctor_copy"></a>9.13.1.2. Copy</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">arguments</span><span class="tok-o">::</span><span class="tok-n">arguments</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">arguments</span><span class="tok-o">&amp;</span> <span class="tok-n">other</span><span class="tok-p">);</span></code></pre>
@@ -1774,9 +1885,9 @@ and options for parsing a arguments line.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_arguments_specification"><a class="anchor" href="#lyra_arguments_specification"></a>8.13.2. Specification</h4>
+<h4 id="lyra_arguments_specification"><a class="anchor" href="#lyra_arguments_specification"></a>9.13.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_arguments_add_argument"><a class="anchor" href="#lyra_arguments_add_argument"></a>8.13.2.1. <code>lyra::arguments::add_argument</code></h5>
+<h5 id="lyra_arguments_add_argument"><a class="anchor" href="#lyra_arguments_add_argument"></a>9.13.2.1. <code>lyra::arguments::add_argument</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">arguments</span><span class="tok-o">&amp;</span> <span class="tok-n">arguments</span><span class="tok-o">::</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">parser</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">p</span><span class="tok-p">);</span>
@@ -1792,10 +1903,48 @@ argument (for <code>parser</code>), or add the parsers from another <code>argume
 this one.</p>
 </div>
 </div>
+<div class="sect4">
+<h5 id="_lyraargumentssequential"><a class="anchor" href="#_lyraargumentssequential"></a>9.13.2.2. <code>lyra::arguments::sequential</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">arguments</span> <span class="tok-o">&amp;</span> <span class="tok-n">arguments</span><span class="tok-o">::</span><span class="tok-n">sequential</span><span class="tok-p">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sets the parsing mode for the arguments to "sequential". When parsing the
+arguments they will be, greedily, consumed in the order they where added.
+This is useful for sub-commands and structured command lines.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lyraargumentsinclusive"><a class="anchor" href="#_lyraargumentsinclusive"></a>9.13.2.3. <code>lyra::arguments::inclusive</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">arguments</span> <span class="tok-o">&amp;</span> <span class="tok-n">arguments</span><span class="tok-o">::</span><span class="tok-n">inclusive</span><span class="tok-p">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sets the parsing mode for the arguments to "inclusively any". This is the
+default that attempts to match each parsed argument with all the available
+parsers. This means that there is no ordering enforced.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lyraargumentsget"><a class="anchor" href="#_lyraargumentsget"></a>9.13.2.4. <code>lyra::arguments::get</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">T</span><span class="tok-o">&gt;</span>
+<span class="tok-n">T</span> <span class="tok-o">&amp;</span> <span class="tok-n">arguments</span><span class="tok-o">::</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-kt">size_t</span> <span class="tok-n">i</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Get a modifyable reference to one of the parsers specified.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_literal"><a class="anchor" href="#lyra_literal"></a>8.14. <code>lyra::literal</code></h3>
+<h3 id="lyra_literal"><a class="anchor" href="#lyra_literal"></a>9.14. <code>lyra::literal</code></h3>
 <div class="paragraph">
 <p>A parser that matches a single fixed value.</p>
 </div>
@@ -1803,9 +1952,9 @@ this one.</p>
 <p>Is-a <a href="#lyra_parser"><code>lyra::parser</code></a>.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_literal_ctor"><a class="anchor" href="#lyra_literal_ctor"></a>8.14.1. Construction</h4>
+<h4 id="lyra_literal_ctor"><a class="anchor" href="#lyra_literal_ctor"></a>9.14.1. Construction</h4>
 <div class="sect4">
-<h5 id="_token"><a class="anchor" href="#_token"></a>8.14.1.1. Token</h5>
+<h5 id="_token"><a class="anchor" href="#_token"></a>9.14.1.1. Token</h5>
 <div id="lyra_literal_ctor_token" class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-kr">inline</span> <span class="tok-n">literal</span><span class="tok-o">::</span><span class="tok-n">literal</span><span class="tok-p">(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">n</span><span class="tok-p">)</span></code></pre>
@@ -1817,9 +1966,9 @@ this one.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lyra_literal_specification"><a class="anchor" href="#lyra_literal_specification"></a>8.14.2. Specification</h4>
+<h4 id="lyra_literal_specification"><a class="anchor" href="#lyra_literal_specification"></a>9.14.2. Specification</h4>
 <div class="sect4">
-<h5 id="lyra_literal_help"><a class="anchor" href="#lyra_literal_help"></a>8.14.2.1. <code>lyra:literal::help</code></h5>
+<h5 id="lyra_literal_help"><a class="anchor" href="#lyra_literal_help"></a>9.14.2.1. <code>lyra:literal::help</code></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">literal</span><span class="tok-o">&amp;</span> <span class="tok-n">literal</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span><span class="tok-o">&amp;</span> <span class="tok-n">text</span><span class="tok-p">)</span>
@@ -1833,21 +1982,21 @@ this one.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_group"><a class="anchor" href="#lyra_group"></a>8.15. <code>lyra::group</code></h3>
+<h3 id="lyra_group"><a class="anchor" href="#lyra_group"></a>9.15. <code>lyra::group</code></h3>
 <div class="paragraph">
 <p>A group of arguments provides for parsing, optionally, a set of arguments
 together. The group itself is considered successfully parsed only when the
-arguments int he group are parsed without errors. A common use case for this
+arguments in the group are parsed without errors. A common use case for this
 are sub-commands. This implementation is recursive. And hence allows groups
-with groups for describing branching argument parsing.</p>
+within groups for describing branching argument parsing.</p>
 </div>
 <div class="paragraph">
 <p>Is-a <a href="#lyra_arguments"><code>lyra::arguments</code></a>.</p>
 </div>
 <div class="sect3">
-<h4 id="lyra_group_ctor"><a class="anchor" href="#lyra_group_ctor"></a>8.15.1. Construction</h4>
+<h4 id="lyra_group_ctor"><a class="anchor" href="#lyra_group_ctor"></a>9.15.1. Construction</h4>
 <div class="sect4">
-<h5 id="lyra_group_ctor_default"><a class="anchor" href="#lyra_group_ctor_default"></a>8.15.1.1. Default</h5>
+<h5 id="lyra_group_ctor_default"><a class="anchor" href="#lyra_group_ctor_default"></a>9.15.1.1. Default</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">group</span><span class="tok-p">()</span> <span class="tok-o">=</span> <span class="tok-k">default</span><span class="tok-p">;</span></code></pre>
@@ -1858,7 +2007,7 @@ with groups for describing branching argument parsing.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_group_ctor_copy"><a class="anchor" href="#lyra_group_ctor_copy"></a>8.15.1.2. Copy</h5>
+<h5 id="lyra_group_ctor_copy"><a class="anchor" href="#lyra_group_ctor_copy"></a>9.15.1.2. Copy</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">group</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">group</span><span class="tok-o">&amp;</span> <span class="tok-n">other</span><span class="tok-p">);</span></code></pre>
@@ -1866,7 +2015,7 @@ with groups for describing branching argument parsing.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="lyra_group_ctor_success"><a class="anchor" href="#lyra_group_ctor_success"></a>8.15.1.3. Success Handler</h5>
+<h5 id="lyra_group_ctor_success"><a class="anchor" href="#lyra_group_ctor_success"></a>9.15.1.3. Success Handler</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">group</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">function</span><span class="tok-o">&lt;</span><span class="tok-kt">void</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">group</span> <span class="tok-o">&amp;</span><span class="tok-p">)</span><span class="tok-o">&gt;</span> <span class="tok-o">&amp;</span> <span class="tok-n">f</span><span class="tok-p">)</span></code></pre>
@@ -1879,13 +2028,90 @@ function is called with the group to facilitate customization.</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="lyra_command"><a class="anchor" href="#lyra_command"></a>9.16. <code>lyra::command</code></h3>
+<div class="paragraph">
+<p>A parser that encapsulates the pattern of parsing sub-commands. It provides a
+quick wrapper for the equivalent arrangement of <code>group</code> and <code>literal</code> parsers.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">command</span> <span class="tok-n">c</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">command</span><span class="tok-p">(</span><span class="tok-s">&quot;sub&quot;</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Is equivalent to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">command</span> <span class="tok-n">c</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-p">()</span>
+    <span class="tok-p">.</span><span class="tok-n">sequential</span><span class="tok-p">()</span>
+    <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">literal</span><span class="tok-p">(</span><span class="tok-s">&quot;sub&quot;</span><span class="tok-p">))</span>
+    <span class="tok-p">.</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">group</span><span class="tok-p">());</span>
+<span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span> <span class="tok-o">&amp;</span> <span class="tok-n">g</span> <span class="tok-o">=</span> <span class="tok-n">c</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-o">&lt;</span><span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">group</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>I.e. it&#8217;s conposed of a <code>literal</code> followed by the rest of the command arguments.</p>
+</div>
+<div class="paragraph">
+<p>Is-a <a href="#lyra_group"><code>lyra::group</code></a>.</p>
+</div>
+<div class="sect3">
+<h4 id="lyra_command_ctor"><a class="anchor" href="#lyra_command_ctor"></a>9.16.1. Construction</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">command</span><span class="tok-o">::</span><span class="tok-n">command</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-o">&amp;</span> <span class="tok-n">n</span><span class="tok-p">);</span>
+<span class="tok-n">command</span><span class="tok-o">::</span><span class="tok-n">command</span><span class="tok-p">(</span>
+    <span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-o">&amp;</span> <span class="tok-n">n</span><span class="tok-p">,</span> <span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">function</span><span class="tok-o">&lt;</span><span class="tok-kt">void</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">group</span> <span class="tok-o">&amp;</span><span class="tok-p">)</span><span class="tok-o">&gt;&amp;</span> <span class="tok-n">f</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To construct an <code>command</code> we need a name (<code>n</code>) that matches, and triggers, that
+command.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="lyra_command_specification"><a class="anchor" href="#lyra_command_specification"></a>9.16.2. Specification</h4>
+<div class="sect4">
+<h5 id="lyra_command_help"><a class="anchor" href="#lyra_command_help"></a>9.16.2.1. <code>lyra:command::help</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-n">command</span> <span class="tok-o">&amp;</span> <span class="tok-n">command</span><span class="tok-o">::</span><span class="tok-n">help</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span><span class="tok-o">&amp;</span> <span class="tok-n">text</span><span class="tok-p">)</span>
+<span class="tok-n">command</span> <span class="tok-o">&amp;</span> <span class="tok-n">command</span><span class="tok-o">::</span><span class="tok-k">operator</span><span class="tok-p">()(</span><span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-k">const</span><span class="tok-o">&amp;</span> <span class="tok-n">description</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Specify a help description for the command. This sets the help for the
+underlying literal of the command.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="lyra_command_add_argument"><a class="anchor" href="#lyra_command_add_argument"></a>9.16.2.2. <code>lyra::command::add_argument</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">P</span><span class="tok-o">&gt;</span>
+<span class="tok-n">command</span> <span class="tok-o">&amp;</span> <span class="tok-n">command</span><span class="tok-o">::</span><span class="tok-n">add_argument</span><span class="tok-p">(</span><span class="tok-n">P</span> <span class="tok-k">const</span> <span class="tok-o">&amp;</span> <span class="tok-n">p</span><span class="tok-p">);</span>
+<span class="tok-k">template</span> <span class="tok-o">&lt;</span><span class="tok-k">typename</span> <span class="tok-n">P</span><span class="tok-o">&gt;</span>
+<span class="tok-n">command</span> <span class="tok-o">&amp;</span> <span class="tok-n">command</span><span class="tok-o">::</span><span class="tok-k">operator</span><span class="tok-o">|=</span><span class="tok-p">(</span><span class="tok-n">parser</span> <span class="tok-k">const</span> <span class="tok-o">&amp;</span> <span class="tok-n">p</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Adds the given argument parser to the considered arguments for this <code>comand</code>.
+The argument is added to the sub-group argument instead of this one. Hence it
+has the effect of adding arguments <strong>after</strong> the command name.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_history"><a class="anchor" href="#_history"></a>9. History</h2>
+<h2 id="_history"><a class="anchor" href="#_history"></a>10. History</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_5"><a class="anchor" href="#_1_5"></a>9.1. 1.5</h3>
+<h3 id="_1_5"><a class="anchor" href="#_1_5"></a>10.1. 1.5</h3>
 <div class="admonitionblock warning">
 <table>
 <tr>
@@ -1906,6 +2132,12 @@ future release.
 <div class="ulist">
 <ul>
 <li>
+<p><strong>New</strong>: Command argument to make it easy to specify sub-commands.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p><strong>New</strong>: Alternative sequential argument parsing mode.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
 <p><strong>New</strong>: Grouped arguments to specify and handle sub-command parsers.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
@@ -1921,7 +2153,7 @@ future release.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_4"><a class="anchor" href="#_1_4"></a>9.2. 1.4</h3>
+<h3 id="_1_4"><a class="anchor" href="#_1_4"></a>10.2. 1.4</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -1955,7 +2187,7 @@ and with
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_3"><a class="anchor" href="#_1_3"></a>9.3. 1.3</h3>
+<h3 id="_1_3"><a class="anchor" href="#_1_3"></a>10.3. 1.3</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -2000,7 +2232,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_2"><a class="anchor" href="#_1_2"></a>9.4. 1.2</h3>
+<h3 id="_1_2"><a class="anchor" href="#_1_2"></a>10.4. 1.2</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -2046,7 +2278,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_1"><a class="anchor" href="#_1_1"></a>9.5. 1.1</h3>
+<h3 id="_1_1"><a class="anchor" href="#_1_1"></a>10.5. 1.1</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -2091,7 +2323,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>9.6. 1.0</h3>
+<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>10.6. 1.0</h3>
 <div class="paragraph">
 <p>This is the initial base version based on Clara library. Changes from that
 library:</p>

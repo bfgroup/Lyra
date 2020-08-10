@@ -17,9 +17,9 @@ namespace lyra {
 
 A group of arguments provides for parsing, optionally, a set of arguments
 together. The group itself is considered successfully parsed only when the
-arguments int he group are parsed without errors. A common use case for this
+arguments in the group are parsed without errors. A common use case for this
 are sub-commands. This implementation is recursive. And hence allows groups
-with groups for describing branching argument parsing.
+within groups for describing branching argument parsing.
 
 Is-a <<lyra_arguments>>.
 

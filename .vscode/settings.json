@@ -1,0 +1,6 @@
+{
+	"python.pythonPath": "/usr/bin/python",
+	"C_Cpp.default.browse.path": ["include"],
+	"C_Cpp.default.includePath": ["include"],
+	"C_Cpp.default.cppStandard": "c++11"
+}

@@ -11,6 +11,7 @@
 #include "lyra/arguments.hpp"
 #include "lyra/cli.hpp"
 #include "lyra/cli_parser.hpp"
+#include "lyra/command.hpp"
 #include "lyra/exe_name.hpp"
 #include "lyra/group.hpp"
 #include "lyra/help.hpp"

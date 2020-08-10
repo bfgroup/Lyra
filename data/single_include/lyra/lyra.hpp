@@ -350,8 +350,7 @@ enum class parser_result_type
 {
 	matched,
 	no_match,
-	short_circuit_all,
-	short_circuit_same
+	short_circuit_all
 };
 
 using result = detail::basic_result<void>;
@@ -737,241 +736,232 @@ namespace detail
 #include <string>
 #include <vector>
 
-namespace lyra
+namespace lyra { namespace detail {
+enum class token_type
 {
-namespace detail
+	unknown,
+	option,
+	argument
+};
+
+template <typename Char, class Traits = std::char_traits<Char>>
+class basic_token_name
 {
-	enum class token_type
+	public:
+	using traits_type = Traits;
+	using value_type = Char;
+	using pointer = value_type *;
+	using const_pointer = const value_type *;
+	using reference = value_type &;
+	using const_reference = const value_type &;
+	using size_type = std::size_t;
+	using difference_type = std::ptrdiff_t;
+	using const_iterator = const_pointer;
+	using iterator = const_iterator;
+	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+	using reverse_iterator = const_reverse_iterator;
+	using string_type = std::basic_string<value_type, traits_type>;
+
+	basic_token_name() noexcept
+		: str { nullptr }
+		, len { 0 }
+	{}
+
+	basic_token_name(const basic_token_name &) noexcept = default;
+
+	basic_token_name(const_pointer s) noexcept
+		: str { s }
+		, len { traits_type::length(s) }
+	{}
+
+	basic_token_name(const_pointer s, size_type count) noexcept
+		: str { s }
+		, len { count }
+	{}
+
+	basic_token_name & operator=(const basic_token_name &) noexcept = default;
+
+	void swap(basic_token_name & other) noexcept
 	{
-		unknown,
-		option,
-		argument
-	};
+		auto tmp = *this;
+		*this = other;
+		other = tmp;
+	}
 
-	template <typename Char, class Traits = std::char_traits<Char>>
-	class basic_token_name
+	const_iterator begin() const noexcept { return this->str; }
+	const_iterator end() const noexcept { return this->str + this->len; }
+	const_iterator cbegin() const noexcept { return this->str; }
+	const_iterator cend() const noexcept { return this->str + this->len; }
+
+	size_type size() const noexcept { return this->len; }
+	size_type length() const noexcept { return this->len; }
+	bool empty() const noexcept { return this->len == 0; }
+
+	friend string_type to_string(const basic_token_name & t)
 	{
-		public:
-		using traits_type = Traits;
-		using value_type = Char;
-		using pointer = value_type*;
-		using const_pointer = const value_type*;
-		using reference = value_type&;
-		using const_reference = const value_type&;
-		using size_type = std::size_t;
-		using difference_type = std::ptrdiff_t;
-		using const_iterator = const_pointer;
-		using iterator = const_iterator;
-		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-		using reverse_iterator = const_reverse_iterator;
-		using string_type = std::basic_string<value_type, traits_type>;
+		return { t.str, t.len };
+	}
 
-		basic_token_name() noexcept
-			: str { nullptr }
-			, len { 0 }
-		{
-		}
-
-		basic_token_name(const basic_token_name&) noexcept = default;
-
-		basic_token_name(const_pointer s) noexcept
-			: str { s }
-			, len { traits_type::length(s) }
-		{
-		}
-
-		basic_token_name(const_pointer s, size_type count) noexcept
-			: str { s }
-			, len { count }
-		{
-		}
-
-		basic_token_name& operator=(const basic_token_name&) noexcept = default;
-
-		void swap(basic_token_name& other) noexcept
-		{
-			auto tmp = *this;
-			*this = other;
-			other = tmp;
-		}
-
-		const_iterator begin() const noexcept { return this->str; }
-		const_iterator end() const noexcept { return this->str + this->len; }
-		const_iterator cbegin() const noexcept { return this->str; }
-		const_iterator cend() const noexcept { return this->str + this->len; }
-
-		size_type size() const noexcept { return this->len; }
-		size_type length() const noexcept { return this->len; }
-		bool empty() const noexcept { return this->len == 0; }
-
-		friend string_type to_string(const basic_token_name& t)
-		{
-			return { t.str, t.len };
-		}
-
-		friend string_type
-		operator+(const_pointer lhs, const basic_token_name& rhs)
-		{
-			return lhs + to_string(rhs);
-		}
-
-		private:
-		const_pointer str;
-		size_type len;
-	};
-
-	using token_name = std::string;
-
-	struct token
+	friend string_type operator+(
+		const_pointer lhs, const basic_token_name & rhs)
 	{
-		token_type type;
-		token_name name;
+		return lhs + to_string(rhs);
+	}
 
-		token()
-			: type(token_type::unknown)
-		{
-		}
-		token(const token& other) = default;
-		token(token_type t, const token_name& n)
-			: type(t)
-			, name(n)
-		{
-		}
+	private:
+	const_pointer str;
+	size_type len;
+};
 
-		explicit operator bool() const { return type != token_type::unknown; }
-	};
+using token_name = std::string;
 
-	class token_iterator
+struct token
+{
+	token_type type;
+	token_name name;
+
+	token()
+		: type(token_type::unknown)
+	{}
+	token(const token & other) = default;
+	token(token_type t, const token_name & n)
+		: type(t)
+		, name(n)
+	{}
+
+	explicit operator bool() const { return type != token_type::unknown; }
+};
+
+class token_iterator
+{
+	public:
+	template <typename Span>
+	explicit token_iterator(Span const & args, std::string const & dels,
+		std::string const & opt_prefix)
+		: delimiters(dels)
+		, option_prefix(opt_prefix)
+		, args_i(args.begin())
+		, args_e(args.end())
+		, args_i_sub(1)
+	{}
+
+	explicit operator bool() const noexcept { return args_i != args_e; }
+
+	token_iterator & pop(const token & arg_or_opt)
 	{
-		public:
-		template <typename Span>
-		explicit token_iterator(
-			Span const& args, std::string const& dels,
-			std::string const& opt_prefix)
-			: delimiters(dels)
-			, option_prefix(opt_prefix)
-			, args_i(args.begin())
-			, args_e(args.end())
-			, args_i_sub(1)
+		if (arg_or_opt.type == token_type::option && has_short_option_prefix())
 		{
-		}
-
-		explicit operator bool() const noexcept { return args_i != args_e; }
-
-		token_iterator& pop(const token& arg_or_opt)
-		{
-			if (arg_or_opt.type == token_type::option
-				&& has_short_option_prefix())
-			{
-				if (++args_i_sub >= args_i->size())
-				{
-					++args_i;
-					args_i_sub = 1;
-				}
-			}
-			else
+			if (++args_i_sub >= args_i->size())
 			{
 				++args_i;
 				args_i_sub = 1;
 			}
-			return *this;
 		}
-
-		token_iterator& pop(const token& /* opt */, const token& /* val */)
+		else
 		{
-			if (has_short_option_prefix() && args_i->size() > 2)
-				++args_i;
-			else if (!has_value_delimiter())
-				args_i += 2;
-			else
-				++args_i;
+			++args_i;
 			args_i_sub = 1;
-			return *this;
 		}
+		tokens_popped += 1;
+		return *this;
+	}
 
-		bool has_option_prefix() const noexcept
+	token_iterator & pop(const token & /* opt */, const token & /* val */)
+	{
+		if (has_short_option_prefix() && args_i->size() > 2) ++args_i;
+		else if (!has_value_delimiter())
+			args_i += 2;
+		else
+			++args_i;
+		args_i_sub = 1;
+		tokens_popped += 1;
+		return *this;
+	}
+
+	std::size_t pop_count() const { return tokens_popped; }
+
+	bool has_option_prefix() const noexcept
+	{
+		return (args_i != args_e) && is_opt_prefix((*args_i)[0]);
+	}
+
+	bool has_short_option_prefix() const noexcept
+	{
+		return (args_i != args_e) && is_opt_prefix((*args_i)[0])
+			&& !is_opt_prefix((*args_i)[1]);
+	}
+
+	bool has_long_option_prefix() const noexcept
+	{
+		return (args_i != args_e) && is_opt_prefix((*args_i)[0])
+			&& is_opt_prefix((*args_i)[1]);
+	}
+
+	bool has_value_delimiter() const noexcept
+	{
+		return (args_i != args_e)
+			&& (args_i->find_first_of(delimiters) != std::string::npos);
+	}
+
+	token option() const
+	{
+		if (has_long_option_prefix())
 		{
-			return (args_i != args_e) && is_opt_prefix((*args_i)[0]);
+			if (has_value_delimiter())
+				return token(token_type::option,
+					args_i->substr(0, args_i->find_first_of(delimiters)));
+			else
+				return token(token_type::option, *args_i);
 		}
-
-		bool has_short_option_prefix() const noexcept
+		else if (has_short_option_prefix())
 		{
-			return (args_i != args_e) && is_opt_prefix((*args_i)[0])
-				&& !is_opt_prefix((*args_i)[1]);
+			token t { token_type::option, option_prefix.substr(0, 1) };
+			t.name += (*args_i)[args_i_sub];
+			return t;
 		}
+		return token();
+	}
 
-		bool has_long_option_prefix() const noexcept
+	token value() const
+	{
+		if (has_option_prefix() && has_value_delimiter())
+			return token(token_type::argument,
+				args_i->substr(args_i->find_first_of(delimiters) + 1));
+		else if (has_long_option_prefix())
 		{
-			return (args_i != args_e) && is_opt_prefix((*args_i)[0])
-				&& is_opt_prefix((*args_i)[1]);
+			if (args_i + 1 != args_e)
+				return token(token_type::argument, *(args_i + 1));
 		}
-
-		bool has_value_delimiter() const noexcept
+		else if (has_short_option_prefix())
 		{
-			return (args_i != args_e)
-				&& (args_i->find_first_of(delimiters) != std::string::npos);
-		}
-
-		token option() const
-		{
-			if (has_long_option_prefix())
-			{
-				if (has_value_delimiter())
-					return token(
-						token_type::option,
-						args_i->substr(0, args_i->find_first_of(delimiters)));
-				else
-					return token(token_type::option, *args_i);
-			}
-			else if (has_short_option_prefix())
-			{
-				token t { token_type::option, option_prefix.substr(0, 1) };
-				t.name += (*args_i)[args_i_sub];
-				return t;
-			}
-			return token();
-		}
-
-		token value() const
-		{
-			if (has_option_prefix() && has_value_delimiter())
+			if (args_i_sub + 1 < args_i->size())
 				return token(
-					token_type::argument,
-					args_i->substr(args_i->find_first_of(delimiters) + 1));
-			else if (has_long_option_prefix())
-			{
-				if (args_i + 1 != args_e)
-					return token(token_type::argument, *(args_i + 1));
-			}
-			else if (has_short_option_prefix())
-			{
-				if (args_i_sub + 1 < args_i->size())
-					return token(
-						token_type::argument, args_i->substr(args_i_sub + 1));
-				else if (args_i + 1 != args_e)
-					return token(token_type::argument, *(args_i + 1));
-			}
-			return token();
+					token_type::argument, args_i->substr(args_i_sub + 1));
+			else if (args_i + 1 != args_e)
+				return token(token_type::argument, *(args_i + 1));
 		}
+		return token();
+	}
 
-		token argument() const { return token(token_type::argument, *args_i); }
+	token argument() const { return token(token_type::argument, *args_i); }
 
-		private:
-		std::string delimiters;
-		std::string option_prefix;
+	private:
+	std::string delimiters;
+	std::string option_prefix;
 
-		std::vector<std::string>::const_iterator args_i;
-		std::vector<std::string>::const_iterator args_e;
-		std::string::size_type args_i_sub;
+	std::size_t tokens_popped = 0;
 
-		inline bool is_opt_prefix(char c) const noexcept
-		{
-			auto r = option_prefix.find(c) != std::string::npos;
-			return r;
-		}
-	};
-} // namespace detail
-} // namespace lyra
+	std::vector<std::string>::const_iterator args_i;
+	std::vector<std::string>::const_iterator args_e;
+	std::string::size_type args_i_sub;
+
+	inline bool is_opt_prefix(char c) const noexcept
+	{
+		auto r = option_prefix.find(c) != std::string::npos;
+		return r;
+	}
+};
+}} // namespace lyra::detail
 
 #endif
 
@@ -1073,17 +1063,22 @@ namespace detail {
 class parse_state
 {
 	public:
-	parse_state(parser_result_type type, token_iterator const & remainingTokens)
-		: m_type(type)
-		, m_remainingTokens(remainingTokens)
+	parse_state(parser_result_type type,
+		token_iterator const & remaining_tokens, size_t parsed_tokens = 0)
+		: result_type(type)
+		, tokens(remaining_tokens)
+		, parsed_count(parsed_tokens)
 	{}
 
-	auto type() const -> parser_result_type { return m_type; }
-	auto remainingTokens() const -> token_iterator { return m_remainingTokens; }
+	parser_result_type type() const { return result_type; }
+	token_iterator remainingTokens() const { return tokens; }
+	bool have_tokens() const { return bool(tokens); }
+
 
 	private:
-	parser_result_type m_type;
-	token_iterator m_remainingTokens;
+	parser_result_type result_type;
+	token_iterator tokens;
+	size_t parsed_count;
 };
 
 struct parser_cardinality
@@ -1168,7 +1163,7 @@ class parser
 	virtual detail::parser_cardinality cardinality() const { return { 0, 1 }; }
 	bool is_optional() const { return cardinality().is_optional(); }
 	virtual bool is_group() const { return false; }
-	virtual auto validate() const -> result { return result::ok(); }
+	virtual result validate() const { return result::ok(); }
 	virtual std::unique_ptr<parser> clone() const { return nullptr; }
 
 	protected:
@@ -1795,8 +1790,7 @@ inline parser_result exe_name::set(std::string const& newName)
 #include <functional>
 #include <sstream>
 
-namespace lyra
-{
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_arguments]
@@ -1822,27 +1816,43 @@ p.add_argument(lyra::opt(where, "where").name("--where")
 class arguments : public parser
 {
 	public:
+	enum evaluation
+	{
+		any = 0,
+		sequence = 1
+	};
+
 	arguments() = default;
 
-	arguments(const arguments& other);
+	arguments(evaluation e)
+		: eval_mode(e)
+	{}
 
-	arguments& add_argument(parser const& p);
-	arguments& operator|=(parser const& p);
+	arguments(const arguments & other);
 
-	arguments& add_argument(arguments const& other);
-	arguments& operator|=(arguments const& other);
+	arguments & add_argument(parser const & p);
+	arguments & operator|=(parser const & p);
+
+	arguments & add_argument(arguments const & other);
+	arguments & operator|=(arguments const & other);
 
 	template <typename T>
-	arguments operator|(T const& other) const
+	arguments operator|(T const & other) const
 	{
 		return arguments(*this) |= other;
 	}
+
+	arguments & sequential();
+	arguments & inclusive();
+
+	template <typename T>
+	T & get(size_t i);
 
 
 	virtual std::string get_usage_text() const override
 	{
 		std::ostringstream os;
-		for (auto const& p : parsers)
+		for (auto const & p : parsers)
 		{
 			std::string usage_text = p->get_usage_text();
 			if (usage_text.size() > 0)
@@ -1862,7 +1872,7 @@ class arguments : public parser
 	virtual std::string get_description_text() const override
 	{
 		std::ostringstream os;
-		for (auto const& p : parsers)
+		for (auto const & p : parsers)
 		{
 			if (p->is_group()) continue;
 			auto child_description = p->get_description_text();
@@ -1874,7 +1884,7 @@ class arguments : public parser
 	virtual help_text get_help_text() const override
 	{
 		help_text text;
-		for (auto const& p : parsers)
+		for (auto const & p : parsers)
 		{
 			if (p->is_group()) text.push_back({ "", "" });
 			auto child_help = p->get_help_text();
@@ -1883,9 +1893,14 @@ class arguments : public parser
 		return text;
 	}
 
+	virtual detail::parser_cardinality cardinality() const override
+	{
+		return { 0, 0 };
+	}
+
 	virtual result validate() const override
 	{
-		for (auto const& p : parsers)
+		for (auto const & p : parsers)
 		{
 			auto result = p->validate();
 			if (!result) return result;
@@ -1893,19 +1908,31 @@ class arguments : public parser
 		return result::ok();
 	}
 
-	parse_result parse(
-		detail::token_iterator const& tokens,
-		parser_customization const& customize) const override
+	parse_result parse(detail::token_iterator const & tokens,
+		parser_customization const & customize) const override
+	{
+		switch (eval_mode)
+		{
+			case any: return parse_any(tokens, customize);
+			case sequence: return parse_sequence(tokens, customize);
+		}
+		return parse_result::logicError(
+			detail::parse_state(parser_result_type::no_match, tokens),
+			"Unknown evaluation mode; not one of 'any', or 'sequence'.");
+	}
+
+	parse_result parse_any(detail::token_iterator const & tokens,
+		parser_customization const & customize) const
 	{
 		struct ParserInfo
 		{
-			parser const* parser_p = nullptr;
+			parser const * parser_p = nullptr;
 			size_t count = 0;
 		};
 		std::vector<ParserInfo> parser_info(parsers.size());
 		{
 			size_t i = 0;
-			for (auto const& p : parsers) parser_info[i++].parser_p = p.get();
+			for (auto const & p : parsers) parser_info[i++].parser_p = p.get();
 		}
 
 		auto result = parse_result::ok(
@@ -1914,19 +1941,21 @@ class arguments : public parser
 		{
 			bool token_parsed = false;
 
-			for (auto& parseInfo : parser_info)
+			for (auto & parse_info : parser_info)
 			{
-				auto parser_cardinality = parseInfo.parser_p->cardinality();
+				auto parser_cardinality = parse_info.parser_p->cardinality();
 				if (parser_cardinality.is_unbounded()
-					|| parseInfo.count < parser_cardinality.maximum)
+					|| parse_info.count < parser_cardinality.maximum)
 				{
-					result = parseInfo.parser_p->parse(
+					auto subparse_result = parse_info.parser_p->parse(
 						result.value().remainingTokens(), customize);
-					if (!result && !parseInfo.parser_p->is_group()) return result;
+					if (!subparse_result && !parse_info.parser_p->is_group())
+						return subparse_result;
+					result = parse_result(subparse_result);
 					if (result.value().type() != parser_result_type::no_match)
 					{
 						token_parsed = true;
-						++parseInfo.count;
+						parse_info.count += 1;
 						break;
 					}
 				}
@@ -1935,23 +1964,76 @@ class arguments : public parser
 			if (result.value().type() == parser_result_type::short_circuit_all)
 				return result;
 			if (!token_parsed)
-				return parse_result::runtimeError(
-					result.value(),
+				return parse_result::runtimeError(result.value(),
 					"Unrecognized token: "
 						+ result.value().remainingTokens().argument().name);
 		}
-		for (auto& parseInfo : parser_info)
+		for (auto & parseInfo : parser_info)
 		{
 			auto parser_cardinality = parseInfo.parser_p->cardinality();
 			if ((parser_cardinality.is_bounded()
-				 && (parseInfo.count < parser_cardinality.minimum
-					 || parser_cardinality.maximum < parseInfo.count))
+					&& (parseInfo.count < parser_cardinality.minimum
+						|| parser_cardinality.maximum < parseInfo.count))
 				|| (parser_cardinality.is_required()
 					&& (parseInfo.count < parser_cardinality.minimum)))
 			{
-				return parse_result::runtimeError(
-					result.value(),
+				return parse_result::runtimeError(result.value(),
 					"Expected: " + parseInfo.parser_p->get_usage_text());
+			}
+		}
+		return result;
+	}
+
+	parse_result parse_sequence(detail::token_iterator const & tokens,
+		parser_customization const & customize) const
+	{
+		struct ParserInfo
+		{
+			parser const * parser_p = nullptr;
+			size_t count = 0;
+		};
+		std::vector<ParserInfo> parser_info(parsers.size());
+		{
+			size_t i = 0;
+			for (auto const & p : parsers) parser_info[i++].parser_p = p.get();
+		}
+
+		auto result = parse_result::ok(
+			detail::parse_state(parser_result_type::no_match, tokens));
+
+		for (size_t i = 0; i < parsers.size() && result.value().have_tokens();
+			 ++i)
+		{
+			auto & parse_info = parser_info[i];
+			auto parser_cardinality = parse_info.parser_p->cardinality();
+			while (result.value().have_tokens()
+				&& (parser_cardinality.is_unbounded()
+					|| parse_info.count < parser_cardinality.maximum))
+			{
+				result = parse_info.parser_p->parse(
+					result.value().remainingTokens(), customize);
+				parser_result_type result_type = result.value().type();
+				if (!result)
+				{
+					return result;
+				}
+				else if (result_type == parser_result_type::short_circuit_all)
+				{
+					return result;
+				}
+				else if (result_type == parser_result_type::matched)
+				{
+					parse_info.count += 1;
+				}
+			}
+			if ((parser_cardinality.is_bounded()
+					&& (parse_info.count < parser_cardinality.minimum
+						|| parser_cardinality.maximum < parse_info.count))
+				|| (parser_cardinality.is_required()
+					&& (parse_info.count < parser_cardinality.minimum)))
+			{
+				return parse_result::runtimeError(result.value(),
+					"Expected: " + parse_info.parser_p->get_usage_text());
 			}
 		}
 		return result;
@@ -1962,7 +2044,8 @@ class arguments : public parser
 		return make_clone<arguments>(this);
 	}
 
-	friend std::ostream& operator<<(std::ostream& os, arguments const& parser)
+	friend std::ostream & operator<<(
+		std::ostream & os, arguments const & parser)
 	{
 		parser.print_help_text(os);
 		return os;
@@ -1970,6 +2053,7 @@ class arguments : public parser
 
 	private:
 	std::vector<std::unique_ptr<parser>> parsers;
+	evaluation eval_mode = any;
 };
 
 /* tag::reference[]
@@ -2005,9 +2089,10 @@ arguments::arguments(const arguments& other);
 ----
 
 end::reference[] */
-inline arguments::arguments(const arguments& other)
+inline arguments::arguments(const arguments & other)
+	: eval_mode(other.eval_mode)
 {
-	for (auto& other_parser : other.parsers)
+	for (auto & other_parser : other.parsers)
 	{
 		parsers.push_back(other_parser->clone());
 	}
@@ -2039,26 +2124,89 @@ argument (for `parser`), or add the parsers from another `arguments` to
 this one.
 
 end::reference[] */
-inline arguments& arguments::add_argument(parser const& p)
+inline arguments & arguments::add_argument(parser const & p)
 {
 	parsers.push_back(p.clone());
 	return *this;
 }
-inline arguments& arguments::operator|=(parser const& p)
+inline arguments & arguments::operator|=(parser const & p)
 {
 	return this->add_argument(p);
 }
-inline arguments& arguments::add_argument(arguments const& other)
+inline arguments & arguments::add_argument(arguments const & other)
 {
-	for (auto& p : other.parsers)
+	if (other.is_group())
 	{
-		parsers.push_back(p->clone());
+		parsers.push_back(other.clone());
+	}
+	else
+	{
+		for (auto & p : other.parsers)
+		{
+			parsers.push_back(p->clone());
+		}
 	}
 	return *this;
 }
-inline arguments& arguments::operator|=(arguments const& other)
+inline arguments & arguments::operator|=(arguments const & other)
 {
 	return this->add_argument(other);
+}
+
+/* tag::reference[]
+=== `lyra::arguments::sequential`
+
+[source]
+----
+arguments & arguments::sequential();
+----
+
+Sets the parsing mode for the arguments to "sequential". When parsing the
+arguments they will be, greedily, consumed in the order they where added.
+This is useful for sub-commands and structured command lines.
+
+end::reference[] */
+inline arguments & arguments::sequential()
+{
+	eval_mode = sequence;
+	return *this;
+}
+
+/* tag::reference[]
+=== `lyra::arguments::inclusive`
+
+[source]
+----
+arguments & arguments::inclusive();
+----
+
+Sets the parsing mode for the arguments to "inclusively any". This is the
+default that attempts to match each parsed argument with all the available
+parsers. This means that there is no ordering enforced.
+
+end::reference[] */
+inline arguments & arguments::inclusive()
+{
+	eval_mode = any;
+	return *this;
+}
+
+/* tag::reference[]
+=== `lyra::arguments::get`
+
+[source]
+----
+template <typename T>
+T & arguments::get(size_t i);
+----
+
+Get a modifyable reference to one of the parsers specified.
+
+end::reference[] */
+template <typename T>
+T & arguments::get(size_t i)
+{
+	return static_cast<T &>(*parsers.at(i));
 }
 
 } // namespace lyra
@@ -2082,9 +2230,9 @@ namespace lyra {
 
 A group of arguments provides for parsing, optionally, a set of arguments
 together. The group itself is considered successfully parsed only when the
-arguments int he group are parsed without errors. A common use case for this
+arguments in the group are parsed without errors. A common use case for this
 are sub-commands. This implementation is recursive. And hence allows groups
-with groups for describing branching argument parsing.
+within groups for describing branching argument parsing.
 
 Is-a <<lyra_arguments>>.
 
@@ -2418,6 +2566,293 @@ cli::parse(args const& args, parser_customization const& customize) const
 namespace lyra
 {
 using cli_parser = cli;
+} // namespace lyra
+
+#endif
+
+#ifndef LYRA_COMMAND_HPP
+#define LYRA_COMMAND_HPP
+
+
+#ifndef LYRA_LITERAL_HPP
+#define LYRA_LITERAL_HPP
+
+#include <string>
+
+namespace lyra {
+/* tag::reference[]
+
+[#lyra_literal]
+= `lyra::literal`
+
+A parser that matches a single fixed value.
+
+Is-a <<lyra_parser>>.
+
+end::reference[] */
+class literal : public parser
+{
+	public:
+	literal(std::string const & n);
+
+	literal & help(const std::string & text);
+	literal & operator()(std::string const & description);
+
+	virtual detail::parser_cardinality cardinality() const override
+	{
+		return { 1, 1 };
+	}
+
+
+	virtual std::string get_usage_text() const override { return name; }
+
+	virtual std::string get_description_text() const override
+	{
+		return description;
+	}
+
+	virtual help_text get_help_text() const override
+	{
+		return { { name, description } };
+	}
+
+	using parser::parse;
+
+	virtual parse_result parse(detail::token_iterator const & tokens,
+		parser_customization const &) const override
+	{
+		auto validationResult = validate();
+		if (!validationResult) return parse_result(validationResult);
+
+		auto const & token = tokens.argument();
+		if (name == token.name)
+		{
+			auto remainingTokens = tokens;
+			remainingTokens.pop(token);
+			return parse_result::ok(detail::parse_state(
+				parser_result_type::matched, remainingTokens));
+		}
+		else
+		{
+			return parse_result(parser_result::runtimeError(
+				parser_result_type::no_match, "Expected '" + name + "'."));
+		}
+	}
+
+	virtual std::unique_ptr<parser> clone() const override
+	{
+		return make_clone<literal>(this);
+	}
+
+	protected:
+	std::string name;
+	std::string description;
+};
+
+/* tag::reference[]
+
+[#lyra_literal_ctor]
+== Construction
+
+end::reference[] */
+
+/* tag::reference[]
+
+=== Token
+
+[#lyra_literal_ctor_token]
+
+[source]
+----
+inline literal::literal(std::string const& n)
+----
+
+Constructs the literal with the name of the token to match.
+
+end::reference[] */
+inline literal::literal(std::string const & n)
+	: name(n)
+{}
+
+/* tag::reference[]
+
+[#lyra_literal_specification]
+== Specification
+
+end::reference[] */
+
+/* tag::reference[]
+
+[#lyra_literal_help]
+=== `lyra:literal::help`
+
+[source]
+----
+literal& literal::help(const std::string& text)
+literal& literal::operator()(std::string const& description)
+----
+
+Specify a help description for the literal.
+
+end::reference[] */
+inline literal & literal::help(const std::string & text)
+{
+	description = text;
+	return *this;
+}
+inline literal & literal::operator()(std::string const & description)
+{
+	return this->help(description);
+}
+
+} // namespace lyra
+
+#endif
+#include <functional>
+#include <string>
+
+namespace lyra {
+
+/* tag::reference[]
+
+[#lyra_command]
+= `lyra::command`
+
+A parser that encapsulates the pattern of parsing sub-commands. It provides a
+quick wrapper for the equivalent arrangement of `group` and `literal` parsers.
+For example:
+
+[source]
+----
+lyra::command c = lyra::command("sub");
+----
+
+Is equivalent to:
+
+[source]
+----
+lyra::command c = lyra::group()
+	.sequential()
+	.add_argument(literal("sub"))
+	.add_argument(group());
+lyra::group & g = c.get<lyra::group>(1);
+----
+
+I.e. it's conposed of a `literal` followed by the rest of the command arguments.
+
+Is-a <<lyra_group>>.
+
+*/ // end::reference[]
+class command : public group
+{
+	public:
+	explicit command(const std::string & n);
+	command(
+		const std::string & n, const std::function<void(const group &)> & f);
+
+	command & help(const std::string & text);
+	command & operator()(std::string const & description);
+
+	template <typename P>
+	command & add_argument(P const & p);
+	template <typename P>
+	command & operator|=(parser const & p);
+
+	virtual std::unique_ptr<parser> clone() const override
+	{
+		return make_clone<command>(this);
+	}
+};
+
+/* tag::reference[]
+
+[#lyra_command_ctor]
+== Construction
+
+[source]
+----
+command::command(const std::string & n);
+command::command(
+	const std::string & n, const std::function<void(const group &)>& f);
+----
+
+To construct an `command` we need a name (`n`) that matches, and triggers, that
+command.
+
+
+end::reference[] */
+inline command::command(const std::string & n)
+{
+	this->sequential().add_argument(literal(n)).add_argument(group());
+}
+inline command::command(
+	const std::string & n, const std::function<void(const group &)> & f)
+	: group(f)
+{
+	this->sequential().add_argument(literal(n)).add_argument(group());
+}
+
+/* tag::reference[]
+
+[#lyra_command_specification]
+== Specification
+
+end::reference[] */
+
+/* tag::reference[]
+
+[#lyra_command_help]
+=== `lyra:command::help`
+
+[source]
+----
+command & command::help(const std::string& text)
+command & command::operator()(std::string const& description)
+----
+
+Specify a help description for the command. This sets the help for the
+underlying literal of the command.
+
+end::reference[] */
+inline command & command::help(const std::string & text)
+{
+	this->get<literal>(0).help(text);
+	return *this;
+}
+inline command & command::operator()(std::string const & description)
+{
+	return this->help(description);
+}
+
+/* tag::reference[]
+[#lyra_command_add_argument]
+=== `lyra::command::add_argument`
+
+[source]
+----
+template <typename P>
+command & command::add_argument(P const & p);
+template <typename P>
+command & command::operator|=(parser const & p);
+----
+
+Adds the given argument parser to the considered arguments for this `comand`.
+The argument is added to the sub-group argument instead of this one. Hence it
+has the effect of adding arguments *after* the command name.
+
+end::reference[] */
+template <typename P>
+command & command::add_argument(P const & p)
+{
+	this->get<group>(1).add_argument(p);
+	return *this;
+}
+template <typename P>
+command & command::operator|=(parser const & p)
+{
+	return this->add_argument(p);
+}
+
 } // namespace lyra
 
 #endif
@@ -2772,140 +3207,6 @@ inline help & help::description(const std::string &text)
 }
 } // namespace lyra
 
-
-#endif
-
-#ifndef LYRA_LITERAL_HPP
-#define LYRA_LITERAL_HPP
-
-#include <string>
-
-namespace lyra
-{
-/* tag::reference[]
-
-[#lyra_literal]
-= `lyra::literal`
-
-A parser that matches a single fixed value.
-
-Is-a <<lyra_parser>>.
-
-end::reference[] */
-class literal : public parser
-{
-	public:
-	literal(std::string const& n);
-
-	literal& help(const std::string& text);
-	literal& operator()(std::string const& description);
-
-	virtual detail::parser_cardinality cardinality() const override
-	{
-		return { 1, 1 };
-	}
-
-	virtual std::string get_usage_text() const override { return name; }
-	virtual std::string get_description_text() const override
-	{
-		return description;
-	}
-	virtual help_text get_help_text() const override
-	{
-		return { { name, description } };
-	}
-
-	using parser::parse;
-	virtual parse_result parse(
-		detail::token_iterator const& tokens,
-		parser_customization const&) const override
-	{
-		auto validationResult = validate();
-		if (!validationResult) return parse_result(validationResult);
-
-		auto const& token = tokens.argument();
-		if (name == token.name)
-		{
-			auto remainingTokens = tokens;
-			remainingTokens.pop(token);
-			return parse_result::ok(detail::parse_state(
-				parser_result_type::matched, remainingTokens));
-		}
-		else
-		{
-			return parse_result(parser_result::runtimeError(
-				parser_result_type::no_match, "Expected '" + name + "'."));
-		}
-	}
-
-	virtual std::unique_ptr<parser> clone() const override
-	{
-		return make_clone<literal>(this);
-	}
-
-	protected:
-	std::string name;
-	std::string description;
-};
-
-/* tag::reference[]
-
-[#lyra_literal_ctor]
-== Construction
-
-end::reference[] */
-
-/* tag::reference[]
-
-=== Token
-
-[#lyra_literal_ctor_token]
-
-[source]
-----
-inline literal::literal(std::string const& n)
-----
-
-Constructs the literal with the name of the token to match.
-
-end::reference[] */
-inline literal::literal(std::string const& n)
-	: name(n)
-{
-}
-
-/* tag::reference[]
-
-[#lyra_literal_specification]
-== Specification
-
-end::reference[] */
-
-/* tag::reference[]
-
-[#lyra_literal_help]
-=== `lyra:literal::help`
-
-[source]
-----
-literal& literal::help(const std::string& text)
-literal& literal::operator()(std::string const& description)
-----
-
-Specify a help description for the literal.
-
-end::reference[] */
-inline literal& literal::help(const std::string& text)
-{
-	description = text;
-	return *this;
-}
-inline literal& literal::operator()(std::string const& description)
-{
-	return this->help(description);
-}
-
-} // namespace lyra
 
 #endif
 

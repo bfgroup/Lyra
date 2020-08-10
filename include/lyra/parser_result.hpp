@@ -17,8 +17,7 @@ enum class parser_result_type
 {
 	matched,
 	no_match,
-	short_circuit_all,
-	short_circuit_same
+	short_circuit_all
 };
 
 using result = detail::basic_result<void>;

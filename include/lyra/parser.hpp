@@ -74,17 +74,28 @@ namespace detail {
 class parse_state
 {
 	public:
-	parse_state(parser_result_type type, token_iterator const & remainingTokens)
-		: m_type(type)
-		, m_remainingTokens(remainingTokens)
+	parse_state(parser_result_type type,
+		token_iterator const & remaining_tokens, size_t parsed_tokens = 0)
+		: result_type(type)
+		, tokens(remaining_tokens)
+		, parsed_count(parsed_tokens)
 	{}
 
-	auto type() const -> parser_result_type { return m_type; }
-	auto remainingTokens() const -> token_iterator { return m_remainingTokens; }
+	parser_result_type type() const { return result_type; }
+	token_iterator remainingTokens() const { return tokens; }
+	bool have_tokens() const { return bool(tokens); }
+	// size_t parsed_tokens() const { return parsed_count; }
+
+	// parse_state accumulate(const parse_state & other) const
+	// {
+	// 	return parse_state(
+	// 		other.result_type, other.tokens, parsed_count + other.parsed_count);
+	// }
 
 	private:
-	parser_result_type m_type;
-	token_iterator m_remainingTokens;
+	parser_result_type result_type;
+	token_iterator tokens;
+	size_t parsed_count;
 };
 
 struct parser_cardinality
@@ -172,7 +183,7 @@ class parser
 	virtual detail::parser_cardinality cardinality() const { return { 0, 1 }; }
 	bool is_optional() const { return cardinality().is_optional(); }
 	virtual bool is_group() const { return false; }
-	virtual auto validate() const -> result { return result::ok(); }
+	virtual result validate() const { return result::ok(); }
 	virtual std::unique_ptr<parser> clone() const { return nullptr; }
 
 	protected:
