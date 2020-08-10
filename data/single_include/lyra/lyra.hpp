@@ -862,7 +862,6 @@ class token_iterator
 			++args_i;
 			args_i_sub = 1;
 		}
-		tokens_popped += 1;
 		return *this;
 	}
 
@@ -874,11 +873,8 @@ class token_iterator
 		else
 			++args_i;
 		args_i_sub = 1;
-		tokens_popped += 1;
 		return *this;
 	}
-
-	std::size_t pop_count() const { return tokens_popped; }
 
 	bool has_option_prefix() const noexcept
 	{
@@ -948,8 +944,6 @@ class token_iterator
 	private:
 	std::string delimiters;
 	std::string option_prefix;
-
-	std::size_t tokens_popped = 0;
 
 	std::vector<std::string>::const_iterator args_i;
 	std::vector<std::string>::const_iterator args_e;
@@ -1067,18 +1061,15 @@ class parse_state
 		token_iterator const & remaining_tokens, size_t parsed_tokens = 0)
 		: result_type(type)
 		, tokens(remaining_tokens)
-		, parsed_count(parsed_tokens)
 	{}
 
 	parser_result_type type() const { return result_type; }
 	token_iterator remainingTokens() const { return tokens; }
 	bool have_tokens() const { return bool(tokens); }
 
-
 	private:
 	parser_result_type result_type;
 	token_iterator tokens;
-	size_t parsed_count;
 };
 
 struct parser_cardinality

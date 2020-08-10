@@ -144,7 +144,6 @@ class token_iterator
 			++args_i;
 			args_i_sub = 1;
 		}
-		tokens_popped += 1;
 		return *this;
 	}
 
@@ -156,11 +155,8 @@ class token_iterator
 		else
 			++args_i;
 		args_i_sub = 1;
-		tokens_popped += 1;
 		return *this;
 	}
-
-	std::size_t pop_count() const { return tokens_popped; }
 
 	// Current arg looks like an option, short or long.
 	bool has_option_prefix() const noexcept
@@ -244,10 +240,6 @@ class token_iterator
 	private:
 	std::string delimiters;
 	std::string option_prefix;
-
-	// Number of times pop() was called, and hence number of tokens
-	// consumed since the initialization.
-	std::size_t tokens_popped = 0;
 
 	std::vector<std::string>::const_iterator args_i;
 	std::vector<std::string>::const_iterator args_e;
