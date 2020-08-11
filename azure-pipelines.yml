@@ -3,6 +3,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 # Copyright 2019 René Ferdinand Rivera Morell.
+# Copyright 2020 Jayesh Vinay Badwaik
 
 trigger:
   branches:
@@ -114,6 +115,22 @@ stages:
         b2 toolset=${TOOLSET} cxxstd=${CXXSTD} ${B2_ARGS}
         popd
       displayName: Test
+    - bash: |
+        set -e
+        SOURCE=$PWD
+        mkdir -p ../run
+        mkdir -p ../build
+        pushd ../build
+          cmake -DCMAKE_INSTALL_PREFIX=../run $SOURCE -DCMAKE_CXX_STANDARD=11
+          make install
+        popd
+        mkdir -p ../test
+        pushd ../test
+          cmake -DCMAKE_PREFIX_PATH=$SOURCE/../run  $SOURCE/tests/lib_use_test -DCMAKE_CXX_STANDARD=11
+          make
+          ctest
+        popd
+      displayName: CMake Test
 
   - job: 'Xcode'
     strategy:
