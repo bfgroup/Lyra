@@ -135,9 +135,6 @@ stages:
   - job: 'Xcode'
     strategy:
       matrix:
-        Xcode 12 beta: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12 beta",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
         Xcode 11.6: {
           CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.6",
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
