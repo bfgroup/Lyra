@@ -286,8 +286,12 @@ WARNING: The `cli_parser` type was renamed to `cli`. Both the `cli_parser` type
 and the `lyra/cli_parser.hpp` header are deprecated and will be removed in a
 future release.
 
+WARNING: Changed the install CMake target from `BFG::Lyra` to `bfg::lyra`.
+
 Changes:
 
+* *New*: Add Cmake install support.
+	-- _Jayesh Vinay Badwaik_
 * *New*: Command argument to make it easy to specify sub-commands.
 	-- _René Ferdinand Rivera Morell_
 * *New*: Alternative sequential argument parsing mode.
