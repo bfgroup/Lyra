@@ -290,6 +290,9 @@ WARNING: Changed the install CMake target from `BFG::Lyra` to `bfg::lyra`.
 
 Changes:
 
+* *New*: Support construction of `lyra::args` from iterators for cases where
+  the arguments come from some existing container.
+	-- _René Ferdinand Rivera Morell_
 * *New*: Add Cmake install support.
 	-- _Jayesh Vinay Badwaik_
 * *New*: Command argument to make it easy to specify sub-commands.
@@ -304,6 +307,20 @@ Changes:
 	-- _René Ferdinand Rivera Morell_
 * Bring back some cleaner and compact formatting of the help text.
 	-- _René Ferdinand Rivera Morell_
+* Tested with
+		Visual Studio 2017, VS 2019,
+		MinGW-64 (gcc 8.1.0),
+		Linux (
+			clang 3.8, 3.9, 4, 5, 6, 7, 8, 9, 10;
+			gcc 4.8, 4.9, 5, 6, 7, 8, 9, 10),
+		Xcode (
+			10.1, 10.2.1, 10.3, 11.1, 11.2.1, 11.3.1, 11.4.1, 11.5, 11.6,
+			12 beta),
+		on Azure Pipelines;
+	and with
+		VS 2015,
+		MinGW-64 (gcc 6.3, 7.3)
+		on AppVeyor.
 
 === 1.4
 
