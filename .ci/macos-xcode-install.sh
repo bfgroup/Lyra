@@ -15,7 +15,7 @@ xcversion list
 echo ">>>>>"
 echo ">>>>> INSTALLL: Xcode ${XCODE_VERSION}.."
 echo ">>>>>"
-xcversion --verbose --no-progress --no-clean --no-show-release-notes install ${XCODE_VERSION}
+xcversion --verbose --no-progress --no-clean --no-show-release-notes install "${XCODE_VERSION}"
 echo ""
 echo ">>>>>"
 echo ">>>>> INSTALL: CLI Tools.."
@@ -29,7 +29,7 @@ xcversion list
 echo ">>>>>"
 echo ">>>>> SELECT: Xcode ${XCODE_VERSION}.."
 echo ">>>>>"
-xcversion select ${XCODE_VERSION} --symlink
+xcversion select "${XCODE_VERSION}" --symlink
 
 # Use, modification, and distribution are
 # subject to the Boost Software License, Version 1.0. (See accompanying
