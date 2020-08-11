@@ -3045,9 +3045,6 @@ lyra::opt::opt(bool& ref);
 
 template <typename LambdaT>
 lyra::opt::opt(LambdaT const& ref);
-
-template <typename LambdaT>
-lyra::opt::opt(LambdaT const& ref, std::string const& hint)
 ----
 
 Constructs a flag option with a target `bool` to indicate if the flag is
