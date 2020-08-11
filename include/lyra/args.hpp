@@ -11,32 +11,37 @@
 #include <string>
 #include <vector>
 
-namespace lyra
-{
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_args]
 = `lyra::args`
 
-Transport for raw args (copied from main args, or supplied via init list).
+Transport for raw args (copied from main args, supplied via init list, or from a
+pair of iterators).
 
 */ // end::reference[]
 class args
 {
 	public:
 	// Construct from usual main() function arguments.
-	args(int argc, char const* const* argv)
+	args(int argc, char const * const * argv)
 		: m_exeName(argv[0])
 		, m_args(argv + 1, argv + argc)
-	{
-	}
+	{}
 
 	// Construct directly from an initializer '{}'.
 	args(std::initializer_list<std::string> args)
 		: m_exeName(*args.begin())
 		, m_args(args.begin() + 1, args.end())
-	{
-	}
+	{}
+
+	// Construct from iterators.
+	template <typename It>
+	args(const It & start, const It & end)
+		: m_exeName(*start)
+		, m_args(start+1, end)
+	{}
 
 	// The executable name taken from argument zero.
 	std::string exe_name() const { return m_exeName; }
