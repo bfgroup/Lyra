@@ -1164,10 +1164,14 @@ class parser
 	protected:
 	void print_help_text(std::ostream & os) const
 	{
-		os << "USAGE:\n"
-		   << "  " << get_usage_text() << "\n\n";
+		std::string usage_test = get_usage_text();
+		if (!usage_test.empty())
+			os << "USAGE:\n"
+			<< "  " << get_usage_text() << "\n\n";
 
-		os << get_description_text() << "\n";
+		std::string description_test = get_description_text();
+		if (!description_test.empty())
+			os << get_description_text() << "\n";
 
 		os << "OPTIONS, ARGUMENTS:\n";
 		const std::string::size_type left_col_size = 26 - 3;
@@ -2393,7 +2397,7 @@ class cli : protected arguments
 		if (!m_exeName.name().empty())
 			return m_exeName.name() + " " + arguments::get_usage_text();
 		else
-			return arguments::get_usage_text();
+			return "";
 	}
 
 	parse_result parse(

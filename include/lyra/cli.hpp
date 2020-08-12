@@ -92,7 +92,8 @@ class cli : protected arguments
 		if (!m_exeName.name().empty())
 			return m_exeName.name() + " " + arguments::get_usage_text();
 		else
-			return arguments::get_usage_text();
+			// We use an empty exe name as an indicator to remove USAGE text.
+			return "";
 	}
 
 	parse_result parse(
