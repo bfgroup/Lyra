@@ -147,15 +147,6 @@ stages:
         Xcode 11.1: {
           CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.1",
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 10.3: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.14', XCODE_VERSION: "10.3",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 10.2.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.14', XCODE_VERSION: "10.2.1",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 10.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.14', XCODE_VERSION: "10.1",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
