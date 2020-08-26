@@ -248,6 +248,10 @@ include::../examples/doc_commands.cpp[tag=doc]
 
 include::../examples/doc_groups.cpp[tag=doc]
 
+include::../examples/doc_simple_alt.cpp[tag=doc]
+
+include::../examples/doc_simple.cpp[tag=doc]
+
 :leveloffset: -1
 
 == Reference
@@ -276,11 +280,20 @@ include::../include/lyra/group.hpp[tag=reference]
 
 include::../include/lyra/command.hpp[tag=reference]
 
+include::../include/lyra/main.hpp[tag=reference]
+
+include::../include/lyra/val.hpp[tag=reference]
+
 :leveloffset: -2
 
 == History
 
 === 1.5
+
+This release has some big changes in easy of use and functionality. There are
+now alternate interfaces for specifying and fetching arguments. Also the help
+output is now more compact and clearer. There is also new support for
+sub-commands.
 
 WARNING: The `cli_parser` type was renamed to `cli`. Both the `cli_parser` type
 and the `lyra/cli_parser.hpp` header are deprecated and will be removed in a
@@ -290,6 +303,14 @@ WARNING: Changed the install CMake target from `BFG::Lyra` to `bfg::lyra`.
 
 Changes:
 
+* *New*: Main encapsulation of common use case of help option handling. With
+	shorthand specification of arguments.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Ability to specify argument values, with default, without specifying
+	a local external to the parser variable. Making it easier to specify
+	command lines. The values can be retrieved from the `cli` as a map from
+	argument names to the value.
+	-- _René Ferdinand Rivera Morell_
 * *New*: Support construction of `lyra::args` from iterators for cases where
   the arguments come from some existing container.
 	-- _René Ferdinand Rivera Morell_

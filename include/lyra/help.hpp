@@ -9,8 +9,7 @@
 
 #include "lyra/opt.hpp"
 
-namespace lyra
-{
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_help]
@@ -26,18 +25,20 @@ The option accepts `-?`, `-h`, and `--help` as allowed option names.
 class help : public opt
 {
 	public:
-	help(bool& showHelpFlag)
+	help(bool & showHelpFlag)
 		: opt([&](bool flag) {
 			showHelpFlag = flag;
 			return parser_result::ok(parser_result_type::short_circuit_all);
 		})
 	{
-		static_cast<opt&> (*this)(
-			"Display usage information.")["-?"]["-h"]["--help"]
-			.optional();
+		this->description("Display usage information.")
+			.optional()
+			.name("-?")
+			.name("-h")
+			.name("--help");
 	}
 
-	help & description(const std::string &text);
+	help & description(const std::string & text);
 
 	virtual std::string get_description_text() const override
 	{
@@ -64,12 +65,11 @@ usage output for CLI parser. This text is displayed between the "Usage"
 and "Options, arguments" sections.
 
 end::reference[] */
-inline help & help::description(const std::string &text)
+inline help & help::description(const std::string & text)
 {
 	description_text = text;
 	return *this;
 }
 } // namespace lyra
-
 
 #endif

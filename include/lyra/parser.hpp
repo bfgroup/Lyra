@@ -14,6 +14,7 @@
 #include "lyra/detail/result.hpp"
 #include "lyra/detail/tokens.hpp"
 #include "lyra/detail/trait_utils.hpp"
+#include "lyra/val.hpp"
 #include "lyra/parser_result.hpp"
 
 #include <memory>
@@ -176,6 +177,14 @@ class parser
 	virtual bool is_group() const { return false; }
 	virtual result validate() const { return result::ok(); }
 	virtual std::unique_ptr<parser> clone() const { return nullptr; }
+	virtual bool is_named(const std::string & n) const { return false; }
+	virtual const parser * get_named(const std::string & n) const
+	{
+		if (is_named(n)) return this;
+		return nullptr;
+	}
+	virtual size_t get_value_count() const { return 0; }
+	virtual std::string get_value(size_t i) const { return ""; }
 
 	protected:
 	void print_help_text(std::ostream & os) const
@@ -320,13 +329,33 @@ class bound_parser : public composable_parser<Derived>
 		else
 			m_cardinality = { 0, 1 };
 	}
+	bound_parser(std::shared_ptr<detail::BoundRef> const & ref, std::string const & hint)
+		: m_ref(ref), m_hint(hint)
+	{
+		if (m_ref->isContainer()) m_cardinality = { 0, 0 };
+		else
+			m_cardinality = { 0, 1 };
+	}
 
 	public:
+
+	enum class ctor_lambda_e { val };
+
 	template <typename Reference>
 	bound_parser(Reference & ref, std::string const & hint);
 
 	template <typename Lambda>
-	bound_parser(Lambda const & ref, std::string const & hint);
+	bound_parser(Lambda const & ref, std::string const & hint,
+	typename std::enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type = ctor_lambda_e::val);
+
+	template <typename T>
+	explicit bound_parser(detail::BoundVal<T> && val)
+		: bound_parser(val.move_to_shared())
+	{}
+	template <typename T>
+	bound_parser(detail::BoundVal<T> && val, std::string const & hint)
+		: bound_parser(val.move_to_shared(), hint)
+	{}
 
 	Derived & help(const std::string & text);
 	Derived & operator()(std::string const & description);
@@ -354,6 +383,13 @@ class bound_parser : public composable_parser<Derived>
 	{
 		return make_clone<Derived>(this);
 	}
+
+	virtual bool is_named(const std::string &n) const override
+	{
+		return n == m_hint;
+	}
+	virtual size_t get_value_count() const override { return m_ref->get_value_count(); }
+	virtual std::string get_value(size_t i) const override { return m_ref->get_value(i); }
 };
 
 /* tag::reference[]
@@ -388,18 +424,17 @@ end::reference[] */
 template <typename Derived>
 template <typename Reference>
 bound_parser<Derived>::bound_parser(Reference & ref, std::string const & hint)
-	: bound_parser(std::make_shared<detail::BoundValueRef<Reference>>(ref))
+	: bound_parser(std::make_shared<detail::BoundValueRef<Reference>>(ref), hint)
 {
-	m_hint = hint;
 }
 
 template <typename Derived>
 template <typename Lambda>
 bound_parser<Derived>::bound_parser(
-	Lambda const & ref, std::string const & hint)
-	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref))
+	Lambda const & ref, std::string const & hint,
+	typename std::enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type)
+	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref), hint)
 {
-	m_hint = hint;
 }
 
 /* tag::reference[]

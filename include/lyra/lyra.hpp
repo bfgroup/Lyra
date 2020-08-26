@@ -7,6 +7,8 @@
 #ifndef LYRA_LYRA_HPP
 #define LYRA_LYRA_HPP
 
+#include "lyra/version.hpp"
+
 #include "lyra/arg.hpp"
 #include "lyra/arguments.hpp"
 #include "lyra/cli.hpp"
@@ -16,9 +18,10 @@
 #include "lyra/group.hpp"
 #include "lyra/help.hpp"
 #include "lyra/literal.hpp"
+#include "lyra/main.hpp"
 #include "lyra/opt.hpp"
 #include "lyra/parser.hpp"
 #include "lyra/parser_result.hpp"
-#include "lyra/version.hpp"
+#include "lyra/val.hpp"
 
 #endif // LYRA_HPP_INCLUDED

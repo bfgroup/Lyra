@@ -9,6 +9,22 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include "mini_test.hpp"
 #include <string>
 
+template <typename L>
+constexpr bool is_invocable_v(
+	L,
+	typename std::enable_if<lyra::detail::is_invocable<L>::value, int>::type = 0)
+{
+	return true;
+}
+
+template <typename T>
+constexpr bool is_invocable_v(
+	T,
+	typename std::enable_if<!lyra::detail::is_invocable<T>::value, char>::type = 0)
+{
+	return false;
+}
+
 int main()
 {
 	using namespace lyra;
@@ -70,6 +86,19 @@ int main()
 			))
 			(REQUIRE(
 				(lyra::detail::is_invocable<decltype(f2)>::value)
+			))
+			;
+	}
+	{
+		test
+			(REQUIRE(
+				is_invocable_v([]() -> bool { return false; })
+			))
+			(REQUIRE(
+				is_invocable_v([](int x) -> bool { return x > 1; })
+			))
+			(REQUIRE(
+				is_invocable_v([](int x, float y) -> bool { return x > y; })
 			))
 			;
 	}

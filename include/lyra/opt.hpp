@@ -7,11 +7,12 @@
 #ifndef LYRA_OPT_HPP
 #define LYRA_OPT_HPP
 
+#include "lyra/detail/trait_utils.hpp"
 #include "lyra/parser.hpp"
+#include "lyra/val.hpp"
 #include <memory>
 
-namespace lyra
-{
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_opt]
@@ -29,25 +30,56 @@ class opt : public bound_parser<opt>
 	std::vector<std::string> opt_names;
 
 	public:
+	enum class ctor_lambda_e
+	{
+		val
+	};
+	enum class ctor_ref_e
+	{
+		val
+	};
+
 	// Flag option ctors..
 
-	explicit opt(bool& ref);
+	explicit opt(bool & ref);
 
-	template <typename LambdaT>
-	explicit opt(LambdaT const& ref);
+	template <typename L>
+	explicit opt(
+		L const & ref,
+		typename std::enable_if<detail::is_invocable<L>::value, ctor_lambda_e>::
+			type
+		= ctor_lambda_e::val);
 
 	// Value option ctors..
 
 	template <typename T>
-	opt(T& ref, std::string const& hint);
+	opt(T & ref,
+		std::string const & hint,
+		typename std::enable_if<!detail::is_invocable<T>::value, ctor_ref_e>::
+			type
+		= ctor_ref_e::val);
 
-	template <typename LambdaT>
-	opt(LambdaT const& ref, std::string const& hint);
+	template <typename L>
+	opt(L const & ref,
+		std::string const & hint,
+		typename std::enable_if<detail::is_invocable<L>::value, ctor_lambda_e>::
+			type
+		= ctor_lambda_e::val);
+
+	// Bound value ctors..
+	template <typename T>
+	explicit opt(detail::BoundVal<T> && val)
+		: bound_parser(val.move_to_shared())
+	{}
+	template <typename T>
+	explicit opt(detail::BoundVal<T> && val, std::string const & hint)
+		: bound_parser(val.move_to_shared(), hint)
+	{}
 
 	// Option specifications..
 
-	opt& name(const std::string& opt_name);
-	opt& operator[](std::string const& opt_name);
+	opt & name(const std::string & opt_name);
+	opt & operator[](std::string const & opt_name);
 
 	// Internal..
 
@@ -66,7 +98,7 @@ class opt : public bound_parser<opt>
 	{
 		std::ostringstream oss;
 		bool first = true;
-		for (auto const& opt : opt_names)
+		for (auto const & opt : opt_names)
 		{
 			if (first)
 				first = false;
@@ -78,12 +110,18 @@ class opt : public bound_parser<opt>
 		return { { oss.str(), m_description } };
 	}
 
+	virtual bool is_named(const std::string & n) const override
+	{
+		return bound_parser::is_named(n)
+			|| (std::find(opt_names.begin(), opt_names.end(), n) != opt_names.end());
+	}
+
 	bool isMatch(
-		std::string const& optToken,
-		parser_customization const& customize) const
+		std::string const & optToken,
+		parser_customization const & customize) const
 	{
 		auto normalisedToken = normaliseOpt(optToken, customize);
-		for (auto const& name : opt_names)
+		for (auto const & name : opt_names)
 		{
 			if (normaliseOpt(name, customize) == normalisedToken) return true;
 		}
@@ -91,7 +129,8 @@ class opt : public bound_parser<opt>
 	}
 
 	std::string normaliseOpt(
-		std::string const& optName, parser_customization const& customize) const
+		std::string const & optName,
+		parser_customization const & customize) const
 	{
 		auto is_prefix_char_0
 			= customize.option_prefix().find(optName[0]) != std::string::npos;
@@ -111,8 +150,8 @@ class opt : public bound_parser<opt>
 	using parser::parse;
 
 	parse_result parse(
-		detail::token_iterator const& tokens,
-		parser_customization const& customize) const override
+		detail::token_iterator const & tokens,
+		parser_customization const & customize) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
@@ -120,14 +159,14 @@ class opt : public bound_parser<opt>
 		auto remainingTokens = tokens;
 		if (remainingTokens && remainingTokens.has_option_prefix())
 		{
-			auto const& token = remainingTokens.option();
+			auto const & token = remainingTokens.option();
 			if (isMatch(token.name, customize))
 			{
 				if (m_ref->isFlag())
 				{
 					remainingTokens.pop(token);
 					auto flagRef
-						= static_cast<detail::BoundFlagRefBase*>(m_ref.get());
+						= static_cast<detail::BoundFlagRefBase *>(m_ref.get());
 					auto result = flagRef->setFlag(true);
 					if (!result) return parse_result(result);
 					if (result.value() == parser_result_type::short_circuit_all)
@@ -136,14 +175,14 @@ class opt : public bound_parser<opt>
 				}
 				else
 				{
-					auto const& argToken = remainingTokens.value();
+					auto const & argToken = remainingTokens.value();
 					if (argToken.type == detail::token_type::unknown)
 						return parse_result::runtimeError(
 							{ parser_result_type::no_match, remainingTokens },
 							"Expected argument following " + token.name);
 					remainingTokens.pop(token, argToken);
 					auto valueRef
-						= static_cast<detail::BoundValueRefBase*>(m_ref.get());
+						= static_cast<detail::BoundValueRefBase *>(m_ref.get());
 					if (value_choices)
 					{
 						auto choice_result
@@ -168,7 +207,7 @@ class opt : public bound_parser<opt>
 	{
 		if (opt_names.empty())
 			return result::logicError("No options supplied to opt");
-		for (auto const& name : opt_names)
+		for (auto const & name : opt_names)
 		{
 			if (name.empty())
 				return result::logicError("Option name cannot be empty");
@@ -178,7 +217,7 @@ class opt : public bound_parser<opt>
 		return bound_parser::validate();
 	}
 
-	std::unique_ptr<parser> clone() const override
+	virtual std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<opt>(this);
 	}
@@ -200,8 +239,8 @@ end::reference[] */
 ----
 lyra::opt::opt(bool& ref);
 
-template <typename LambdaT>
-lyra::opt::opt(LambdaT const& ref);
+template <typename L>
+lyra::opt::opt(L const& ref);
 ----
 
 Constructs a flag option with a target `bool` to indicate if the flag is
@@ -210,15 +249,16 @@ present. The first form takes a reference to a variable to receive the
 option is present.
 
 end::reference[] */
-inline opt::opt(bool& ref)
+inline opt::opt(bool & ref)
 	: bound_parser(std::make_shared<detail::BoundFlagRef>(ref))
-{
-}
-template <typename LambdaT>
-opt::opt(LambdaT const& ref)
-	: bound_parser(std::make_shared<detail::BoundFlagLambda<LambdaT>>(ref))
-{
-}
+{}
+template <typename L>
+opt::opt(
+	L const & ref,
+	typename std::
+		enable_if<detail::is_invocable<L>::value, opt::ctor_lambda_e>::type)
+	: bound_parser(std::make_shared<detail::BoundFlagLambda<L>>(ref))
+{}
 
 /* tag::reference[]
 
@@ -230,8 +270,8 @@ opt::opt(LambdaT const& ref)
 template <typename T>
 lyra::opt::opt(T& ref, std::string const& hint);
 
-template <typename LambdaT>
-lyra::opt::opt(LambdaT const& ref, std::string const& hint)
+template <typename L>
+lyra::opt::opt(L const& ref, std::string const& hint)
 ----
 
 Constructs a value option with a target `ref`. The first form takes a reference
@@ -240,15 +280,21 @@ with the value when the option is present.
 
 end::reference[] */
 template <typename T>
-opt::opt(T& ref, std::string const& hint)
+opt::opt(
+	T & ref,
+	std::string const & hint,
+	typename std::enable_if<!detail::is_invocable<T>::value, opt::ctor_ref_e>::
+		type)
 	: bound_parser(ref, hint)
-{
-}
-template <typename LambdaT>
-opt::opt(LambdaT const& ref, std::string const& hint)
+{}
+template <typename L>
+opt::opt(
+	L const & ref,
+	std::string const & hint,
+	typename std::
+		enable_if<detail::is_invocable<L>::value, opt::ctor_lambda_e>::type)
 	: bound_parser(ref, hint)
-{
-}
+{}
 
 /* tag::reference[]
 
@@ -272,7 +318,7 @@ Add a spelling for the option of the form `--<name>` or `-n`.
 One can add multiple short spellings at once with `-abc`.
 
 end::reference[] */
-inline opt& opt::name(const std::string& opt_name)
+inline opt & opt::name(const std::string & opt_name)
 {
 	if (opt_name.size() > 2 && opt_name[0] != opt_name[1])
 		for (auto o : opt_name.substr(1))
@@ -281,7 +327,7 @@ inline opt& opt::name(const std::string& opt_name)
 		opt_names.push_back(opt_name);
 	return *this;
 }
-inline opt& opt::operator[](const std::string& opt_name)
+inline opt & opt::operator[](const std::string & opt_name)
 {
 	return this->name(opt_name);
 }

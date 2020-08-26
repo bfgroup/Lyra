@@ -306,6 +306,16 @@ class arguments : public parser
 		return os;
 	}
 
+	virtual const parser * get_named(const std::string & n) const override
+	{
+		for (auto & p: parsers)
+		{
+			const parser * result = p->get_named(n);
+			if (result) return result;
+		}
+		return nullptr;
+	}
+
 	private:
 	std::vector<std::unique_ptr<parser>> parsers;
 	evaluation eval_mode = any;

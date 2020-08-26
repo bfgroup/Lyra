@@ -7,137 +7,186 @@
 #ifndef LYRA_DETAIL_BOUND_HPP
 #define LYRA_DETAIL_BOUND_HPP
 
+#include "lyra/detail/from_string.hpp"
 #include "lyra/detail/invoke_lambda.hpp"
 #include "lyra/detail/parse.hpp"
 #include "lyra/detail/unary_lambda_traits.hpp"
 #include <string>
 
-namespace lyra
+namespace lyra { namespace detail {
+struct NonCopyable
 {
-namespace detail
+	NonCopyable() = default;
+	NonCopyable(NonCopyable const &) = delete;
+	NonCopyable(NonCopyable &&) = delete;
+	NonCopyable & operator=(NonCopyable const &) = delete;
+	NonCopyable & operator=(NonCopyable &&) = delete;
+};
+
+struct BoundRef : NonCopyable
 {
-	struct NonCopyable
-	{
-		NonCopyable() = default;
-		NonCopyable(NonCopyable const&) = delete;
-		NonCopyable(NonCopyable&&) = delete;
-		NonCopyable& operator=(NonCopyable const&) = delete;
-		NonCopyable& operator=(NonCopyable&&) = delete;
-	};
+	virtual ~BoundRef() = default;
+	virtual auto isContainer() const -> bool { return false; }
+	virtual auto isFlag() const -> bool { return false; }
 
-	struct BoundRef : NonCopyable
-	{
-		virtual ~BoundRef() = default;
-		virtual auto isContainer() const -> bool { return false; }
-		virtual auto isFlag() const -> bool { return false; }
-	};
-	struct BoundValueRefBase : BoundRef
-	{
-		virtual auto setValue(std::string const& arg) -> parser_result = 0;
-	};
-	struct BoundFlagRefBase : BoundRef
-	{
-		virtual auto setFlag(bool flag) -> parser_result = 0;
-		virtual auto isFlag() const -> bool { return true; }
-	};
+	virtual size_t get_value_count() const { return 0; }
+	virtual std::string get_value(size_t) const { return ""; }
+};
 
-	template <typename T>
-	struct BoundValueRef : BoundValueRefBase
-	{
-		T& m_ref;
+struct BoundValueRefBase : BoundRef
+{
+	virtual auto setValue(std::string const & arg) -> parser_result = 0;
+};
 
-		explicit BoundValueRef(T& ref)
-			: m_ref(ref)
+struct BoundFlagRefBase : BoundRef
+{
+	virtual auto setFlag(bool flag) -> parser_result = 0;
+	virtual auto isFlag() const -> bool { return true; }
+};
+
+template <typename T>
+struct BoundValueRef : BoundValueRefBase
+{
+	T & m_ref;
+
+	explicit BoundValueRef(T & ref)
+		: m_ref(ref)
+	{}
+
+	auto setValue(std::string const & arg) -> parser_result override
+	{
+		return parse_string(arg, m_ref);
+	}
+
+	virtual size_t get_value_count() const override { return 1; }
+	virtual std::string get_value(size_t i) const override
+	{
+		if (i == 0)
 		{
-		}
-
-		auto setValue(std::string const& arg) -> parser_result override
-		{
-			return parse_string(arg, m_ref);
-		}
-	};
-
-	template <typename T>
-	struct BoundValueRef<std::vector<T>> : BoundValueRefBase
-	{
-		std::vector<T>& m_ref;
-
-		explicit BoundValueRef(std::vector<T>& ref)
-			: m_ref(ref)
-		{
-		}
-
-		auto isContainer() const -> bool override { return true; }
-
-		auto setValue(std::string const& arg) -> parser_result override
-		{
-			T temp;
-			auto result = parse_string(arg, temp);
-			if (result) m_ref.push_back(temp);
+			std::string result;
+			detail::to_string(m_ref, result);
 			return result;
 		}
-	};
+		return "";
+	}
+};
 
-	struct BoundFlagRef : BoundFlagRefBase
+template <typename T>
+struct BoundValueRef<std::vector<T>> : BoundValueRefBase
+{
+	std::vector<T> & m_ref;
+
+	explicit BoundValueRef(std::vector<T> & ref)
+		: m_ref(ref)
+	{}
+
+	auto isContainer() const -> bool override { return true; }
+
+	auto setValue(std::string const & arg) -> parser_result override
 	{
-		bool& m_ref;
+		T temp;
+		auto result = parse_string(arg, temp);
+		if (result) m_ref.push_back(temp);
+		return result;
+	}
 
-		explicit BoundFlagRef(bool& ref)
-			: m_ref(ref)
-		{
-		}
-
-		auto setFlag(bool flag) -> parser_result override
-		{
-			m_ref = flag;
-			return parser_result::ok(parser_result_type::matched);
-		}
-	};
-
-	template <typename L>
-	struct BoundLambda : BoundValueRefBase
+	virtual size_t get_value_count() const override { return m_ref.size(); }
+	virtual std::string get_value(size_t i) const override
 	{
-		L m_lambda;
-
-		static_assert(
-			unary_lambda_traits<L>::isValid,
-			"Supplied lambda must take exactly one argument");
-		explicit BoundLambda(L const& lambda)
-			: m_lambda(lambda)
+		if (i < m_ref.size())
 		{
+			std::string result;
+			detail::to_string(m_ref[i], result);
+			return result;
 		}
+		return "";
+	}
+};
 
-		auto setValue(std::string const& arg) -> parser_result override
-		{
-			return invokeLambda<typename unary_lambda_traits<L>::ArgType>(
-				m_lambda, arg);
-		}
-	};
+struct BoundFlagRef : BoundFlagRefBase
+{
+	bool & m_ref;
 
-	template <typename L>
-	struct BoundFlagLambda : BoundFlagRefBase
+	explicit BoundFlagRef(bool & ref)
+		: m_ref(ref)
+	{}
+
+	auto setFlag(bool flag) -> parser_result override
 	{
-		L m_lambda;
+		m_ref = flag;
+		return parser_result::ok(parser_result_type::matched);
+	}
 
-		static_assert(
-			unary_lambda_traits<L>::isValid,
-			"Supplied lambda must take exactly one argument");
-		static_assert(
-			std::is_same<typename unary_lambda_traits<L>::ArgType, bool>::value,
-			"flags must be boolean");
+	virtual size_t get_value_count() const override { return 1; }
+	virtual std::string get_value(size_t i) const override
+	{
+		if (i == 0) return m_ref ? "true" : "false";
+		return "";
+	}
+};
 
-		explicit BoundFlagLambda(L const& lambda)
-			: m_lambda(lambda)
-		{
-		}
+template <typename L>
+struct BoundLambda : BoundValueRefBase
+{
+	L m_lambda;
 
-		auto setFlag(bool flag) -> parser_result override
-		{
-			return LambdaInvoker<typename unary_lambda_traits<L>::ReturnType>::
-				invoke(m_lambda, flag);
-		}
-	};
-} // namespace detail
-} // namespace lyra
+	static_assert(
+		unary_lambda_traits<L>::isValid,
+		"Supplied lambda must take exactly one argument");
+	explicit BoundLambda(L const & lambda)
+		: m_lambda(lambda)
+	{}
+
+	auto setValue(std::string const & arg) -> parser_result override
+	{
+		return invokeLambda<typename unary_lambda_traits<L>::ArgType>(
+			m_lambda, arg);
+	}
+};
+
+template <typename L>
+struct BoundFlagLambda : BoundFlagRefBase
+{
+	L m_lambda;
+
+	static_assert(
+		unary_lambda_traits<L>::isValid,
+		"Supplied lambda must take exactly one argument");
+	static_assert(
+		std::is_same<typename unary_lambda_traits<L>::ArgType, bool>::value,
+		"flags must be boolean");
+
+	explicit BoundFlagLambda(L const & lambda)
+		: m_lambda(lambda)
+	{}
+
+	auto setFlag(bool flag) -> parser_result override
+	{
+		return LambdaInvoker<typename unary_lambda_traits<L>::ReturnType>::
+			invoke(m_lambda, flag);
+	}
+};
+
+template <typename T>
+struct BoundVal : BoundValueRef<T>
+{
+	T value;
+
+	BoundVal(T && v)
+		: BoundValueRef<T>(value)
+		, value(v)
+	{}
+
+	BoundVal(BoundVal && other)
+		: BoundValueRef<T>(value)
+		, value(std::move(other.value))
+	{}
+
+	std::shared_ptr<BoundRef> move_to_shared()
+	{
+		return std::shared_ptr<BoundRef>(new BoundVal<T>(std::move(*this)));
+	}
+};
+}} // namespace lyra::detail
 
 #endif

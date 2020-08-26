@@ -8,6 +8,20 @@
 #define LYRA_LYRA_HPP
 
 
+#ifndef LYRA_VERSION_HPP
+#define LYRA_VERSION_HPP
+
+#define LYRA_VERSION_MAJOR 1
+#define LYRA_VERSION_MINOR 5
+#define LYRA_VERSION_PATCH 0
+
+#define LYRA_VERSION \
+	(((LYRA_VERSION_MAJOR)*10000000) + ((LYRA_VERSION_MINOR)*100000) \
+	 + (LYRA_VERSION_PATCH))
+
+#endif // LYRA_VERSION_HPP
+
+
 #ifndef LYRA_ARG_HPP
 #define LYRA_ARG_HPP
 
@@ -76,6 +90,222 @@ class args
 #define LYRA_DETAIL_BOUND_HPP
 
 
+#ifndef LYRA_DETAIL_FROM_STRING_HPP
+#define LYRA_DETAIL_FROM_STRING_HPP
+
+
+#ifndef LYRA_DETAIL_TRAIT_UTILS_HPP
+#define LYRA_DETAIL_TRAIT_UTILS_HPP
+
+#include <type_traits>
+#include <utility>
+
+namespace lyra { namespace detail {
+template <class F, class... Args>
+struct is_callable
+{
+	template <class U>
+	static auto test(U * p)
+		-> decltype((*p)(std::declval<Args>()...), void(), std::true_type());
+
+	template <class U>
+	static auto test(...) -> decltype(std::false_type());
+
+	static constexpr bool value = decltype(test<F>(0))::value;
+};
+
+template <class T>
+struct remove_cvref
+{
+	typedef
+		typename std::remove_cv<typename std::remove_reference<T>::type>::type
+			type;
+};
+
+template <class F>
+struct is_invocable
+{
+	template <class U>
+	static auto test(U * p)
+		-> decltype((&U::operator()), void(), std::true_type());
+
+	template <class U>
+	static auto test(...) -> decltype(std::false_type());
+
+	static constexpr bool value
+		= decltype(test<typename remove_cvref<F>::type>(0))::value;
+};
+
+template <typename... Ts>
+struct make_void
+{
+	typedef void type;
+};
+template <typename... Ts>
+using valid_t = typename make_void<Ts...>::type;
+
+template <class T, template <class...> class Primary>
+struct is_specialization_of : std::false_type
+{};
+template <template <class...> class Primary, class... Args>
+struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
+{};
+
+}} // namespace lyra::detail
+
+#endif
+
+#include <algorithm>
+#include <sstream>
+#include <string>
+#include <type_traits>
+
+#ifndef LYRA_CONFIG_OPTIONAL_TYPE
+#	ifdef __has_include
+#		if __has_include(<optional>) && __cplusplus >= 201703L
+#			include <optional>
+#			define LYRA_CONFIG_OPTIONAL_TYPE std::optional
+#		endif
+#	endif
+#endif
+
+namespace lyra { namespace detail {
+template <typename T>
+bool to_string(const T & source, std::string & target)
+{
+	std::stringstream ss;
+	ss << source;
+	ss >> target;
+	return !ss.fail();
+}
+
+inline bool to_string(const std::string & source, std::string & target)
+{
+	target = source;
+	return true;
+}
+
+inline bool to_string(const char * source, std::string & target)
+{
+	target = source;
+	return true;
+}
+
+inline bool to_string(bool source, std::string & target)
+{
+	target = source ? "true" : "false";
+	return true;
+}
+
+#ifdef LYRA_CONFIG_OPTIONAL_TYPE
+template <typename T>
+inline bool
+	to_string(LYRA_CONFIG_OPTIONAL_TYPE<T> & source, std::string & target)
+{
+	if (source)
+		return to_string(*source, target);
+	else
+		target = "<nullopt>";
+	return true;
+}
+#endif // LYRA_CONFIG_OPTIONAL_TYPE
+
+template <typename, typename = void>
+struct is_convertible_from_string : std::false_type
+{};
+
+template <typename T>
+struct is_convertible_from_string<
+	T,
+	typename std::enable_if<std::is_arithmetic<T>::value>::type>
+	: std::true_type
+{};
+
+template <typename S, typename T>
+inline bool from_string(S const & source, T & target)
+{
+	std::stringstream ss;
+	ss << source;
+	T temp {};
+	ss >> temp;
+	if (!ss.fail() && ss.eof())
+	{
+		target = temp;
+		return true;
+	}
+	return false;
+}
+
+template <typename S, typename... C>
+inline bool from_string(S const & source, std::basic_string<C...> & target)
+{
+	to_string(source, target);
+	return true;
+}
+
+template <typename T>
+struct is_convertible_from_string<
+	T,
+	typename std::enable_if<std::is_same<T, bool>::value>::type>
+	: std::true_type
+{};
+
+template <typename S>
+inline bool from_string(S const & source, bool & target)
+{
+	std::string srcLC;
+	to_string(source, srcLC);
+	std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(), [](char c) {
+		return static_cast<char>(::tolower(c));
+	});
+	if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes"
+		|| srcLC == "on")
+		target = true;
+	else if (
+		srcLC == "n" || srcLC == "0" || srcLC == "false" || srcLC == "no"
+		|| srcLC == "off")
+		target = false;
+	else
+		return false;
+	return true;
+}
+
+#ifdef LYRA_CONFIG_OPTIONAL_TYPE
+template <typename T>
+struct is_convertible_from_string<
+	T,
+	typename std::enable_if<
+		is_specialization_of<T, LYRA_CONFIG_OPTIONAL_TYPE>::value>::type>
+	: std::true_type
+{};
+
+template <typename S, typename T>
+inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
+{
+	std::string srcLC;
+	to_string(source, srcLC);
+	std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(), [](char c) {
+		return static_cast<char>(::tolower(c));
+	});
+	if (srcLC == "<nullopt>")
+	{
+		target.reset();
+		return true;
+	}
+	else
+	{
+		T temp;
+		auto result = from_string(source, temp);
+		if (result) target = std::move(temp);
+		return result;
+	}
+}
+#endif // LYRA_CONFIG_OPTIONAL_TYPE
+
+}} // namespace lyra::detail
+
+#endif
+
 #ifndef LYRA_DETAIL_INVOKE_LAMBDA_HPP
 #define LYRA_DETAIL_INVOKE_LAMBDA_HPP
 
@@ -83,108 +313,6 @@ class args
 #ifndef LYRA_DETAIL_PARSE_HPP
 #define LYRA_DETAIL_PARSE_HPP
 
-
-#ifndef LYRA_DETAIL_FROM_STRING_HPP
-#define LYRA_DETAIL_FROM_STRING_HPP
-
-#include <algorithm>
-#include <sstream>
-#include <string>
-
-#ifndef LYRA_CONFIG_OPTIONAL_TYPE
-#ifdef __has_include
-#if __has_include(<optional>) && __cplusplus >= 201703L
-#include <optional>
-#define LYRA_CONFIG_OPTIONAL_TYPE std::optional
-#endif
-#endif
-#endif
-
-namespace lyra
-{
-namespace detail
-{
-	template <typename T>
-	bool to_string(const T& source, std::string& target)
-	{
-		std::stringstream ss;
-		ss << source;
-		ss >> target;
-		return !ss.fail();
-	}
-
-	inline bool to_string(const std::string& source, std::string& target)
-	{
-		target = source;
-		return true;
-	}
-
-	inline bool to_string(const char* source, std::string& target)
-	{
-		target = source;
-		return true;
-	}
-
-	inline bool to_string(bool source, std::string& target)
-	{
-		target = source ? "true" : "false";
-		return true;
-	}
-
-	template <typename S, typename T>
-	inline bool from_string(S const& source, T& target)
-	{
-		std::stringstream ss;
-		ss << source;
-		T temp{};
-		ss >> temp;
-		if (!ss.fail() && ss.eof()) { target = temp; return true; }
-		return false;
-	}
-
-	template <typename S, typename... C>
-	inline bool from_string(S const& source, std::basic_string<C...>& target)
-	{
-		to_string(source, target);
-		return true;
-	}
-
-	template <typename S>
-	inline bool from_string(S const& source, bool& target)
-	{
-		std::string srcLC;
-		to_string(source, srcLC);
-		std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(), [](char c) {
-			return static_cast<char>(::tolower(c));
-		});
-		if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes"
-			|| srcLC == "on")
-			target = true;
-		else if (
-			srcLC == "n" || srcLC == "0" || srcLC == "false" || srcLC == "no"
-			|| srcLC == "off")
-			target = false;
-		else
-			return false;
-		return true;
-	}
-
-#ifdef LYRA_CONFIG_OPTIONAL_TYPE
-	template <typename S, typename T>
-	inline bool
-	from_string(S const& source, LYRA_CONFIG_OPTIONAL_TYPE<T>& target)
-	{
-		T temp;
-		auto result = from_string(source, temp);
-		if (result) target = std::move(temp);
-		return result;
-	}
-#endif // LYRA_CONFIG_OPTIONAL_TYPE
-
-} // namespace detail
-} // namespace lyra
-
-#endif
 
 #ifndef LYRA_PARSER_RESULT_HPP
 #define LYRA_PARSER_RESULT_HPP
@@ -461,133 +589,181 @@ namespace detail
 #endif
 #include <string>
 
-namespace lyra
+namespace lyra { namespace detail {
+struct NonCopyable
 {
-namespace detail
+	NonCopyable() = default;
+	NonCopyable(NonCopyable const &) = delete;
+	NonCopyable(NonCopyable &&) = delete;
+	NonCopyable & operator=(NonCopyable const &) = delete;
+	NonCopyable & operator=(NonCopyable &&) = delete;
+};
+
+struct BoundRef : NonCopyable
 {
-	struct NonCopyable
-	{
-		NonCopyable() = default;
-		NonCopyable(NonCopyable const&) = delete;
-		NonCopyable(NonCopyable&&) = delete;
-		NonCopyable& operator=(NonCopyable const&) = delete;
-		NonCopyable& operator=(NonCopyable&&) = delete;
-	};
+	virtual ~BoundRef() = default;
+	virtual auto isContainer() const -> bool { return false; }
+	virtual auto isFlag() const -> bool { return false; }
 
-	struct BoundRef : NonCopyable
-	{
-		virtual ~BoundRef() = default;
-		virtual auto isContainer() const -> bool { return false; }
-		virtual auto isFlag() const -> bool { return false; }
-	};
-	struct BoundValueRefBase : BoundRef
-	{
-		virtual auto setValue(std::string const& arg) -> parser_result = 0;
-	};
-	struct BoundFlagRefBase : BoundRef
-	{
-		virtual auto setFlag(bool flag) -> parser_result = 0;
-		virtual auto isFlag() const -> bool { return true; }
-	};
+	virtual size_t get_value_count() const { return 0; }
+	virtual std::string get_value(size_t) const { return ""; }
+};
 
-	template <typename T>
-	struct BoundValueRef : BoundValueRefBase
-	{
-		T& m_ref;
+struct BoundValueRefBase : BoundRef
+{
+	virtual auto setValue(std::string const & arg) -> parser_result = 0;
+};
 
-		explicit BoundValueRef(T& ref)
-			: m_ref(ref)
+struct BoundFlagRefBase : BoundRef
+{
+	virtual auto setFlag(bool flag) -> parser_result = 0;
+	virtual auto isFlag() const -> bool { return true; }
+};
+
+template <typename T>
+struct BoundValueRef : BoundValueRefBase
+{
+	T & m_ref;
+
+	explicit BoundValueRef(T & ref)
+		: m_ref(ref)
+	{}
+
+	auto setValue(std::string const & arg) -> parser_result override
+	{
+		return parse_string(arg, m_ref);
+	}
+
+	virtual size_t get_value_count() const override { return 1; }
+	virtual std::string get_value(size_t i) const override
+	{
+		if (i == 0)
 		{
-		}
-
-		auto setValue(std::string const& arg) -> parser_result override
-		{
-			return parse_string(arg, m_ref);
-		}
-	};
-
-	template <typename T>
-	struct BoundValueRef<std::vector<T>> : BoundValueRefBase
-	{
-		std::vector<T>& m_ref;
-
-		explicit BoundValueRef(std::vector<T>& ref)
-			: m_ref(ref)
-		{
-		}
-
-		auto isContainer() const -> bool override { return true; }
-
-		auto setValue(std::string const& arg) -> parser_result override
-		{
-			T temp;
-			auto result = parse_string(arg, temp);
-			if (result) m_ref.push_back(temp);
+			std::string result;
+			detail::to_string(m_ref, result);
 			return result;
 		}
-	};
+		return "";
+	}
+};
 
-	struct BoundFlagRef : BoundFlagRefBase
+template <typename T>
+struct BoundValueRef<std::vector<T>> : BoundValueRefBase
+{
+	std::vector<T> & m_ref;
+
+	explicit BoundValueRef(std::vector<T> & ref)
+		: m_ref(ref)
+	{}
+
+	auto isContainer() const -> bool override { return true; }
+
+	auto setValue(std::string const & arg) -> parser_result override
 	{
-		bool& m_ref;
+		T temp;
+		auto result = parse_string(arg, temp);
+		if (result) m_ref.push_back(temp);
+		return result;
+	}
 
-		explicit BoundFlagRef(bool& ref)
-			: m_ref(ref)
-		{
-		}
-
-		auto setFlag(bool flag) -> parser_result override
-		{
-			m_ref = flag;
-			return parser_result::ok(parser_result_type::matched);
-		}
-	};
-
-	template <typename L>
-	struct BoundLambda : BoundValueRefBase
+	virtual size_t get_value_count() const override { return m_ref.size(); }
+	virtual std::string get_value(size_t i) const override
 	{
-		L m_lambda;
-
-		static_assert(
-			unary_lambda_traits<L>::isValid,
-			"Supplied lambda must take exactly one argument");
-		explicit BoundLambda(L const& lambda)
-			: m_lambda(lambda)
+		if (i < m_ref.size())
 		{
+			std::string result;
+			detail::to_string(m_ref[i], result);
+			return result;
 		}
+		return "";
+	}
+};
 
-		auto setValue(std::string const& arg) -> parser_result override
-		{
-			return invokeLambda<typename unary_lambda_traits<L>::ArgType>(
-				m_lambda, arg);
-		}
-	};
+struct BoundFlagRef : BoundFlagRefBase
+{
+	bool & m_ref;
 
-	template <typename L>
-	struct BoundFlagLambda : BoundFlagRefBase
+	explicit BoundFlagRef(bool & ref)
+		: m_ref(ref)
+	{}
+
+	auto setFlag(bool flag) -> parser_result override
 	{
-		L m_lambda;
+		m_ref = flag;
+		return parser_result::ok(parser_result_type::matched);
+	}
 
-		static_assert(
-			unary_lambda_traits<L>::isValid,
-			"Supplied lambda must take exactly one argument");
-		static_assert(
-			std::is_same<typename unary_lambda_traits<L>::ArgType, bool>::value,
-			"flags must be boolean");
+	virtual size_t get_value_count() const override { return 1; }
+	virtual std::string get_value(size_t i) const override
+	{
+		if (i == 0) return m_ref ? "true" : "false";
+		return "";
+	}
+};
 
-		explicit BoundFlagLambda(L const& lambda)
-			: m_lambda(lambda)
-		{
-		}
+template <typename L>
+struct BoundLambda : BoundValueRefBase
+{
+	L m_lambda;
 
-		auto setFlag(bool flag) -> parser_result override
-		{
-			return LambdaInvoker<typename unary_lambda_traits<L>::ReturnType>::
-				invoke(m_lambda, flag);
-		}
-	};
-} // namespace detail
-} // namespace lyra
+	static_assert(
+		unary_lambda_traits<L>::isValid,
+		"Supplied lambda must take exactly one argument");
+	explicit BoundLambda(L const & lambda)
+		: m_lambda(lambda)
+	{}
+
+	auto setValue(std::string const & arg) -> parser_result override
+	{
+		return invokeLambda<typename unary_lambda_traits<L>::ArgType>(
+			m_lambda, arg);
+	}
+};
+
+template <typename L>
+struct BoundFlagLambda : BoundFlagRefBase
+{
+	L m_lambda;
+
+	static_assert(
+		unary_lambda_traits<L>::isValid,
+		"Supplied lambda must take exactly one argument");
+	static_assert(
+		std::is_same<typename unary_lambda_traits<L>::ArgType, bool>::value,
+		"flags must be boolean");
+
+	explicit BoundFlagLambda(L const & lambda)
+		: m_lambda(lambda)
+	{}
+
+	auto setFlag(bool flag) -> parser_result override
+	{
+		return LambdaInvoker<typename unary_lambda_traits<L>::ReturnType>::
+			invoke(m_lambda, flag);
+	}
+};
+
+template <typename T>
+struct BoundVal : BoundValueRef<T>
+{
+	T value;
+
+	BoundVal(T && v)
+		: BoundValueRef<T>(value)
+		, value(v)
+	{}
+
+	BoundVal(BoundVal && other)
+		: BoundValueRef<T>(value)
+		, value(std::move(other.value))
+	{}
+
+	std::shared_ptr<BoundRef> move_to_shared()
+	{
+		return std::shared_ptr<BoundRef>(new BoundVal<T>(std::move(*this)));
+	}
+};
+}} // namespace lyra::detail
 
 #endif
 
@@ -963,42 +1139,30 @@ class token_iterator
 
 #endif
 
-#ifndef LYRA_DETAIL_TRAIT_UTILS_HPP
-#define LYRA_DETAIL_TRAIT_UTILS_HPP
+#ifndef LYRA_VAL_HPP
+#define LYRA_VAL_HPP
 
-#include <type_traits>
-#include <utility>
+#include <memory>
 
-namespace lyra
+namespace lyra {
+
+/* tag::reference[]
+
+[#lyra_val]
+= `lyra::val`
+
+*/ // end::reference[]
+template <typename T>
+detail::BoundVal<T> val(T && v)
 {
-namespace detail
+	return detail::BoundVal<T>(std::forward<T>(v));
+}
+
+inline detail::BoundVal<std::string> val(const char * v)
 {
-	template <class F, class... Args>
-	struct is_callable
-	{
-		template <class U>
-		static auto test(U* p) -> decltype(
-			(*p)(std::declval<Args>()...), void(), std::true_type());
+	return detail::BoundVal<std::string>(v);
+}
 
-		template <class U>
-		static auto test(...) -> decltype(std::false_type());
-
-		static constexpr bool value = decltype(test<F>(0))::value;
-	};
-
-	template <class F>
-	struct is_invocable
-	{
-		template <class U>
-		static auto test(U* p) -> decltype(
-			(&U::operator()), void(), std::true_type());
-
-		template <class U>
-		static auto test(...) -> decltype(std::false_type());
-
-		static constexpr bool value = decltype(test<F>(0))::value;
-	};
-} // namespace detail
 } // namespace lyra
 
 #endif
@@ -1160,6 +1324,14 @@ class parser
 	virtual bool is_group() const { return false; }
 	virtual result validate() const { return result::ok(); }
 	virtual std::unique_ptr<parser> clone() const { return nullptr; }
+	virtual bool is_named(const std::string & n) const { return false; }
+	virtual const parser * get_named(const std::string & n) const
+	{
+		if (is_named(n)) return this;
+		return nullptr;
+	}
+	virtual size_t get_value_count() const { return 0; }
+	virtual std::string get_value(size_t i) const { return ""; }
 
 	protected:
 	void print_help_text(std::ostream & os) const
@@ -1303,13 +1475,33 @@ class bound_parser : public composable_parser<Derived>
 		else
 			m_cardinality = { 0, 1 };
 	}
+	bound_parser(std::shared_ptr<detail::BoundRef> const & ref, std::string const & hint)
+		: m_ref(ref), m_hint(hint)
+	{
+		if (m_ref->isContainer()) m_cardinality = { 0, 0 };
+		else
+			m_cardinality = { 0, 1 };
+	}
 
 	public:
+
+	enum class ctor_lambda_e { val };
+
 	template <typename Reference>
 	bound_parser(Reference & ref, std::string const & hint);
 
 	template <typename Lambda>
-	bound_parser(Lambda const & ref, std::string const & hint);
+	bound_parser(Lambda const & ref, std::string const & hint,
+	typename std::enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type = ctor_lambda_e::val);
+
+	template <typename T>
+	explicit bound_parser(detail::BoundVal<T> && val)
+		: bound_parser(val.move_to_shared())
+	{}
+	template <typename T>
+	bound_parser(detail::BoundVal<T> && val, std::string const & hint)
+		: bound_parser(val.move_to_shared(), hint)
+	{}
 
 	Derived & help(const std::string & text);
 	Derived & operator()(std::string const & description);
@@ -1337,6 +1529,13 @@ class bound_parser : public composable_parser<Derived>
 	{
 		return make_clone<Derived>(this);
 	}
+
+	virtual bool is_named(const std::string &n) const override
+	{
+		return n == m_hint;
+	}
+	virtual size_t get_value_count() const override { return m_ref->get_value_count(); }
+	virtual std::string get_value(size_t i) const override { return m_ref->get_value(i); }
 };
 
 /* tag::reference[]
@@ -1371,18 +1570,17 @@ end::reference[] */
 template <typename Derived>
 template <typename Reference>
 bound_parser<Derived>::bound_parser(Reference & ref, std::string const & hint)
-	: bound_parser(std::make_shared<detail::BoundValueRef<Reference>>(ref))
+	: bound_parser(std::make_shared<detail::BoundValueRef<Reference>>(ref), hint)
 {
-	m_hint = hint;
 }
 
 template <typename Derived>
 template <typename Lambda>
 bound_parser<Derived>::bound_parser(
-	Lambda const & ref, std::string const & hint)
-	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref))
+	Lambda const & ref, std::string const & hint,
+	typename std::enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type)
+	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref), hint)
 {
-	m_hint = hint;
 }
 
 /* tag::reference[]
@@ -2050,6 +2248,16 @@ class arguments : public parser
 		return os;
 	}
 
+	virtual const parser * get_named(const std::string & n) const override
+	{
+		for (auto & p: parsers)
+		{
+			const parser * result = p->get_named(n);
+			if (result) return result;
+		}
+		return nullptr;
+	}
+
 	private:
 	std::vector<std::unique_ptr<parser>> parsers;
 	evaluation eval_mode = any;
@@ -2325,8 +2533,9 @@ inline group::group(const std::function<void(const group &)> & f)
 
 #endif
 
-namespace lyra
-{
+#include <type_traits>
+
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_cli]
@@ -2354,35 +2563,87 @@ class cli : protected arguments
 	public:
 	cli() = default;
 
-	cli(const cli& other);
+	cli(const cli & other);
 
-	cli& add_argument(exe_name const& exe_name);
-	cli& operator|=(exe_name const& exe_name);
+	cli & add_argument(exe_name const & exe_name);
+	cli & operator|=(exe_name const & exe_name);
 
-	cli& add_argument(parser const& p);
-	cli& operator|=(parser const& p);
+	cli & add_argument(parser const & p);
+	cli & operator|=(parser const & p);
 
-	cli& add_argument(group const& p);
-	cli& operator|=(group const& p);
+	cli & add_argument(group const & p);
+	cli & operator|=(group const & p);
 
-	cli& add_argument(cli const& other);
-	cli& operator|=(cli const& other);
+	cli & add_argument(cli const & other);
+	cli & operator|=(cli const & other);
 
 	template <typename T>
-	cli operator|(T const& other) const;
+	cli operator|(T const & other) const;
 
-	friend std::ostream& operator<<(std::ostream& os, cli const& parser)
+	struct value_result
 	{
-		return os << static_cast<const arguments&>(parser);
+		public:
+		explicit value_result(const parser * p)
+			: parser_ref(p)
+		{}
+
+		template <
+			typename T,
+			typename std::enable_if<detail::is_convertible_from_string<
+				typename detail::remove_cvref<T>::type>::value>::
+				type * = nullptr>
+		operator T() const
+		{
+			typename detail::remove_cvref<T>::type result {};
+			if (parser_ref)
+				detail::from_string<
+					std::string,
+					typename detail::remove_cvref<T>::type>(
+					parser_ref->get_value(0), result);
+			return result;
+		}
+
+		template <typename T>
+		operator std::vector<T>() const
+		{
+			std::vector<T> result;
+			if (parser_ref)
+			{
+				for (size_t i = 0; i < parser_ref->get_value_count(); ++i)
+				{
+					T v;
+					if (detail::from_string(parser_ref->get_value(i), v))
+						result.push_back(v);
+				}
+			}
+			return result;
+		}
+
+		operator std::string() const
+		{
+			if (parser_ref) return parser_ref->get_value(0);
+			return "";
+		}
+
+		private:
+		const parser * parser_ref = nullptr;
+	};
+
+	value_result operator[](const std::string & n);
+
+	friend std::ostream & operator<<(std::ostream & os, cli const & parser)
+	{
+		return os << static_cast<const arguments &>(parser);
 	}
 
 	parse_result parse(
-		args const& args,
-		parser_customization const& customize
+		args const & args,
+		parser_customization const & customize
 		= default_parser_customization()) const;
 
 
 	using arguments::parse;
+	using arguments::get_named;
 
 	virtual std::unique_ptr<parser> clone() const override
 	{
@@ -2401,8 +2662,9 @@ class cli : protected arguments
 	}
 
 	parse_result parse(
-		std::string const& exe_name, detail::token_iterator const& tokens,
-		parser_customization const& customize) const override
+		std::string const & exe_name,
+		detail::token_iterator const & tokens,
+		parser_customization const & customize) const override
 	{
 		m_exeName.set(exe_name);
 		return parse(tokens, customize);
@@ -2442,11 +2704,10 @@ cli::cli(const cli& other);
 ----
 
 end::reference[] */
-inline cli::cli(const cli& other)
+inline cli::cli(const cli & other)
 	: arguments(other)
 	, m_exeName(other.m_exeName)
-{
-}
+{}
 
 /* tag::reference[]
 
@@ -2478,54 +2739,73 @@ name (for `exe_name` parser), directly added as an argument (for
 `parser`), or add the parsers from another `cli` to this one.
 
 end::reference[] */
-inline cli& cli::add_argument(exe_name const& exe_name)
+inline cli & cli::add_argument(exe_name const & exe_name)
 {
 	m_exeName = exe_name;
 	return *this;
 }
-inline cli& cli::operator|=(exe_name const& exe_name)
+inline cli & cli::operator|=(exe_name const & exe_name)
 {
 	return this->add_argument(exe_name);
 }
-inline cli& cli::add_argument(parser const& p)
+inline cli & cli::add_argument(parser const & p)
 {
 	arguments::add_argument(p);
 	return *this;
 }
-inline cli& cli::operator|=(parser const& p)
+inline cli & cli::operator|=(parser const & p)
 {
 	arguments::add_argument(p);
 	return *this;
 }
-inline cli& cli::add_argument(group const& other)
+inline cli & cli::add_argument(group const & other)
 {
-	arguments::add_argument(static_cast<parser const&>(other));
+	arguments::add_argument(static_cast<parser const &>(other));
 	return *this;
 }
-inline cli& cli::operator|=(group const& other)
+inline cli & cli::operator|=(group const & other)
 {
 	return this->add_argument(other);
 }
-inline cli& cli::add_argument(cli const& other)
+inline cli & cli::add_argument(cli const & other)
 {
-	arguments::add_argument(static_cast<arguments const&>(other));
+	arguments::add_argument(static_cast<arguments const &>(other));
 	return *this;
 }
-inline cli& cli::operator|=(cli const& other)
+inline cli & cli::operator|=(cli const & other)
 {
 	return this->add_argument(other);
 }
 
 template <typename T>
-inline cli cli::operator|(T const& other) const
+inline cli cli::operator|(T const & other) const
 {
 	return cli(*this).add_argument(other);
 }
 
 template <typename DerivedT, typename T>
-cli operator|(composable_parser<DerivedT> const& thing, T const& other)
+cli operator|(composable_parser<DerivedT> const & thing, T const & other)
 {
-	return cli() | static_cast<DerivedT const&>(thing) | other;
+	return cli() | static_cast<DerivedT const &>(thing) | other;
+}
+
+/* tag::reference[]
+[#lyra_cli_array_ref]
+=== `lyra::cli::operator[]`
+
+[source]
+----
+cli::value_result cli::operator[](const std::string & n)
+----
+
+Finds the given argument by either option name or hint name and returns a
+convertible reference to the value, either the one provided by the user or the
+default.
+
+end::reference[] */
+inline cli::value_result cli::operator[](const std::string & n)
+{
+	return value_result(this->get_named(n));
 }
 
 /* tag::reference[]
@@ -2545,7 +2825,7 @@ callbacks may have been called.
 
 end::reference[] */
 inline parse_result
-cli::parse(args const& args, parser_customization const& customize) const
+	cli::parse(args const & args, parser_customization const & customize) const
 {
 	return parse(
 		args.exe_name(),
@@ -2865,8 +3145,7 @@ command & command::operator|=(parser const & p)
 
 #include <memory>
 
-namespace lyra
-{
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_opt]
@@ -2884,22 +3163,52 @@ class opt : public bound_parser<opt>
 	std::vector<std::string> opt_names;
 
 	public:
+	enum class ctor_lambda_e
+	{
+		val
+	};
+	enum class ctor_ref_e
+	{
+		val
+	};
 
-	explicit opt(bool& ref);
 
-	template <typename LambdaT>
-	explicit opt(LambdaT const& ref);
+	explicit opt(bool & ref);
+
+	template <typename L>
+	explicit opt(
+		L const & ref,
+		typename std::enable_if<detail::is_invocable<L>::value, ctor_lambda_e>::
+			type
+		= ctor_lambda_e::val);
 
 
 	template <typename T>
-	opt(T& ref, std::string const& hint);
+	opt(T & ref,
+		std::string const & hint,
+		typename std::enable_if<!detail::is_invocable<T>::value, ctor_ref_e>::
+			type
+		= ctor_ref_e::val);
 
-	template <typename LambdaT>
-	opt(LambdaT const& ref, std::string const& hint);
+	template <typename L>
+	opt(L const & ref,
+		std::string const & hint,
+		typename std::enable_if<detail::is_invocable<L>::value, ctor_lambda_e>::
+			type
+		= ctor_lambda_e::val);
+
+	template <typename T>
+	explicit opt(detail::BoundVal<T> && val)
+		: bound_parser(val.move_to_shared())
+	{}
+	template <typename T>
+	explicit opt(detail::BoundVal<T> && val, std::string const & hint)
+		: bound_parser(val.move_to_shared(), hint)
+	{}
 
 
-	opt& name(const std::string& opt_name);
-	opt& operator[](std::string const& opt_name);
+	opt & name(const std::string & opt_name);
+	opt & operator[](std::string const & opt_name);
 
 
 	virtual std::string get_usage_text() const override
@@ -2917,7 +3226,7 @@ class opt : public bound_parser<opt>
 	{
 		std::ostringstream oss;
 		bool first = true;
-		for (auto const& opt : opt_names)
+		for (auto const & opt : opt_names)
 		{
 			if (first)
 				first = false;
@@ -2929,12 +3238,18 @@ class opt : public bound_parser<opt>
 		return { { oss.str(), m_description } };
 	}
 
+	virtual bool is_named(const std::string & n) const override
+	{
+		return bound_parser::is_named(n)
+			|| (std::find(opt_names.begin(), opt_names.end(), n) != opt_names.end());
+	}
+
 	bool isMatch(
-		std::string const& optToken,
-		parser_customization const& customize) const
+		std::string const & optToken,
+		parser_customization const & customize) const
 	{
 		auto normalisedToken = normaliseOpt(optToken, customize);
-		for (auto const& name : opt_names)
+		for (auto const & name : opt_names)
 		{
 			if (normaliseOpt(name, customize) == normalisedToken) return true;
 		}
@@ -2942,7 +3257,8 @@ class opt : public bound_parser<opt>
 	}
 
 	std::string normaliseOpt(
-		std::string const& optName, parser_customization const& customize) const
+		std::string const & optName,
+		parser_customization const & customize) const
 	{
 		auto is_prefix_char_0
 			= customize.option_prefix().find(optName[0]) != std::string::npos;
@@ -2962,8 +3278,8 @@ class opt : public bound_parser<opt>
 	using parser::parse;
 
 	parse_result parse(
-		detail::token_iterator const& tokens,
-		parser_customization const& customize) const override
+		detail::token_iterator const & tokens,
+		parser_customization const & customize) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
@@ -2971,14 +3287,14 @@ class opt : public bound_parser<opt>
 		auto remainingTokens = tokens;
 		if (remainingTokens && remainingTokens.has_option_prefix())
 		{
-			auto const& token = remainingTokens.option();
+			auto const & token = remainingTokens.option();
 			if (isMatch(token.name, customize))
 			{
 				if (m_ref->isFlag())
 				{
 					remainingTokens.pop(token);
 					auto flagRef
-						= static_cast<detail::BoundFlagRefBase*>(m_ref.get());
+						= static_cast<detail::BoundFlagRefBase *>(m_ref.get());
 					auto result = flagRef->setFlag(true);
 					if (!result) return parse_result(result);
 					if (result.value() == parser_result_type::short_circuit_all)
@@ -2987,14 +3303,14 @@ class opt : public bound_parser<opt>
 				}
 				else
 				{
-					auto const& argToken = remainingTokens.value();
+					auto const & argToken = remainingTokens.value();
 					if (argToken.type == detail::token_type::unknown)
 						return parse_result::runtimeError(
 							{ parser_result_type::no_match, remainingTokens },
 							"Expected argument following " + token.name);
 					remainingTokens.pop(token, argToken);
 					auto valueRef
-						= static_cast<detail::BoundValueRefBase*>(m_ref.get());
+						= static_cast<detail::BoundValueRefBase *>(m_ref.get());
 					if (value_choices)
 					{
 						auto choice_result
@@ -3019,7 +3335,7 @@ class opt : public bound_parser<opt>
 	{
 		if (opt_names.empty())
 			return result::logicError("No options supplied to opt");
-		for (auto const& name : opt_names)
+		for (auto const & name : opt_names)
 		{
 			if (name.empty())
 				return result::logicError("Option name cannot be empty");
@@ -3029,7 +3345,7 @@ class opt : public bound_parser<opt>
 		return bound_parser::validate();
 	}
 
-	std::unique_ptr<parser> clone() const override
+	virtual std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<opt>(this);
 	}
@@ -3051,8 +3367,8 @@ end::reference[] */
 ----
 lyra::opt::opt(bool& ref);
 
-template <typename LambdaT>
-lyra::opt::opt(LambdaT const& ref);
+template <typename L>
+lyra::opt::opt(L const& ref);
 ----
 
 Constructs a flag option with a target `bool` to indicate if the flag is
@@ -3061,15 +3377,16 @@ present. The first form takes a reference to a variable to receive the
 option is present.
 
 end::reference[] */
-inline opt::opt(bool& ref)
+inline opt::opt(bool & ref)
 	: bound_parser(std::make_shared<detail::BoundFlagRef>(ref))
-{
-}
-template <typename LambdaT>
-opt::opt(LambdaT const& ref)
-	: bound_parser(std::make_shared<detail::BoundFlagLambda<LambdaT>>(ref))
-{
-}
+{}
+template <typename L>
+opt::opt(
+	L const & ref,
+	typename std::
+		enable_if<detail::is_invocable<L>::value, opt::ctor_lambda_e>::type)
+	: bound_parser(std::make_shared<detail::BoundFlagLambda<L>>(ref))
+{}
 
 /* tag::reference[]
 
@@ -3081,8 +3398,8 @@ opt::opt(LambdaT const& ref)
 template <typename T>
 lyra::opt::opt(T& ref, std::string const& hint);
 
-template <typename LambdaT>
-lyra::opt::opt(LambdaT const& ref, std::string const& hint)
+template <typename L>
+lyra::opt::opt(L const& ref, std::string const& hint)
 ----
 
 Constructs a value option with a target `ref`. The first form takes a reference
@@ -3091,15 +3408,21 @@ with the value when the option is present.
 
 end::reference[] */
 template <typename T>
-opt::opt(T& ref, std::string const& hint)
+opt::opt(
+	T & ref,
+	std::string const & hint,
+	typename std::enable_if<!detail::is_invocable<T>::value, opt::ctor_ref_e>::
+		type)
 	: bound_parser(ref, hint)
-{
-}
-template <typename LambdaT>
-opt::opt(LambdaT const& ref, std::string const& hint)
+{}
+template <typename L>
+opt::opt(
+	L const & ref,
+	std::string const & hint,
+	typename std::
+		enable_if<detail::is_invocable<L>::value, opt::ctor_lambda_e>::type)
 	: bound_parser(ref, hint)
-{
-}
+{}
 
 /* tag::reference[]
 
@@ -3123,7 +3446,7 @@ Add a spelling for the option of the form `--<name>` or `-n`.
 One can add multiple short spellings at once with `-abc`.
 
 end::reference[] */
-inline opt& opt::name(const std::string& opt_name)
+inline opt & opt::name(const std::string & opt_name)
 {
 	if (opt_name.size() > 2 && opt_name[0] != opt_name[1])
 		for (auto o : opt_name.substr(1))
@@ -3132,7 +3455,7 @@ inline opt& opt::name(const std::string& opt_name)
 		opt_names.push_back(opt_name);
 	return *this;
 }
-inline opt& opt::operator[](const std::string& opt_name)
+inline opt & opt::operator[](const std::string & opt_name)
 {
 	return this->name(opt_name);
 }
@@ -3141,8 +3464,7 @@ inline opt& opt::operator[](const std::string& opt_name)
 
 #endif
 
-namespace lyra
-{
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_help]
@@ -3158,18 +3480,20 @@ The option accepts `-?`, `-h`, and `--help` as allowed option names.
 class help : public opt
 {
 	public:
-	help(bool& showHelpFlag)
+	help(bool & showHelpFlag)
 		: opt([&](bool flag) {
 			showHelpFlag = flag;
 			return parser_result::ok(parser_result_type::short_circuit_all);
 		})
 	{
-		static_cast<opt&> (*this)(
-			"Display usage information.")["-?"]["-h"]["--help"]
-			.optional();
+		this->description("Display usage information.")
+			.optional()
+			.name("-?")
+			.name("-h")
+			.name("--help");
 	}
 
-	help & description(const std::string &text);
+	help & description(const std::string & text);
 
 	virtual std::string get_description_text() const override
 	{
@@ -3196,27 +3520,229 @@ usage output for CLI parser. This text is displayed between the "Usage"
 and "Options, arguments" sections.
 
 end::reference[] */
-inline help & help::description(const std::string &text)
+inline help & help::description(const std::string & text)
 {
 	description_text = text;
 	return *this;
 }
 } // namespace lyra
 
-
 #endif
 
-#ifndef LYRA_VERSION_HPP
-#define LYRA_VERSION_HPP
+#ifndef LYRA_MAIN_HPP
+#define LYRA_MAIN_HPP
 
-#define LYRA_VERSION_MAJOR 1
-#define LYRA_VERSION_MINOR 5
-#define LYRA_VERSION_PATCH 0
 
-#define LYRA_VERSION \
-	(((LYRA_VERSION_MAJOR)*10000000) + ((LYRA_VERSION_MINOR)*100000) \
-	 + (LYRA_VERSION_PATCH))
+#include <iostream>
 
-#endif // LYRA_VERSION_HPP
+namespace lyra {
+/* tag::reference[]
+
+[#lyra_main]
+= `lyra::main`
+
+Encapsulates the common use case of a main program that has a help option and
+has a minimal way to specify and parse options. This provides for a way to
+specify options and arguments in a simple function form. It handles checking for
+errors and reporting problems.
+
+*/ // end::reference[]
+class main final : protected cli
+{
+	bool show_help = false;
+
+	public:
+	explicit main(const std::string & text = "");
+
+	template <typename T>
+	main & operator()(const T & parser);
+	template <typename T>
+	main & add_argument(const T & parser);
+	template <typename T>
+	main & operator|=(const T & parser);
+
+	template <typename V>
+	main & operator()(
+		std::initializer_list<std::string> arg_names, V && default_value);
+	template <typename V>
+	main & operator()(const std::string & arg_name, V && default_value);
+
+	template <typename L>
+	int operator()(const args & argv, L action);
+	template <typename L>
+	int operator()(int argc, const char ** argv, L action);
+
+	using cli::operator[];
+};
+
+/* tag::reference[]
+
+[#lyra_main_ctor]
+== Construction
+
+[source]
+----
+main::main(const std::string & text);
+----
+
+Construct with text for description, which defaults to an empty string. The
+description is specified for the help option that is added to the command line.
+
+end::reference[] */
+inline main::main(const std::string & text)
+{
+	this->add_argument(help(show_help).description(text));
+}
+
+/* tag::reference[]
+
+[#lyra_main_add_argument]
+== Add Argument
+
+[source]
+----
+template <typename T> main & main::operator()(const T & parser)
+template <typename T> main & main::add_argument(const T & parser)
+template <typename T> main & main::operator|=(const T & parser)
+----
+
+Adds a parser as an argument to the command line. These forward directly to the
+`lyra::cli` equivalents. The added parser can be any of the regular Lyra parsers
+like `lyra::opt` or `lyra::arg`.
+
+end::reference[] */
+template <typename T>
+main & main::operator()(const T & parser)
+{
+	cli::add_argument(parser);
+	return *this;
+}
+template <typename T>
+main & main::add_argument(const T & parser)
+{
+	cli::add_argument(parser);
+	return *this;
+}
+template <typename T>
+main & main::operator|=(const T & parser)
+{
+	cli::operator|=(parser);
+	return *this;
+}
+
+/* tag::reference[]
+
+[#lyra_main_simple_args]
+== Simple Args
+
+[source]
+----
+template <typename V>
+main & main::operator()(
+	std::initializer_list<std::string> arg_names, V && default_value)
+template <typename V>
+main & main::operator()(const std::string & arg_name, V && default_value)
+----
+
+Specifies, and adds, a new argument. Depending on the `arg_names` it can be
+either a `lyra::opt` or `lyra::arg`. The first item in `arg_names` indicates
+the type of argument created and added:
+
+Specify either `-<name>` or `--<name>` to add a `lyra::opt`. You can specify as
+many option names following the first name. A name that doesn't follow the
+option syntax is considered the as the help text for the option.
+
+Specify a non `-` prefixed name as the first item to signify a positional
+`lyra::arg`.
+
+The single `std::string` call is equivalent to specifying just the one option or
+argument.
+
+Example specifications:
+
+|===
+| `("-o", 0)` | Short `-o` option as `int` value.
+| `("--opt", 0)` | Long `--opt` option as `int` value.
+| `({"-o", "--opt"}, 1.0f)` | Short and long option as `float` value.
+| `({"-o", "The option."}, 1.0f)` | Short option and help description as `float` value.
+| `("opt", 2)` | Positional, i.e. `lyra::arg`, argument as `int` value.
+| `({"opt", "The option."}, 2)` | Positional argument and help description as `int` value.
+| `("--opt", std::vector<float>())` | Long option with as multiple float values.
+|===
+
+end::reference[] */
+template <typename V>
+main & main::operator()(
+	std::initializer_list<std::string> arg_names, V && default_value)
+{
+	auto bound_val = val(std::forward<V>(default_value));
+	if ((*arg_names.begin())[0] == '-')
+	{
+		std::string hint = arg_names.begin()->substr(1);
+		if (hint[0] == '-') hint = hint.substr(1);
+		opt o(std::move(bound_val), hint);
+		for (auto arg_name : arg_names)
+		{
+			if (arg_name[0] == '-')
+				o.name(arg_name);
+			else
+				o.help(arg_name);
+		}
+		cli::add_argument(o);
+	}
+	else
+	{
+		arg a(std::move(bound_val), *arg_names.begin());
+		a.optional();
+		if (arg_names.size() > 2) a.help(*(arg_names.begin() + 1));
+		cli::add_argument(a);
+	}
+	return *this;
+}
+template <typename V>
+main & main::operator()(const std::string & arg_name, V && default_value)
+{
+	return (*this)({ arg_name }, std::forward<V>(default_value));
+}
+
+/* tag::reference[]
+
+[#lyra_main_execute]
+== Execute
+
+[source]
+----
+template <typename L>
+int main::operator()(const args & argv, L action)
+template <typename L>
+int main::operator()(int argc, const char ** argv, L action)
+----
+
+Executes the given action after parsing of the program input arguments. It
+returns either `0` or `1` if the execution was successful or failed
+respectively. The `action` is called with the `lyra::main` instance to provide
+access to the parsed argument values.
+
+end::reference[] */
+template <typename L>
+int main::operator()(const args & argv, L action)
+{
+	auto result = cli::parse(argv);
+	if (!result) std::cerr << result.errorMessage() << "\n\n";
+	if (show_help || !result)
+		std::cout << *this << "\n";
+	else
+		return action(*this);
+	return result ? 0 : 1;
+}
+template <typename L>
+int main::operator()(int argc, const char ** argv, L action)
+{
+	return (*this)({ argc, argv }, action);
+}
+
+} // namespace lyra
+
+#endif
 
 #endif // LYRA_HPP_INCLUDED

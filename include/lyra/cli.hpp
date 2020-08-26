@@ -8,11 +8,13 @@
 #define LYRA_CLI_HPP
 
 #include "lyra/arguments.hpp"
+#include "lyra/detail/from_string.hpp"
 #include "lyra/exe_name.hpp"
 #include "lyra/group.hpp"
 
-namespace lyra
-{
+#include <type_traits>
+
+namespace lyra {
 /* tag::reference[]
 
 [#lyra_cli]
@@ -41,43 +43,96 @@ class cli : protected arguments
 	cli() = default;
 
 	// Copy construction, needs to copy the exe name and the composed parsers.
-	cli(const cli& other);
+	cli(const cli & other);
 
 	// Compose the `exe_name` parser.
-	cli& add_argument(exe_name const& exe_name);
-	cli& operator|=(exe_name const& exe_name);
+	cli & add_argument(exe_name const & exe_name);
+	cli & operator|=(exe_name const & exe_name);
 
 	// Compose a regular parser.
-	cli& add_argument(parser const& p);
-	cli& operator|=(parser const& p);
+	cli & add_argument(parser const & p);
+	cli & operator|=(parser const & p);
 
 	// Compose a group, by adding it as a single argument.
-	cli& add_argument(group const& p);
-	cli& operator|=(group const& p);
+	cli & add_argument(group const & p);
+	cli & operator|=(group const & p);
 
 	// Compose the parsers from another `cli`.
-	cli& add_argument(cli const& other);
-	cli& operator|=(cli const& other);
+	cli & add_argument(cli const & other);
+	cli & operator|=(cli const & other);
 
 	// Concat composition.
 	template <typename T>
-	cli operator|(T const& other) const;
+	cli operator|(T const & other) const;
+
+	// Result reference wrapper to fetch and convert argument.
+	struct value_result
+	{
+		public:
+		explicit value_result(const parser * p)
+			: parser_ref(p)
+		{}
+
+		template <
+			typename T,
+			typename std::enable_if<detail::is_convertible_from_string<
+				typename detail::remove_cvref<T>::type>::value>::
+				type * = nullptr>
+		operator T() const
+		{
+			typename detail::remove_cvref<T>::type result {};
+			if (parser_ref)
+				detail::from_string<
+					std::string,
+					typename detail::remove_cvref<T>::type>(
+					parser_ref->get_value(0), result);
+			return result;
+		}
+
+		template <typename T>
+		operator std::vector<T>() const
+		{
+			std::vector<T> result;
+			if (parser_ref)
+			{
+				for (size_t i = 0; i < parser_ref->get_value_count(); ++i)
+				{
+					T v;
+					if (detail::from_string(parser_ref->get_value(i), v))
+						result.push_back(v);
+				}
+			}
+			return result;
+		}
+
+		operator std::string() const
+		{
+			if (parser_ref) return parser_ref->get_value(0);
+			return "";
+		}
+
+		private:
+		const parser * parser_ref = nullptr;
+	};
+
+	value_result operator[](const std::string & n);
 
 	// Stream out generates the help output.
-	friend std::ostream& operator<<(std::ostream& os, cli const& parser)
+	friend std::ostream & operator<<(std::ostream & os, cli const & parser)
 	{
-		return os << static_cast<const arguments&>(parser);
+		return os << static_cast<const arguments &>(parser);
 	}
 
 	// Parse from arguments.
 	parse_result parse(
-		args const& args,
-		parser_customization const& customize
+		args const & args,
+		parser_customization const & customize
 		= default_parser_customization()) const;
 
 	// Internal..
 
 	using arguments::parse;
+	using arguments::get_named;
 
 	virtual std::unique_ptr<parser> clone() const override
 	{
@@ -97,8 +152,9 @@ class cli : protected arguments
 	}
 
 	parse_result parse(
-		std::string const& exe_name, detail::token_iterator const& tokens,
-		parser_customization const& customize) const override
+		std::string const & exe_name,
+		detail::token_iterator const & tokens,
+		parser_customization const & customize) const override
 	{
 		m_exeName.set(exe_name);
 		return parse(tokens, customize);
@@ -138,11 +194,10 @@ cli::cli(const cli& other);
 ----
 
 end::reference[] */
-inline cli::cli(const cli& other)
+inline cli::cli(const cli & other)
 	: arguments(other)
 	, m_exeName(other.m_exeName)
-{
-}
+{}
 
 /* tag::reference[]
 
@@ -175,54 +230,73 @@ name (for `exe_name` parser), directly added as an argument (for
 `parser`), or add the parsers from another `cli` to this one.
 
 end::reference[] */
-inline cli& cli::add_argument(exe_name const& exe_name)
+inline cli & cli::add_argument(exe_name const & exe_name)
 {
 	m_exeName = exe_name;
 	return *this;
 }
-inline cli& cli::operator|=(exe_name const& exe_name)
+inline cli & cli::operator|=(exe_name const & exe_name)
 {
 	return this->add_argument(exe_name);
 }
-inline cli& cli::add_argument(parser const& p)
+inline cli & cli::add_argument(parser const & p)
 {
 	arguments::add_argument(p);
 	return *this;
 }
-inline cli& cli::operator|=(parser const& p)
+inline cli & cli::operator|=(parser const & p)
 {
 	arguments::add_argument(p);
 	return *this;
 }
-inline cli& cli::add_argument(group const& other)
+inline cli & cli::add_argument(group const & other)
 {
-	arguments::add_argument(static_cast<parser const&>(other));
+	arguments::add_argument(static_cast<parser const &>(other));
 	return *this;
 }
-inline cli& cli::operator|=(group const& other)
+inline cli & cli::operator|=(group const & other)
 {
 	return this->add_argument(other);
 }
-inline cli& cli::add_argument(cli const& other)
+inline cli & cli::add_argument(cli const & other)
 {
-	arguments::add_argument(static_cast<arguments const&>(other));
+	arguments::add_argument(static_cast<arguments const &>(other));
 	return *this;
 }
-inline cli& cli::operator|=(cli const& other)
+inline cli & cli::operator|=(cli const & other)
 {
 	return this->add_argument(other);
 }
 
 template <typename T>
-inline cli cli::operator|(T const& other) const
+inline cli cli::operator|(T const & other) const
 {
 	return cli(*this).add_argument(other);
 }
 
 template <typename DerivedT, typename T>
-cli operator|(composable_parser<DerivedT> const& thing, T const& other)
+cli operator|(composable_parser<DerivedT> const & thing, T const & other)
 {
-	return cli() | static_cast<DerivedT const&>(thing) | other;
+	return cli() | static_cast<DerivedT const &>(thing) | other;
+}
+
+/* tag::reference[]
+[#lyra_cli_array_ref]
+=== `lyra::cli::operator[]`
+
+[source]
+----
+cli::value_result cli::operator[](const std::string & n)
+----
+
+Finds the given argument by either option name or hint name and returns a
+convertible reference to the value, either the one provided by the user or the
+default.
+
+end::reference[] */
+inline cli::value_result cli::operator[](const std::string & n)
+{
+	return value_result(this->get_named(n));
 }
 
 /* tag::reference[]
@@ -242,7 +316,7 @@ callbacks may have been called.
 
 end::reference[] */
 inline parse_result
-cli::parse(args const& args, parser_customization const& customize) const
+	cli::parse(args const & args, parser_customization const & customize) const
 {
 	return parse(
 		args.exe_name(),
