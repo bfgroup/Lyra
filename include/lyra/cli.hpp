@@ -116,6 +116,10 @@ class cli : protected arguments
 	};
 
 	value_result operator[](const std::string & n);
+	value_result operator[](const char * n)
+	{
+		return (*this)[std::string(n)];
+	}
 
 	// Stream out generates the help output.
 	friend std::ostream & operator<<(std::ostream & os, cli const & parser)
