@@ -2349,7 +2349,18 @@ access to the parsed argument values.</p>
 </div>
 <div class="sect2">
 <h3 id="lyra_val"><a class="anchor" href="#lyra_val"></a>11.18. <code>lyra::val</code></h3>
-
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-k">auto</span> <span class="tok-nf">val</span><span class="tok-p">(</span><span class="tok-n">T</span> <span class="tok-o">&amp;&amp;</span> <span class="tok-n">v</span><span class="tok-p">);</span>
+<span class="tok-k">auto</span> <span class="tok-nf">val</span><span class="tok-p">(</span><span class="tok-k">const</span> <span class="tok-kt">char</span> <span class="tok-o">*</span> <span class="tok-n">v</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Makes a bound self-contained value of the type of the given r-value. The created
+bound values can be used in place of the value references for arguments. And can
+be retrieved with the
+<a href="#lyra_cli_array_ref"><code>lyra::cli::operator[]</code></a> call.</p>
+</div>
 </div>
 </div>
 </div>
