@@ -75,7 +75,7 @@ int main()
         auto result = cli.parse({ "TestApp", "--number", "42" });
         test
             (REQUIRE(!result))
-            (REQUIRE(result.errorMessage() == "Expected: --name"));
+            (REQUIRE(result.errorMessage() == "Expected: --name <name>"));
     }
 
     return test;

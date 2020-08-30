@@ -13,7 +13,7 @@
 
 #define LYRA_VERSION_MAJOR 1
 #define LYRA_VERSION_MINOR 5
-#define LYRA_VERSION_PATCH 0
+#define LYRA_VERSION_PATCH 1
 
 #define LYRA_VERSION \
 	(((LYRA_VERSION_MAJOR)*10000000) + ((LYRA_VERSION_MINOR)*100000) \
@@ -3230,6 +3230,7 @@ class opt : public bound_parser<opt>
 			if (o > 0) result += "|";
 			result += opt_names[o];
 		}
+		if (!m_hint.empty()) result += " <" + m_hint + ">";
 		return result;
 	}
 
@@ -3252,7 +3253,8 @@ class opt : public bound_parser<opt>
 	virtual bool is_named(const std::string & n) const override
 	{
 		return bound_parser::is_named(n)
-			|| (std::find(opt_names.begin(), opt_names.end(), n) != opt_names.end());
+			|| (std::find(opt_names.begin(), opt_names.end(), n)
+				!= opt_names.end());
 	}
 
 	bool isMatch(

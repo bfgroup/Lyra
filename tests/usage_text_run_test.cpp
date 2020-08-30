@@ -5,10 +5,10 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <lyra/lyra.hpp>
 #include "mini_test.hpp"
-#include <string>
+#include <lyra/lyra.hpp>
 #include <sstream>
+#include <string>
 
 int main()
 {
@@ -18,24 +18,34 @@ int main()
 	{
 		bool a = false;
 		bool show_help = false;
-		auto cli = lyra::cli() | opt( a )["-a"] | help(show_help);
+		auto cli = lyra::cli() | opt(a)["-a"] | help(show_help);
 		std::ostringstream help_text;
-		auto result = cli.parse( { "TestApp", "-?" } );
+		auto result = cli.parse({ "TestApp", "-?" });
 		help_text << cli;
-		test
-			(REQUIRE( result ))
-			(REQUIRE( help_text.str().find("USAGE:") != std::string::npos ));
+		test(REQUIRE(result));
+		test(REQUIRE(help_text.str().find("USAGE:") != std::string::npos));
 	}
 	{
 		bool a = false;
 		bool show_help = false;
-		auto cli = lyra::cli() | opt( a )["-a"] | help(show_help);
+		auto cli = lyra::cli() | opt(a)["-a"] | help(show_help);
 		std::ostringstream help_text;
-		auto result = cli.parse( { "", "-?" } );
+		auto result = cli.parse({ "", "-?" });
 		help_text << cli;
-		test
-			(REQUIRE( result ))
-			(REQUIRE( help_text.str().find("USAGE:") == std::string::npos ));
+		test(REQUIRE(result));
+		test(REQUIRE(help_text.str().find("USAGE:") == std::string::npos));
+	}
+	{
+		std::string named_required;
+		auto opt_required
+			= lyra::opt(named_required, "required-arg")["--required"](
+				"You must supply this arg");
+		test(REQUIRE(
+			opt_required.get_usage_text().find("--required")
+			!= std::string::npos));
+		test(REQUIRE(
+			opt_required.get_usage_text().find("<required-arg>")
+			!= std::string::npos));
 	}
 
 	return test;
