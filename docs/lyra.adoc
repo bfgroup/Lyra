@@ -252,6 +252,8 @@ include::../examples/doc_simple_alt.cpp[tag=doc]
 
 include::../examples/doc_simple.cpp[tag=doc]
 
+include::../examples/count_flag.cpp[tag=doc]
+
 :leveloffset: -1
 
 == Reference
