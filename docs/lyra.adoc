@@ -288,6 +288,8 @@ include::../include/lyra/val.hpp[tag=reference]
 
 == History
 
+=== 1.6
+
 === 1.5.1
 
 Minor change to bring back the missing option argument hints from the usage
