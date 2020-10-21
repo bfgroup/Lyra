@@ -59,6 +59,9 @@ stages:
         GCC 4.9: {
           CXX: g++-4.9, PACKAGES: g++-4.9, VM_IMAGE: 'ubuntu-16.04',
           TOOLSET: gcc, CXXSTD: "11" }
+        Clang 11: {
+          CXX: clang++-11, PACKAGES: clang-11, LLVM_OS: bionic, LLVM_VER: 11, VM_IMAGE: 'ubuntu-18.04',
+          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
         Clang 10: {
           CXX: clang++-10, PACKAGES: clang-10, LLVM_OS: bionic, LLVM_VER: 10, VM_IMAGE: 'ubuntu-18.04',
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
@@ -129,6 +132,15 @@ stages:
   - job: 'Xcode'
     strategy:
       matrix:
+        Xcode 12.2: {
+          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.2",
+          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+        Xcode 12.0: {
+          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.0",
+          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+        Xcode 11.7: {
+          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.7",
+          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
         Xcode 11.6: {
           CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.6",
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
@@ -143,9 +155,6 @@ stages:
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
         Xcode 11.2.1: {
           CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.2.1",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 11.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.1",
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
     pool:
       vmImage: $(VM_IMAGE)
