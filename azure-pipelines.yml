@@ -73,10 +73,10 @@ stages:
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
         Clang 7: {
           CXX: clang++-7, PACKAGES: clang-7, LLVM_OS: bionic, LLVM_VER: 7, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+          TOOLSET: clang, CXXSTD: "11,14,17" }
         Clang 6.0: {
           CXX: clang++-6.0, PACKAGES: clang-6.0, LLVM_OS: bionic, LLVM_VER: 6.0, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+          TOOLSET: clang, CXXSTD: "11,14,17" }
         Clang 5.0: {
           CXX: clang++-5.0, PACKAGES: clang-5.0, LLVM_OS: bionic, LLVM_VER: 5.0, VM_IMAGE: 'ubuntu-18.04',
           TOOLSET: clang, CXXSTD: "11,14,17" }
