@@ -27,6 +27,22 @@ cmake_minimum_required( VERSION 3.0 )
 # only, so it's irrelevant.
 project( lyra )
 
+# ====== Some configuration options
+# Check if Lyra is being used directly or via add_subdirectory, but allow overriding
+if(NOT DEFINED LYRA_MASTER_PROJECT)
+    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        set(LYRA_MASTER_PROJECT ON)
+    else()
+        set(LYRA_MASTER_PROJECT OFF)
+    endif()
+endif()
+
+# This generates the install targets only if lyra is used directly
+# if it is a subdirectory of a parent project, it will not pollute
+# the install of the parent project with Lyra headers.
+# It also let the user overrite that behaviour if needed.
+option(LYRA_INSTALL "Generate install targets" ${LYRA_MASTER_PROJECT})
+
 # Simple INTERFACE, and header only, library target.
 add_library( lyra INTERFACE )
 
@@ -41,39 +57,37 @@ target_include_directories(
 # Add an alias to public name.
 add_library( bfg::Lyra ALIAS lyra )
 
-
 ## Installation Code
-include(GNUInstallDirs)
+if(${LYRA_INSTALL})
+  include(GNUInstallDirs)
 
-include(CMakePackageConfigHelpers)
-configure_package_config_file(
-  ${PROJECT_SOURCE_DIR}/data/cmake/lyraConfig.cmake.in
-  ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra
-  )
+  include(CMakePackageConfigHelpers)
+  configure_package_config_file(
+    ${PROJECT_SOURCE_DIR}/data/cmake/lyraConfig.cmake.in
+    ${PROJECT_BINARY_DIR}/lyraConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra
+    )
 
-install(
-  TARGETS lyra
-  EXPORT lyraTarget
-  )
+  install(
+    TARGETS lyra
+    EXPORT lyraTarget
+    )
 
-install(
-  EXPORT lyraTarget
-  FILE  lyraTarget.cmake
-  NAMESPACE bfg::
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake
-  )
+  install(
+    EXPORT lyraTarget
+    FILE  lyraTarget.cmake
+    NAMESPACE bfg::
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake
+    )
 
-install(
-  DIRECTORY ${PROJECT_SOURCE_DIR}/include
-  DESTINATION  ${CMAKE_INSTALL_PREFIX}
-  )
+  install(
+    DIRECTORY ${PROJECT_SOURCE_DIR}/include
+    DESTINATION  ${CMAKE_INSTALL_PREFIX}
+    )
 
-install(
-  FILES
-  ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake/
-  )
-
-
-
+  install(
+    FILES
+    ${PROJECT_BINARY_DIR}/lyraConfig.cmake
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake/
+    )
+endif()
