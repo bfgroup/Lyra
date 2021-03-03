@@ -1240,7 +1240,7 @@ class parse_state
 		token_iterator const & remaining_tokens, size_t parsed_tokens = 0)
 		: result_type(type)
 		, tokens(remaining_tokens)
-	{}
+	{ (void) parsed_tokens; }
 
 	parser_result_type type() const { return result_type; }
 	token_iterator remainingTokens() const { return tokens; }
@@ -1324,6 +1324,8 @@ class parser
 		detail::token_iterator const & tokens,
 		parser_customization const & customize) const
 	{
+		(void) exe_name;
+
 		return this->parse(tokens, customize);
 	}
 
@@ -1335,14 +1337,14 @@ class parser
 	virtual bool is_group() const { return false; }
 	virtual result validate() const { return result::ok(); }
 	virtual std::unique_ptr<parser> clone() const { return nullptr; }
-	virtual bool is_named(const std::string & n) const { return false; }
+	virtual bool is_named(const std::string & n) const { (void) n; return false; }
 	virtual const parser * get_named(const std::string & n) const
 	{
 		if (is_named(n)) return this;
 		return nullptr;
 	}
 	virtual size_t get_value_count() const { return 0; }
-	virtual std::string get_value(size_t i) const { return ""; }
+	virtual std::string get_value(size_t i) const { (void) i; return ""; }
 
 	protected:
 	void print_help_text(std::ostream & os) const
