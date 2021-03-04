@@ -6,7 +6,6 @@
 # XCODE_INSTALL_PASSWORD = Password for that account.
 
 set -e
-export SPACESHIP_SKIP_2FA_UPGRADE=1
 sudo gem install xcode-install
 xcversion update
 echo ">>>>>"
