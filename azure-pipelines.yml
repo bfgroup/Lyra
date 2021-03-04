@@ -132,11 +132,20 @@ stages:
   - job: 'Xcode'
     strategy:
       matrix:
+        Xcode 12.4: {
+          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.4",
+          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+        Xcode 12.3: {
+          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.3",
+          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
         Xcode 12.2: {
           CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.2",
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 12.0: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.0",
+        Xcode 12.1: {
+          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.1",
+          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+        Xcode 12.0.1: {
+          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.0.1",
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
         Xcode 11.7: {
           CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.7",
