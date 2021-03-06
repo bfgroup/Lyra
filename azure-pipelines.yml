@@ -171,9 +171,6 @@ stages:
     - bash: |
         set -e
         uname -a
-        export 'XCODE_INSTALL_USER=$(DEV_APPLE_USER)'
-        export 'XCODE_INSTALL_PASSWORD=$(DEV_APPLE_PASSWORD)'
-        export 'FASTLANE_SESSION=$(FASTLANE_SESSION)'
         ./.ci/macos-xcode-install.sh
         ${CXX} --version
       displayName: Install Toolset
