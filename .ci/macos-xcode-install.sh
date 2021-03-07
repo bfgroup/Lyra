@@ -53,7 +53,7 @@ else
 	echo ">>>>>"
 	XC_PATH=`xc_path "${XCODE_VERSION}"`
 	echo "Xcode ${XCODE_VERSION} @ ${XC_PATH}"
-	if test `basename ${XC_PATH}` != `Xcode.app` ; then
+	if test `basename ${XC_PATH}` != "Xcode.app" ; then
 		sudo mv -f "${PWD}/Xcode.app" "${PWD}/Xcode-Default.app"
 		sudo ln -s "${XC_PATH}" Xcode.app
 	fi
