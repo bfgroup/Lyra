@@ -9,12 +9,29 @@ set -e
 
 xc_versions ()
 {
-	grep -E -e '[>]([[:digit:]]{1,3}[.]){1,2}([[:digit:]]+)' ${PWD}/Xcode*/Contents/version.plist | sed -E -e 's/^([[:graph:]]+)[/]Contents[/]version.plist[^>]+[>]([^<]+).*/\1 \2/g'
+	IFS=$'\n'
+	XC_VERSIONS=`grep -H -E -e '[>]([[:digit:]]{1,3}[.]){1,2}([[:digit:]]+)' ${PWD}/Xcode*/Contents/version.plist | sed -E -e 's/^([[:graph:]]+)[/]Contents[/]version.plist[^>]+[>]([^<]+).*/\1 \2/g'`
+	for XC in ${XC_VERSIONS}
+	do
+		XC_PATH=`echo ${XC} | sed -E -e 's/[[:space:]]+[0-9.]+$//g'`
+		if test '!' -h "${XC_PATH}" ; then
+			echo "${XC}"
+		fi
+	done
 }
 
 xc_path ()
 {
-	xc_versions | grep -F "$1" | head -n 1 | sed -E -e 's/[[:space:]]+[0-9.]+$//g'
+	IFS=$'\n'
+	XC_VERSIONS=`xc_versions`
+	for XC in ${XC_VERSIONS}
+	do
+		XC_PATH=`echo ${XC} | sed -E -e 's/[[:space:]]+[0-9.]+$//g'`
+		XC_VERSION=`echo ${XC} | sed -E -e 's/.*[[:space:]]+([0-9.]+)$/\1/g'`
+		if test "$1" == "${XC_VERSION}" ; then
+			echo "${XC_PATH}"
+		fi
+	done
 }
 
 if test -n "${XCODE_INSTALL_USER}" ; then
@@ -54,10 +71,13 @@ else
 	XC_PATH=`xc_path "${XCODE_VERSION}"`
 	echo "Xcode ${XCODE_VERSION} @ ${XC_PATH}"
 	if test `basename ${XC_PATH}` != "Xcode.app" ; then
-		sudo mv -f "${PWD}/Xcode.app" "${PWD}/Xcode-Default.app"
+		if test -e "${PWD}/Xcode.app" ; then
+			sudo mv -f "${PWD}/Xcode.app" "${PWD}/Xcode-Default.app"
+		fi
 		sudo ln -s "${XC_PATH}" Xcode.app
 	fi
 	sudo xcode-select -s "${XC_PATH}"
+	popd
 fi
 
 # Use, modification, and distribution are
