@@ -1,11 +1,12 @@
-= Lyra -- CLI C++11 Parsing Library
+= Lyra -- C++11 CLI Parsing Library
 :copyright: Copyright 2019-2020 René Ferdinand Rivera Morell
 :version-label!:
 :reproducible:
 :nofooter:
 :sectanchors:
 :sectnums:
-:sectnumlevels: 5
+:sectnumlevels: 2
+:stylesheet: amber.css
 :icons: font
 :source-highlighter: pygments
 :source-language: c++
@@ -23,7 +24,6 @@
 ifdef::backend-html5[]
 ++++
 <style>
-include::std.css[]
 #toctitle {
 	padding: 400px 0 0 0;
 	background: url(logo-color-300.png) no-repeat center/90%;

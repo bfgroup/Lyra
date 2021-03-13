@@ -2,15 +2,17 @@
 :copyright: Copyright 2019 René Ferdinand Rivera Morell
 :author: René Ferdinand Rivera Morell
 :email: grafikrobot@gmail.com
-:revnumber: 1.5
+:revnumber: 1.6
 :version-label!:
 :reproducible:
 :nofooter:
 :sectanchors:
 :sectnums:
-:sectnumlevels: 5
+:sectnumlevels: 2
+:stylesheet: amber.css
 :icons: font
 :source-highlighter: pygments
+:pygments-style: friendly
 :source-language: c++
 :toc: left
 :toclevels: 2
@@ -24,13 +26,6 @@
 :P: +
 :tabsize: 4
 
-ifdef::backend-html5[]
-++++
-<style>
-include::std.css[]
-</style>
-++++
-endif::[]
 
 == Introduction
 
