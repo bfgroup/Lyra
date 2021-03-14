@@ -48,6 +48,9 @@ stages:
   - job: 'Xcode'
     strategy:
       matrix:
+        Xcode 12.4: {
+          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.4",
+          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
@@ -130,9 +133,6 @@ stages:
   - job: 'Xcode'
     strategy:
       matrix:
-        Xcode 12.4: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.4",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
         Xcode 12.3: {
           CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.3",
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
