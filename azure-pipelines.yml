@@ -28,7 +28,7 @@ pr:
 
 stages:
 
-- stage: Test
+- stage: Base
   jobs:
 
   - job: 'Linux'
@@ -37,9 +37,43 @@ stages:
         GCC 10 Warn-All: {
           CXX: g++-10, PACKAGES: g++-10, VM_IMAGE: 'ubuntu-18.04',
           TOOLSET: gcc, CXXSTD: "11,14,17,2a", B2_ARGS: "warnings=all warnings-as-errors=on" }
-        Clang 10 Warn-All: {
-          CXX: clang++-10, PACKAGES: clang-10, LLVM_OS: bionic, LLVM_VER: 10, VM_IMAGE: 'ubuntu-18.04',
+        Clang 11 Warn-All: {
+          CXX: clang++-11, PACKAGES: clang-11, LLVM_OS: bionic, LLVM_VER: 11, VM_IMAGE: 'ubuntu-18.04',
           TOOLSET: clang, CXXSTD: "11,14,17,2a", B2_ARGS: "warnings=all warnings-as-errors=on" }
+    pool:
+      vmImage: $(VM_IMAGE)
+    steps:
+    - template: .ci/azp-linux-test.yml
+
+  - job: 'Xcode'
+    strategy:
+      matrix:
+    pool:
+      vmImage: $(VM_IMAGE)
+    steps:
+    - template: .ci/azp-xcode-test.yml
+
+  - job: 'Visual_Studio'
+    strategy:
+      matrix:
+        VS 2019 Warn-All: {
+          VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe, B2_ARGS: "warnings=all warnings-as-errors=on",
+          PLATFORM: x64, VM_IMAGE: 'windows-2019', TOOLSET: msvc, TOOLSET_VERSION: '14.2' }
+        VS 2019: {
+          VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe,
+          PLATFORM: x64, VM_IMAGE: 'windows-2019', TOOLSET: msvc, TOOLSET_VERSION: '14.2' }
+    pool:
+      vmImage: $(VM_IMAGE)
+    steps:
+    - template: .ci/azp-msvc-test.yml
+
+- stage: Test
+  dependsOn: [Base]
+  jobs:
+
+  - job: 'Linux'
+    strategy:
+      matrix:
         GCC 10: {
           CXX: g++-10, PACKAGES: g++-10, VM_IMAGE: 'ubuntu-18.04',
           TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
@@ -137,9 +171,6 @@ stages:
   - job: 'Visual_Studio'
     strategy:
       matrix:
-        VS 2019: {
-          VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe, PLATFORM: x64, VM_IMAGE: 'windows-2019',
-          TOOLSET: msvc, TOOLSET_VERSION: '14.2' }
         VS 2017: {
           VSWHERE_VERSION: '[15.0,16.0)', CXX: cl.exe, PLATFORM: x64, VM_IMAGE: 'vs2017-win2016',
           TOOLSET: msvc, TOOLSET_VERSION: '14.1' }
