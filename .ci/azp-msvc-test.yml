@@ -1,0 +1,24 @@
+steps:
+- script: |
+    choco install vswhere
+  displayName: Install
+- script: |
+    cd %BUILD_SOURCESDIRECTORY%/..
+    curl "https://github.com/bfgroup/b2/archive/release.zip" -L -o b2.zip
+  displayName: Download B2
+- task: ExtractFiles@1
+  inputs:
+    archiveFilePatterns: $(Build.SourcesDirectory)/../b2.zip
+    destinationFolder: $(Build.SourcesDirectory)/..
+    cleanDestinationFolder: false
+  displayName: Extract B2
+- script: |
+    echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+    cd %BUILD_SOURCESDIRECTORY%/../b2-release
+    cmd.exe /c bootstrap.bat
+    b2.exe install b2-install-layout=portable --prefix=%BUILD_SOURCESDIRECTORY%/../bin
+  displayName: Install B2
+- script: |
+    cd %BUILD_SOURCESDIRECTORY%/tests
+    %BUILD_SOURCESDIRECTORY%/../bin/b2.exe --debug-configuration toolset=%TOOLSET%
+  displayName: Test

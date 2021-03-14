@@ -11,6 +11,8 @@ trigger:
     - develop
     - master
     - feature/*
+    - pr/*
+    - issue/*
   paths:
     exclude:
     - .circleci/*
@@ -89,45 +91,7 @@ stages:
     pool:
       vmImage: $(VM_IMAGE)
     steps:
-    - bash: |
-        set -e
-        uname -a
-        ./.ci/linux-cxx-install.sh
-      displayName: Install Toolset
-    - bash: |
-        set -e
-        pushd ..
-        wget "https://github.com/boostorg/build/archive/develop.zip" -O b2.zip
-        unzip b2.zip
-        cd build-develop
-        CXX= ./bootstrap.sh
-        CXX= sudo ./b2 install b2-install-layout=portable --prefix=/usr/bin
-        popd
-        CXX_PATH=`which ${CXX}`
-        echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
-      displayName: Install B2
-    - bash: |
-        set -e
-        pushd tests
-        b2 toolset=${TOOLSET} cxxstd=${CXXSTD} ${B2_ARGS}
-        popd
-      displayName: Test
-    - bash: |
-        set -e
-        SOURCE=$PWD
-        mkdir -p ../run
-        mkdir -p ../build
-        pushd ../build
-          cmake -DCMAKE_INSTALL_PREFIX=../run $SOURCE -DCMAKE_CXX_STANDARD=11
-          make install
-        popd
-        mkdir -p ../test
-        pushd ../test
-          cmake -DCMAKE_PREFIX_PATH=$SOURCE/../run  $SOURCE/tests/lib_use_test -DCMAKE_CXX_STANDARD=11
-          make
-          ctest
-        popd
-      displayName: CMake Test
+    - template: .ci/azp-linux-test.yml
 
   - job: 'Xcode'
     strategy:
@@ -168,30 +132,7 @@ stages:
     pool:
       vmImage: $(VM_IMAGE)
     steps:
-    - bash: |
-        set -e
-        uname -a
-        ./.ci/macos-xcode-install.sh
-        ${CXX} --version
-      displayName: Install Toolset
-    - bash: |
-        set -e
-        pushd ..
-        wget "https://github.com/boostorg/build/archive/develop.zip" -O b2.zip
-        unzip b2.zip
-        cd build-develop
-        CXX= ./bootstrap.sh clang
-        CXX= sudo ./b2 install b2-install-layout=portable --prefix=/usr/local/bin
-        popd
-        CXX_PATH=`which ${CXX}`
-        echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
-      displayName: Install B2
-    - bash: |
-        set -e
-        pushd tests
-        b2 toolset=${TOOLSET} cxxstd=${CXXSTD}
-        popd
-      displayName: Test
+    - template: .ci/azp-xcode-test.yml
 
   - job: 'Visual_Studio'
     strategy:
@@ -205,29 +146,7 @@ stages:
     pool:
       vmImage: $(VM_IMAGE)
     steps:
-    - script: |
-        choco install vswhere
-      displayName: Install
-    - script: |
-        cd %BUILD_SOURCESDIRECTORY%/..
-        curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
-      displayName: Download B2
-    - task: ExtractFiles@1
-      inputs:
-        archiveFilePatterns: $(Build.SourcesDirectory)/../b2.zip
-        destinationFolder: $(Build.SourcesDirectory)/..
-        cleanDestinationFolder: false
-      displayName: Extract B2
-    - script: |
-        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
-        cd %BUILD_SOURCESDIRECTORY%/../build-develop
-        cmd.exe /c bootstrap.bat
-        b2.exe install b2-install-layout=portable --prefix=%BUILD_SOURCESDIRECTORY%/../bin
-      displayName: Install B2
-    - script: |
-        cd %BUILD_SOURCESDIRECTORY%/tests
-        %BUILD_SOURCESDIRECTORY%/../bin/b2.exe --debug-configuration toolset=%TOOLSET%
-      displayName: Test
+    - template: .ci/azp-msvc-test.yml
 
   - job: 'MinGW'
     strategy:
@@ -237,23 +156,4 @@ stages:
     pool:
       vmImage: $(VM_IMAGE)
     steps:
-    - script: |
-        cd %BUILD_SOURCESDIRECTORY%/..
-        curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
-      displayName: Download B2
-    - task: ExtractFiles@1
-      inputs:
-        archiveFilePatterns: $(Build.SourcesDirectory)/../b2.zip
-        destinationFolder: $(Build.SourcesDirectory)/..
-        cleanDestinationFolder: false
-      displayName: Extract B2
-    - script: |
-        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
-        cd %BUILD_SOURCESDIRECTORY%/../build-develop
-        cmd.exe /c bootstrap.bat
-        b2.exe install b2-install-layout=portable --prefix=%BUILD_SOURCESDIRECTORY%/../bin
-      displayName: Install B2
-    - script: |
-        cd %BUILD_SOURCESDIRECTORY%/tests
-        %BUILD_SOURCESDIRECTORY%/../bin/b2.exe --debug-configuration toolset=%TOOLSET%
-      displayName: Test
+    - template: .ci/azp-mingw-test.yml
