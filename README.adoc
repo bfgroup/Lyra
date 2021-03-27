@@ -6,7 +6,9 @@
 A simple to use, composing, header only, command line arguments parser for C++ 11 and beyond.
 
 [horizontal.shields]
-Obtain:: image:https://img.shields.io/github/downloads/bfgroup/Lyra/total.svg?label=GitHub[GitHub All Releases, link="https://github.com/bfgroup/Lyra/releases"]
+Obtain::
+image:https://img.shields.io/github/downloads/bfgroup/Lyra/total.svg?label=GitHub[GitHub All Releases, link="https://github.com/bfgroup/Lyra/releases"]
+image:https://img.shields.io/badge/package-Conan-blue[Conan Center, link="https://conan.io/center/lyra"]
 License:: image:https://img.shields.io/badge/license-BSL%201.0-blue.svg["Boost Software License 1.0", link="LICENSE.txt"]
 Standards:: image:https://img.shields.io/badge/standard-PFL-orange.svg["Pitchfork Layout", link="https://github.com/vector-of-bool/pitchfork"]
 image:https://img.shields.io/badge/standard-C%2B%2B%2011-blue.svg?logo=C%2B%2B["C\+\+ 11", link="https://isocpp.org/"]
