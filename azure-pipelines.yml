@@ -36,10 +36,10 @@ stages:
       matrix:
         GCC 10 Warn-All: {
           CXX: g++-10, PACKAGES: g++-10, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: gcc, CXXSTD: "11,14,17,2a", B2_ARGS: "warnings=all warnings-as-errors=on" }
+          TOOLSET: gcc, CXXSTD: "11,14,17,2a", B2_ARGS: "-d+2 warnings=all warnings-as-errors=on" }
         Clang 11 Warn-All: {
           CXX: clang++-11, PACKAGES: clang-11, LLVM_OS: bionic, LLVM_VER: 11, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14,17,2a", B2_ARGS: "warnings=all warnings-as-errors=on" }
+          TOOLSET: clang, CXXSTD: "11,14,17,2a", B2_ARGS: "-d+2 warnings=all warnings-as-errors=on" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
@@ -60,7 +60,7 @@ stages:
     strategy:
       matrix:
         VS 2019 Warn-All: {
-          VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe, B2_ARGS: "warnings=all warnings-as-errors=on",
+          VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe, B2_ARGS: "-d+2 warnings=all warnings-as-errors=on",
           PLATFORM: x64, VM_IMAGE: 'windows-2019', TOOLSET: msvc, TOOLSET_VERSION: '14.2' }
         VS 2019: {
           VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe,
