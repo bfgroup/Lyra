@@ -29,14 +29,14 @@ int main()
             (REQUIRE( !result ))
             (REQUIRE( result.errorMessage() == "Option name cannot be empty" ));
     }
-    {
-        int number = 0;
-        auto cli = lyra::cli() | opt( number, "number" )["invalid"];
-        auto result = cli.parse( { "TestApp", "-o", "filename" } );
-        test
-            (REQUIRE( !result ))
-            (REQUIRE( result.errorMessage().find( "Option name must begin with '-'" ) == 0 ));
-    }
+    // {
+    //     int number = 0;
+    //     auto cli = lyra::cli() | opt( number, "number" )["invalid"];
+    //     auto result = cli.parse( { "TestApp", "-o", "filename" } );
+    //     test
+    //         (REQUIRE( !result ))
+    //         (REQUIRE( result.errorMessage().find( "Option name must begin with '-'" ) == 0 ));
+    // }
 
     return test;
 }

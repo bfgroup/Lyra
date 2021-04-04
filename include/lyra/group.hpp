@@ -34,9 +34,9 @@ class group : public arguments
 	virtual bool is_group() const override { return true; }
 
 	parse_result parse(detail::token_iterator const & tokens,
-		parser_customization const & customize) const override
+		const option_style & style) const override
 	{
-		parse_result result = arguments::parse(tokens, customize);
+		parse_result result = arguments::parse(tokens, style);
 		if (result && result.value().type() != parser_result_type::no_match
 			&& success_signal)
 		{

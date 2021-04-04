@@ -1,4 +1,4 @@
-// Copyright 2018-2020 René Ferdinand Rivera Morell
+// Copyright 2018-2021 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -913,6 +913,169 @@ namespace detail
 #ifndef LYRA_DETAIL_TOKENS_HPP
 #define LYRA_DETAIL_TOKENS_HPP
 
+
+#ifndef LYRA_OPTION_STYLE_HPP
+#define LYRA_OPTION_STYLE_HPP
+
+#include <string>
+
+namespace lyra {
+
+/* tag::reference[]
+
+[#lyra_option_style]
+= `lyra::option_style`
+
+Specify the syntax style for options to the parser.
+
+[source]
+----
+std::string value_delimiters;
+std::string long_option_prefix;
+std::size_t long_option_size = 0;
+std::string short_option_prefix;
+std::size_t short_option_size = 0;
+----
+
+* `value_delimiters` -- Specifies a set of characters that are accepted as a
+	delimiter/separator between an option name and an option value when a
+	single argument is used for the option+value (i.e. "--option=value").
+* `long_option_prefix` -- Specifies a set of characters that are accepted as a
+	prefix for long options (i.e. multi-char single option name).
+* `long_option_size` -- The number of prefix characters that indicates a long
+	option. A value of zero (0) indicates that long options are not accepted.
+* `short_option_prefix` -- Specifies a set of characters that are accepted as a
+	prefix for short options (i.e. single-char multi-options).
+* `short_option_size` -- The number of prefix characters that indicates a short
+	option. A value of zero (0) indicates that short options are not accepted.
+
+end::reference[] */
+struct option_style
+{
+	std::string value_delimiters;
+	std::string long_option_prefix;
+	std::size_t long_option_size = 0;
+	std::string short_option_prefix;
+	std::size_t short_option_size = 0;
+
+
+	option_style(
+		std::string && value_delimiters,
+		std::string && long_option_prefix = {},
+		std::size_t long_option_size = 0,
+		std::string && short_option_prefix = {},
+		std::size_t short_option_size = 0)
+		: value_delimiters(std::move(value_delimiters))
+		, long_option_prefix(std::move(long_option_prefix))
+		, long_option_size(long_option_size)
+		, short_option_prefix(std::move(short_option_prefix))
+		, short_option_size(short_option_size)
+	{}
+
+
+	std::string long_option_string() const;
+	std::string short_option_string() const;
+
+
+	static const option_style & posix();
+	static const option_style & posix_brief();
+	static const option_style & windows();
+};
+
+/* tag::reference[]
+
+[#lyra_option_style_ctor]
+== Construction
+
+[source]
+----
+lyra::option_style::option_style(
+	std::string && value_delimiters,
+	std::string && long_option_prefix = {},
+	std::size_t long_option_size = 0,
+	std::string && short_option_prefix = {},
+	std::size_t short_option_size = 0)
+----
+
+Utility constructor that defines all the settings.
+
+end::reference[] */
+
+/* tag::reference[]
+
+[#lyra_option_style_def]
+== Definitions
+
+[source]
+----
+std::string lyra::option_style::long_option_string() const
+std::string lyra::option_style::short_option_string() const
+----
+
+Gives the default long or short option string, or prefix, for this option
+style. If the type of option is not available, i.e. size is zero, an empty
+string is returned.
+
+end::reference[] */
+
+inline std::string option_style::long_option_string() const
+{
+	return long_option_size > 0 ? std::string(long_option_size, long_option_prefix[0]) : "";
+}
+
+inline std::string option_style::short_option_string() const
+{
+	return short_option_size > 0 ? std::string(short_option_size, short_option_prefix[0]) : "";
+}
+
+/* tag::reference[]
+
+[#lyra_option_style_styles]
+== Styles
+
+[source]
+----
+static const option_style & lyra::option_style::posix();
+static const option_style & lyra::option_style::posix_brief();
+static const option_style & lyra::option_style::windows();
+----
+
+These provide definitions for common syntax of option styles:
+
+`posix`:: The overall _default_ that is two dashes (`--`) for long option
+	names and one dash (`-`) for short option names. Values for long options
+	use equal (`=`) between the option and value.
+`posix_brief`:: Variant that only allows for long option names with a single
+	dash (`-`).
+`windows`:: The common option style on Windows `CMD.EXE` shell. It only allows
+	long name options that start with slash (`/`) where the value is
+	specified after a colon (`:`). Single character flag style options are
+	only available as individual long options, for example `/A`.
+
+end::reference[] */
+
+inline const option_style & option_style::posix()
+{
+	static const option_style style("= ", "-", 2, "-", 1);
+	return style;
+}
+
+inline const option_style & option_style::posix_brief()
+{
+	static const option_style style("= ", "-", 1);
+	return style;
+}
+
+inline const option_style & option_style::windows()
+{
+	static const option_style style(":", "/", 1);
+	return style;
+}
+
+} // namespace lyra
+
+#endif
+
 #include <string>
 #include <vector>
 
@@ -1016,13 +1179,12 @@ class token_iterator
 {
 	public:
 	template <typename Span>
-	explicit token_iterator(Span const & args, std::string const & dels,
-		std::string const & opt_prefix)
-		: delimiters(dels)
-		, option_prefix(opt_prefix)
+	explicit token_iterator(
+		Span const & args, const option_style & opt_style)
+		: style(opt_style)
 		, args_i(args.begin())
 		, args_e(args.end())
-		, args_i_sub(1)
+		, args_i_sub(opt_style.short_option_size)
 	{}
 
 	explicit operator bool() const noexcept { return args_i != args_e; }
@@ -1034,13 +1196,13 @@ class token_iterator
 			if (++args_i_sub >= args_i->size())
 			{
 				++args_i;
-				args_i_sub = 1;
+				args_i_sub = style.short_option_size;
 			}
 		}
 		else
 		{
 			++args_i;
-			args_i_sub = 1;
+			args_i_sub = style.short_option_size;
 		}
 		return *this;
 	}
@@ -1052,31 +1214,29 @@ class token_iterator
 			args_i += 2;
 		else
 			++args_i;
-		args_i_sub = 1;
+		args_i_sub = style.short_option_size;
 		return *this;
 	}
 
 	bool has_option_prefix() const noexcept
 	{
-		return (args_i != args_e) && is_opt_prefix((*args_i)[0]);
+		return has_long_option_prefix() || has_short_option_prefix();
 	}
 
 	bool has_short_option_prefix() const noexcept
 	{
-		return (args_i != args_e) && is_opt_prefix((*args_i)[0])
-			&& !is_opt_prefix((*args_i)[1]);
+		return (args_i != args_e) && is_prefixed(style.short_option_prefix, style.short_option_size, *args_i);
 	}
 
 	bool has_long_option_prefix() const noexcept
 	{
-		return (args_i != args_e) && is_opt_prefix((*args_i)[0])
-			&& is_opt_prefix((*args_i)[1]);
+		return (args_i != args_e) && is_prefixed(style.long_option_prefix, style.long_option_size, *args_i);
 	}
 
 	bool has_value_delimiter() const noexcept
 	{
 		return (args_i != args_e)
-			&& (args_i->find_first_of(delimiters) != std::string::npos);
+			&& (args_i->find_first_of(style.value_delimiters) != std::string::npos);
 	}
 
 	token option() const
@@ -1085,15 +1245,14 @@ class token_iterator
 		{
 			if (has_value_delimiter())
 				return token(token_type::option,
-					args_i->substr(0, args_i->find_first_of(delimiters)));
+					args_i->substr(0, args_i->find_first_of(style.value_delimiters)));
 			else
 				return token(token_type::option, *args_i);
 		}
 		else if (has_short_option_prefix())
 		{
-			token t { token_type::option, option_prefix.substr(0, 1) };
-			t.name += (*args_i)[args_i_sub];
-			return t;
+			return { token_type::option,
+				prefix_value(style.short_option_prefix, style.short_option_size)+(*args_i)[args_i_sub] };
 		}
 		return token();
 	}
@@ -1102,7 +1261,7 @@ class token_iterator
 	{
 		if (has_option_prefix() && has_value_delimiter())
 			return token(token_type::argument,
-				args_i->substr(args_i->find_first_of(delimiters) + 1));
+				args_i->substr(args_i->find_first_of(style.value_delimiters) + 1));
 		else if (has_long_option_prefix())
 		{
 			if (args_i + 1 != args_e)
@@ -1121,18 +1280,40 @@ class token_iterator
 
 	token argument() const { return token(token_type::argument, *args_i); }
 
-	private:
-	std::string delimiters;
-	std::string option_prefix;
+	static bool is_prefixed(const std::string & prefix, std::size_t size, const std::string & s)
+	{
+		if (!prefix.empty() && size > 0 && s.size() > size)
+		{
+			for (auto c : prefix)
+			{
+				if (s[size] != c && s.find_last_not_of(c, size-1) == std::string::npos)
+					return true;
+			}
+		}
+		return false;
+	}
 
+	private:
+
+	const option_style & style;
 	std::vector<std::string>::const_iterator args_i;
 	std::vector<std::string>::const_iterator args_e;
 	std::string::size_type args_i_sub;
 
 	inline bool is_opt_prefix(char c) const noexcept
 	{
-		auto r = option_prefix.find(c) != std::string::npos;
-		return r;
+		return is_prefix_char(style.long_option_prefix, style.long_option_size, c) ||
+			is_prefix_char(style.short_option_prefix, style.short_option_size, c);
+	}
+
+	inline bool is_prefix_char(const std::string & prefix, std::size_t size, std::string::value_type c) const noexcept
+	{
+		return !prefix.empty() && size > 0 && prefix.find(c) != std::string::npos;
+	}
+
+	inline std::string prefix_value(const std::string & prefix, std::size_t size) const
+	{
+		return std::string(static_cast<typename std::string::size_type>(size), prefix[0]);
 	}
 };
 }} // namespace lyra::detail
@@ -1183,54 +1364,6 @@ inline detail::BoundVal<std::string> val(const char * v)
 #include <type_traits>
 
 namespace lyra {
-
-/* tag::reference[]
-
-[#lyra_parser_customization]
-= `lyra::parser_customization`
-
-Customization interface for parsing of options.
-
-[source]
-----
-virtual std::string token_delimiters() const = 0;
-----
-
-Specifies the characters to use for splitting a cli argument into the option
-and its value (if any).
-
-[source]
-----
-virtual std::string option_prefix() const = 0;
-----
-
-Specifies the characters to use as possible prefix, either single or double,
-for all options.
-
-end::reference[] */
-struct parser_customization
-{
-	virtual std::string token_delimiters() const = 0;
-	virtual std::string option_prefix() const = 0;
-};
-
-/* tag::reference[]
-
-[#lyra_default_parser_customization]
-= `lyra::default_parser_customization`
-
-Is-a `lyra::parser_customization` that defines token delimiters as space (" ")
-or equal (`=`). And specifies the option prefix character as dash (`-`)
-resulting in long options with `--` and short options with `-`.
-
-This customization is used as the default if none is given.
-
-end::reference[] */
-struct default_parser_customization : parser_customization
-{
-	std::string token_delimiters() const override { return " ="; }
-	std::string option_prefix() const override { return "-"; }
-};
 
 namespace detail {
 class parse_state
@@ -1314,23 +1447,15 @@ class parser
 
 	using help_text = std::vector<help_text_item>;
 
-	virtual help_text get_help_text() const { return {}; }
-	virtual std::string get_usage_text() const { return ""; }
-	virtual std::string get_description_text() const { return ""; }
+	[[deprecated]] help_text get_help_text() const { return {}; }
+	[[deprecated]] std::string get_usage_text() const { return ""; }
+	[[deprecated]] std::string get_description_text() const { return ""; }
+
+	virtual help_text get_help_text(const option_style &) const { return {}; }
+	virtual std::string get_usage_text(const option_style &) const { return ""; }
+	virtual std::string get_description_text(const option_style &) const { return ""; }
 
 	virtual ~parser() = default;
-
-	virtual parse_result parse(std::string const & exe_name,
-		detail::token_iterator const & tokens,
-		parser_customization const & customize) const
-	{
-		(void) exe_name;
-
-		return this->parse(tokens, customize);
-	}
-
-	virtual parse_result parse(detail::token_iterator const & tokens,
-		parser_customization const & customize) const = 0;
 
 	virtual detail::parser_cardinality cardinality() const { return { 0, 1 }; }
 	bool is_optional() const { return cardinality().is_optional(); }
@@ -1346,22 +1471,34 @@ class parser
 	virtual size_t get_value_count() const { return 0; }
 	virtual std::string get_value(size_t i) const { (void) i; return ""; }
 
+	virtual parse_result parse(detail::token_iterator const & tokens,
+		const option_style & style) const = 0;
+
 	protected:
-	void print_help_text(std::ostream & os) const
+	virtual parse_result parse(std::string const & exe_name,
+		detail::token_iterator const & tokens,
+		const option_style & style) const
 	{
-		std::string usage_test = get_usage_text();
+		(void) exe_name;
+
+		return this->parse(tokens, style);
+	}
+
+	void print_help_text(std::ostream & os, const option_style & style) const
+	{
+		std::string usage_test = get_usage_text(style);
 		if (!usage_test.empty())
 			os << "USAGE:\n"
-			<< "  " << get_usage_text() << "\n\n";
+			<< "  " << get_usage_text(style) << "\n\n";
 
-		std::string description_test = get_description_text();
+		std::string description_test = get_description_text(style);
 		if (!description_test.empty())
-			os << get_description_text() << "\n";
+			os << get_description_text(style) << "\n";
 
 		os << "OPTIONS, ARGUMENTS:\n";
 		const std::string::size_type left_col_size = 26 - 3;
 		const std::string left_pad(left_col_size, ' ');
-		for (auto const & cols : get_help_text())
+		for (auto const & cols : get_help_text(style))
 		{
 			if (cols.option.size() > left_pad.size())
 				os << "  " << cols.option << "\n  " << left_pad << " "
@@ -1411,7 +1548,7 @@ The set of help texts for any options in the sub-parsers to this one, if any.
 
 [source]
 ----
-virtual help_text get_help_text() const;
+virtual help_text get_help_text(const option_style &) const;
 ----
 
 Collects, and returns, the set of help items for the sub-parser arguments in
@@ -1425,7 +1562,7 @@ the stream operator.
 
 [source]
 ----
-virtual std::string get_usage_text() const;
+virtual std::string get_usage_text(const option_style &) const;
 ----
 
 Returns the formatted `USAGE` text for this parser, and any contained
@@ -1436,7 +1573,7 @@ sub-parsers. This is called to print out the help text from the stream operator.
 
 [source]
 ----
-virtual std::string get_description_text() const;
+virtual std::string get_description_text(const option_style &) const;
 ----
 
 Returns the description text for this, and any contained sub-parsers. This is
@@ -1459,7 +1596,7 @@ A parser that can be composed with other parsers using `operator|`. Composing
 two `composable_parser` instances generates a `cli` parser.
 
 end::reference[] */
-template <typename DerivedT>
+template <typename Derived>
 class composable_parser : public parser
 {};
 
@@ -1781,7 +1918,7 @@ class arg : public bound_parser<arg>
 	public:
 	using bound_parser::bound_parser;
 
-	virtual std::string get_usage_text() const override
+	virtual std::string get_usage_text(const option_style &) const override
 	{
 		std::ostringstream oss;
 		if (!m_hint.empty())
@@ -1807,16 +1944,16 @@ class arg : public bound_parser<arg>
 		return oss.str();
 	}
 
-	virtual help_text get_help_text() const override
+	virtual help_text get_help_text(const option_style & style) const override
 	{
-		return { { get_usage_text(), m_description } };
+		return { { get_usage_text(style), m_description } };
 	}
 
 	using parser::parse;
 
 	parse_result parse(
 		detail::token_iterator const& tokens,
-		parser_customization const&) const override
+		const option_style &) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
@@ -1885,7 +2022,7 @@ class exe_name : public composable_parser<exe_name>
 
 	virtual parse_result parse(
 		detail::token_iterator const& tokens,
-		parser_customization const&) const override
+		const option_style &) const override
 	{
 		return parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
@@ -2059,12 +2196,12 @@ class arguments : public parser
 	T & get(size_t i);
 
 
-	virtual std::string get_usage_text() const override
+	virtual std::string get_usage_text(const option_style & style) const override
 	{
 		std::ostringstream os;
 		for (auto const & p : parsers)
 		{
-			std::string usage_text = p->get_usage_text();
+			std::string usage_text = p->get_usage_text(style);
 			if (usage_text.size() > 0)
 			{
 				if (os.tellp() != std::ostringstream::pos_type(0)) os << " ";
@@ -2079,25 +2216,25 @@ class arguments : public parser
 		return os.str();
 	}
 
-	virtual std::string get_description_text() const override
+	virtual std::string get_description_text(const option_style & style) const override
 	{
 		std::ostringstream os;
 		for (auto const & p : parsers)
 		{
 			if (p->is_group()) continue;
-			auto child_description = p->get_description_text();
+			auto child_description = p->get_description_text(style);
 			if (!child_description.empty()) os << child_description << "\n";
 		}
 		return os.str();
 	}
 
-	virtual help_text get_help_text() const override
+	virtual help_text get_help_text(const option_style & style) const override
 	{
 		help_text text;
 		for (auto const & p : parsers)
 		{
 			if (p->is_group()) text.push_back({ "", "" });
-			auto child_help = p->get_help_text();
+			auto child_help = p->get_help_text(style);
 			text.insert(text.end(), child_help.begin(), child_help.end());
 		}
 		return text;
@@ -2119,12 +2256,12 @@ class arguments : public parser
 	}
 
 	parse_result parse(detail::token_iterator const & tokens,
-		parser_customization const & customize) const override
+		const option_style & style) const override
 	{
 		switch (eval_mode)
 		{
-			case any: return parse_any(tokens, customize);
-			case sequence: return parse_sequence(tokens, customize);
+			case any: return parse_any(tokens, style);
+			case sequence: return parse_sequence(tokens, style);
 		}
 		return parse_result::logicError(
 			detail::parse_state(parser_result_type::no_match, tokens),
@@ -2132,7 +2269,7 @@ class arguments : public parser
 	}
 
 	parse_result parse_any(detail::token_iterator const & tokens,
-		parser_customization const & customize) const
+		const option_style & style) const
 	{
 		struct ParserInfo
 		{
@@ -2158,7 +2295,7 @@ class arguments : public parser
 					|| parse_info.count < parser_cardinality.maximum)
 				{
 					auto subparse_result = parse_info.parser_p->parse(
-						result.value().remainingTokens(), customize);
+						result.value().remainingTokens(), style);
 					if (!subparse_result && !parse_info.parser_p->is_group())
 						return subparse_result;
 					result = parse_result(subparse_result);
@@ -2188,14 +2325,14 @@ class arguments : public parser
 					&& (parseInfo.count < parser_cardinality.minimum)))
 			{
 				return parse_result::runtimeError(result.value(),
-					"Expected: " + parseInfo.parser_p->get_usage_text());
+					"Expected: " + parseInfo.parser_p->get_usage_text(style));
 			}
 		}
 		return result;
 	}
 
 	parse_result parse_sequence(detail::token_iterator const & tokens,
-		parser_customization const & customize) const
+		const option_style & style) const
 	{
 		struct ParserInfo
 		{
@@ -2221,7 +2358,7 @@ class arguments : public parser
 					|| parse_info.count < parser_cardinality.maximum))
 			{
 				result = parse_info.parser_p->parse(
-					result.value().remainingTokens(), customize);
+					result.value().remainingTokens(), style);
 				parser_result_type result_type = result.value().type();
 				if (!result)
 				{
@@ -2243,7 +2380,7 @@ class arguments : public parser
 					&& (parse_info.count < parser_cardinality.minimum)))
 			{
 				return parse_result::runtimeError(result.value(),
-					"Expected: " + parse_info.parser_p->get_usage_text());
+					"Expected: " + parse_info.parser_p->get_usage_text(style));
 			}
 		}
 		return result;
@@ -2257,7 +2394,8 @@ class arguments : public parser
 	friend std::ostream & operator<<(
 		std::ostream & os, arguments const & parser)
 	{
-		parser.print_help_text(os);
+		const option_style & s = parser.opt_style ? *parser.opt_style : option_style::posix();
+		parser.print_help_text(os, s);
 		return os;
 	}
 
@@ -2270,6 +2408,9 @@ class arguments : public parser
 		}
 		return nullptr;
 	}
+
+	protected:
+	std::shared_ptr<option_style> opt_style;
 
 	private:
 	std::vector<std::unique_ptr<parser>> parsers;
@@ -2310,7 +2451,9 @@ arguments::arguments(const arguments& other);
 
 end::reference[] */
 inline arguments::arguments(const arguments & other)
-	: eval_mode(other.eval_mode)
+	: parser(other)
+	, opt_style(other.opt_style)
+	, eval_mode(other.eval_mode)
 {
 	for (auto & other_parser : other.parsers)
 	{
@@ -2433,9 +2576,72 @@ T & arguments::get(size_t i)
 
 #endif
 
+#ifndef LYRA_CLI_PARSER_HPP
+#define LYRA_CLI_PARSER_HPP
+
+
 #ifndef LYRA_CLI_HPP
 #define LYRA_CLI_HPP
 
+
+#ifndef LYRA_DETAIL_DEPRECATED_PARSER_CUSTOMIZATION_HPP
+#define LYRA_DETAIL_DEPRECATED_PARSER_CUSTOMIZATION_HPP
+
+#include <string>
+
+namespace lyra {
+
+/* tag::reference[]
+
+[#lyra_parser_customization]
+= `lyra::parser_customization`
+
+Customization interface for parsing of options.
+
+[source]
+----
+virtual std::string token_delimiters() const = 0;
+----
+
+Specifies the characters to use for splitting a cli argument into the option
+and its value (if any).
+
+[source]
+----
+virtual std::string option_prefix() const = 0;
+----
+
+Specifies the characters to use as possible prefix, either single or double,
+for all options.
+
+end::reference[] */
+struct parser_customization
+{
+	virtual std::string token_delimiters() const = 0;
+	virtual std::string option_prefix() const = 0;
+};
+
+/* tag::reference[]
+
+[#lyra_default_parser_customization]
+= `lyra::default_parser_customization`
+
+Is-a `lyra::parser_customization` that defines token delimiters as space (" ")
+or equal (`=`). And specifies the option prefix character as dash (`-`)
+resulting in long options with `--` and short options with `-`.
+
+This customization is used as the default if none is given.
+
+end::reference[] */
+struct default_parser_customization : parser_customization
+{
+	std::string token_delimiters() const override { return " ="; }
+	std::string option_prefix() const override { return "-"; }
+};
+
+} // namespace lyra
+
+#endif
 
 #ifndef LYRA_GROUP_HPP
 #define LYRA_GROUP_HPP
@@ -2467,9 +2673,9 @@ class group : public arguments
 	virtual bool is_group() const override { return true; }
 
 	parse_result parse(detail::token_iterator const & tokens,
-		parser_customization const & customize) const override
+		const option_style & style) const override
 	{
-		parse_result result = arguments::parse(tokens, customize);
+		parse_result result = arguments::parse(tokens, style);
 		if (result && result.value().type() != parser_result_type::no_match
 			&& success_signal)
 		{
@@ -2644,15 +2850,35 @@ class cli : protected arguments
 
 	value_result operator[](const std::string & n);
 
+	cli & style(const option_style & style);
+	cli & style(option_style && style);
+
 	friend std::ostream & operator<<(std::ostream & os, cli const & parser)
 	{
 		return os << static_cast<const arguments &>(parser);
 	}
 
 	parse_result parse(
+		args const & args) const
+	{
+		if (opt_style)
+			return parse(args, *opt_style);
+		else
+			return parse(args, option_style::posix());
+	}
+	parse_result parse(
 		args const & args,
-		parser_customization const & customize
-		= default_parser_customization()) const;
+		const option_style & style) const;
+
+	[[deprecated]] parse_result parse(
+		args const & args,
+		const parser_customization & customize) const
+	{
+		return this->parse(args, option_style(
+			customize.token_delimiters(),
+			customize.option_prefix(), 2,
+			customize.option_prefix(), 1));
+	}
 
 
 	using arguments::parse;
@@ -2666,10 +2892,10 @@ class cli : protected arguments
 	protected:
 	mutable exe_name m_exeName;
 
-	virtual std::string get_usage_text() const override
+	virtual std::string get_usage_text(const option_style & style) const override
 	{
 		if (!m_exeName.name().empty())
-			return m_exeName.name() + " " + arguments::get_usage_text();
+			return m_exeName.name() + " " + arguments::get_usage_text(style);
 		else
 			return "";
 	}
@@ -2677,10 +2903,10 @@ class cli : protected arguments
 	parse_result parse(
 		std::string const & exe_name,
 		detail::token_iterator const & tokens,
-		parser_customization const & customize) const override
+		const option_style & style) const override
 	{
 		m_exeName.set(exe_name);
-		return parse(tokens, customize);
+		return parse(tokens, style);
 	}
 };
 
@@ -2828,32 +3054,48 @@ inline cli::value_result cli::operator[](const std::string & n)
 [source]
 ----
 parse_result cli::parse(
-	args const& args, parser_customization const& customize) const;
+	args const& args, const option_style& customize) const;
 ----
 
-Parses given arguments `args` and optional parser customization `customize`.
+Parses given arguments `args` and optional option style.
 The result indicates success or failure, and if failure what kind of failure
 it was. The state of variables bound to options is unspecified and any bound
 callbacks may have been called.
 
 end::reference[] */
 inline parse_result
-	cli::parse(args const & args, parser_customization const & customize) const
+	cli::parse(args const & args, const option_style & style) const
 {
-	return parse(
-		args.exe_name(),
-		detail::token_iterator(
-			args, customize.token_delimiters(), customize.option_prefix()),
-		customize);
+	return parse(args.exe_name(), detail::token_iterator(args, style), style);
+}
+
+/* tag::reference[]
+[#lyra_cli_style]
+=== `lyra::cli::style`
+
+[source]
+----
+lyra::cli & lyra::cli::style(const lyra::option_style & style)
+lyra::cli & lyra::cli::style(lyra::option_style && style)
+----
+
+Specifies the <<lyra_option_style>> to accept for this instance.
+
+end::reference[] */
+inline cli & cli::style(const option_style & style)
+{
+	opt_style = std::make_shared<option_style>(style);
+	return *this;
+}
+inline cli & cli::style(option_style && style)
+{
+	opt_style = std::make_shared<option_style>(std::move(style));
+	return *this;
 }
 
 } // namespace lyra
 
 #endif
-
-#ifndef LYRA_CLI_PARSER_HPP
-#define LYRA_CLI_PARSER_HPP
-
 
 namespace lyra
 {
@@ -2896,14 +3138,14 @@ class literal : public parser
 	}
 
 
-	virtual std::string get_usage_text() const override { return name; }
+	virtual std::string get_usage_text(const option_style &) const override { return name; }
 
-	virtual std::string get_description_text() const override
+	virtual std::string get_description_text(const option_style &) const override
 	{
 		return description;
 	}
 
-	virtual help_text get_help_text() const override
+	virtual help_text get_help_text(const option_style &) const override
 	{
 		return { { name, description } };
 	}
@@ -2911,7 +3153,7 @@ class literal : public parser
 	using parser::parse;
 
 	virtual parse_result parse(detail::token_iterator const & tokens,
-		parser_customization const &) const override
+		const option_style &) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
@@ -3172,9 +3414,6 @@ Is-a <<lyra_bound_parser>>.
 end::reference[] */
 class opt : public bound_parser<opt>
 {
-	protected:
-	std::vector<std::string> opt_names;
-
 	public:
 	enum class ctor_lambda_e
 	{
@@ -3224,19 +3463,19 @@ class opt : public bound_parser<opt>
 	opt & operator[](std::string const & opt_name);
 
 
-	virtual std::string get_usage_text() const override
+	virtual std::string get_usage_text(const option_style & style) const override
 	{
 		std::string result;
 		for (std::size_t o = 0; o < opt_names.size(); ++o)
 		{
 			if (o > 0) result += "|";
-			result += opt_names[o];
+			result += format_opt(opt_names[o], style);
 		}
 		if (!m_hint.empty()) result += " <" + m_hint + ">";
 		return result;
 	}
 
-	virtual help_text get_help_text() const override
+	virtual help_text get_help_text(const option_style & style) const override
 	{
 		std::ostringstream oss;
 		bool first = true;
@@ -3246,7 +3485,7 @@ class opt : public bound_parser<opt>
 				first = false;
 			else
 				oss << ", ";
-			oss << opt;
+			oss << format_opt(opt, style);
 		}
 		if (!m_hint.empty()) oss << " <" << m_hint << ">";
 		return { { oss.str(), m_description } };
@@ -3259,42 +3498,11 @@ class opt : public bound_parser<opt>
 				!= opt_names.end());
 	}
 
-	bool isMatch(
-		std::string const & optToken,
-		parser_customization const & customize) const
-	{
-		auto normalisedToken = normaliseOpt(optToken, customize);
-		for (auto const & name : opt_names)
-		{
-			if (normaliseOpt(name, customize) == normalisedToken) return true;
-		}
-		return false;
-	}
-
-	std::string normaliseOpt(
-		std::string const & optName,
-		parser_customization const & customize) const
-	{
-		auto is_prefix_char_0
-			= customize.option_prefix().find(optName[0]) != std::string::npos;
-		auto is_prefix_char_1
-			= customize.option_prefix().find(optName[1]) != std::string::npos;
-		if (is_prefix_char_0)
-		{
-			if (is_prefix_char_1)
-				return "--" + optName.substr(2);
-			else
-				return "-" + optName.substr(1);
-		}
-		else
-			return optName;
-	}
-
 	using parser::parse;
 
 	parse_result parse(
 		detail::token_iterator const & tokens,
-		parser_customization const & customize) const override
+		const option_style & style) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
@@ -3303,7 +3511,7 @@ class opt : public bound_parser<opt>
 		if (remainingTokens && remainingTokens.has_option_prefix())
 		{
 			auto const & token = remainingTokens.option();
-			if (isMatch(token.name, customize))
+			if (is_match(token.name, style))
 			{
 				if (m_ref->isFlag())
 				{
@@ -3354,8 +3562,6 @@ class opt : public bound_parser<opt>
 		{
 			if (name.empty())
 				return result::logicError("Option name cannot be empty");
-			if (name[0] != '-')
-				return result::logicError("Option name must begin with '-'");
 		}
 		return bound_parser::validate();
 	}
@@ -3363,6 +3569,44 @@ class opt : public bound_parser<opt>
 	virtual std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<opt>(this);
+	}
+
+	protected:
+	std::vector<std::string> opt_names;
+
+	bool is_match(
+		std::string const & opt_name,
+		const option_style & style) const
+	{
+		auto opt_normalized = normalise_opt(opt_name, style);
+		for (auto const & name : opt_names)
+		{
+			if (normalise_opt(name, style) == opt_normalized) return true;
+		}
+		return false;
+	}
+
+	std::string normalise_opt(
+		std::string const & opt_name,
+		const option_style & style) const
+	{
+		if (detail::token_iterator::is_prefixed(style.short_option_prefix, style.short_option_size, opt_name))
+			return "-" + opt_name.substr(style.short_option_size);
+
+		if (detail::token_iterator::is_prefixed(style.long_option_prefix, style.long_option_size, opt_name))
+			return "--" + opt_name.substr(style.long_option_size);
+
+		return opt_name;
+	}
+
+	std::string format_opt(std::string const & opt_name, const option_style & style) const
+	{
+		if (opt_name[0] == '-' && opt_name[1] == '-')
+			return style.long_option_string()+opt_name.substr(2);
+		else if (opt_name[0] == '-')
+			return style.short_option_string()+opt_name.substr(1);
+		else
+			return opt_name;
 	}
 };
 
@@ -3454,7 +3698,7 @@ end::reference[] */
 [source]
 ----
 lyra::opt& lyra::opt::name(const std::string &opt_name)
-lyra::opt& lyra::opt::operator[](const std::string &optName)
+lyra::opt& lyra::opt::operator[](const std::string &opt_name)
 ----
 
 Add a spelling for the option of the form `--<name>` or `-n`.
@@ -3463,7 +3707,7 @@ One can add multiple short spellings at once with `-abc`.
 end::reference[] */
 inline opt & opt::name(const std::string & opt_name)
 {
-	if (opt_name.size() > 2 && opt_name[0] != opt_name[1])
+	if (opt_name.size() > 2 && opt_name[0] == '-' && opt_name[1] != '-')
 		for (auto o : opt_name.substr(1))
 			opt_names.push_back(std::string(1, opt_name[0]) + o);
 	else
@@ -3510,7 +3754,7 @@ class help : public opt
 
 	help & description(const std::string & text);
 
-	virtual std::string get_description_text() const override
+	virtual std::string get_description_text(const option_style &) const override
 	{
 		return description_text;
 	}
@@ -3588,6 +3832,17 @@ class main final : protected cli
 	int operator()(int argc, const char ** argv, L action);
 
 	using cli::operator[];
+
+	main & style(const option_style & style)
+	{
+		cli::style(style);
+		return *this;
+	}
+	main & style(option_style && style)
+	{
+		cli::style(style);
+		return *this;
+	}
 };
 
 /* tag::reference[]

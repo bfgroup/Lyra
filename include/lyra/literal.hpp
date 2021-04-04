@@ -38,14 +38,14 @@ class literal : public parser
 
 	// Internal.
 
-	virtual std::string get_usage_text() const override { return name; }
+	virtual std::string get_usage_text(const option_style &) const override { return name; }
 
-	virtual std::string get_description_text() const override
+	virtual std::string get_description_text(const option_style &) const override
 	{
 		return description;
 	}
 
-	virtual help_text get_help_text() const override
+	virtual help_text get_help_text(const option_style &) const override
 	{
 		return { { name, description } };
 	}
@@ -53,7 +53,7 @@ class literal : public parser
 	using parser::parse;
 
 	virtual parse_result parse(detail::token_iterator const & tokens,
-		parser_customization const &) const override
+		const option_style &) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);

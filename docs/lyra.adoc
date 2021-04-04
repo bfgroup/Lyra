@@ -249,36 +249,27 @@ include::../examples/doc_simple.cpp[tag=doc]
 
 include::../examples/count_flag.cpp[tag=doc]
 
+include::../examples/option_styles.cpp[tag=doc]
+
 :leveloffset: -1
 
 == Reference
 
 :leveloffset: +2
 
-include::../include/lyra/parser.hpp[tag=reference]
-
-include::../include/lyra/cli.hpp[tag=reference]
-
-include::../include/lyra/opt.hpp[tag=reference]
-
 include::../include/lyra/arg.hpp[tag=reference]
-
-include::../include/lyra/help.hpp[tag=reference]
-
-include::../include/lyra/exe_name.hpp[tag=reference]
-
 include::../include/lyra/args.hpp[tag=reference]
-
 include::../include/lyra/arguments.hpp[tag=reference]
-
-include::../include/lyra/literal.hpp[tag=reference]
-
-include::../include/lyra/group.hpp[tag=reference]
-
+include::../include/lyra/cli.hpp[tag=reference]
 include::../include/lyra/command.hpp[tag=reference]
-
+include::../include/lyra/exe_name.hpp[tag=reference]
+include::../include/lyra/group.hpp[tag=reference]
+include::../include/lyra/help.hpp[tag=reference]
+include::../include/lyra/literal.hpp[tag=reference]
 include::../include/lyra/main.hpp[tag=reference]
-
+include::../include/lyra/opt.hpp[tag=reference]
+include::../include/lyra/option_style.hpp[tag=reference]
+include::../include/lyra/parser.hpp[tag=reference]
 include::../include/lyra/val.hpp[tag=reference]
 
 :leveloffset: -2

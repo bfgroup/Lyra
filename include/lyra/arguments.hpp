@@ -83,12 +83,12 @@ class arguments : public parser
 
 	// Internal..
 
-	virtual std::string get_usage_text() const override
+	virtual std::string get_usage_text(const option_style & style) const override
 	{
 		std::ostringstream os;
 		for (auto const & p : parsers)
 		{
-			std::string usage_text = p->get_usage_text();
+			std::string usage_text = p->get_usage_text(style);
 			if (usage_text.size() > 0)
 			{
 				if (os.tellp() != std::ostringstream::pos_type(0)) os << " ";
@@ -103,26 +103,26 @@ class arguments : public parser
 		return os.str();
 	}
 
-	virtual std::string get_description_text() const override
+	virtual std::string get_description_text(const option_style & style) const override
 	{
 		std::ostringstream os;
 		for (auto const & p : parsers)
 		{
 			if (p->is_group()) continue;
-			auto child_description = p->get_description_text();
+			auto child_description = p->get_description_text(style);
 			if (!child_description.empty()) os << child_description << "\n";
 		}
 		return os.str();
 	}
 
 	// Return a container of the individual help text for the composed parsers.
-	virtual help_text get_help_text() const override
+	virtual help_text get_help_text(const option_style & style) const override
 	{
 		help_text text;
 		for (auto const & p : parsers)
 		{
 			if (p->is_group()) text.push_back({ "", "" });
-			auto child_help = p->get_help_text();
+			auto child_help = p->get_help_text(style);
 			text.insert(text.end(), child_help.begin(), child_help.end());
 		}
 		return text;
@@ -144,12 +144,12 @@ class arguments : public parser
 	}
 
 	parse_result parse(detail::token_iterator const & tokens,
-		parser_customization const & customize) const override
+		const option_style & style) const override
 	{
 		switch (eval_mode)
 		{
-			case any: return parse_any(tokens, customize);
-			case sequence: return parse_sequence(tokens, customize);
+			case any: return parse_any(tokens, style);
+			case sequence: return parse_sequence(tokens, style);
 		}
 		return parse_result::logicError(
 			detail::parse_state(parser_result_type::no_match, tokens),
@@ -157,7 +157,7 @@ class arguments : public parser
 	}
 
 	parse_result parse_any(detail::token_iterator const & tokens,
-		parser_customization const & customize) const
+		const option_style & style) const
 	{
 		struct ParserInfo
 		{
@@ -183,7 +183,7 @@ class arguments : public parser
 					|| parse_info.count < parser_cardinality.maximum)
 				{
 					auto subparse_result = parse_info.parser_p->parse(
-						result.value().remainingTokens(), customize);
+						result.value().remainingTokens(), style);
 					// It's only an error if this is not a sub-parser. This
 					// makes it such that sub-parsers will report no_match
 					// trigerring consideration of other sub-parser
@@ -222,14 +222,14 @@ class arguments : public parser
 					&& (parseInfo.count < parser_cardinality.minimum)))
 			{
 				return parse_result::runtimeError(result.value(),
-					"Expected: " + parseInfo.parser_p->get_usage_text());
+					"Expected: " + parseInfo.parser_p->get_usage_text(style));
 			}
 		}
 		return result;
 	}
 
 	parse_result parse_sequence(detail::token_iterator const & tokens,
-		parser_customization const & customize) const
+		const option_style & style) const
 	{
 		struct ParserInfo
 		{
@@ -259,7 +259,7 @@ class arguments : public parser
 					|| parse_info.count < parser_cardinality.maximum))
 			{
 				result = parse_info.parser_p->parse(
-					result.value().remainingTokens(), customize);
+					result.value().remainingTokens(), style);
 				parser_result_type result_type = result.value().type();
 				if (!result)
 				{
@@ -286,7 +286,7 @@ class arguments : public parser
 					&& (parse_info.count < parser_cardinality.minimum)))
 			{
 				return parse_result::runtimeError(result.value(),
-					"Expected: " + parse_info.parser_p->get_usage_text());
+					"Expected: " + parse_info.parser_p->get_usage_text(style));
 			}
 		}
 		// The return is just the last state as it contains any remaining tokens
@@ -302,7 +302,8 @@ class arguments : public parser
 	friend std::ostream & operator<<(
 		std::ostream & os, arguments const & parser)
 	{
-		parser.print_help_text(os);
+		const option_style & s = parser.opt_style ? *parser.opt_style : option_style::posix();
+		parser.print_help_text(os, s);
 		return os;
 	}
 
@@ -315,6 +316,9 @@ class arguments : public parser
 		}
 		return nullptr;
 	}
+
+	protected:
+	std::shared_ptr<option_style> opt_style;
 
 	private:
 	std::vector<std::unique_ptr<parser>> parsers;
@@ -355,7 +359,9 @@ arguments::arguments(const arguments& other);
 
 end::reference[] */
 inline arguments::arguments(const arguments & other)
-	: eval_mode(other.eval_mode)
+	: parser(other)
+	, opt_style(other.opt_style)
+	, eval_mode(other.eval_mode)
 {
 	for (auto & other_parser : other.parsers)
 	{

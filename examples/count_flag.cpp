@@ -30,9 +30,9 @@ int main(int argc, const char ** argv)
 	int verbose = 0; // <1>
 	return lyra::main()
 		(lyra::opt(
-			[&](bool v){ verbose += 1; }) // <2>
+			[&](bool){ verbose += 1; }) // <2>
 			["-v"].cardinality(0,5)) // <3>
-		(argc, argv, [&](lyra::main & m)
+		(argc, argv, [&](lyra::main &)
 		{
 			std::cout << verbose << "\n"; // <4>
 			return 0;

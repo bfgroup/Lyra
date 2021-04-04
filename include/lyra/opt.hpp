@@ -26,9 +26,6 @@ Is-a <<lyra_bound_parser>>.
 end::reference[] */
 class opt : public bound_parser<opt>
 {
-	protected:
-	std::vector<std::string> opt_names;
-
 	public:
 	enum class ctor_lambda_e
 	{
@@ -83,19 +80,19 @@ class opt : public bound_parser<opt>
 
 	// Internal..
 
-	virtual std::string get_usage_text() const override
+	virtual std::string get_usage_text(const option_style & style) const override
 	{
 		std::string result;
 		for (std::size_t o = 0; o < opt_names.size(); ++o)
 		{
 			if (o > 0) result += "|";
-			result += opt_names[o];
+			result += format_opt(opt_names[o], style);
 		}
 		if (!m_hint.empty()) result += " <" + m_hint + ">";
 		return result;
 	}
 
-	virtual help_text get_help_text() const override
+	virtual help_text get_help_text(const option_style & style) const override
 	{
 		std::ostringstream oss;
 		bool first = true;
@@ -105,7 +102,7 @@ class opt : public bound_parser<opt>
 				first = false;
 			else
 				oss << ", ";
-			oss << opt;
+			oss << format_opt(opt, style);
 		}
 		if (!m_hint.empty()) oss << " <" << m_hint << ">";
 		return { { oss.str(), m_description } };
@@ -118,42 +115,11 @@ class opt : public bound_parser<opt>
 				!= opt_names.end());
 	}
 
-	bool isMatch(
-		std::string const & optToken,
-		parser_customization const & customize) const
-	{
-		auto normalisedToken = normaliseOpt(optToken, customize);
-		for (auto const & name : opt_names)
-		{
-			if (normaliseOpt(name, customize) == normalisedToken) return true;
-		}
-		return false;
-	}
-
-	std::string normaliseOpt(
-		std::string const & optName,
-		parser_customization const & customize) const
-	{
-		auto is_prefix_char_0
-			= customize.option_prefix().find(optName[0]) != std::string::npos;
-		auto is_prefix_char_1
-			= customize.option_prefix().find(optName[1]) != std::string::npos;
-		if (is_prefix_char_0)
-		{
-			if (is_prefix_char_1)
-				return "--" + optName.substr(2);
-			else
-				return "-" + optName.substr(1);
-		}
-		else
-			return optName;
-	}
-
 	using parser::parse;
 
 	parse_result parse(
 		detail::token_iterator const & tokens,
-		parser_customization const & customize) const override
+		const option_style & style) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
@@ -162,7 +128,7 @@ class opt : public bound_parser<opt>
 		if (remainingTokens && remainingTokens.has_option_prefix())
 		{
 			auto const & token = remainingTokens.option();
-			if (isMatch(token.name, customize))
+			if (is_match(token.name, style))
 			{
 				if (m_ref->isFlag())
 				{
@@ -213,8 +179,8 @@ class opt : public bound_parser<opt>
 		{
 			if (name.empty())
 				return result::logicError("Option name cannot be empty");
-			if (name[0] != '-')
-				return result::logicError("Option name must begin with '-'");
+			// if (name[0] != '-')
+			// 	return result::logicError("Option name must begin with '-'");
 		}
 		return bound_parser::validate();
 	}
@@ -222,6 +188,44 @@ class opt : public bound_parser<opt>
 	virtual std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<opt>(this);
+	}
+
+	protected:
+	std::vector<std::string> opt_names;
+
+	bool is_match(
+		std::string const & opt_name,
+		const option_style & style) const
+	{
+		auto opt_normalized = normalise_opt(opt_name, style);
+		for (auto const & name : opt_names)
+		{
+			if (normalise_opt(name, style) == opt_normalized) return true;
+		}
+		return false;
+	}
+
+	std::string normalise_opt(
+		std::string const & opt_name,
+		const option_style & style) const
+	{
+		if (detail::token_iterator::is_prefixed(style.short_option_prefix, style.short_option_size, opt_name))
+			return "-" + opt_name.substr(style.short_option_size);
+
+		if (detail::token_iterator::is_prefixed(style.long_option_prefix, style.long_option_size, opt_name))
+			return "--" + opt_name.substr(style.long_option_size);
+
+		return opt_name;
+	}
+
+	std::string format_opt(std::string const & opt_name, const option_style & style) const
+	{
+		if (opt_name[0] == '-' && opt_name[1] == '-')
+			return style.long_option_string()+opt_name.substr(2);
+		else if (opt_name[0] == '-')
+			return style.short_option_string()+opt_name.substr(1);
+		else
+			return opt_name;
 	}
 };
 
@@ -313,7 +317,7 @@ end::reference[] */
 [source]
 ----
 lyra::opt& lyra::opt::name(const std::string &opt_name)
-lyra::opt& lyra::opt::operator[](const std::string &optName)
+lyra::opt& lyra::opt::operator[](const std::string &opt_name)
 ----
 
 Add a spelling for the option of the form `--<name>` or `-n`.
@@ -322,7 +326,7 @@ One can add multiple short spellings at once with `-abc`.
 end::reference[] */
 inline opt & opt::name(const std::string & opt_name)
 {
-	if (opt_name.size() > 2 && opt_name[0] != opt_name[1])
+	if (opt_name.size() > 2 && opt_name[0] == '-' && opt_name[1] != '-')
 		for (auto o : opt_name.substr(1))
 			opt_names.push_back(std::string(1, opt_name[0]) + o);
 	else

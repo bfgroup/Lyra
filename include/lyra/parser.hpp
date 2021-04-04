@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2021 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -16,60 +16,13 @@
 #include "lyra/detail/trait_utils.hpp"
 #include "lyra/val.hpp"
 #include "lyra/parser_result.hpp"
+#include "lyra/option_style.hpp"
 
 #include <memory>
 #include <string>
 #include <type_traits>
 
 namespace lyra {
-
-/* tag::reference[]
-
-[#lyra_parser_customization]
-= `lyra::parser_customization`
-
-Customization interface for parsing of options.
-
-[source]
-----
-virtual std::string token_delimiters() const = 0;
-----
-
-Specifies the characters to use for splitting a cli argument into the option
-and its value (if any).
-
-[source]
-----
-virtual std::string option_prefix() const = 0;
-----
-
-Specifies the characters to use as possible prefix, either single or double,
-for all options.
-
-end::reference[] */
-struct parser_customization
-{
-	virtual std::string token_delimiters() const = 0;
-	virtual std::string option_prefix() const = 0;
-};
-
-/* tag::reference[]
-
-[#lyra_default_parser_customization]
-= `lyra::default_parser_customization`
-
-Is-a `lyra::parser_customization` that defines token delimiters as space (" ")
-or equal (`=`). And specifies the option prefix character as dash (`-`)
-resulting in long options with `--` and short options with `-`.
-
-This customization is used as the default if none is given.
-
-end::reference[] */
-struct default_parser_customization : parser_customization
-{
-	std::string token_delimiters() const override { return " ="; }
-	std::string option_prefix() const override { return "-"; }
-};
 
 namespace detail {
 class parse_state
@@ -156,23 +109,15 @@ class parser
 
 	using help_text = std::vector<help_text_item>;
 
-	virtual help_text get_help_text() const { return {}; }
-	virtual std::string get_usage_text() const { return ""; }
-	virtual std::string get_description_text() const { return ""; }
+	[[deprecated]] help_text get_help_text() const { return {}; }
+	[[deprecated]] std::string get_usage_text() const { return ""; }
+	[[deprecated]] std::string get_description_text() const { return ""; }
+
+	virtual help_text get_help_text(const option_style &) const { return {}; }
+	virtual std::string get_usage_text(const option_style &) const { return ""; }
+	virtual std::string get_description_text(const option_style &) const { return ""; }
 
 	virtual ~parser() = default;
-
-	virtual parse_result parse(std::string const & exe_name,
-		detail::token_iterator const & tokens,
-		parser_customization const & customize) const
-	{
-		(void) exe_name;
-
-		return this->parse(tokens, customize);
-	}
-
-	virtual parse_result parse(detail::token_iterator const & tokens,
-		parser_customization const & customize) const = 0;
 
 	virtual detail::parser_cardinality cardinality() const { return { 0, 1 }; }
 	bool is_optional() const { return cardinality().is_optional(); }
@@ -188,22 +133,34 @@ class parser
 	virtual size_t get_value_count() const { return 0; }
 	virtual std::string get_value(size_t i) const { (void) i; return ""; }
 
+	virtual parse_result parse(detail::token_iterator const & tokens,
+		const option_style & style) const = 0;
+
 	protected:
-	void print_help_text(std::ostream & os) const
+	virtual parse_result parse(std::string const & exe_name,
+		detail::token_iterator const & tokens,
+		const option_style & style) const
 	{
-		std::string usage_test = get_usage_text();
+		(void) exe_name;
+
+		return this->parse(tokens, style);
+	}
+
+	void print_help_text(std::ostream & os, const option_style & style) const
+	{
+		std::string usage_test = get_usage_text(style);
 		if (!usage_test.empty())
 			os << "USAGE:\n"
-			<< "  " << get_usage_text() << "\n\n";
+			<< "  " << get_usage_text(style) << "\n\n";
 
-		std::string description_test = get_description_text();
+		std::string description_test = get_description_text(style);
 		if (!description_test.empty())
-			os << get_description_text() << "\n";
+			os << get_description_text(style) << "\n";
 
 		os << "OPTIONS, ARGUMENTS:\n";
 		const std::string::size_type left_col_size = 26 - 3;
 		const std::string left_pad(left_col_size, ' ');
-		for (auto const & cols : get_help_text())
+		for (auto const & cols : get_help_text(style))
 		{
 			if (cols.option.size() > left_pad.size())
 				os << "  " << cols.option << "\n  " << left_pad << " "
@@ -253,7 +210,7 @@ The set of help texts for any options in the sub-parsers to this one, if any.
 
 [source]
 ----
-virtual help_text get_help_text() const;
+virtual help_text get_help_text(const option_style &) const;
 ----
 
 Collects, and returns, the set of help items for the sub-parser arguments in
@@ -267,7 +224,7 @@ the stream operator.
 
 [source]
 ----
-virtual std::string get_usage_text() const;
+virtual std::string get_usage_text(const option_style &) const;
 ----
 
 Returns the formatted `USAGE` text for this parser, and any contained
@@ -278,7 +235,7 @@ sub-parsers. This is called to print out the help text from the stream operator.
 
 [source]
 ----
-virtual std::string get_description_text() const;
+virtual std::string get_description_text(const option_style &) const;
 ----
 
 Returns the description text for this, and any contained sub-parsers. This is
@@ -301,7 +258,7 @@ A parser that can be composed with other parsers using `operator|`. Composing
 two `composable_parser` instances generates a `cli` parser.
 
 end::reference[] */
-template <typename DerivedT>
+template <typename Derived>
 class composable_parser : public parser
 {};
 

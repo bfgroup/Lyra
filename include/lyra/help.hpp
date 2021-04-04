@@ -40,7 +40,7 @@ class help : public opt
 
 	help & description(const std::string & text);
 
-	virtual std::string get_description_text() const override
+	virtual std::string get_description_text(const option_style &) const override
 	{
 		return description_text;
 	}

@@ -54,6 +54,17 @@ class main final : protected cli
 	int operator()(int argc, const char ** argv, L action);
 
 	using cli::operator[];
+
+	main & style(const option_style & style)
+	{
+		cli::style(style);
+		return *this;
+	}
+	main & style(option_style && style)
+	{
+		cli::style(style);
+		return *this;
+	}
 };
 
 /* tag::reference[]

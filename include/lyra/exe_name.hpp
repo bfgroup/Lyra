@@ -44,7 +44,7 @@ class exe_name : public composable_parser<exe_name>
 	// specially
 	virtual parse_result parse(
 		detail::token_iterator const& tokens,
-		parser_customization const&) const override
+		const option_style &) const override
 	{
 		return parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));

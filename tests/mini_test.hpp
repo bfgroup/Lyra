@@ -11,35 +11,40 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <iostream>
 #include <string>
 
-namespace bfg
-{
-namespace mini_test
-{
+namespace bfg { namespace mini_test {
 
-	struct scope
+struct scope
+{
+	unsigned pass_count = 0;
+	unsigned fail_count = 0;
+	operator int() const { return fail_count; }
+	scope & operator()(
+		bool pass, const std::string & expression, char const * file, int line)
 	{
-		unsigned pass_count = 0;
-		unsigned fail_count = 0;
-		operator int() const { return fail_count; }
-		scope& operator()(
-			bool pass, const std::string& expression, char const* file,
-			int line)
+		return (*this)("", pass, expression, file, line);
+	}
+	scope & operator()(
+		const std::string & message,
+		bool pass,
+		const std::string & expression,
+		char const * file,
+		int line)
+	{
+		if (pass)
+			pass_count += 1;
+		else
 		{
-			if (pass)
-				pass_count += 1;
-			else
-			{
-				fail_count += 1;
-				std::cerr << file << "(" << line << "): test '" << expression
-						  << "' failed\n";
-			}
-			return *this;
+			fail_count += 1;
+			if (!message.empty()) std::cerr << "[ " << message << " ] ";
+			std::cerr << file << "(" << line << "): test '" << expression
+					  << "' failed\n";
 		}
-	};
+		return *this;
+	}
+};
 
 #define CONTEXT __FILE__, __LINE__
 #define REQUIRE(condition) (bool(condition)), #condition, __FILE__, __LINE__
-} // namespace mini_test
-} // namespace bfg
+}} // namespace bfg::mini_test
 
 #endif

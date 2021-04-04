@@ -27,7 +27,7 @@ class arg : public bound_parser<arg>
 	public:
 	using bound_parser::bound_parser;
 
-	virtual std::string get_usage_text() const override
+	virtual std::string get_usage_text(const option_style &) const override
 	{
 		std::ostringstream oss;
 		if (!m_hint.empty())
@@ -53,16 +53,16 @@ class arg : public bound_parser<arg>
 		return oss.str();
 	}
 
-	virtual help_text get_help_text() const override
+	virtual help_text get_help_text(const option_style & style) const override
 	{
-		return { { get_usage_text(), m_description } };
+		return { { get_usage_text(style), m_description } };
 	}
 
 	using parser::parse;
 
 	parse_result parse(
 		detail::token_iterator const& tokens,
-		parser_customization const&) const override
+		const option_style &) const override
 	{
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);

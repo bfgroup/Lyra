@@ -41,10 +41,10 @@ int main()
 			= lyra::opt(named_required, "required-arg")["--required"](
 				"You must supply this arg");
 		test(REQUIRE(
-			opt_required.get_usage_text().find("--required")
+			opt_required.get_usage_text(option_style::posix()).find("--required")
 			!= std::string::npos));
 		test(REQUIRE(
-			opt_required.get_usage_text().find("<required-arg>")
+			opt_required.get_usage_text(option_style::posix()).find("<required-arg>")
 			!= std::string::npos));
 	}
 
