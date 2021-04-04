@@ -2,13 +2,14 @@
 # subject to the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE.txt)
 #
-# Copyright 2020 René Ferdinand Rivera Morell.
+# Copyright 2020-2021 René Ferdinand Rivera Morell.
 
 branches:
   only:
   - develop
   - master
   - /feature[/].*/
+  - /issue[/].*/
 
 skip_commits:
   files:
@@ -36,9 +37,9 @@ for:
     - cmd: |
         choco install vswhere
         cd "%APPVEYOR_BUILD_FOLDER%/.."
-        curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
+        curl "https://github.com/bfgroup/b2/archive/release.zip" -L -o b2.zip
         7z x b2.zip
-        cd build-develop
+        cd b2-release
         bootstrap.bat
         b2.exe install -d0 b2-install-layout=portable --prefix=%APPVEYOR_BUILD_FOLDER%/../bin
         echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
@@ -59,9 +60,9 @@ for:
     - cmd: |
         choco install vswhere
         cd "%APPVEYOR_BUILD_FOLDER%/.."
-        curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
+        curl "https://github.com/bfgroup/b2/archive/release.zip" -L -o b2.zip
         7z x b2.zip
-        cd build-develop
+        cd b2-release
         set CXX_S=%CXX%
         set CXX=
         bootstrap.bat
