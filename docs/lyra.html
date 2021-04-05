@@ -3068,7 +3068,26 @@ be retrieved with the
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_1_6"><a class="anchor" href="#_1_6"></a>14.1. 1.6</h3>
-
+<div class="paragraph">
+<p>Changes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>New</strong>: Add <code>lyra::option_style</code> type to better customize the syntax of
+options allowed. This replaces the "old" <code>lyra::parser_customization</code> as a
+better way. The <code>lyra::parser_customization</code> is now deprecated, and will
+be removed at some future release.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p><strong>New</strong>: Add example to show how to count flags with cardinality greater than
+one (1). Shows how to handle increasing verbosity with <code>-vvvv</code>.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Fix virtual overload hiding of <code>parse</code> method.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+</ul>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_1_5_1"><a class="anchor" href="#_1_5_1"></a>14.2. 1.5.1</h3>

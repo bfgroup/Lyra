@@ -278,6 +278,19 @@ include::../include/lyra/val.hpp[tag=reference]
 
 === 1.6
 
+Changes:
+
+* *New*: Add `lyra::option_style` type to better customize the syntax of
+	options allowed. This replaces the "old" `lyra::parser_customization` as a
+	better way. The `lyra::parser_customization` is now deprecated, and will
+	be removed at some future release.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Add example to show how to count flags with cardinality greater than
+	one (1). Shows how to handle increasing verbosity with `-vvvv`.
+	-- _René Ferdinand Rivera Morell_
+* Fix virtual overload hiding of `parse` method.
+	-- _René Ferdinand Rivera Morell_
+
 === 1.5.1
 
 Minor change to bring back the missing option argument hints from the usage
