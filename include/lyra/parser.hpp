@@ -137,15 +137,6 @@ class parser
 		const option_style & style) const = 0;
 
 	protected:
-	virtual parse_result parse(std::string const & exe_name,
-		detail::token_iterator const & tokens,
-		const option_style & style) const
-	{
-		(void) exe_name;
-
-		return this->parse(tokens, style);
-	}
-
 	void print_help_text(std::ostream & os, const option_style & style) const
 	{
 		std::string usage_test = get_usage_text(style);

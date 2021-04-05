@@ -174,15 +174,6 @@ class cli : protected arguments
 			// We use an empty exe name as an indicator to remove USAGE text.
 			return "";
 	}
-
-	parse_result parse(
-		std::string const & exe_name,
-		detail::token_iterator const & tokens,
-		const option_style & style) const override
-	{
-		m_exeName.set(exe_name);
-		return parse(tokens, style);
-	}
 };
 
 /* tag::reference[]
@@ -342,7 +333,8 @@ end::reference[] */
 inline parse_result
 	cli::parse(args const & args, const option_style & style) const
 {
-	return parse(args.exe_name(), detail::token_iterator(args, style), style);
+	m_exeName.set(args.exe_name());
+	return parse(detail::token_iterator(args, style), style);
 }
 
 /* tag::reference[]
