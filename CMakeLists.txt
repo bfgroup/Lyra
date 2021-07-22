@@ -59,6 +59,7 @@ target_include_directories(
 # Add an alias to public name.
 add_library( bfg::lyra ALIAS lyra )
 
+set(LYRA_INSTALL_CONFIGDIR "${CMAKE_INSTALL_DATADIR}/lyra/cmake")
 set(PkgConfigTemplatesDir "${CMAKE_CURRENT_SOURCE_DIR}/data/pkgconfig")
 
 ## Installation Code
@@ -66,7 +67,7 @@ include(CMakePackageConfigHelpers)
 configure_package_config_file(
   ${PROJECT_SOURCE_DIR}/data/cmake/lyraConfig.cmake.in
   ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake
+  INSTALL_DESTINATION "${LYRA_INSTALL_CONFIGDIR}"
   )
 
 install(
@@ -78,7 +79,7 @@ install(
   EXPORT lyraTarget
   FILE  lyraTarget.cmake
   NAMESPACE bfg::
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake
+  DESTINATION "${LYRA_INSTALL_CONFIGDIR}"
   )
 
 install(
@@ -89,7 +90,7 @@ install(
 install(
   FILES
   ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake
+  DESTINATION "${LYRA_INSTALL_CONFIGDIR}"
   )
 
 set(PKG_CONFIG_FILE_NAME "${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc")
