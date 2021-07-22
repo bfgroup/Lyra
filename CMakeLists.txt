@@ -42,6 +42,9 @@ set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_MAINTAINER}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.adoc")
 
+include(GNUInstallDirs)
+string(REPLACE "/${CMAKE_LIBRARY_ARCHITECTURE}" "" INSTALL_LIBDIR_ARCHIND "${CMAKE_INSTALL_LIBDIR}")
+
 # Simple INTERFACE, and header only, library target.
 add_library( lyra INTERFACE )
 
@@ -59,8 +62,6 @@ add_library( bfg::lyra ALIAS lyra )
 set(PkgConfigTemplatesDir "${CMAKE_CURRENT_SOURCE_DIR}/data/pkgconfig")
 
 ## Installation Code
-include(GNUInstallDirs)
-
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
   ${PROJECT_SOURCE_DIR}/data/cmake/lyraConfig.cmake.in
