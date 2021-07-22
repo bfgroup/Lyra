@@ -53,7 +53,7 @@ target_include_directories(
   lyra
   INTERFACE
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
 # Add an alias to public name.
@@ -83,8 +83,8 @@ install(
   )
 
 install(
-  DIRECTORY ${PROJECT_SOURCE_DIR}/include
-  DESTINATION  ${CMAKE_INSTALL_PREFIX}
+  DIRECTORY ${PROJECT_SOURCE_DIR}/include/lyra
+  DESTINATION  ${CMAKE_INSTALL_INCLUDEDIR}
   )
 
 install(
