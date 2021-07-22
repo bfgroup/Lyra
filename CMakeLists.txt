@@ -56,6 +56,8 @@ target_include_directories(
 # Add an alias to public name.
 add_library( bfg::lyra ALIAS lyra )
 
+set(PkgConfigTemplatesDir "${CMAKE_CURRENT_SOURCE_DIR}/data/pkgconfig")
+
 ## Installation Code
 include(GNUInstallDirs)
 
@@ -88,6 +90,12 @@ install(
   ${PROJECT_BINARY_DIR}/lyraConfig.cmake
   DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake/
   )
+
+set(PKG_CONFIG_FILE_NAME "${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc")
+configure_file("${PkgConfigTemplatesDir}/pkgconfig.pc.in" "${PKG_CONFIG_FILE_NAME}" @ONLY)
+install(FILES "${PKG_CONFIG_FILE_NAME}"
+	DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+)
 
 include(CPack)
 
