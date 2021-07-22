@@ -66,7 +66,7 @@ include(CMakePackageConfigHelpers)
 configure_package_config_file(
   ${PROJECT_SOURCE_DIR}/data/cmake/lyraConfig.cmake.in
   ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra
+  INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake
   )
 
 install(
@@ -89,7 +89,7 @@ install(
 install(
   FILES
   ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake/
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake
   )
 
 set(PKG_CONFIG_FILE_NAME "${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc")
