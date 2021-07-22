@@ -20,12 +20,27 @@
 
 # Only need the basic minimum of project, add_library, and
 # target_include_directories commands.
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.12 )
 
 # Don't set VERSION, as that's a pita to keep up to date with the version
 # header. And don't set LANGUAGES as we are multi-language and header
 # only, so it's irrelevant.
-project( lyra )
+project( lyra
+	VERSION "1.6"
+	DESCRIPTION "A simple to use, composing, header only, command line arguments parser for C++ 11 and beyond."
+	HOMEPAGE_URL "https://github.com/bfgroup/Lyra"
+)
+set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "${PROJECT_NAME} developers")
+set(CPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}")
+set(CPACK_DEBIAN_PACKAGE_NAME "lib${CPACK_PACKAGE_NAME}-dev")
+set(CPACK_RPM_PACKAGE_NAME "lib${CPACK_PACKAGE_NAME}-devel")
+set(CPACK_PACKAGE_HOMEPAGE_URL "${PROJECT_HOMEPAGE_URL}")
+set(CPACK_PACKAGE_MAINTAINER "${CPACK_PACKAGE_VENDOR}")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_MAINTAINER}")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.adoc")
 
 # Simple INTERFACE, and header only, library target.
 add_library( lyra INTERFACE )
