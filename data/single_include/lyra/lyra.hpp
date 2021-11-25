@@ -426,6 +426,8 @@ class result_base
 
 	virtual ~result_base() = default;
 
+	result_base& operator=(const result_base &) = default;
+
 	private:
 	result_kind kind_;
 	std::string message_;
