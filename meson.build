@@ -48,6 +48,7 @@ src = [
 	'include/lyra/detail/from_string.hpp',
 	'include/lyra/detail/invoke_lambda.hpp',
 	'include/lyra/detail/parse.hpp',
+	'include/lyra/detail/print.hpp',
 	'include/lyra/detail/result.hpp',
 	'include/lyra/detail/tokens.hpp',
 	'include/lyra/detail/trait_utils.hpp',
