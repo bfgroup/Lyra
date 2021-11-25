@@ -841,88 +841,6 @@ a { color: inherit; }
 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-pre.rouge table td { padding: 5px; }
-pre.rouge table pre { margin: 0; }
-pre.rouge, pre.rouge .w {
-  color: #586e75;
-}
-pre.rouge .err {
-  color: #002b36;
-  background-color: #dc322f;
-}
-pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cm, pre.rouge .cpf, pre.rouge .c1, pre.rouge .cs {
-  color: #657b83;
-}
-pre.rouge .cp {
-  color: #b58900;
-}
-pre.rouge .nt {
-  color: #b58900;
-}
-pre.rouge .o, pre.rouge .ow {
-  color: #93a1a1;
-}
-pre.rouge .p, pre.rouge .pi {
-  color: #93a1a1;
-}
-pre.rouge .gi {
-  color: #859900;
-}
-pre.rouge .gd {
-  color: #dc322f;
-}
-pre.rouge .gh {
-  color: #268bd2;
-  background-color: #002b36;
-  font-weight: bold;
-}
-pre.rouge .k, pre.rouge .kn, pre.rouge .kp, pre.rouge .kr, pre.rouge .kv {
-  color: #6c71c4;
-}
-pre.rouge .kc {
-  color: #cb4b16;
-}
-pre.rouge .kt {
-  color: #cb4b16;
-}
-pre.rouge .kd {
-  color: #cb4b16;
-}
-pre.rouge .s, pre.rouge .sb, pre.rouge .sc, pre.rouge .dl, pre.rouge .sd, pre.rouge .s2, pre.rouge .sh, pre.rouge .sx, pre.rouge .s1 {
-  color: #859900;
-}
-pre.rouge .sa {
-  color: #6c71c4;
-}
-pre.rouge .sr {
-  color: #2aa198;
-}
-pre.rouge .si {
-  color: #d33682;
-}
-pre.rouge .se {
-  color: #d33682;
-}
-pre.rouge .nn {
-  color: #b58900;
-}
-pre.rouge .nc {
-  color: #b58900;
-}
-pre.rouge .no {
-  color: #b58900;
-}
-pre.rouge .na {
-  color: #268bd2;
-}
-pre.rouge .m, pre.rouge .mb, pre.rouge .mf, pre.rouge .mh, pre.rouge .mi, pre.rouge .il, pre.rouge .mo, pre.rouge .mx {
-  color: #859900;
-}
-pre.rouge .ss {
-  color: #859900;
-}
-</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -1073,21 +991,21 @@ build with exceptions disabled, but that will be coming later)</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;cstdlib&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;cstdlib&gt;
 #include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// Where we read in the argument value:</span>
-    <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
-    <span class="c1">// The parser with the one option argument:</span>
-    <span class="k">auto</span> <span class="n">cli</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="p">()</span>
-        <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s">"width"</span><span class="p">)</span>
-              <span class="p">[</span><span class="s">"-w"</span><span class="p">][</span><span class="s">"--width"</span><span class="p">](</span><span class="s">"How wide should it be?"</span><span class="p">);</span>
+int main(int argc, const char** argv)
+{
+    // Where we read in the argument value:
+    int width = 0;
 
-    <span class="c1">// ...</span></code></pre>
+    // The parser with the one option argument:
+    auto cli = lyra::cli()
+        | lyra::opt(width, "width")
+              ["-w"]["--width"]("How wide should it be?");
+
+    // ...</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1095,21 +1013,21 @@ build with exceptions disabled, but that will be coming later)</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++">    <span class="c1">// ...</span>
+<pre class="rouge highlight"><code data-lang="c++">    // ...
 
-    <span class="c1">// Parse the program arguments:</span>
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
+    // Parse the program arguments:
+    auto result = cli.parse({ argc, argv });
 
-    <span class="c1">// Check that the arguments where valid:</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error in command line: "</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
+    // Check that the arguments where valid:
+    if (!result)
+    {
+        std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.message() &lt;&lt; std::endl;
+        return 1;
+    }
 
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"width = "</span> <span class="o">&lt;&lt;</span> <span class="n">width</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="err">}</span></code></pre>
+    std::cout &lt;&lt; "width = " &lt;&lt; width &lt;&lt; "\n";
+    return 0;
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1117,8 +1035,8 @@ build with exceptions disabled, but that will be coming later)</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="o">&gt;</span> example1 <span class="nt">-w</span> 10
-width <span class="o">=</span> 10</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">&gt; example1 -w 10
+width = 10</code></pre>
 </div>
 </div>
 </div>
@@ -1131,28 +1049,28 @@ operator (<code>|</code>).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;cstdlib&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;cstdlib&gt;
 #include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// Where we read in the argument values:</span>
-    <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
-    <span class="kt">bool</span> <span class="n">doIt</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
 
-    <span class="c1">// The parser with the multiple option arguments. They are composed</span>
-    <span class="c1">// together by the "|" operator.</span>
-    <span class="k">auto</span> <span class="n">cli</span>
-        <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s">"width"</span><span class="p">)</span>
-              <span class="p">[</span><span class="s">"-w"</span><span class="p">][</span><span class="s">"--width"</span><span class="p">](</span><span class="s">"How wide should it be?"</span><span class="p">)</span>
-        <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s">"name"</span><span class="p">)</span>
-              <span class="p">[</span><span class="s">"-n"</span><span class="p">][</span><span class="s">"--name"</span><span class="p">](</span><span class="s">"By what name should I be known"</span><span class="p">)</span>
-        <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">doIt</span><span class="p">)</span>
-              <span class="p">[</span><span class="s">"-d"</span><span class="p">][</span><span class="s">"--doit"</span><span class="p">](</span><span class="s">"Do the thing"</span><span class="p">);</span>
+int main(int argc, const char** argv)
+{
+    // Where we read in the argument values:
+    int width = 0;
+    std::string name;
+    bool doIt = false;
 
-    <span class="c1">// ...</span></code></pre>
+    // The parser with the multiple option arguments. They are composed
+    // together by the "|" operator.
+    auto cli
+        = lyra::opt(width, "width")
+              ["-w"]["--width"]("How wide should it be?")
+        | lyra::opt(name, "name")
+              ["-n"]["--name"]("By what name should I be known")
+        | lyra::opt(doIt)
+              ["-d"]["--doit"]("Do the thing");
+
+    // ...</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1160,21 +1078,21 @@ operator (<code>|</code>).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++">    <span class="c1">// ...</span>
+<pre class="rouge highlight"><code data-lang="c++">    // ...
 
-    <span class="c1">// Parse the program arguments:</span>
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
+    // Parse the program arguments:
+    auto result = cli.parse({ argc, argv });
 
-    <span class="c1">// Check that the arguments where valid:</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error in command line: "</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
+    // Check that the arguments where valid:
+    if (!result)
+    {
+        std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.message() &lt;&lt; std::endl;
+        return 1;
+    }
 
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"width = "</span> <span class="o">&lt;&lt;</span> <span class="n">width</span> <span class="o">&lt;&lt;</span> <span class="s">", name = "</span> <span class="o">&lt;&lt;</span> <span class="n">name</span> <span class="o">&lt;&lt;</span> <span class="s">", doIt = "</span> <span class="o">&lt;&lt;</span> <span class="n">doIt</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="err">}</span></code></pre>
+    std::cout &lt;&lt; "width = " &lt;&lt; width &lt;&lt; ", name = " &lt;&lt; name &lt;&lt; ", doIt = " &lt;&lt; doIt &lt;&lt; "\n";
+    return 0;
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1182,8 +1100,8 @@ operator (<code>|</code>).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="o">&gt;</span> example2 <span class="nt">-w</span> 10 <span class="nt">--name</span><span class="o">=</span>Lyra
-width <span class="o">=</span> 10, name <span class="o">=</span> Lyra, doIt <span class="o">=</span> 0</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">&gt; example2 -w 10 --name=Lyra
+width = 10, name = Lyra, doIt = 0</code></pre>
 </div>
 </div>
 </div>
@@ -1256,36 +1174,36 @@ two examples. The first one with the single option would be:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;cstdlib&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;cstdlib&gt;
 #include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// Where we read in the argument value:</span>
-    <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
-    <span class="c1">// The parser with the one option argument:</span>
-    <span class="k">auto</span> <span class="n">cli</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="p">();</span>
-    <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s">"width"</span><span class="p">)</span>
-            <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"-w"</span><span class="p">)</span>
-            <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"--width"</span><span class="p">)</span>
-            <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"How wide should it be?"</span><span class="p">));</span>
+int main(int argc, const char** argv)
+{
+    // Where we read in the argument value:
+    int width = 0;
 
-    <span class="c1">// Parse the program arguments:</span>
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
+    // The parser with the one option argument:
+    auto cli = lyra::cli();
+    cli.add_argument(
+        lyra::opt(width, "width")
+            .name("-w")
+            .name("--width")
+            .help("How wide should it be?"));
 
-    <span class="c1">// Check that the arguments where valid:</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error in command line: "</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
+    // Parse the program arguments:
+    auto result = cli.parse({ argc, argv });
 
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"width = "</span> <span class="o">&lt;&lt;</span> <span class="n">width</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre>
+    // Check that the arguments where valid:
+    if (!result)
+    {
+        std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.message() &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::cout &lt;&lt; "width = " &lt;&lt; width &lt;&lt; "\n";
+    return 0;
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1293,40 +1211,40 @@ two examples. The first one with the single option would be:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;cstdlib&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;cstdlib&gt;
 #include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// Where we read in the argument values:</span>
-    <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
-    <span class="kt">bool</span> <span class="n">doIt</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
 
-    <span class="c1">// The parser with the multiple option arguments. They are composed</span>
-    <span class="c1">// together by the "|" operator.</span>
-    <span class="k">auto</span> <span class="n">cli</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="p">();</span>
-    <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s">"width"</span><span class="p">)</span>
-        <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"-w"</span><span class="p">).</span><span class="n">name</span><span class="p">(</span><span class="s">"--width"</span><span class="p">).</span><span class="n">help</span><span class="p">(</span><span class="s">"How wide should it be?"</span><span class="p">));</span>
-    <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s">"name"</span><span class="p">)</span>
-        <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"-n"</span><span class="p">).</span><span class="n">name</span><span class="p">(</span><span class="s">"--name"</span><span class="p">).</span><span class="n">help</span><span class="p">(</span><span class="s">"By what name should I be known"</span><span class="p">));</span>
-    <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">doIt</span><span class="p">)</span>
-        <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"-d"</span><span class="p">).</span><span class="n">name</span><span class="p">(</span><span class="s">"--doit"</span><span class="p">).</span><span class="n">help</span><span class="p">(</span><span class="s">"Do the thing"</span><span class="p">));</span>
+int main(int argc, const char** argv)
+{
+    // Where we read in the argument values:
+    int width = 0;
+    std::string name;
+    bool doIt = false;
 
-    <span class="c1">// Parse the program arguments:</span>
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
+    // The parser with the multiple option arguments. They are composed
+    // together by the "|" operator.
+    auto cli = lyra::cli();
+    cli.add_argument(lyra::opt(width, "width")
+        .name("-w").name("--width").help("How wide should it be?"));
+    cli.add_argument(lyra::opt(name, "name")
+        .name("-n").name("--name").help("By what name should I be known"));
+    cli.add_argument(lyra::opt(doIt)
+        .name("-d").name("--doit").help("Do the thing"));
 
-    <span class="c1">// Check that the arguments where valid:</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error in command line: "</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
+    // Parse the program arguments:
+    auto result = cli.parse({ argc, argv });
 
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"width = "</span> <span class="o">&lt;&lt;</span> <span class="n">width</span> <span class="o">&lt;&lt;</span> <span class="s">", name = "</span> <span class="o">&lt;&lt;</span> <span class="n">name</span> <span class="o">&lt;&lt;</span> <span class="s">", doIt = "</span> <span class="o">&lt;&lt;</span> <span class="n">doIt</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre>
+    // Check that the arguments where valid:
+    if (!result)
+    {
+        std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.message() &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::cout &lt;&lt; "width = " &lt;&lt; width &lt;&lt; ", name = " &lt;&lt; name &lt;&lt; ", doIt = " &lt;&lt; doIt &lt;&lt; "\n";
+    return 0;
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1339,25 +1257,25 @@ two examples. The first one with the single option would be:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// Where we read in the argument values:</span>
-    <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
-    <span class="kt">bool</span> <span class="n">doIt</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-    <span class="kt">bool</span> <span class="n">show_help</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="rouge highlight"><code data-lang="c++">int main(int argc, const char** argv)
+{
+    // Where we read in the argument values:
+    int width = 0;
+    std::string name;
+    bool doIt = false;
+    bool show_help = false; <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="c1">// The parser with the multiple option arguments and help option.</span>
-    <span class="k">auto</span> <span class="n">cli</span>
-        <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="n">show_help</span><span class="p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s">"width"</span><span class="p">)</span>
-              <span class="p">[</span><span class="s">"-w"</span><span class="p">][</span><span class="s">"--width"</span><span class="p">](</span><span class="s">"How wide should it be?"</span><span class="p">)</span>
-        <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s">"name"</span><span class="p">)</span>
-              <span class="p">[</span><span class="s">"-n"</span><span class="p">][</span><span class="s">"--name"</span><span class="p">](</span><span class="s">"By what name should I be known"</span><span class="p">)</span>
-        <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">doIt</span><span class="p">)</span>
-              <span class="p">[</span><span class="s">"-d"</span><span class="p">][</span><span class="s">"--doit"</span><span class="p">](</span><span class="s">"Do the thing"</span><span class="p">);</span>
+    // The parser with the multiple option arguments and help option.
+    auto cli
+        = lyra::help(show_help) <i class="conum" data-value="2"></i><b>(2)</b>
+        | lyra::opt(width, "width")
+              ["-w"]["--width"]("How wide should it be?")
+        | lyra::opt(name, "name")
+              ["-n"]["--name"]("By what name should I be known")
+        | lyra::opt(doIt)
+              ["-d"]["--doit"]("Do the thing");
 
-    <span class="c1">// ...</span></code></pre>
+    // ...</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1378,29 +1296,29 @@ specified:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++">    <span class="c1">// ...</span>
+<pre class="rouge highlight"><code data-lang="c++">    // ...
 
-    <span class="c1">// Parse the program arguments:</span>
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
+    // Parse the program arguments:
+    auto result = cli.parse({ argc, argv });
 
-    <span class="c1">// Check that the arguments where valid:</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error in command line: "</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">cli</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
+    // Check that the arguments where valid:
+    if (!result)
+    {
+        std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.message() &lt;&lt; std::endl;
+        std::cerr &lt;&lt; cli &lt;&lt; "\n"; <i class="conum" data-value="1"></i><b>(1)</b>
+        return 1;
+    }
 
-    <span class="c1">// Show the help when asked for.</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">show_help</span><span class="p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">cli</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
+    // Show the help when asked for.
+    if (show_help) <i class="conum" data-value="2"></i><b>(2)</b>
+    {
+        std::cout &lt;&lt; cli &lt;&lt; "\n";
+        return 0;
+    }
 
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"width = "</span> <span class="o">&lt;&lt;</span> <span class="n">width</span> <span class="o">&lt;&lt;</span> <span class="s">", name = "</span> <span class="o">&lt;&lt;</span> <span class="n">name</span> <span class="o">&lt;&lt;</span> <span class="s">", doIt = "</span> <span class="o">&lt;&lt;</span> <span class="n">doIt</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="err">}</span></code></pre>
+    std::cout &lt;&lt; "width = " &lt;&lt; width &lt;&lt; ", name = " &lt;&lt; name &lt;&lt; ", doIt = " &lt;&lt; doIt &lt;&lt; "\n";
+    return 0;
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1427,28 +1345,28 @@ specifying them to the <code>choices()</code> call:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;iostream&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">choice</span><span class="p">;</span>
-    <span class="c1">// Ex: &lt;exe&gt; --choice=red</span>
-    <span class="k">auto</span> <span class="n">cli</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="p">()</span>
-        <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">choice</span><span class="p">,</span> <span class="s">"-c"</span><span class="p">)[</span><span class="s">"--choice"</span><span class="p">]</span>
-              <span class="p">.</span><span class="n">choices</span><span class="p">(</span><span class="s">"red"</span><span class="p">,</span> <span class="s">"green"</span><span class="p">,</span> <span class="s">"blue"</span><span class="p">);</span>
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Your preferred color is "</span> <span class="o">&lt;&lt;</span> <span class="n">choice</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">else</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre>
+
+int main(int argc, const char** argv)
+{
+    std::string choice;
+    // Ex: &lt;exe&gt; --choice=red
+    auto cli = lyra::cli()
+        | lyra::opt(choice, "-c")["--choice"]
+              .choices("red", "green", "blue");
+    auto result = cli.parse({ argc, argv });
+    if (result)
+    {
+        std::cout &lt;&lt; "Your preferred color is " &lt;&lt; choice &lt;&lt; "\n";
+        return 0;
+    }
+    else
+    {
+        std::cerr &lt;&lt; result.message() &lt;&lt; "\n";
+        return 1;
+    }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1457,28 +1375,28 @@ that validates if a given value is allowed:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;iostream&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">int</span> <span class="n">choice</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-    <span class="c1">// Ex: &lt;exe&gt; --choice=3</span>
-    <span class="k">auto</span> <span class="n">cli</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="p">()</span>
-        <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">choice</span><span class="p">,</span> <span class="s">"-c"</span><span class="p">)[</span><span class="s">"--choice"</span><span class="p">]</span>
-              <span class="p">.</span><span class="n">choices</span><span class="p">([](</span><span class="kt">int</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&amp;&amp;</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">;</span> <span class="p">});</span>
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Your number between one and ten is "</span> <span class="o">&lt;&lt;</span> <span class="n">choice</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">else</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre>
+
+int main(int argc, const char** argv)
+{
+    int choice = 5;
+    // Ex: &lt;exe&gt; --choice=3
+    auto cli = lyra::cli()
+        | lyra::opt(choice, "-c")["--choice"]
+              .choices([](int value) { return 1 &lt;= value &amp;&amp; value &lt;= 10; });
+    auto result = cli.parse({ argc, argv });
+    if (result)
+    {
+        std::cout &lt;&lt; "Your number between one and ten is " &lt;&lt; choice &lt;&lt; "\n";
+        return 0;
+    }
+    else
+    {
+        std::cerr &lt;&lt; result.message() &lt;&lt; "\n";
+        return 1;
+    }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1533,113 +1451,113 @@ a lambda to execute the subcommands.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="cp">#include &lt;iostream&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;lyra/lyra.hpp&gt;
+
+#include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;vector&gt;
-</span>
-<span class="c1">// Run a process, sub-command data.</span>
-<span class="k">struct</span> <span class="nc">run_command</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="p">{</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">command</span><span class="p">;</span> <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="kt">bool</span> <span class="n">verbose</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-    <span class="kt">bool</span> <span class="n">show_help</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
 
-    <span class="n">run_command</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">cli</span> <span class="o">&amp;</span> <span class="n">cli</span><span class="p">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
-    <span class="p">{</span>
-        <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="n">lyra</span><span class="o">::</span><span class="n">command</span><span class="p">(</span><span class="s">"run"</span><span class="p">,</span>
-                <span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">g</span><span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">do_command</span><span class="p">(</span><span class="n">g</span><span class="p">);</span> <span class="p">})</span> <i class="conum" data-value="4"></i><b>(4)</b>
-                <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"Execute the given command."</span><span class="p">)</span>
-                <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="n">show_help</span><span class="p">))</span>
-                <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span>
-                    <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
-                        <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"-v"</span><span class="p">)</span>
-                        <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"--verbose"</span><span class="p">)</span>
-                        <span class="p">.</span><span class="n">optional</span><span class="p">()</span>
-                        <span class="p">.</span><span class="n">help</span><span class="p">(</span>
-                            <span class="s">"Show additional output as to what we are doing."</span><span class="p">))</span>
-                <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span>
-                    <span class="n">lyra</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="s">"command"</span><span class="p">)</span>
-                        <span class="p">.</span><span class="n">required</span><span class="p">()</span>
-                        <span class="p">.</span><span class="n">help</span><span class="p">(</span>
-                            <span class="s">"The command, and arguments, to attempt to run."</span><span class="p">)));</span>
-    <span class="p">}</span>
+// Run a process, sub-command data.
+struct run_command <i class="conum" data-value="1"></i><b>(1)</b>
+{
+    std::vector&lt;std::string&gt; command; <i class="conum" data-value="2"></i><b>(2)</b>
+    bool verbose = false;
+    bool show_help = false;
 
-    <span class="kt">void</span> <span class="n">do_command</span><span class="p">(</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">g</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">show_help</span><span class="p">)</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">g</span><span class="p">;</span> <i class="conum" data-value="5"></i><b>(5)</b>
-        <span class="k">else</span>
-        <span class="p">{</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"RUN: "</span>
-                      <span class="o">&lt;&lt;</span> <span class="s">"verbose="</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">verbose</span> <span class="o">?</span> <span class="s">"true"</span> <span class="o">:</span> <span class="s">"false"</span><span class="p">);</span>
-            <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">c</span> <span class="o">:</span> <span class="n">command</span><span class="p">)</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">" "</span> <span class="o">&lt;&lt;</span> <span class="n">c</span><span class="p">;</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">};</span>
+    run_command(lyra::cli &amp; cli) <i class="conum" data-value="3"></i><b>(3)</b>
+    {
+        cli.add_argument(
+            lyra::command("run",
+                [this](const lyra::group &amp; g) { this-&gt;do_command(g); }) <i class="conum" data-value="4"></i><b>(4)</b>
+                .help("Execute the given command.")
+                .add_argument(lyra::help(show_help))
+                .add_argument(
+                    lyra::opt(verbose)
+                        .name("-v")
+                        .name("--verbose")
+                        .optional()
+                        .help(
+                            "Show additional output as to what we are doing."))
+                .add_argument(
+                    lyra::arg(command, "command")
+                        .required()
+                        .help(
+                            "The command, and arguments, to attempt to run.")));
+    }
 
-<span class="c1">// Kill a named process, sub-command data.</span>
-<span class="k">struct</span> <span class="nc">kill_command</span> <i class="conum" data-value="6"></i><b>(6)</b>
-<span class="p">{</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">process_name</span><span class="p">;</span>
-    <span class="kt">int</span> <span class="n">signal</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span>
-    <span class="kt">bool</span> <span class="n">show_help</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    void do_command(const lyra::group &amp; g)
+    {
+        if (show_help)
+            std::cout &lt;&lt; g; <i class="conum" data-value="5"></i><b>(5)</b>
+        else
+        {
+            std::cout &lt;&lt; "RUN: "
+                      &lt;&lt; "verbose=" &lt;&lt; (verbose ? "true" : "false");
+            for (auto c : command) std::cout &lt;&lt; " " &lt;&lt; c;
+            std::cout &lt;&lt; "\n";
+        }
+    }
+};
 
-    <span class="n">kill_command</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">cli</span> <span class="o">&amp;</span> <span class="n">cli</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="n">lyra</span><span class="o">::</span><span class="n">command</span><span class="p">(</span>
-                <span class="s">"kill"</span><span class="p">,</span> <span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">g</span><span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">do_command</span><span class="p">(</span><span class="n">g</span><span class="p">);</span> <span class="p">})</span>
-                <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"Terminate the process with the given name."</span><span class="p">)</span>
-                <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="n">show_help</span><span class="p">))</span>
-                <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span>
-                    <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="s">"signal"</span><span class="p">)</span>
-                        <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"-s"</span><span class="p">)</span>
-                        <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"--signal"</span><span class="p">)</span>
-                        <span class="p">.</span><span class="n">optional</span><span class="p">()</span>
-                        <span class="p">.</span><span class="n">help</span><span class="p">(</span>
-                            <span class="s">"The signal integer to post to the running process."</span><span class="p">))</span>
-                <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span>
-                    <span class="n">lyra</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="n">process_name</span><span class="p">,</span> <span class="s">"process_name"</span><span class="p">)</span>
-                        <span class="p">.</span><span class="n">required</span><span class="p">()</span>
-                        <span class="p">.</span><span class="n">help</span><span class="p">(</span>
-                            <span class="s">"The name of the process to search and signal."</span><span class="p">)));</span>
-    <span class="p">}</span>
+// Kill a named process, sub-command data.
+struct kill_command <i class="conum" data-value="6"></i><b>(6)</b>
+{
+    std::string process_name;
+    int signal = 9;
+    bool show_help = false;
 
-    <span class="kt">void</span> <span class="n">do_command</span><span class="p">(</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">g</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">show_help</span><span class="p">)</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">g</span><span class="p">;</span>
-        <span class="k">else</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"KILL:"</span>
-                      <span class="o">&lt;&lt;</span> <span class="s">" signal="</span> <span class="o">&lt;&lt;</span> <span class="n">signal</span> <span class="o">&lt;&lt;</span> <span class="s">" process="</span> <span class="o">&lt;&lt;</span> <span class="n">process_name</span>
-                      <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">};</span>
+    kill_command(lyra::cli &amp; cli)
+    {
+        cli.add_argument(
+            lyra::command(
+                "kill", [this](const lyra::group &amp; g) { this-&gt;do_command(g); })
+                .help("Terminate the process with the given name.")
+                .add_argument(lyra::help(show_help))
+                .add_argument(
+                    lyra::opt(signal, "signal")
+                        .name("-s")
+                        .name("--signal")
+                        .optional()
+                        .help(
+                            "The signal integer to post to the running process."))
+                .add_argument(
+                    lyra::arg(process_name, "process_name")
+                        .required()
+                        .help(
+                            "The name of the process to search and signal.")));
+    }
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="k">auto</span> <span class="n">cli</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="p">();</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">command</span><span class="p">;</span>
-    <span class="kt">bool</span> <span class="n">show_help</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-    <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="n">show_help</span><span class="p">));</span>
-    <span class="n">kill_command</span> <span class="n">kill</span> <span class="p">{</span> <span class="n">cli</span> <span class="p">};</span>
-    <span class="n">run_command</span> <span class="n">run</span> <span class="p">{</span> <span class="n">cli</span> <span class="p">};</span>
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span> <i class="conum" data-value="7"></i><b>(7)</b>
-    <span class="k">if</span> <span class="p">(</span><span class="n">show_help</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">cli</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">)</span> <i class="conum" data-value="8"></i><b>(8)</b>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="n">result</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
-<span class="p">}</span></code></pre>
+    void do_command(const lyra::group &amp; g)
+    {
+        if (show_help)
+            std::cout &lt;&lt; g;
+        else
+            std::cout &lt;&lt; "KILL:"
+                      &lt;&lt; " signal=" &lt;&lt; signal &lt;&lt; " process=" &lt;&lt; process_name
+                      &lt;&lt; "\n";
+    }
+};
+
+int main(int argc, const char ** argv)
+{
+    auto cli = lyra::cli();
+    std::string command;
+    bool show_help = false;
+    cli.add_argument(lyra::help(show_help));
+    kill_command kill { cli };
+    run_command run { cli };
+    auto result = cli.parse({ argc, argv }); <i class="conum" data-value="7"></i><b>(7)</b>
+    if (show_help)
+    {
+        std::cout &lt;&lt; cli;
+        return 0;
+    }
+    if (!result) <i class="conum" data-value="8"></i><b>(8)</b>
+    {
+        std::cerr &lt;&lt; result.message() &lt;&lt; "\n";
+    }
+    return result ? 0 : 1;
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1701,8 +1619,8 @@ want to allow either one of these to be specified:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">exec</span> <span class="o">--</span><span class="n">width</span><span class="o">=</span><span class="mi">1440</span> <span class="o">--</span><span class="n">height</span><span class="o">=</span><span class="mi">720</span>
-<span class="n">exec</span> <span class="o">--</span><span class="n">aspect</span><span class="o">=</span><span class="mf">1.78</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">exec --width=1440 --height=720
+exec --aspect=1.78</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1710,70 +1628,70 @@ want to allow either one of these to be specified:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="cp">#include &lt;iostream&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;lyra/lyra.hpp&gt;
+
+#include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;vector&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// Default to showing a full screen 4/3 aspect</span>
-    <span class="kt">bool</span> <span class="n">show_full_screen</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-    <span class="kt">float</span> <span class="n">aspect</span> <span class="o">=</span> <span class="mf">4.0</span><span class="n">f</span> <span class="o">/</span> <span class="mf">3.0</span><span class="n">f</span><span class="p">;</span>
 
-    <span class="c1">// If it's not full screen the size will be specified.</span>
-    <span class="kt">unsigned</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="kt">unsigned</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+int main(int argc, const char ** argv)
+{
+    // Default to showing a full screen 4/3 aspect
+    bool show_full_screen = true;
+    float aspect = 4.0f / 3.0f;
 
-    <span class="c1">// Did the user ask for help?</span>
-    <span class="kt">bool</span> <span class="n">get_help</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    // If it's not full screen the size will be specified.
+    unsigned width = 0;
+    unsigned height = 0;
 
-    <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span> <span class="n">cli</span><span class="p">;</span>
-    <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="n">get_help</span><span class="p">))</span>
-        <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">aspect</span><span class="p">,</span> <span class="s">"aspect"</span><span class="p">)</span> <i class="conum" data-value="1"></i><b>(1)</b>
-                          <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"--aspect"</span><span class="p">)</span>
-                          <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"Full-screen aspect ratio window."</span><span class="p">))</span>
-        <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">group</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span><span class="p">)</span> <span class="p">{</span>
-                          <span class="n">show_full_screen</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-                      <span class="p">})</span> <i class="conum" data-value="2"></i><b>(2)</b>
-                          <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s">"width"</span><span class="p">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
-                                            <span class="p">.</span><span class="n">required</span><span class="p">()</span>
-                                            <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"--width"</span><span class="p">)</span>
-                                            <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"Width of window."</span><span class="p">))</span>
-                          <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="s">"height"</span><span class="p">)</span>
-                                            <span class="p">.</span><span class="n">required</span><span class="p">()</span> <i class="conum" data-value="4"></i><b>(4)</b>
-                                            <span class="p">.</span><span class="n">name</span><span class="p">(</span><span class="s">"--height"</span><span class="p">)</span>
-                                            <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"Height of window."</span><span class="p">)));</span>
+    // Did the user ask for help?
+    bool get_help = false;
 
-    <span class="c1">// Parse the program arguments.</span>
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
+    lyra::cli cli;
+    cli.add_argument(lyra::help(get_help))
+        .add_argument(lyra::opt(aspect, "aspect") <i class="conum" data-value="1"></i><b>(1)</b>
+                          .name("--aspect")
+                          .help("Full-screen aspect ratio window."))
+        .add_argument(lyra::group([&amp;](const lyra::group &amp;) {
+                          show_full_screen = false;
+                      }) <i class="conum" data-value="2"></i><b>(2)</b>
+                          .add_argument(lyra::opt(width, "width") <i class="conum" data-value="3"></i><b>(3)</b>
+                                            .required()
+                                            .name("--width")
+                                            .help("Width of window."))
+                          .add_argument(lyra::opt(height, "height")
+                                            .required() <i class="conum" data-value="4"></i><b>(4)</b>
+                                            .name("--height")
+                                            .help("Height of window.")));
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">get_help</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">cli</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
+    // Parse the program arguments.
+    auto result = cli.parse({ argc, argv });
 
-    <span class="c1">// Check that the arguments where valid.</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error in command line: "</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span>
-                  <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
+    if (get_help)
+    {
+        std::cout &lt;&lt; cli;
+        return 0;
+    }
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">show_full_screen</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Full screen aspect = "</span> <span class="o">&lt;&lt;</span> <span class="n">aspect</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">else</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Window size = "</span> <span class="o">&lt;&lt;</span> <span class="n">width</span> <span class="o">&lt;&lt;</span> <span class="s">" x "</span> <span class="o">&lt;&lt;</span> <span class="n">height</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="p">}</span>
+    // Check that the arguments where valid.
+    if (!result)
+    {
+        std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.message()
+                  &lt;&lt; std::endl;
+        return 1;
+    }
 
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre>
+    if (show_full_screen)
+    {
+        std::cout &lt;&lt; "Full screen aspect = " &lt;&lt; aspect &lt;&lt; "\n";
+    }
+    else
+    {
+        std::cout &lt;&lt; "Window size = " &lt;&lt; width &lt;&lt; " x " &lt;&lt; height &lt;&lt; "\n";
+    }
+
+    return 0;
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1816,18 +1734,18 @@ then executes the lambda with the parsed command line as given by <code>argv</co
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;iostream&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="k">return</span> <span class="n">lyra</span><span class="o">::</span><span class="n">main</span><span class="p">()</span> <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="p">(</span><span class="s">"-x"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)(</span><span class="s">"-y"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)(</span><span class="s">"z"</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="p">[](</span><span class="n">lyra</span><span class="o">::</span><span class="n">main</span> <span class="o">&amp;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span> <i class="conum" data-value="3"></i><b>(3)</b>
-            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">"-x"</span><span class="p">])</span> <span class="o">+</span> <span class="kt">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">"-y"</span><span class="p">]))</span> <span class="o">*</span> <span class="kt">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">"z"</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span> <i class="conum" data-value="4"></i><b>(4)</b>
-            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <i class="conum" data-value="5"></i><b>(5)</b>
-        <span class="p">});</span>
-<span class="p">}</span></code></pre>
+
+int main(int argc, const char ** argv)
+{
+    return lyra::main() <i class="conum" data-value="1"></i><b>(1)</b>
+        ("-x", 0)("-y", 0)("z", 5) <i class="conum" data-value="2"></i><b>(2)</b>
+        (argc, argv, [](lyra::main &amp; m) { <i class="conum" data-value="3"></i><b>(3)</b>
+            std::cout &lt;&lt; (int(m["-x"]) + int(m["-y"])) * int(m["z"]) &lt;&lt; "\n"; <i class="conum" data-value="4"></i><b>(4)</b>
+            return 0; <i class="conum" data-value="5"></i><b>(5)</b>
+        });
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1875,21 +1793,21 @@ and it&#8217;s parsed type.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;iostream&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="k">return</span> <span class="n">lyra</span><span class="o">::</span><span class="n">main</span><span class="p">()</span>
-        <span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">val</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="s">"x"</span><span class="p">)[</span><span class="s">"-x"</span><span class="p">])</span> <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">val</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="s">"y"</span><span class="p">)[</span><span class="s">"-y"</span><span class="p">])</span>
-        <span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">val</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="s">"z"</span><span class="p">))</span> <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="p">[](</span><span class="n">lyra</span><span class="o">::</span><span class="n">main</span> <span class="o">&amp;</span> <span class="n">m</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">"-x"</span><span class="p">])</span> <span class="o">+</span> <span class="kt">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">"-y"</span><span class="p">]))</span><span class="o">*</span><span class="kt">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">"z"</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="p">});</span>
-<span class="p">}</span></code></pre>
+
+int main(int argc, const char ** argv)
+{
+    return lyra::main()
+        (lyra::opt(lyra::val(0), "x")["-x"]) <i class="conum" data-value="1"></i><b>(1)</b>
+        (lyra::opt(lyra::val(0), "y")["-y"])
+        (lyra::arg(lyra::val(5), "z")) <i class="conum" data-value="2"></i><b>(2)</b>
+        (argc, argv, [](lyra::main &amp; m)
+        {
+            std::cout &lt;&lt; (int(m["-x"]) + int(m["-y"]))*int(m["z"]) &lt;&lt; "\n";
+            return 0;
+        });
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1919,22 +1837,22 @@ of the flag occurrences.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;iostream&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">int</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="k">return</span> <span class="n">lyra</span><span class="o">::</span><span class="n">main</span><span class="p">()</span>
-        <span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span>
-            <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">bool</span><span class="p">){</span> <span class="n">verbose</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span> <span class="p">})</span> <i class="conum" data-value="2"></i><b>(2)</b>
-            <span class="p">[</span><span class="s">"-v"</span><span class="p">].</span><span class="n">cardinality</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span> <i class="conum" data-value="3"></i><b>(3)</b>
-        <span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="n">lyra</span><span class="o">::</span><span class="n">main</span> <span class="o">&amp;</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">verbose</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span> <i class="conum" data-value="4"></i><b>(4)</b>
-            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="p">});</span>
-<span class="p">}</span></code></pre>
+
+int main(int argc, const char ** argv)
+{
+    int verbose = 0; <i class="conum" data-value="1"></i><b>(1)</b>
+    return lyra::main()
+        (lyra::opt(
+            [&amp;](bool){ verbose += 1; }) <i class="conum" data-value="2"></i><b>(2)</b>
+            ["-v"].cardinality(0,5)) <i class="conum" data-value="3"></i><b>(3)</b>
+        (argc, argv, [&amp;](lyra::main &amp;)
+        {
+            std::cout &lt;&lt; verbose &lt;&lt; "\n"; <i class="conum" data-value="4"></i><b>(4)</b>
+            return 0;
+        });
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2050,34 +1968,34 @@ the <a href="#lyra_cli_style"><code>lyra::cli::style</code></a> method. For exam
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include &lt;iostream&gt;
+<pre class="rouge highlight"><code data-lang="c++">#include &lt;iostream&gt;
 #include &lt;lyra/lyra.hpp&gt;
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="k">using</span> <span class="k">namespace</span> <span class="n">lyra</span><span class="p">;</span>
 
-    <span class="kt">bool</span> <span class="n">show_help</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
-    <span class="kt">bool</span> <span class="n">flag</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-    <span class="k">auto</span> <span class="n">cli</span>
-        <span class="o">=</span> <span class="n">help</span><span class="p">(</span><span class="n">show_help</span><span class="p">).</span><span class="n">description</span><span class="p">(</span><span class="s">"This is a sample CLI parser."</span><span class="p">)</span> <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="o">|</span> <span class="n">opt</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s">"name"</span><span class="p">)[</span><span class="s">"-n"</span><span class="p">][</span><span class="s">"--name"</span><span class="p">](</span><span class="s">"The name to use."</span><span class="p">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="o">|</span> <span class="n">opt</span><span class="p">(</span><span class="n">flag</span><span class="p">)[</span><span class="s">"-f"</span><span class="p">][</span><span class="s">"--flag"</span><span class="p">](</span><span class="s">"A flag to set."</span><span class="p">);</span>
+int main(int argc, const char ** argv)
+{
+    using namespace lyra;
 
-    <span class="n">cli</span><span class="p">.</span><span class="n">style</span><span class="p">({</span> <span class="s">","</span><span class="p">,</span> <span class="s">"+"</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s">"~"</span><span class="p">,</span> <span class="mi">1</span> <span class="p">});</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    bool show_help = false;
+    std::string name;
+    bool flag = false;
+    auto cli
+        = help(show_help).description("This is a sample CLI parser.") <i class="conum" data-value="1"></i><b>(1)</b>
+        | opt(name, "name")["-n"]["--name"]("The name to use.") <i class="conum" data-value="2"></i><b>(2)</b>
+        | opt(flag)["-f"]["--flag"]("A flag to set.");
 
-    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">}))</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">show_help</span> <span class="o">||</span> <span class="o">!</span><span class="n">result</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">cli</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="n">result</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
-<span class="p">}</span></code></pre>
+    cli.style({ ",", "+", 2, "~", 1 }); <i class="conum" data-value="3"></i><b>(3)</b>
+
+    auto result = cli.parse({ argc, argv });
+    if (!cli.parse({ argc, argv }))
+    {
+        std::cerr &lt;&lt; result.message() &lt;&lt; "\n\n";
+    }
+    if (show_help || !result)
+    {
+        std::cout &lt;&lt; cli &lt;&lt; "\n";
+    }
+    return result ? 0 : 1;
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2127,14 +2045,14 @@ one. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">auto</span> <span class="n">p</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">arguments</span><span class="p">();</span>
-<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">what</span><span class="p">;</span>
-<span class="kt">float</span> <span class="n">when</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">where</span><span class="p">;</span>
-<span class="n">p</span> <span class="o">|=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">what</span><span class="p">,</span> <span class="s">"what"</span><span class="p">)[</span><span class="s">"--make-it-so"</span><span class="p">](</span><span class="s">"Make it so."</span><span class="p">).</span><span class="n">required</span><span class="p">();</span>
-<span class="n">p</span> <span class="o">|=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">when</span><span class="p">.</span> <span class="s">"when"</span><span class="p">)[</span><span class="s">"--time"</span><span class="p">](</span><span class="s">"When to do &lt;what&gt;."</span><span class="p">).</span><span class="n">optional</span><span class="p">();</span>
-<span class="n">p</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">where</span><span class="p">,</span> <span class="s">"where"</span><span class="p">).</span><span class="n">name</span><span class="p">(</span><span class="s">"--where"</span><span class="p">)</span>
-    <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"There you are."</span><span class="p">).</span><span class="n">optional</span><span class="p">());</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">auto p = lyra::arguments();
+std::string what;
+float when = 0;
+std::string where;
+p |= lyra::opt(what, "what")["--make-it-so"]("Make it so.").required();
+p |= lyra::opt(when. "when")["--time"]("When to do &lt;what&gt;.").optional();
+p.add_argument(lyra::opt(where, "where").name("--where")
+    .help("There you are.").optional());</code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -2143,7 +2061,7 @@ one. For example:</p>
 <h5 id="lyra_arguments_ctor_default"><a class="anchor" href="#lyra_arguments_ctor_default"></a>Default</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">arguments</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">arguments() = default;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2155,7 +2073,7 @@ and options for parsing a arguments line.</p>
 <h5 id="lyra_arguments_ctor_copy"><a class="anchor" href="#lyra_arguments_ctor_copy"></a>Copy</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">arguments</span><span class="o">::</span><span class="n">arguments</span><span class="p">(</span><span class="k">const</span> <span class="n">arguments</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">arguments::arguments(const arguments&amp; other);</code></pre>
 </div>
 </div>
 </div>
@@ -2166,10 +2084,10 @@ and options for parsing a arguments line.</p>
 <h5 id="lyra_arguments_add_argument"><a class="anchor" href="#lyra_arguments_add_argument"></a><code>lyra::arguments::add_argument</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">arguments</span><span class="o">&amp;</span> <span class="n">arguments</span><span class="o">::</span><span class="n">add_argument</span><span class="p">(</span><span class="n">parser</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
-<span class="n">arguments</span><span class="o">&amp;</span> <span class="n">arguments</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">parser</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
-<span class="n">arguments</span><span class="o">&amp;</span> <span class="n">arguments</span><span class="o">::</span><span class="n">add_argument</span><span class="p">(</span><span class="n">arguments</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">);</span>
-<span class="n">arguments</span><span class="o">&amp;</span> <span class="n">arguments</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">arguments</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">arguments&amp; arguments::add_argument(parser const&amp; p);
+arguments&amp; arguments::operator|=(parser const&amp; p);
+arguments&amp; arguments::add_argument(arguments const&amp; other);
+arguments&amp; arguments::operator|=(arguments const&amp; other);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2183,7 +2101,7 @@ this one.</p>
 <h5 id="_lyraargumentssequential"><a class="anchor" href="#_lyraargumentssequential"></a><code>lyra::arguments::sequential</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">arguments</span> <span class="o">&amp;</span> <span class="n">arguments</span><span class="o">::</span><span class="n">sequential</span><span class="p">();</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">arguments &amp; arguments::sequential();</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2196,7 +2114,7 @@ This is useful for sub-commands and structured command lines.</p>
 <h5 id="_lyraargumentsinclusive"><a class="anchor" href="#_lyraargumentsinclusive"></a><code>lyra::arguments::inclusive</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">arguments</span> <span class="o">&amp;</span> <span class="n">arguments</span><span class="o">::</span><span class="n">inclusive</span><span class="p">();</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">arguments &amp; arguments::inclusive();</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2209,8 +2127,8 @@ parsers. This means that there is no ordering enforced.</p>
 <h5 id="_lyraargumentsget"><a class="anchor" href="#_lyraargumentsget"></a><code>lyra::arguments::get</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
-<span class="n">T</span> <span class="o">&amp;</span> <span class="n">arguments</span><span class="o">::</span><span class="n">get</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename T&gt;
+T &amp; arguments::get(size_t i);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2228,14 +2146,14 @@ one. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">auto</span> <span class="n">cli</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="p">();</span>
-<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">what</span><span class="p">;</span>
-<span class="kt">float</span> <span class="n">when</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">where</span><span class="p">;</span>
-<span class="n">cli</span> <span class="o">|=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">what</span><span class="p">,</span> <span class="s">"what"</span><span class="p">)[</span><span class="s">"--make-it-so"</span><span class="p">](</span><span class="s">"Make it so."</span><span class="p">).</span><span class="n">required</span><span class="p">();</span>
-<span class="n">cli</span> <span class="o">|=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">when</span><span class="p">.</span> <span class="s">"when"</span><span class="p">)[</span><span class="s">"--time"</span><span class="p">](</span><span class="s">"When to do &lt;what&gt;."</span><span class="p">).</span><span class="n">optional</span><span class="p">();</span>
-<span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">where</span><span class="p">,</span> <span class="s">"where"</span><span class="p">).</span><span class="n">name</span><span class="p">(</span><span class="s">"--where"</span><span class="p">)</span>
-    <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"There you are."</span><span class="p">).</span><span class="n">optional</span><span class="p">());</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">auto cli = lyra::cli();
+std::string what;
+float when = 0;
+std::string where;
+cli |= lyra::opt(what, "what")["--make-it-so"]("Make it so.").required();
+cli |= lyra::opt(when. "when")["--time"]("When to do &lt;what&gt;.").optional();
+cli.add_argument(lyra::opt(where, "where").name("--where")
+    .help("There you are.").optional());</code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -2244,7 +2162,7 @@ one. For example:</p>
 <h5 id="lyra_cli_ctor_default"><a class="anchor" href="#lyra_cli_ctor_default"></a>Default</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">cli</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">cli() = default;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2256,7 +2174,7 @@ and options for parsing a command line.</p>
 <h5 id="lyra_cli_ctor_copy"><a class="anchor" href="#lyra_cli_ctor_copy"></a>Copy</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">cli</span><span class="o">::</span><span class="n">cli</span><span class="p">(</span><span class="k">const</span> <span class="n">cli</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">cli::cli(const cli&amp; other);</code></pre>
 </div>
 </div>
 </div>
@@ -2267,14 +2185,14 @@ and options for parsing a command line.</p>
 <h5 id="lyra_cli_add_argument"><a class="anchor" href="#lyra_cli_add_argument"></a><code>lyra::cli::add_argument</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">cli</span><span class="o">&amp;</span> <span class="n">cli</span><span class="o">::</span><span class="n">add_argument</span><span class="p">(</span><span class="n">exe_name</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">exe_name</span><span class="p">);</span>
-<span class="n">cli</span><span class="o">&amp;</span> <span class="n">cli</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">exe_name</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">exe_name</span><span class="p">);</span>
-<span class="n">cli</span><span class="o">&amp;</span> <span class="n">cli</span><span class="o">::</span><span class="n">add_argument</span><span class="p">(</span><span class="n">parser</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
-<span class="n">cli</span><span class="o">&amp;</span> <span class="n">cli</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">parser</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
-<span class="n">cli</span><span class="o">&amp;</span> <span class="n">cli</span><span class="o">::</span><span class="n">add_argument</span><span class="p">(</span><span class="n">group</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
-<span class="n">cli</span><span class="o">&amp;</span> <span class="n">cli</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">group</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
-<span class="n">cli</span><span class="o">&amp;</span> <span class="n">cli</span><span class="o">::</span><span class="n">add_argument</span><span class="p">(</span><span class="n">cli</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">);</span>
-<span class="n">cli</span><span class="o">&amp;</span> <span class="n">cli</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">cli</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">cli&amp; cli::add_argument(exe_name const&amp; exe_name);
+cli&amp; cli::operator|=(exe_name const&amp; exe_name);
+cli&amp; cli::add_argument(parser const&amp; p);
+cli&amp; cli::operator|=(parser const&amp; p);
+cli&amp; cli::add_argument(group const&amp; p);
+cli&amp; cli::operator|=(group const&amp; p);
+cli&amp; cli::add_argument(cli const&amp; other);
+cli&amp; cli::operator|=(cli const&amp; other);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2288,7 +2206,7 @@ name (for <code>exe_name</code> parser), directly added as an argument (for
 <h5 id="lyra_cli_array_ref"><a class="anchor" href="#lyra_cli_array_ref"></a><code>lyra::cli::operator[]</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">cli</span><span class="o">::</span><span class="n">value_result</span> <span class="n">cli</span><span class="o">::</span><span class="k">operator</span><span class="p">[](</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">n</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">cli::value_result cli::operator[](const std::string &amp; n)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2301,8 +2219,8 @@ default.</p>
 <h5 id="lyra_cli_parse"><a class="anchor" href="#lyra_cli_parse"></a><code>lyra::cli::parse</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">parse_result</span> <span class="n">cli</span><span class="o">::</span><span class="n">parse</span><span class="p">(</span>
-    <span class="n">args</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">args</span><span class="p">,</span> <span class="k">const</span> <span class="n">option_style</span><span class="o">&amp;</span> <span class="n">customize</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">parse_result cli::parse(
+    args const&amp; args, const option_style&amp; customize) const;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2316,8 +2234,8 @@ callbacks may have been called.</p>
 <h5 id="lyra_cli_style"><a class="anchor" href="#lyra_cli_style"></a><code>lyra::cli::style</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">lyra</span><span class="o">::</span><span class="n">cli</span> <span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="o">::</span><span class="n">style</span><span class="p">(</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">option_style</span> <span class="o">&amp;</span> <span class="n">style</span><span class="p">)</span>
-<span class="n">lyra</span><span class="o">::</span><span class="n">cli</span> <span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="o">::</span><span class="n">style</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">option_style</span> <span class="o">&amp;&amp;</span> <span class="n">style</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">lyra::cli &amp; lyra::cli::style(const lyra::option_style &amp; style)
+lyra::cli &amp; lyra::cli::style(lyra::option_style &amp;&amp; style)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2335,7 +2253,7 @@ For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">lyra</span><span class="o">::</span><span class="n">command</span> <span class="n">c</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">command</span><span class="p">(</span><span class="s">"sub"</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">lyra::command c = lyra::command("sub");</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2343,11 +2261,11 @@ For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">lyra</span><span class="o">::</span><span class="n">command</span> <span class="n">c</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span><span class="p">()</span>
-    <span class="p">.</span><span class="n">sequential</span><span class="p">()</span>
-    <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">literal</span><span class="p">(</span><span class="s">"sub"</span><span class="p">))</span>
-    <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">group</span><span class="p">());</span>
-<span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">lyra</span><span class="o">::</span><span class="n">group</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">lyra::command c = lyra::group()
+    .sequential()
+    .add_argument(literal("sub"))
+    .add_argument(group());
+lyra::group &amp; g = c.get&lt;lyra::group&gt;(1);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2360,9 +2278,9 @@ For example:</p>
 <h4 id="lyra_command_ctor"><a class="anchor" href="#lyra_command_ctor"></a>Construction</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">command</span><span class="o">::</span><span class="n">command</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">n</span><span class="p">);</span>
-<span class="n">command</span><span class="o">::</span><span class="n">command</span><span class="p">(</span>
-    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">n</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="k">const</span> <span class="n">group</span> <span class="o">&amp;</span><span class="p">)</span><span class="o">&gt;&amp;</span> <span class="n">f</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">command::command(const std::string &amp; n);
+command::command(
+    const std::string &amp; n, const std::function&lt;void(const group &amp;)&gt;&amp; f);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2376,8 +2294,8 @@ command.</p>
 <h5 id="lyra_command_help"><a class="anchor" href="#lyra_command_help"></a><code>lyra:command::help</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">command</span> <span class="o">&amp;</span> <span class="n">command</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">text</span><span class="p">)</span>
-<span class="n">command</span> <span class="o">&amp;</span> <span class="n">command</span><span class="o">::</span><span class="k">operator</span><span class="p">()(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">description</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">command &amp; command::help(const std::string&amp; text)
+command &amp; command::operator()(std::string const&amp; description)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2389,10 +2307,10 @@ underlying literal of the command.</p>
 <h5 id="lyra_command_add_argument"><a class="anchor" href="#lyra_command_add_argument"></a><code>lyra::command::add_argument</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">P</span><span class="p">&gt;</span>
-<span class="n">command</span> <span class="o">&amp;</span> <span class="n">command</span><span class="o">::</span><span class="n">add_argument</span><span class="p">(</span><span class="n">P</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">P</span><span class="p">&gt;</span>
-<span class="n">command</span> <span class="o">&amp;</span> <span class="n">command</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">parser</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename P&gt;
+command &amp; command::add_argument(P const &amp; p);
+template &lt;typename P&gt;
+command &amp; command::operator|=(parser const &amp; p);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2415,7 +2333,7 @@ has the effect of adding arguments <strong>after</strong> the command name.</p>
 <h4 id="lyra_exe_name_ctor"><a class="anchor" href="#lyra_exe_name_ctor"></a>Construction</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">exe_name</span><span class="o">::</span><span class="n">exe_name</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">ref</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">exe_name::exe_name(std::string&amp; ref)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2424,8 +2342,8 @@ the <code>cli</code> is run the target string will contain the exec name.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">LambdaT</span><span class="p">&gt;</span>
-<span class="n">exe_name</span><span class="o">::</span><span class="n">exe_name</span><span class="p">(</span><span class="n">LambdaT</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">lambda</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename LambdaT&gt;
+exe_name::exe_name(LambdaT const&amp; lambda)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2439,7 +2357,7 @@ when the <code>cli</code> runs.</p>
 <h5 id="lyra_exe_name_name"><a class="anchor" href="#lyra_exe_name_name"></a><code>lyra::exe_name::name</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">exe_name</span><span class="o">::</span><span class="n">name</span><span class="p">()</span> <span class="k">const</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">std::string exe_name::name() const</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2451,7 +2369,7 @@ value.</p>
 <h5 id="lyra_exe_name_set"><a class="anchor" href="#lyra_exe_name_set"></a><code>lyra::exe_name::set</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">parser_result</span> <span class="n">exe_name</span><span class="o">::</span><span class="n">set</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">newName</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">parser_result exe_name::set(std::string const&amp; newName)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2479,7 +2397,7 @@ within groups for describing branching argument parsing.</p>
 <h5 id="lyra_group_ctor_default"><a class="anchor" href="#lyra_group_ctor_default"></a>Default</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">group</span><span class="p">();</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">group();</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2490,7 +2408,7 @@ within groups for describing branching argument parsing.</p>
 <h5 id="lyra_group_ctor_copy"><a class="anchor" href="#lyra_group_ctor_copy"></a>Copy</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">group</span><span class="o">::</span><span class="n">group</span><span class="p">(</span><span class="k">const</span> <span class="n">group</span> <span class="o">&amp;</span> <span class="n">other</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">group::group(const group &amp; other);</code></pre>
 </div>
 </div>
 </div>
@@ -2498,7 +2416,7 @@ within groups for describing branching argument parsing.</p>
 <h5 id="lyra_group_ctor_success"><a class="anchor" href="#lyra_group_ctor_success"></a>Success Handler</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">group</span><span class="o">::</span><span class="n">group</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="k">const</span> <span class="n">group</span> <span class="o">&amp;</span><span class="p">)</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">f</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">group::group(const std::function&lt;void(const group &amp;)&gt; &amp; f)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2510,7 +2428,7 @@ function is called with the group to facilitate customization.</p>
 <h5 id="lyra_group_optional"><a class="anchor" href="#lyra_group_optional"></a><code>lyra::group::optional</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">group</span> <span class="o">&amp;</span> <span class="n">group</span><span class="o">::</span><span class="n">optional</span><span class="p">();</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">group &amp; group::optional();</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2522,7 +2440,7 @@ function is called with the group to facilitate customization.</p>
 <h5 id="lyra_group_required"><a class="anchor" href="#lyra_group_required"></a><code>lyra::group::required(n)</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">group</span> <span class="o">&amp;</span> <span class="n">group</span><span class="o">::</span><span class="n">required</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">group &amp; group::required(size_t n);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2534,8 +2452,8 @@ function is called with the group to facilitate customization.</p>
 <h5 id="lyra_group_cardinality"><a class="anchor" href="#lyra_group_cardinality"></a><code>lyra::group::cardinality(n)</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">group</span> <span class="o">&amp;</span> <span class="n">group</span><span class="o">::</span><span class="n">cardinality</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span>
-<span class="n">group</span> <span class="o">&amp;</span> <span class="n">group</span><span class="o">::</span><span class="n">cardinality</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">n</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">m</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">group &amp; group::cardinality(size_t n);
+group &amp; group::cardinality(size_t n, size_t m);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2559,7 +2477,7 @@ display a help message.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">help</span> <span class="o">&amp;</span> <span class="n">help</span><span class="o">::</span><span class="n">description</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">text</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">help &amp; help::description(const std::string &amp;text)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2582,7 +2500,7 @@ and "Options, arguments" sections.</p>
 <h5 id="_token"><a class="anchor" href="#_token"></a>Token</h5>
 <div id="lyra_literal_ctor_token" class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="kr">inline</span> <span class="n">literal</span><span class="o">::</span><span class="n">literal</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">n</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">inline literal::literal(std::string const&amp; n)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2596,8 +2514,8 @@ and "Options, arguments" sections.</p>
 <h5 id="lyra_literal_help"><a class="anchor" href="#lyra_literal_help"></a><code>lyra:literal::help</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">literal</span><span class="o">&amp;</span> <span class="n">literal</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">text</span><span class="p">)</span>
-<span class="n">literal</span><span class="o">&amp;</span> <span class="n">literal</span><span class="o">::</span><span class="k">operator</span><span class="p">()(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">description</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">literal&amp; literal::help(const std::string&amp; text)
+literal&amp; literal::operator()(std::string const&amp; description)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2618,7 +2536,7 @@ errors and reporting problems.</p>
 <h4 id="lyra_main_ctor"><a class="anchor" href="#lyra_main_ctor"></a>Construction</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">main</span><span class="o">::</span><span class="n">main</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">text</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">main::main(const std::string &amp; text);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2630,9 +2548,9 @@ description is specified for the help option that is added to the command line.<
 <h4 id="lyra_main_add_argument"><a class="anchor" href="#lyra_main_add_argument"></a>Add Argument</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span> <span class="n">main</span> <span class="o">&amp;</span> <span class="n">main</span><span class="o">::</span><span class="k">operator</span><span class="p">()(</span><span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span> <span class="n">parser</span><span class="p">)</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span> <span class="n">main</span> <span class="o">&amp;</span> <span class="n">main</span><span class="o">::</span><span class="n">add_argument</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span> <span class="n">parser</span><span class="p">)</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span> <span class="n">main</span> <span class="o">&amp;</span> <span class="n">main</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span> <span class="n">parser</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename T&gt; main &amp; main::operator()(const T &amp; parser)
+template &lt;typename T&gt; main &amp; main::add_argument(const T &amp; parser)
+template &lt;typename T&gt; main &amp; main::operator|=(const T &amp; parser)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2645,11 +2563,11 @@ like <code>lyra::opt</code> or <code>lyra::arg</code>.</p>
 <h4 id="lyra_main_simple_args"><a class="anchor" href="#lyra_main_simple_args"></a>Simple Args</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">V</span><span class="p">&gt;</span>
-<span class="n">main</span> <span class="o">&amp;</span> <span class="n">main</span><span class="o">::</span><span class="k">operator</span><span class="p">()(</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">arg_names</span><span class="p">,</span> <span class="n">V</span> <span class="o">&amp;&amp;</span> <span class="n">default_value</span><span class="p">)</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">V</span><span class="p">&gt;</span>
-<span class="n">main</span> <span class="o">&amp;</span> <span class="n">main</span><span class="o">::</span><span class="k">operator</span><span class="p">()(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">arg_name</span><span class="p">,</span> <span class="n">V</span> <span class="o">&amp;&amp;</span> <span class="n">default_value</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename V&gt;
+main &amp; main::operator()(
+    std::initializer_list&lt;std::string&gt; arg_names, V &amp;&amp; default_value)
+template &lt;typename V&gt;
+main &amp; main::operator()(const std::string &amp; arg_name, V &amp;&amp; default_value)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2714,10 +2632,10 @@ argument.</p>
 <h4 id="lyra_main_execute"><a class="anchor" href="#lyra_main_execute"></a>Execute</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">L</span><span class="p">&gt;</span>
-<span class="kt">int</span> <span class="n">main</span><span class="o">::</span><span class="k">operator</span><span class="p">()(</span><span class="k">const</span> <span class="n">args</span> <span class="o">&amp;</span> <span class="n">argv</span><span class="p">,</span> <span class="n">L</span> <span class="n">action</span><span class="p">)</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">L</span><span class="p">&gt;</span>
-<span class="kt">int</span> <span class="n">main</span><span class="o">::</span><span class="k">operator</span><span class="p">()(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">,</span> <span class="n">L</span> <span class="n">action</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename L&gt;
+int main::operator()(const args &amp; argv, L action)
+template &lt;typename L&gt;
+int main::operator()(int argc, const char ** argv, L action)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2743,10 +2661,10 @@ communicated through a reference to a variable, a container, or a callback.</p>
 <h5 id="lyra_opt_ctor_flags"><a class="anchor" href="#lyra_opt_ctor_flags"></a>Flags</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="kt">bool</span><span class="o">&amp;</span> <span class="n">ref</span><span class="p">);</span>
+<pre class="rouge highlight"><code data-lang="c++">lyra::opt::opt(bool&amp; ref);
 
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">L</span><span class="p">&gt;</span>
-<span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">L</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">ref</span><span class="p">);</span></code></pre>
+template &lt;typename L&gt;
+lyra::opt::opt(L const&amp; ref);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2760,11 +2678,11 @@ option is present.</p>
 <h5 id="lyra_opt_ctor_values"><a class="anchor" href="#lyra_opt_ctor_values"></a>Values</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
-<span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">T</span><span class="o">&amp;</span> <span class="n">ref</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">hint</span><span class="p">);</span>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename T&gt;
+lyra::opt::opt(T&amp; ref, std::string const&amp; hint);
 
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">L</span><span class="p">&gt;</span>
-<span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">L</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">ref</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">hint</span><span class="p">)</span></code></pre>
+template &lt;typename L&gt;
+lyra::opt::opt(L const&amp; ref, std::string const&amp; hint)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2780,8 +2698,8 @@ with the value when the option is present.</p>
 <h5 id="lyra_opt_name"><a class="anchor" href="#lyra_opt_name"></a><code>lyra::opt::name</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">::</span><span class="n">name</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">opt_name</span><span class="p">)</span>
-<span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">::</span><span class="k">operator</span><span class="p">[](</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">opt_name</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">lyra::opt&amp; lyra::opt::name(const std::string &amp;opt_name)
+lyra::opt&amp; lyra::opt::operator[](const std::string &amp;opt_name)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2798,11 +2716,11 @@ One can add multiple short spellings at once with <code>-abc</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">value_delimiters</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">long_option_prefix</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">long_option_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">short_option_prefix</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">short_option_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">std::string value_delimiters;
+std::string long_option_prefix;
+std::size_t long_option_size = 0;
+std::string short_option_prefix;
+std::size_t short_option_size = 0;</code></pre>
 </div>
 </div>
 <div class="ulist">
@@ -2834,12 +2752,12 @@ option. A value of zero (0) indicates that short options are not accepted.</p>
 <h4 id="lyra_option_style_ctor"><a class="anchor" href="#lyra_option_style_ctor"></a>Construction</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">lyra</span><span class="o">::</span><span class="n">option_style</span><span class="o">::</span><span class="n">option_style</span><span class="p">(</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;&amp;</span> <span class="n">value_delimiters</span><span class="p">,</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;&amp;</span> <span class="n">long_option_prefix</span> <span class="o">=</span> <span class="p">{},</span>
-    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">long_option_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;&amp;</span> <span class="n">short_option_prefix</span> <span class="o">=</span> <span class="p">{},</span>
-    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">short_option_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">lyra::option_style::option_style(
+    std::string &amp;&amp; value_delimiters,
+    std::string &amp;&amp; long_option_prefix = {},
+    std::size_t long_option_size = 0,
+    std::string &amp;&amp; short_option_prefix = {},
+    std::size_t short_option_size = 0)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2850,8 +2768,8 @@ option. A value of zero (0) indicates that short options are not accepted.</p>
 <h4 id="lyra_option_style_def"><a class="anchor" href="#lyra_option_style_def"></a>Definitions</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">lyra</span><span class="o">::</span><span class="n">option_style</span><span class="o">::</span><span class="n">long_option_string</span><span class="p">()</span> <span class="k">const</span>
-<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">lyra</span><span class="o">::</span><span class="n">option_style</span><span class="o">::</span><span class="n">short_option_string</span><span class="p">()</span> <span class="k">const</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">std::string lyra::option_style::long_option_string() const
+std::string lyra::option_style::short_option_string() const</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2864,9 +2782,9 @@ string is returned.</p>
 <h4 id="lyra_option_style_styles"><a class="anchor" href="#lyra_option_style_styles"></a>Styles</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">static</span> <span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">option_style</span><span class="o">::</span><span class="n">posix</span><span class="p">();</span>
-<span class="k">static</span> <span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">option_style</span><span class="o">::</span><span class="n">posix_brief</span><span class="p">();</span>
-<span class="k">static</span> <span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">option_style</span><span class="o">::</span><span class="n">windows</span><span class="p">();</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">static const option_style &amp; lyra::option_style::posix();
+static const option_style &amp; lyra::option_style::posix_brief();
+static const option_style &amp; lyra::option_style::windows();</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2913,11 +2831,11 @@ only available as individual long options, for example <code>/A</code>.</p>
 <h5 id="lyra_parser_help_text_item"><a class="anchor" href="#lyra_parser_help_text_item"></a><code>lyra::parser::help_text_item</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">struct</span> <span class="nc">lyra</span><span class="o">::</span><span class="n">parser</span><span class="o">::</span><span class="n">help_text_item</span>
-<span class="p">{</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">option</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">description</span><span class="p">;</span>
-<span class="p">};</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">struct lyra::parser::help_text_item
+{
+    std::string option;
+    std::string description;
+};</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2931,7 +2849,7 @@ method.</p>
 <h5 id="lyra_parser_help_text"><a class="anchor" href="#lyra_parser_help_text"></a><code>lyra::parser::help_text</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">using</span> <span class="n">help_text</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">help_text_item</span><span class="o">&gt;</span><span class="p">;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">using help_text = std::vector&lt;help_text_item&gt;;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2942,7 +2860,7 @@ method.</p>
 <h5 id="lyra_parser_get_help_text"><a class="anchor" href="#lyra_parser_get_help_text"></a><code>lyra::parser::get_help_text</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">virtual</span> <span class="n">help_text</span> <span class="n">get_help_text</span><span class="p">(</span><span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">virtual help_text get_help_text(const option_style &amp;) const;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2957,7 +2875,7 @@ the stream operator.</p>
 <h5 id="lyra_parser_get_usage_text"><a class="anchor" href="#lyra_parser_get_usage_text"></a><code>lyra::parser::get_usage_text</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">get_usage_text</span><span class="p">(</span><span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">virtual std::string get_usage_text(const option_style &amp;) const;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2969,7 +2887,7 @@ sub-parsers. This is called to print out the help text from the stream operator.
 <h5 id="lyra_parser_get_description_text"><a class="anchor" href="#lyra_parser_get_description_text"></a><code>lyra::parser::get_description_text</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">get_description_text</span><span class="p">(</span><span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">virtual std::string get_description_text(const option_style &amp;) const;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2995,13 +2913,13 @@ two <code>composable_parser</code> instances generates a <code>cli</code> parser
 <h4 id="lyra_bound_parser_ctor"><a class="anchor" href="#lyra_bound_parser_ctor"></a>Construction</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Reference</span><span class="p">&gt;</span>
-<span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">bound_parser</span><span class="p">(</span><span class="n">Reference</span><span class="o">&amp;</span> <span class="n">ref</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">hint</span><span class="p">);</span>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename Derived&gt;
+template &lt;typename Reference&gt;
+bound_parser&lt;Derived&gt;::bound_parser(Reference&amp; ref, std::string const&amp; hint);
 
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Lambda</span><span class="p">&gt;</span>
-<span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">bound_parser</span><span class="p">(</span><span class="n">Lambda</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">ref</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">hint</span><span class="p">);</span></code></pre>
+template &lt;typename Derived&gt;
+template &lt;typename Lambda&gt;
+bound_parser&lt;Derived&gt;::bound_parser(Lambda const&amp; ref, std::string const&amp; hint);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3021,10 +2939,10 @@ contain all the specified values.</p>
 <h5 id="lyra_bound_parser_help"><a class="anchor" href="#lyra_bound_parser_help"></a><code>lyra::bound_parser::help</code>, <code>lyra::bound_parser::operator(help)</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="n">Derived</span><span class="o">&amp;</span> <span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">help</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">text</span><span class="p">);</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="n">Derived</span><span class="o">&amp;</span> <span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="k">operator</span><span class="p">()(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">help</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename Derived&gt;
+Derived&amp; bound_parser&lt;Derived&gt;::help(std::string const&amp; text);
+template &lt;typename Derived&gt;
+Derived&amp; bound_parser&lt;Derived&gt;::operator()(std::string const&amp; help);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3035,8 +2953,8 @@ contain all the specified values.</p>
 <h5 id="lyra_bound_parser_optional"><a class="anchor" href="#lyra_bound_parser_optional"></a><code>lyra::bound_parser::optional</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="n">Derived</span><span class="o">&amp;</span> <span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">optional</span><span class="p">();</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename Derived&gt;
+Derived&amp; bound_parser&lt;Derived&gt;::optional();</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3048,8 +2966,8 @@ contain all the specified values.</p>
 <h5 id="lyra_bound_parser_required"><a class="anchor" href="#lyra_bound_parser_required"></a><code>lyra::bound_parser::required(n)</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="n">Derived</span><span class="o">&amp;</span> <span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">required</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename Derived&gt;
+Derived&amp; bound_parser&lt;Derived&gt;::required(size_t n);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3061,11 +2979,11 @@ contain all the specified values.</p>
 <h5 id="lyra_bound_parser_cardinality"><a class="anchor" href="#lyra_bound_parser_cardinality"></a><code>lyra::bound_parser::cardinality(n, m)</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="n">Derived</span><span class="o">&amp;</span> <span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">cardinality</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename Derived&gt;
+Derived&amp; bound_parser&lt;Derived&gt;::cardinality(size_t n);
 
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="n">Derived</span><span class="o">&amp;</span> <span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">cardinality</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">n</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">m</span><span class="p">);</span></code></pre>
+template &lt;typename Derived&gt;
+Derived&amp; bound_parser&lt;Derived&gt;::cardinality(size_t n, size_t m);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3079,13 +2997,13 @@ inclusive.</p>
 <h5 id="lyra_bound_parser_choices"><a class="anchor" href="#lyra_bound_parser_choices"></a><code>lyra::bound_parser::choices</code></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">,</span> <span class="k">typename</span><span class="o">...</span> <span class="nc">Rest</span><span class="p">&gt;</span>
-<span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">choices</span><span class="p">(</span><span class="n">T</span> <span class="n">val0</span><span class="p">,</span> <span class="n">Rest</span><span class="p">...</span> <span class="n">rest</span><span class="p">)</span>
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename Derived&gt;
+template &lt;typename T, typename... Rest&gt;
+lyra::opt&amp; lyra::bound_parser&lt;Derived&gt;::choices(T val0, Rest... rest)
 
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Lambda</span><span class="p">&gt;</span>
-<span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">choices</span><span class="p">(</span><span class="n">Lambda</span> <span class="k">const</span> <span class="o">&amp;</span><span class="n">check_choice</span><span class="p">)</span></code></pre>
+template &lt;typename Derived&gt;
+template &lt;typename Lambda&gt;
+lyra::opt&amp; lyra::bound_parser&lt;Derived&gt;::choices(Lambda const &amp;check_choice)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3095,14 +3013,32 @@ form the <code>check_choice</code> function is called with the parsed value and 
 <code>true</code> if it&#8217;s an allowed value.</p>
 </div>
 </div>
+<div class="sect4">
+<h5 id="lyra_bound_parser_hint"><a class="anchor" href="#lyra_bound_parser_hint"></a><code>lyra::bound_parser::hint</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++">template &lt;typename Derived&gt;
+std::string lyra::bound_parser&lt;Derived&gt;::hint()
+
+template &lt;typename Derived&gt;
+Derived &amp; lyra::bound_parser&lt;Derived&gt;::hint(std::string const &amp; hint)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Selectors to read and write the hint of a variable-bound parser.</p>
+</div>
+<div class="paragraph">
+<p>The hint should not be modified anymore, once the parser is applied to arguments or used in a <code>lyra::composable_parser</code>.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="lyra_val"><a class="anchor" href="#lyra_val"></a>13.17. <code>lyra::val</code></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">auto</span> <span class="nf">val</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;&amp;</span> <span class="n">v</span><span class="p">);</span>
-<span class="k">auto</span> <span class="nf">val</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">v</span><span class="p">);</span></code></pre>
+<pre class="rouge highlight"><code data-lang="c++">auto val(T &amp;&amp; v);
+auto val(const char * v);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3117,6 +3053,13 @@ be retrieved with the
 <div class="sect1">
 <h2 id="_history"><a class="anchor" href="#_history"></a>14. History</h2>
 <div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Allow setting hint after construction of <code>lyra::bound_parser</code>.&#8201;&#8212;&#8201;<em>Max Ferger</em></p>
+</li>
+</ul>
+</div>
 <div class="sect2">
 <h3 id="_1_7"><a class="anchor" href="#_1_7"></a>14.1. 1.7</h3>
 <div class="paragraph">
