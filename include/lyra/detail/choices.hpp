@@ -59,8 +59,8 @@ namespace detail
 			auto parse = parse_string(val, value);
 			if (!parse)
 			{
-				return parser_result::runtimeError(
-					parser_result_type::no_match, parse.errorMessage());
+				return parser_result::error(
+					parser_result_type::no_match, parse.message());
 			}
 			bool result = std::count(values.begin(), values.end(), value) > 0;
 			if (result)
@@ -68,7 +68,7 @@ namespace detail
 				return parser_result::ok(parser_result_type::matched);
 			}
 			// We consider not finding a choice a parse error.
-			return parser_result::runtimeError(
+			return parser_result::error(
 				parser_result_type::no_match,
 				"Value '" + val + "' not expected. Allowed values are: "
 					+ this->to_string());
@@ -141,15 +141,15 @@ namespace detail
 			auto parse = parse_string(val, value);
 			if (!parse)
 			{
-				return parser_result::runtimeError(
-					parser_result_type::no_match, parse.errorMessage());
+				return parser_result::error(
+					parser_result_type::no_match, parse.message());
 			}
 			if (checker(value))
 			{
 				return parser_result::ok(parser_result_type::matched);
 			}
 			// We consider not finding a choice a parse error.
-			return parser_result::runtimeError(
+			return parser_result::error(
 				parser_result_type::no_match,
 				"Value '" + val + "' not expected.");
 		}

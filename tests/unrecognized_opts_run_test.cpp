@@ -20,21 +20,21 @@ int main()
 		auto result = cli.parse( { "TestApp", "-b" } );
 		test
 			(REQUIRE( !result ))
-			(REQUIRE( result.errorMessage().find( "Unrecognized token") != std::string::npos ))
-			(REQUIRE( result.errorMessage().find( "-b" ) != std::string::npos ));
+			(REQUIRE( result.message().find( "Unrecognized token") != std::string::npos ))
+			(REQUIRE( result.message().find( "-b" ) != std::string::npos ));
 	}
 	#if 0 // Test case for https://github.com/bfgroup/Lyra/issues/24
 	{
 		bool o = false;
 		std::string a;
-		auto cli = cli()
+		auto cli = lyra::cli()
 			.add_argument(opt( o )["--option"].optional())
 			.add_argument(arg(a, "argument"));
 		auto result = cli.parse( { "TestApp", "--function", "arg" } );
 		test
 			(REQUIRE( !result ))
-			(REQUIRE( result.errorMessage().find( "Unrecognized token") != std::string::npos ))
-			(REQUIRE( result.errorMessage().find( "--function" ) != std::string::npos ));
+			(REQUIRE( result.message().find( "Unrecognized token") != std::string::npos ))
+			(REQUIRE( result.message().find( "--function" ) != std::string::npos ));
 	}
 	#endif
 

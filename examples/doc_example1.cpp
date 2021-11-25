@@ -31,7 +31,7 @@ int main(int argc, const char** argv)
 	// Check that the arguments where valid:
 	if (!result)
 	{
-		std::cerr << "Error in command line: " << result.errorMessage() << std::endl;
+		std::cerr << "Error in command line: " << result.message() << std::endl;
 		return 1;
 	}
 

@@ -22,7 +22,7 @@ namespace detail
 		if (from_string(source, target))
 			return parser_result::ok(parser_result_type::matched);
 		else
-			return parser_result::runtimeError(
+			return parser_result::error(
 				parser_result_type::no_match,
 				"Unable to convert '" + source + "' to destination type");
 	}

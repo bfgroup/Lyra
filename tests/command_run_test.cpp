@@ -17,10 +17,9 @@ int main(int, const char **)
 		auto cli = lyra::cli()
 			| command("one")
 			| command("two");
-		test
-			(REQUIRE(cli.parse({ "TestApp", "one" })))
-			(REQUIRE(cli.parse({ "TestApp", "two" })))
-			(REQUIRE(cli.parse({ "TestApp" })));
+		test(REQUIRE(cli.parse({ "TestApp", "one" })));
+		test(REQUIRE(cli.parse({ "TestApp", "two" })));
+		test(REQUIRE(cli.parse({ "TestApp" })));
 	}
 	{
 		std::string one = "one";
@@ -28,14 +27,13 @@ int main(int, const char **)
 		auto cli = lyra::cli()
 			| command("one").add_argument(arg(one, "one"))
 			| command("two").add_argument(arg(two, "two"));
-		test
-			(REQUIRE(cli.parse({ "TestApp", "one" })))
-			(REQUIRE(cli.parse({ "TestApp", "two" })))
-			(REQUIRE(cli.parse({ "TestApp", "one", "ONE" })))
-			(REQUIRE(cli.parse({ "TestApp", "two", "3" })))
-			(REQUIRE(!cli.parse({ "TestApp", "one", "OnE", "TwO" })))
-			(REQUIRE(!cli.parse({ "TestApp", "two", "3", "4" })))
-			(REQUIRE(cli.parse({ "TestApp" })));
+		test(REQUIRE(cli.parse({ "TestApp", "one" })));
+		test(REQUIRE(cli.parse({ "TestApp", "two" })));
+		test(REQUIRE(cli.parse({ "TestApp", "one", "ONE" })));
+		test(REQUIRE(cli.parse({ "TestApp", "two", "3" })));
+		test(REQUIRE(!cli.parse({ "TestApp", "one", "OnE", "TwO" })));
+		test(REQUIRE(!cli.parse({ "TestApp", "two", "3", "4" })));
+		test(REQUIRE(cli.parse({ "TestApp" })));
 	}
 	{
 		bool a = false;
@@ -50,10 +48,9 @@ int main(int, const char **)
 				.add_argument(opt(c, "c").name("--c").optional())
 				.add_argument(opt(d, "d").name("--d").optional())
 			;
-		test
-			(REQUIRE(cli.parse({ "TestApp", "one", "--a=1" })))
-			(REQUIRE(cli.parse({ "TestApp", "two", "--c=1" })))
-			(REQUIRE(cli.parse({ "TestApp" })));
+		test(REQUIRE(cli.parse({ "TestApp", "one", "--a=1" })));
+		test(REQUIRE(cli.parse({ "TestApp", "two", "--c=1" })));
+		test(REQUIRE(cli.parse({ "TestApp" })));
 	}
 
 	return test;

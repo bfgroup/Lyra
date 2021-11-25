@@ -222,7 +222,7 @@ template <typename L>
 int main::operator()(const args & argv, L action)
 {
 	auto result = cli::parse(argv);
-	if (!result) std::cerr << result.errorMessage() << "\n\n";
+	if (!result) std::cerr << result.message() << "\n\n";
 	if (show_help || !result)
 		std::cout << *this << "\n";
 	else

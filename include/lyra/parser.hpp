@@ -14,9 +14,9 @@
 #include "lyra/detail/result.hpp"
 #include "lyra/detail/tokens.hpp"
 #include "lyra/detail/trait_utils.hpp"
-#include "lyra/val.hpp"
-#include "lyra/parser_result.hpp"
 #include "lyra/option_style.hpp"
+#include "lyra/parser_result.hpp"
+#include "lyra/val.hpp"
 
 #include <memory>
 #include <string>
@@ -28,11 +28,15 @@ namespace detail {
 class parse_state
 {
 	public:
-	parse_state(parser_result_type type,
-		token_iterator const & remaining_tokens, size_t parsed_tokens = 0)
+	parse_state(
+		parser_result_type type,
+		token_iterator const & remaining_tokens,
+		size_t parsed_tokens = 0)
 		: result_type(type)
 		, tokens(remaining_tokens)
-	{ (void) parsed_tokens; }
+	{
+		(void)parsed_tokens;
+	}
 
 	parser_result_type type() const { return result_type; }
 	token_iterator remainingTokens() const { return tokens; }
@@ -65,6 +69,27 @@ struct parser_cardinality
 
 	// If one or more values are expected, it's required.
 	bool is_required() const { return (minimum > 0); }
+
+	void optional()
+	{
+		minimum = 0;
+		maximum = 1;
+	}
+	void required(size_t n = 1)
+	{
+		minimum = n;
+		maximum = n;
+	}
+	void counted(size_t n)
+	{
+		minimum = n;
+		maximum = n;
+	}
+	void bounded(size_t n, size_t m)
+	{
+		minimum = n;
+		maximum = m;
+	}
 };
 } // namespace detail
 
@@ -81,9 +106,8 @@ class parse_result : public detail::basic_result<detail::parse_state>
 	public:
 	using base = detail::basic_result<detail::parse_state>;
 	using base::basic_result;
-	using base::logicError;
+	using base::error;
 	using base::ok;
-	using base::runtimeError;
 
 	parse_result(const base & other)
 		: base(other)
@@ -114,8 +138,14 @@ class parser
 	[[deprecated]] std::string get_description_text() const { return ""; }
 
 	virtual help_text get_help_text(const option_style &) const { return {}; }
-	virtual std::string get_usage_text(const option_style &) const { return ""; }
-	virtual std::string get_description_text(const option_style &) const { return ""; }
+	virtual std::string get_usage_text(const option_style &) const
+	{
+		return "";
+	}
+	virtual std::string get_description_text(const option_style &) const
+	{
+		return "";
+	}
 
 	virtual ~parser() = default;
 
@@ -124,16 +154,25 @@ class parser
 	virtual bool is_group() const { return false; }
 	virtual result validate() const { return result::ok(); }
 	virtual std::unique_ptr<parser> clone() const { return nullptr; }
-	virtual bool is_named(const std::string & n) const { (void) n; return false; }
+	virtual bool is_named(const std::string & n) const
+	{
+		(void)n;
+		return false;
+	}
 	virtual const parser * get_named(const std::string & n) const
 	{
 		if (is_named(n)) return this;
 		return nullptr;
 	}
 	virtual size_t get_value_count() const { return 0; }
-	virtual std::string get_value(size_t i) const { (void) i; return ""; }
+	virtual std::string get_value(size_t i) const
+	{
+		(void)i;
+		return "";
+	}
 
-	virtual parse_result parse(detail::token_iterator const & tokens,
+	virtual parse_result parse(
+		detail::token_iterator const & tokens,
 		const option_style & style) const = 0;
 
 	protected:
@@ -142,7 +181,7 @@ class parser
 		std::string usage_test = get_usage_text(style);
 		if (!usage_test.empty())
 			os << "USAGE:\n"
-			<< "  " << get_usage_text(style) << "\n\n";
+			   << "  " << get_usage_text(style) << "\n\n";
 
 		std::string description_test = get_description_text(style);
 		if (!description_test.empty())
@@ -275,28 +314,38 @@ class bound_parser : public composable_parser<Derived>
 	explicit bound_parser(std::shared_ptr<detail::BoundRef> const & ref)
 		: m_ref(ref)
 	{
-		if (m_ref->isContainer()) m_cardinality = { 0, 0 };
+		if (m_ref->isContainer())
+			m_cardinality = { 0, 0 };
 		else
 			m_cardinality = { 0, 1 };
 	}
-	bound_parser(std::shared_ptr<detail::BoundRef> const & ref, std::string const & hint)
-		: m_ref(ref), m_hint(hint)
+	bound_parser(
+		std::shared_ptr<detail::BoundRef> const & ref, std::string const & hint)
+		: m_ref(ref)
+		, m_hint(hint)
 	{
-		if (m_ref->isContainer()) m_cardinality = { 0, 0 };
+		if (m_ref->isContainer())
+			m_cardinality = { 0, 0 };
 		else
 			m_cardinality = { 0, 1 };
 	}
 
 	public:
-
-	enum class ctor_lambda_e { val };
+	enum class ctor_lambda_e
+	{
+		val
+	};
 
 	template <typename Reference>
 	bound_parser(Reference & ref, std::string const & hint);
 
 	template <typename Lambda>
-	bound_parser(Lambda const & ref, std::string const & hint,
-	typename std::enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type = ctor_lambda_e::val);
+	bound_parser(
+		Lambda const & ref,
+		std::string const & hint,
+		typename std::
+			enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type
+		= ctor_lambda_e::val);
 
 	template <typename T>
 	explicit bound_parser(detail::BoundVal<T> && val)
@@ -319,10 +368,13 @@ class bound_parser : public composable_parser<Derived>
 	}
 	std::string hint() const { return m_hint; }
 
-	template <typename T, typename... Rest,
+	template <
+		typename T,
+		typename... Rest,
 		typename std::enable_if<!detail::is_invocable<T>::value, int>::type = 0>
 	Derived & choices(T val0, Rest... rest);
-	template <typename Lambda,
+	template <
+		typename Lambda,
 		typename std::enable_if<detail::is_invocable<Lambda>::value, int>::type
 		= 1>
 	Derived & choices(Lambda const & check_choice);
@@ -334,12 +386,18 @@ class bound_parser : public composable_parser<Derived>
 		return make_clone<Derived>(this);
 	}
 
-	virtual bool is_named(const std::string &n) const override
+	virtual bool is_named(const std::string & n) const override
 	{
 		return n == m_hint;
 	}
-	virtual size_t get_value_count() const override { return m_ref->get_value_count(); }
-	virtual std::string get_value(size_t i) const override { return m_ref->get_value(i); }
+	virtual size_t get_value_count() const override
+	{
+		return m_ref->get_value_count();
+	}
+	virtual std::string get_value(size_t i) const override
+	{
+		return m_ref->get_value(i);
+	}
 };
 
 /* tag::reference[]
@@ -374,18 +432,19 @@ end::reference[] */
 template <typename Derived>
 template <typename Reference>
 bound_parser<Derived>::bound_parser(Reference & ref, std::string const & hint)
-	: bound_parser(std::make_shared<detail::BoundValueRef<Reference>>(ref), hint)
-{
-}
+	: bound_parser(
+		std::make_shared<detail::BoundValueRef<Reference>>(ref), hint)
+{}
 
 template <typename Derived>
 template <typename Lambda>
 bound_parser<Derived>::bound_parser(
-	Lambda const & ref, std::string const & hint,
-	typename std::enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type)
+	Lambda const & ref,
+	std::string const & hint,
+	typename std::
+		enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type)
 	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref), hint)
-{
-}
+{}
 
 /* tag::reference[]
 
@@ -461,7 +520,8 @@ end::reference[] */
 template <typename Derived>
 Derived & bound_parser<Derived>::required(size_t n)
 {
-	if (m_ref->isContainer()) return this->cardinality(1, 0);
+	if (m_ref->isContainer())
+		return this->cardinality(1, 0);
 	else
 		return this->cardinality(n);
 }
@@ -523,7 +583,9 @@ form the `check_choice` function is called with the parsed value and returns
 
 end::reference[] */
 template <typename Derived>
-template <typename T, typename... Rest,
+template <
+	typename T,
+	typename... Rest,
 	typename std::enable_if<!detail::is_invocable<T>::value, int>::type>
 Derived & bound_parser<Derived>::choices(T val0, Rest... rest)
 {
@@ -532,7 +594,8 @@ Derived & bound_parser<Derived>::choices(T val0, Rest... rest)
 }
 
 template <typename Derived>
-template <typename Lambda,
+template <
+	typename Lambda,
 	typename std::enable_if<detail::is_invocable<Lambda>::value, int>::type>
 Derived & bound_parser<Derived>::choices(Lambda const & check_choice)
 {

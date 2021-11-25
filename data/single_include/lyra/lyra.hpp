@@ -12,7 +12,7 @@
 #define LYRA_VERSION_HPP
 
 #define LYRA_VERSION_MAJOR 1
-#define LYRA_VERSION_MINOR 6
+#define LYRA_VERSION_MINOR 7
 #define LYRA_VERSION_PATCH 0
 
 #define LYRA_VERSION \
@@ -25,6 +25,79 @@
 #ifndef LYRA_ARG_HPP
 #define LYRA_ARG_HPP
 
+
+#ifndef LYRA_DETAIL_PRINT_HPP
+#define LYRA_DETAIL_PRINT_HPP
+
+#include <iostream>
+#include <string>
+
+#ifndef LYRA_DEBUG
+#	define LYRA_DEBUG 0
+#endif
+
+namespace lyra { namespace detail {
+
+constexpr bool is_debug = LYRA_DEBUG;
+
+template <typename T>
+std::string to_string(T && t)
+{
+	return std::string(std::move(t));
+}
+
+using std::to_string;
+
+struct print
+{
+	print(const char * scope = nullptr) : scope(scope)
+	{
+		if (is_debug) print::depth() += 1;
+		if (scope) debug(scope, "...");
+	}
+
+	~print()
+	{
+		if (scope) debug("...", scope);
+		if (is_debug) print::depth() -= 1;
+	}
+
+	template <typename... A>
+	void debug(A... arg)
+	{
+		if (is_debug)
+		{
+			std::cerr << "[DEBUG]"
+					  << std::string((print::depth() - 1) * 2, ' ');
+			std::string args[] = { to_string(arg)... };
+			for (auto & arg_string : args)
+			{
+				std::cerr << " " << arg_string;
+			}
+			std::cerr << "\n";
+		}
+	}
+
+	private:
+	const char * scope;
+	static std::size_t & depth()
+	{
+		static std::size_t d = 0;
+		return d;
+	}
+};
+
+}} // namespace lyra::detail
+
+#if LYRA_DEBUG
+#	define LYRA_PRINT_SCOPE ::lyra::detail::print lyra_print_scope
+#	define LYRA_PRINT_DEBUG lyra_print_scope.debug
+#else
+#	define LYRA_PRINT_SCOPE(...) while(false)
+#	define LYRA_PRINT_DEBUG(...) while(false)
+#endif
+
+#endif
 
 #ifndef LYRA_PARSER_HPP
 #define LYRA_PARSER_HPP
@@ -324,159 +397,156 @@ inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
 #include <memory>
 #include <string>
 
-namespace lyra
+namespace lyra { namespace detail {
+class result_base
 {
-namespace detail
+	public:
+	result_base const & base() const { return *this; }
+	explicit operator bool() const { return is_ok(); }
+	bool is_ok() const { return kind_ == result_kind::ok; }
+	std::string message() const { return message_; }
+	[[deprecated]] std::string errorMessage() const { return message(); }
+
+	protected:
+	enum class result_kind
+	{
+		ok,
+		error
+	};
+
+	explicit result_base(result_kind kind, const std::string & message = "")
+		: kind_(kind)
+		, message_(message)
+	{}
+
+	explicit result_base(const result_base & other)
+		: kind_(other.kind_)
+		, message_(other.message_)
+	{}
+
+	virtual ~result_base() = default;
+
+	private:
+	result_kind kind_;
+	std::string message_;
+};
+
+template <typename T>
+class result_value_base : public result_base
 {
-	class result_base
+	public:
+	using value_type = T;
+
+	value_type const & value() const { return *value_; }
+	bool has_value() const { return bool(value_); }
+
+	protected:
+	std::unique_ptr<value_type> value_;
+
+	explicit result_value_base(
+		result_kind kind, const std::string & message = "")
+		: result_base(kind, message)
+	{}
+
+	explicit result_value_base(
+		result_kind kind,
+		const value_type & val,
+		const std::string & message = "")
+		: result_base(kind, message)
 	{
-		public:
-		enum Type
-		{
-			Ok,
-			LogicError,
-			RuntimeError
-		};
+		value_.reset(new value_type(val));
+	}
 
-		result_base const& base() const { return *this; }
-
-		explicit operator bool() const
-		{
-			return this->m_type == result_base::Ok;
-		}
-
-		Type type() const { return m_type; }
-
-		std::string errorMessage() const { return m_errorMessage; }
-
-		protected:
-		Type m_type;
-		std::string m_errorMessage; // Only populated if resultType is an error
-
-		explicit result_base(Type type, const std::string& message = "")
-			: m_type(type)
-			, m_errorMessage(message)
-		{
-		}
-
-		virtual ~result_base() = default;
-	};
-
-	template <typename T>
-	class result_value_base : public result_base
+	explicit result_value_base(result_value_base const & other)
+		: result_base(other)
 	{
-		public:
-		using value_type = T;
+		if (other.value_) value_.reset(new value_type(*other.value_));
+	}
 
-		value_type const& value() const { return *m_value; }
-		bool has_value() const { return m_value; }
+	explicit result_value_base(const result_base & other)
+		: result_base(other)
+	{}
 
-		protected:
-		std::unique_ptr<value_type> m_value;
-
-		explicit result_value_base(Type type, const std::string& message = "")
-			: result_base(type, message)
-		{
-		}
-
-		explicit result_value_base(
-			Type type, const value_type& val, const std::string& message = "")
-			: result_base(type, message)
-		{
-			m_value.reset(new value_type(val));
-		}
-
-		explicit result_value_base(result_value_base const& other)
-			: result_base(other)
-		{
-			if (other.m_value) m_value.reset(new value_type(*other.m_value));
-		}
-
-		result_value_base& operator=(result_value_base const& other)
-		{
-			result_base::operator=(other);
-			if (other.m_value) m_value.reset(new T(*other.m_value));
-			return *this;
-		}
-	};
-
-	template <>
-	class result_value_base<void> : public result_base
+	result_value_base & operator=(result_value_base const & other)
 	{
-		public:
-		using value_type = void;
+		result_base::operator=(other);
+		if (other.value_) value_.reset(new T(*other.value_));
+		return *this;
+	}
+};
 
-		protected:
-		using result_base::result_base;
-	};
+template <>
+class result_value_base<void> : public result_base
+{
+	public:
+	using value_type = void;
 
-	template <typename T>
-	class basic_result : public result_value_base<T>
+	protected:
+	explicit result_value_base(const result_base & other)
+		: result_base(other)
+	{}
+	explicit result_value_base(
+		result_kind kind, const std::string & message = "")
+		: result_base(kind, message)
+	{}
+};
+
+template <typename T>
+class basic_result : public result_value_base<T>
+{
+	public:
+	using value_type = typename result_value_base<T>::value_type;
+
+	explicit basic_result(result_base const & other)
+		: result_value_base<T>(other)
+	{}
+
+
+	static basic_result ok(value_type const & val)
 	{
-		public:
-		using value_type = typename result_value_base<T>::value_type;
+		return basic_result(result_base::result_kind::ok, val);
+	}
 
-		explicit basic_result(result_base const& other)
-			: result_value_base<T>(other.type(), other.errorMessage())
-		{
-		}
-
-
-		static basic_result ok(value_type const& val)
-		{
-			return basic_result(result_base::Ok, val);
-		}
-
-		static basic_result
-		logicError(value_type const& val, std::string const& message)
-		{
-			return basic_result(result_base::LogicError, val, message);
-		}
-
-		static basic_result
-		runtimeError(value_type const& val, const std::string& message)
-		{
-			return basic_result(result_base::RuntimeError, val, message);
-		}
-
-		protected:
-		using result_value_base<T>::result_value_base;
-	};
-
-	template <>
-	class basic_result<void> : public result_value_base<void>
+	static basic_result
+		error(value_type const & val, std::string const & message)
 	{
-		public:
-		using value_type = typename result_value_base<void>::value_type;
+		return basic_result(result_base::result_kind::error, val, message);
+	}
 
-		explicit basic_result(result_base const& other)
-			: result_value_base<void>(other.type(), other.errorMessage())
-		{
-		}
+	protected:
+	using result_value_base<T>::result_value_base;
+};
+
+template <>
+class basic_result<void> : public result_value_base<void>
+{
+	public:
+	using value_type = typename result_value_base<void>::value_type;
+
+	explicit basic_result(result_base const & other)
+		: result_value_base<void>(other)
+	{}
 
 
-		static basic_result ok() { return basic_result(result_base::Ok); }
+	static basic_result ok()
+	{
+		return basic_result(result_base::result_kind::ok);
+	}
 
-		static basic_result logicError(std::string const& message)
-		{
-			return basic_result(result_base::LogicError, message);
-		}
+	static basic_result error(std::string const & message)
+	{
+		return basic_result(result_base::result_kind::error, message);
+	}
 
-		static basic_result runtimeError(std::string const& message)
-		{
-			return basic_result(result_base::RuntimeError, message);
-		}
-
-		protected:
-		using result_value_base<void>::result_value_base;
-	};
-} // namespace detail
-} // namespace lyra
+	protected:
+	using result_value_base<void>::result_value_base;
+};
+}} // namespace lyra::detail
 
 #endif
+#include <string>
 
-namespace lyra
-{
+namespace lyra {
 
 enum class parser_result_type
 {
@@ -484,6 +554,17 @@ enum class parser_result_type
 	no_match,
 	short_circuit_all
 };
+
+inline std::string to_string(parser_result_type v)
+{
+	switch (v)
+	{
+		case parser_result_type::matched: return "matched";
+		case parser_result_type::no_match: return "no_match";
+		case parser_result_type::short_circuit_all: return "short_circuit_all";
+	}
+	return "?";
+}
 
 using result = detail::basic_result<void>;
 
@@ -505,7 +586,7 @@ namespace detail
 		if (from_string(source, target))
 			return parser_result::ok(parser_result_type::matched);
 		else
-			return parser_result::runtimeError(
+			return parser_result::error(
 				parser_result_type::no_match,
 				"Unable to convert '" + source + "' to destination type");
 	}
@@ -815,15 +896,15 @@ namespace detail
 			auto parse = parse_string(val, value);
 			if (!parse)
 			{
-				return parser_result::runtimeError(
-					parser_result_type::no_match, parse.errorMessage());
+				return parser_result::error(
+					parser_result_type::no_match, parse.message());
 			}
 			bool result = std::count(values.begin(), values.end(), value) > 0;
 			if (result)
 			{
 				return parser_result::ok(parser_result_type::matched);
 			}
-			return parser_result::runtimeError(
+			return parser_result::error(
 				parser_result_type::no_match,
 				"Value '" + val + "' not expected. Allowed values are: "
 					+ this->to_string());
@@ -893,14 +974,14 @@ namespace detail
 			auto parse = parse_string(val, value);
 			if (!parse)
 			{
-				return parser_result::runtimeError(
-					parser_result_type::no_match, parse.errorMessage());
+				return parser_result::error(
+					parser_result_type::no_match, parse.message());
 			}
 			if (checker(value))
 			{
 				return parser_result::ok(parser_result_type::matched);
 			}
-			return parser_result::runtimeError(
+			return parser_result::error(
 				parser_result_type::no_match,
 				"Value '" + val + "' not expected.");
 		}
@@ -1369,11 +1450,15 @@ namespace detail {
 class parse_state
 {
 	public:
-	parse_state(parser_result_type type,
-		token_iterator const & remaining_tokens, size_t parsed_tokens = 0)
+	parse_state(
+		parser_result_type type,
+		token_iterator const & remaining_tokens,
+		size_t parsed_tokens = 0)
 		: result_type(type)
 		, tokens(remaining_tokens)
-	{ (void) parsed_tokens; }
+	{
+		(void)parsed_tokens;
+	}
 
 	parser_result_type type() const { return result_type; }
 	token_iterator remainingTokens() const { return tokens; }
@@ -1403,6 +1488,27 @@ struct parser_cardinality
 	bool is_bounded() const { return !is_unbounded(); }
 
 	bool is_required() const { return (minimum > 0); }
+
+	void optional()
+	{
+		minimum = 0;
+		maximum = 1;
+	}
+	void required(size_t n = 1)
+	{
+		minimum = n;
+		maximum = n;
+	}
+	void counted(size_t n)
+	{
+		minimum = n;
+		maximum = n;
+	}
+	void bounded(size_t n, size_t m)
+	{
+		minimum = n;
+		maximum = m;
+	}
 };
 } // namespace detail
 
@@ -1419,9 +1525,8 @@ class parse_result : public detail::basic_result<detail::parse_state>
 	public:
 	using base = detail::basic_result<detail::parse_state>;
 	using base::basic_result;
-	using base::logicError;
+	using base::error;
 	using base::ok;
-	using base::runtimeError;
 
 	parse_result(const base & other)
 		: base(other)
@@ -1452,8 +1557,14 @@ class parser
 	[[deprecated]] std::string get_description_text() const { return ""; }
 
 	virtual help_text get_help_text(const option_style &) const { return {}; }
-	virtual std::string get_usage_text(const option_style &) const { return ""; }
-	virtual std::string get_description_text(const option_style &) const { return ""; }
+	virtual std::string get_usage_text(const option_style &) const
+	{
+		return "";
+	}
+	virtual std::string get_description_text(const option_style &) const
+	{
+		return "";
+	}
 
 	virtual ~parser() = default;
 
@@ -1462,16 +1573,25 @@ class parser
 	virtual bool is_group() const { return false; }
 	virtual result validate() const { return result::ok(); }
 	virtual std::unique_ptr<parser> clone() const { return nullptr; }
-	virtual bool is_named(const std::string & n) const { (void) n; return false; }
+	virtual bool is_named(const std::string & n) const
+	{
+		(void)n;
+		return false;
+	}
 	virtual const parser * get_named(const std::string & n) const
 	{
 		if (is_named(n)) return this;
 		return nullptr;
 	}
 	virtual size_t get_value_count() const { return 0; }
-	virtual std::string get_value(size_t i) const { (void) i; return ""; }
+	virtual std::string get_value(size_t i) const
+	{
+		(void)i;
+		return "";
+	}
 
-	virtual parse_result parse(detail::token_iterator const & tokens,
+	virtual parse_result parse(
+		detail::token_iterator const & tokens,
 		const option_style & style) const = 0;
 
 	protected:
@@ -1480,7 +1600,7 @@ class parser
 		std::string usage_test = get_usage_text(style);
 		if (!usage_test.empty())
 			os << "USAGE:\n"
-			<< "  " << get_usage_text(style) << "\n\n";
+			   << "  " << get_usage_text(style) << "\n\n";
 
 		std::string description_test = get_description_text(style);
 		if (!description_test.empty())
@@ -1612,28 +1732,38 @@ class bound_parser : public composable_parser<Derived>
 	explicit bound_parser(std::shared_ptr<detail::BoundRef> const & ref)
 		: m_ref(ref)
 	{
-		if (m_ref->isContainer()) m_cardinality = { 0, 0 };
+		if (m_ref->isContainer())
+			m_cardinality = { 0, 0 };
 		else
 			m_cardinality = { 0, 1 };
 	}
-	bound_parser(std::shared_ptr<detail::BoundRef> const & ref, std::string const & hint)
-		: m_ref(ref), m_hint(hint)
+	bound_parser(
+		std::shared_ptr<detail::BoundRef> const & ref, std::string const & hint)
+		: m_ref(ref)
+		, m_hint(hint)
 	{
-		if (m_ref->isContainer()) m_cardinality = { 0, 0 };
+		if (m_ref->isContainer())
+			m_cardinality = { 0, 0 };
 		else
 			m_cardinality = { 0, 1 };
 	}
 
 	public:
-
-	enum class ctor_lambda_e { val };
+	enum class ctor_lambda_e
+	{
+		val
+	};
 
 	template <typename Reference>
 	bound_parser(Reference & ref, std::string const & hint);
 
 	template <typename Lambda>
-	bound_parser(Lambda const & ref, std::string const & hint,
-	typename std::enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type = ctor_lambda_e::val);
+	bound_parser(
+		Lambda const & ref,
+		std::string const & hint,
+		typename std::
+			enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type
+		= ctor_lambda_e::val);
 
 	template <typename T>
 	explicit bound_parser(detail::BoundVal<T> && val)
@@ -1656,10 +1786,13 @@ class bound_parser : public composable_parser<Derived>
 	}
 	std::string hint() const { return m_hint; }
 
-	template <typename T, typename... Rest,
+	template <
+		typename T,
+		typename... Rest,
 		typename std::enable_if<!detail::is_invocable<T>::value, int>::type = 0>
 	Derived & choices(T val0, Rest... rest);
-	template <typename Lambda,
+	template <
+		typename Lambda,
 		typename std::enable_if<detail::is_invocable<Lambda>::value, int>::type
 		= 1>
 	Derived & choices(Lambda const & check_choice);
@@ -1671,12 +1804,18 @@ class bound_parser : public composable_parser<Derived>
 		return make_clone<Derived>(this);
 	}
 
-	virtual bool is_named(const std::string &n) const override
+	virtual bool is_named(const std::string & n) const override
 	{
 		return n == m_hint;
 	}
-	virtual size_t get_value_count() const override { return m_ref->get_value_count(); }
-	virtual std::string get_value(size_t i) const override { return m_ref->get_value(i); }
+	virtual size_t get_value_count() const override
+	{
+		return m_ref->get_value_count();
+	}
+	virtual std::string get_value(size_t i) const override
+	{
+		return m_ref->get_value(i);
+	}
 };
 
 /* tag::reference[]
@@ -1711,18 +1850,19 @@ end::reference[] */
 template <typename Derived>
 template <typename Reference>
 bound_parser<Derived>::bound_parser(Reference & ref, std::string const & hint)
-	: bound_parser(std::make_shared<detail::BoundValueRef<Reference>>(ref), hint)
-{
-}
+	: bound_parser(
+		std::make_shared<detail::BoundValueRef<Reference>>(ref), hint)
+{}
 
 template <typename Derived>
 template <typename Lambda>
 bound_parser<Derived>::bound_parser(
-	Lambda const & ref, std::string const & hint,
-	typename std::enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type)
+	Lambda const & ref,
+	std::string const & hint,
+	typename std::
+		enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type)
 	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref), hint)
-{
-}
+{}
 
 /* tag::reference[]
 
@@ -1798,7 +1938,8 @@ end::reference[] */
 template <typename Derived>
 Derived & bound_parser<Derived>::required(size_t n)
 {
-	if (m_ref->isContainer()) return this->cardinality(1, 0);
+	if (m_ref->isContainer())
+		return this->cardinality(1, 0);
 	else
 		return this->cardinality(n);
 }
@@ -1860,7 +2001,9 @@ form the `check_choice` function is called with the parsed value and returns
 
 end::reference[] */
 template <typename Derived>
-template <typename T, typename... Rest,
+template <
+	typename T,
+	typename... Rest,
 	typename std::enable_if<!detail::is_invocable<T>::value, int>::type>
 Derived & bound_parser<Derived>::choices(T val0, Rest... rest)
 {
@@ -1869,7 +2012,8 @@ Derived & bound_parser<Derived>::choices(T val0, Rest... rest)
 }
 
 template <typename Derived>
-template <typename Lambda,
+template <
+	typename Lambda,
 	typename std::enable_if<detail::is_invocable<Lambda>::value, int>::type>
 Derived & bound_parser<Derived>::choices(Lambda const & check_choice)
 {
@@ -1944,8 +2088,9 @@ class arg : public bound_parser<arg>
 
 	parse_result parse(
 		detail::token_iterator const& tokens,
-		const option_style &) const override
+		const option_style & style) const override
 	{
+		LYRA_PRINT_SCOPE("arg::parse");
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
 
@@ -1956,14 +2101,22 @@ class arg : public bound_parser<arg>
 		if (value_choices)
 		{
 			auto choice_result = value_choices->contains_value(token.name);
-			if (!choice_result) return parse_result(choice_result);
+			if (!choice_result)
+			{
+				LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=", token.name);
+				return parse_result(choice_result);
+			}
 		}
 
 		auto result = valueRef->setValue(token.name);
 		if (!result)
+		{
+			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=", token.name);
 			return parse_result(result);
+		}
 		else
 		{
+			LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==", token.name);
 			auto remainingTokens = tokens;
 			remainingTokens.pop(token);
 			return parse_result::ok(detail::parse_state(
@@ -2196,7 +2349,9 @@ class arguments : public parser
 			if (usage_text.size() > 0)
 			{
 				if (os.tellp() != std::ostringstream::pos_type(0)) os << " ";
-				if (p->is_group())
+				if (p->is_group() && p->is_optional())
+					os << "[ " << usage_text << " ]";
+				else if (p->is_group())
 					os << "{ " << usage_text << " }";
 				else if (p->is_optional())
 					os << "[" << usage_text << "]";
@@ -2254,7 +2409,7 @@ class arguments : public parser
 			case any: return parse_any(tokens, style);
 			case sequence: return parse_sequence(tokens, style);
 		}
-		return parse_result::logicError(
+		return parse_result::error(
 			detail::parse_state(parser_result_type::no_match, tokens),
 			"Unknown evaluation mode; not one of 'any', or 'sequence'.");
 	}
@@ -2262,6 +2417,9 @@ class arguments : public parser
 	parse_result parse_any(detail::token_iterator const & tokens,
 		const option_style & style) const
 	{
+		LYRA_PRINT_SCOPE("arguments::parse_any");
+		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=", tokens ? tokens.argument().name : "", "..");
+
 		struct ParserInfo
 		{
 			parser const * parser_p = nullptr;
@@ -2275,6 +2433,8 @@ class arguments : public parser
 
 		auto result = parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
+		auto error_result = parse_result::ok(
+			detail::parse_state(parser_result_type::no_match, tokens));
 		while (result.value().remainingTokens())
 		{
 			bool token_parsed = false;
@@ -2287,11 +2447,24 @@ class arguments : public parser
 				{
 					auto subparse_result = parse_info.parser_p->parse(
 						result.value().remainingTokens(), style);
-					if (!subparse_result && !parse_info.parser_p->is_group())
-						return subparse_result;
-					result = parse_result(subparse_result);
-					if (result.value().type() != parser_result_type::no_match)
+					if (!subparse_result)
 					{
+						LYRA_PRINT_DEBUG("(!)", get_usage_text(style),
+							"!=", result.value().remainingTokens().argument().name);
+						if (subparse_result.has_value() &&
+							subparse_result.value().type()
+								== parser_result_type::short_circuit_all)
+							return subparse_result;
+						if (error_result)
+							error_result = parse_result(subparse_result);
+					}
+					else if (subparse_result && subparse_result.value().type()
+						!= parser_result_type::no_match)
+					{
+						LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
+							"==", result.value().remainingTokens().argument().name,
+							"==>", subparse_result.value().type());
+						result = parse_result(subparse_result);
 						token_parsed = true;
 						parse_info.count += 1;
 						break;
@@ -2301,10 +2474,10 @@ class arguments : public parser
 
 			if (result.value().type() == parser_result_type::short_circuit_all)
 				return result;
+			if (!token_parsed && !error_result)
+				return error_result;
 			if (!token_parsed)
-				return parse_result::runtimeError(result.value(),
-					"Unrecognized token: "
-						+ result.value().remainingTokens().argument().name);
+				break;
 		}
 		for (auto & parseInfo : parser_info)
 		{
@@ -2315,7 +2488,7 @@ class arguments : public parser
 				|| (parser_cardinality.is_required()
 					&& (parseInfo.count < parser_cardinality.minimum)))
 			{
-				return parse_result::runtimeError(result.value(),
+				return parse_result::error(result.value(),
 					"Expected: " + parseInfo.parser_p->get_usage_text(style));
 			}
 		}
@@ -2348,20 +2521,27 @@ class arguments : public parser
 				&& (parser_cardinality.is_unbounded()
 					|| parse_info.count < parser_cardinality.maximum))
 			{
-				result = parse_info.parser_p->parse(
+				auto subresult = parse_info.parser_p->parse(
 					result.value().remainingTokens(), style);
-				parser_result_type result_type = result.value().type();
-				if (!result)
+				if (!subresult)
 				{
-					return result;
+					return subresult;
 				}
-				else if (result_type == parser_result_type::short_circuit_all)
+				switch (subresult.value().type())
 				{
-					return result;
-				}
-				else if (result_type == parser_result_type::matched)
-				{
-					parse_info.count += 1;
+					case parser_result_type::short_circuit_all:
+					{
+						return subresult;
+					}
+					case parser_result_type::matched:
+					{
+						result = subresult;
+						parse_info.count += 1;
+					}
+					case parser_result_type::no_match:
+					{
+						break;
+					}
 				}
 			}
 			if ((parser_cardinality.is_bounded()
@@ -2370,7 +2550,7 @@ class arguments : public parser
 				|| (parser_cardinality.is_required()
 					&& (parse_info.count < parser_cardinality.minimum)))
 			{
-				return parse_result::runtimeError(result.value(),
+				return parse_result::error(result.value(),
 					"Expected: " + parse_info.parser_p->get_usage_text(style));
 			}
 		}
@@ -2657,22 +2837,45 @@ end::reference[] */
 class group : public arguments
 {
 	public:
-	group() = default;
+	group();
 	group(const group & other);
 	explicit group(const std::function<void(const group &)> & f);
 
 	virtual bool is_group() const override { return true; }
 
-	parse_result parse(detail::token_iterator const & tokens,
+	parse_result parse(
+		detail::token_iterator const & tokens,
 		const option_style & style) const override
 	{
+		LYRA_PRINT_SCOPE("group::parse");
+		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=",
+			tokens.argument().name);
 		parse_result result = arguments::parse(tokens, style);
 		if (result && result.value().type() != parser_result_type::no_match
 			&& success_signal)
 		{
 			this->success_signal(*this);
 		}
+		if (!result)
+		{
+			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
+				tokens.argument().name);
+		}
+		else
+		{
+			LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+				tokens.argument().name, "==>", result.value().type());
+		}
 		return result;
+	}
+
+	group & optional();
+	group & required(size_t n = 1);
+	group & cardinality(size_t n);
+	group & cardinality(size_t n, size_t m);
+	detail::parser_cardinality cardinality() const override
+	{
+		return m_cardinality;
 	}
 
 	virtual std::unique_ptr<parser> clone() const override
@@ -2682,6 +2885,7 @@ class group : public arguments
 
 	private:
 	std::function<void(const group &)> success_signal;
+	detail::parser_cardinality m_cardinality = {0,1};
 };
 
 /* tag::reference[]
@@ -2698,12 +2902,15 @@ end::reference[] */
 
 [source]
 ----
-group() = default;
+group();
 ----
 
 Default constructing a `group` does not register the success callback.
 
 end::reference[] */
+inline group::group()
+	: m_cardinality(0,1)
+{}
 
 /* tag::reference[]
 
@@ -2712,13 +2919,14 @@ end::reference[] */
 
 [source]
 ----
-group::group(const group& other);
+group::group(const group & other);
 ----
 
 end::reference[] */
 inline group::group(const group & other)
 	: arguments(other)
 	, success_signal(other.success_signal)
+	, m_cardinality(other.m_cardinality)
 {}
 
 /* tag::reference[]
@@ -2738,6 +2946,74 @@ end::reference[] */
 inline group::group(const std::function<void(const group &)> & f)
 	: success_signal(f)
 {}
+
+/* tag::reference[]
+
+[#lyra_group_optional]
+=== `lyra::group::optional`
+
+[source]
+----
+group & group::optional();
+----
+
+Indicates that the argument is optional. This is equivalent to specifying
+`cardinality(0, 1)`.
+
+end::reference[] */
+inline group & group::optional()
+{
+	m_cardinality.optional();
+	return *this;
+}
+
+/* tag::reference[]
+
+[#lyra_group_required]
+=== `lyra::group::required(n)`
+
+[source]
+----
+group & group::required(size_t n);
+----
+
+Specifies that the argument needs to given the number of `n` times
+(defaults to *1*).
+
+end::reference[] */
+inline group & group::required(size_t n)
+{
+	m_cardinality.required(n);
+	return *this;
+}
+
+/* tag::reference[]
+
+[#lyra_group_cardinality]
+=== `lyra::group::cardinality(n)`
+
+[source]
+----
+group & group::cardinality(size_t n);
+group & group::cardinality(size_t n, size_t m);
+----
+
+Specifies the number of times the argument can and needs to appear in the list
+of arguments. In the first form the argument can appear exactly `n` times. In
+the second form it specifies that the argument can appear from `n` to `m` times
+inclusive.
+
+end::reference[] */
+inline group & group::cardinality(size_t n)
+{
+	m_cardinality.counted(n);
+	return *this;
+}
+inline group & group::cardinality(size_t n, size_t m)
+{
+	m_cardinality.bounded(n, m);
+	return *this;
+}
 
 } // namespace lyra
 
@@ -3048,8 +3324,20 @@ end::reference[] */
 inline parse_result
 	cli::parse(args const & args, const option_style & style) const
 {
+	LYRA_PRINT_SCOPE("cli::parse");
 	m_exeName.set(args.exe_name());
-	return parse(detail::token_iterator(args, style), style);
+	detail::token_iterator args_tokens(args, style);
+	parse_result result = parse(args_tokens, style);
+	if (result && (result.value().type() == parser_result_type::no_match || result.value().type() == parser_result_type::matched))
+	{
+		if (result.value().have_tokens())
+		{
+			return parse_result::error(result.value(),
+				"Unrecognized token: "
+					+ result.value().remainingTokens().argument().name);
+		}
+	}
+	return result;
 }
 
 /* tag::reference[]
@@ -3151,7 +3439,7 @@ class literal : public parser
 		}
 		else
 		{
-			return parse_result(parser_result::runtimeError(
+			return parse_result(parser_result::error(
 				parser_result_type::no_match, "Expected '" + name + "'."));
 		}
 	}
@@ -3300,13 +3588,13 @@ command.
 end::reference[] */
 inline command::command(const std::string & n)
 {
-	this->sequential().add_argument(literal(n)).add_argument(group());
+	this->sequential().add_argument(literal(n)).add_argument(group().optional());
 }
 inline command::command(
 	const std::string & n, const std::function<void(const group &)> & f)
 	: group(f)
 {
-	this->sequential().add_argument(literal(n)).add_argument(group());
+	this->sequential().add_argument(literal(n)).add_argument(group().optional());
 }
 
 /* tag::reference[]
@@ -3487,6 +3775,7 @@ class opt : public bound_parser<opt>
 		detail::token_iterator const & tokens,
 		const option_style & style) const override
 	{
+		LYRA_PRINT_SCOPE("opt::parse");
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
 
@@ -3503,6 +3792,7 @@ class opt : public bound_parser<opt>
 						= static_cast<detail::BoundFlagRefBase *>(m_ref.get());
 					auto result = flagRef->setFlag(true);
 					if (!result) return parse_result(result);
+					LYRA_PRINT_DEBUG("(=)",get_usage_text(style),"==",token.name);
 					if (result.value() == parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
 							result.value(), remainingTokens));
@@ -3511,7 +3801,7 @@ class opt : public bound_parser<opt>
 				{
 					auto const & argToken = remainingTokens.value();
 					if (argToken.type == detail::token_type::unknown)
-						return parse_result::runtimeError(
+						return parse_result::error(
 							{ parser_result_type::no_match, remainingTokens },
 							"Expected argument following " + token.name);
 					remainingTokens.pop(token, argToken);
@@ -3524,7 +3814,15 @@ class opt : public bound_parser<opt>
 						if (!choice_result) return parse_result(choice_result);
 					}
 					auto result = valueRef->setValue(argToken.name);
-					if (!result) return parse_result(result);
+					if (!result)
+					{
+						return parse_result::error(
+							{parser_result_type::short_circuit_all,
+								remainingTokens},
+							result.message());
+					}
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+						token.name, argToken.name);
 					if (result.value() == parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
 							result.value(), remainingTokens));
@@ -3532,7 +3830,15 @@ class opt : public bound_parser<opt>
 				return parse_result::ok(detail::parse_state(
 					parser_result_type::matched, remainingTokens));
 			}
+			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!= ",
+				token.name);
 		}
+		else
+		{
+			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
+				remainingTokens.argument().name);
+		}
+
 		return parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, remainingTokens));
 	}
@@ -3540,11 +3846,13 @@ class opt : public bound_parser<opt>
 	result validate() const override
 	{
 		if (opt_names.empty())
-			return result::logicError("No options supplied to opt");
+			return result::error("No options supplied to opt");
 		for (auto const & name : opt_names)
 		{
 			if (name.empty())
-				return result::logicError("Option name cannot be empty");
+				return result::error("Option name cannot be empty");
+			if (name[0] != '-')
+				return result::error("Option name must begin with '-'");
 		}
 		return bound_parser::validate();
 	}
@@ -3981,7 +4289,7 @@ template <typename L>
 int main::operator()(const args & argv, L action)
 {
 	auto result = cli::parse(argv);
-	if (!result) std::cerr << result.errorMessage() << "\n\n";
+	if (!result) std::cerr << result.message() << "\n\n";
 	if (show_help || !result)
 		std::cout << *this << "\n";
 	else

@@ -66,7 +66,7 @@ int main(int argc, const char ** argv)
 	auto result = cli.parse({ argc, argv });
 	if (!cli.parse({ argc, argv }))
 	{
-		std::cerr << result.errorMessage() << "\n\n";
+		std::cerr << result.message() << "\n\n";
 	}
 	if (show_help || !result)
 	{

@@ -7,6 +7,7 @@
 #ifndef LYRA_OPT_HPP
 #define LYRA_OPT_HPP
 
+#include "lyra/detail/print.hpp"
 #include "lyra/detail/trait_utils.hpp"
 #include "lyra/parser.hpp"
 #include "lyra/val.hpp"
@@ -121,6 +122,7 @@ class opt : public bound_parser<opt>
 		detail::token_iterator const & tokens,
 		const option_style & style) const override
 	{
+		LYRA_PRINT_SCOPE("opt::parse");
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
 
@@ -137,6 +139,7 @@ class opt : public bound_parser<opt>
 						= static_cast<detail::BoundFlagRefBase *>(m_ref.get());
 					auto result = flagRef->setFlag(true);
 					if (!result) return parse_result(result);
+					LYRA_PRINT_DEBUG("(=)",get_usage_text(style),"==",token.name);
 					if (result.value() == parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
 							result.value(), remainingTokens));
@@ -145,7 +148,7 @@ class opt : public bound_parser<opt>
 				{
 					auto const & argToken = remainingTokens.value();
 					if (argToken.type == detail::token_type::unknown)
-						return parse_result::runtimeError(
+						return parse_result::error(
 							{ parser_result_type::no_match, remainingTokens },
 							"Expected argument following " + token.name);
 					remainingTokens.pop(token, argToken);
@@ -158,7 +161,17 @@ class opt : public bound_parser<opt>
 						if (!choice_result) return parse_result(choice_result);
 					}
 					auto result = valueRef->setValue(argToken.name);
-					if (!result) return parse_result(result);
+					if (!result)
+					{
+						// Matched the option, but not the value. This is a
+						// hard fail that needs to skip subsequent parsing.
+						return parse_result::error(
+							{parser_result_type::short_circuit_all,
+								remainingTokens},
+							result.message());
+					}
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+						token.name, argToken.name);
 					if (result.value() == parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
 							result.value(), remainingTokens));
@@ -166,7 +179,15 @@ class opt : public bound_parser<opt>
 				return parse_result::ok(detail::parse_state(
 					parser_result_type::matched, remainingTokens));
 			}
+			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!= ",
+				token.name);
 		}
+		else
+		{
+			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
+				remainingTokens.argument().name);
+		}
+
 		return parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, remainingTokens));
 	}
@@ -174,13 +195,13 @@ class opt : public bound_parser<opt>
 	result validate() const override
 	{
 		if (opt_names.empty())
-			return result::logicError("No options supplied to opt");
+			return result::error("No options supplied to opt");
 		for (auto const & name : opt_names)
 		{
 			if (name.empty())
-				return result::logicError("Option name cannot be empty");
-			// if (name[0] != '-')
-			// 	return result::logicError("Option name must begin with '-'");
+				return result::error("Option name cannot be empty");
+			if (name[0] != '-')
+				return result::error("Option name must begin with '-'");
 		}
 		return bound_parser::validate();
 	}

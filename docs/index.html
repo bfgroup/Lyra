@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.12">
+<meta name="generator" content="Asciidoctor 2.0.16">
 <meta name="copyright" content="Copyright 2019-2020 René Ferdinand Rivera Morell">
 <title>Lyra&#8201;&#8212;&#8201;C++11 CLI Parsing Library</title>
 <style>
@@ -840,77 +840,6 @@ a { color: inherit; }
 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-pre.pygments .hll { background-color: #ffffcc }
-pre.pygments  { background: #f8f8f8; }
-pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
-pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
-pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
-pre.pygments .tok-o { color: #666666 } /* Operator */
-pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
-pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
-pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
-pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
-pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
-pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
-pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
-pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
-pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
-pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
-pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
-pre.pygments .tok-go { color: #888888 } /* Generic.Output */
-pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
-pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
-pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
-pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
-pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
-pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
-pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
-pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
-pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
-pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
-pre.pygments .tok-m { color: #666666 } /* Literal.Number */
-pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
-pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
-pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
-pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
-pre.pygments .tok-no { color: #880000 } /* Name.Constant */
-pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
-pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
-pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
-pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
-pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
-pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
-pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
-pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
-pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
-pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
-pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
-pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
-pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
-pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
-pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
-pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
-pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
-pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
-pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
-pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
-pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
-pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
-pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
-pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
-pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
-pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
-pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
-pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
-pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
-pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
-pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
-pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
-pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
-pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
-pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
-</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -1070,11 +999,11 @@ easy and generic sub-command specifications.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
-<span class="tok-k">auto</span> <span class="tok-n">cli</span> <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">cli</span><span class="tok-p">()</span>
-    <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
-        <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
-        <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">);</span></code></pre>
+<pre class="pygments highlight"><code data-lang="cpp">int width = 0;
+auto cli = lyra::cli()
+    | lyra::opt( width, "width" )
+        ["-w"]["--width"]
+        ("How wide should it be?");</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1082,14 +1011,14 @@ easy and generic sub-command specifications.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-k">auto</span> <span class="tok-n">result</span> <span class="tok-o">=</span> <span class="tok-n">cli</span><span class="tok-p">.</span><span class="tok-n">parse</span><span class="tok-p">(</span> <span class="tok-p">{</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">argv</span> <span class="tok-p">}</span> <span class="tok-p">);</span>
-<span class="tok-k">if</span> <span class="tok-p">(</span> <span class="tok-o">!</span><span class="tok-n">result</span> <span class="tok-p">)</span>
-<span class="tok-p">{</span>
-	<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cerr</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Error in command line: &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">result</span><span class="tok-p">.</span><span class="tok-n">errorMessage</span><span class="tok-p">()</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-	<span class="tok-n">exit</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
-<span class="tok-p">}</span>
+<pre class="pygments highlight"><code data-lang="cpp">auto result = cli.parse( { argc, argv } );
+if ( !result )
+{
+	std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.errorMessage() &lt;&lt; std::endl;
+	exit(1);
+}
 
-<span class="tok-c1">// Everything was ok, width will have a value if supplied on command line.</span></code></pre>
+// Everything was ok, width will have a value if supplied on command line.</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1100,22 +1029,22 @@ easy and generic sub-command specifications.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="cpp"><span></span><span class="tok-kt">int</span> <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
-<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">name</span><span class="tok-p">;</span>
-<span class="tok-kt">bool</span> <span class="tok-n">doIt</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
-<span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">string</span> <span class="tok-n">command</span><span class="tok-p">;</span>
-<span class="tok-k">auto</span> <span class="tok-n">cli</span>
-    <span class="tok-o">=</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-s">&quot;width&quot;</span> <span class="tok-p">)</span>
-        <span class="tok-p">[</span><span class="tok-s">&quot;-w&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--width&quot;</span><span class="tok-p">]</span>
-        <span class="tok-p">(</span><span class="tok-s">&quot;How wide should it be?&quot;</span><span class="tok-p">)</span>
-    <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">name</span><span class="tok-p">,</span> <span class="tok-s">&quot;name&quot;</span> <span class="tok-p">)</span>
-        <span class="tok-p">[</span><span class="tok-s">&quot;-n&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--name&quot;</span><span class="tok-p">]</span>
-        <span class="tok-p">(</span><span class="tok-s">&quot;By what name should I be known&quot;</span><span class="tok-p">)</span>
-    <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">opt</span><span class="tok-p">(</span> <span class="tok-n">doIt</span> <span class="tok-p">)</span>
-        <span class="tok-p">[</span><span class="tok-s">&quot;-d&quot;</span><span class="tok-p">][</span><span class="tok-s">&quot;--doit&quot;</span><span class="tok-p">]</span>
-        <span class="tok-p">(</span><span class="tok-s">&quot;Do the thing&quot;</span> <span class="tok-p">)</span>
-    <span class="tok-o">|</span> <span class="tok-n">lyra</span><span class="tok-o">::</span><span class="tok-n">arg</span><span class="tok-p">(</span> <span class="tok-n">command</span><span class="tok-p">,</span> <span class="tok-s">&quot;command&quot;</span> <span class="tok-p">)</span>
-        <span class="tok-p">(</span><span class="tok-s">&quot;which command to run&quot;</span><span class="tok-p">);</span></code></pre>
+<pre class="pygments highlight"><code data-lang="cpp">int width = 0;
+std::string name;
+bool doIt = false;
+std::string command;
+auto cli
+    = lyra::opt( width, "width" )
+        ["-w"]["--width"]
+        ("How wide should it be?")
+    | lyra::opt( name, "name" )
+        ["-n"]["--name"]
+        ("By what name should I be known")
+    | lyra::opt( doIt )
+        ["-d"]["--doit"]
+        ("Do the thing" )
+    | lyra::arg( command, "command" )
+        ("which command to run");</code></pre>
 </div>
 </div>
 <div class="paragraph">

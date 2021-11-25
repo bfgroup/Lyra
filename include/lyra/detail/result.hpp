@@ -10,155 +10,153 @@
 #include <memory>
 #include <string>
 
-namespace lyra
+namespace lyra { namespace detail {
+class result_base
 {
-namespace detail
+	public:
+	result_base const & base() const { return *this; }
+	explicit operator bool() const { return is_ok(); }
+	bool is_ok() const { return kind_ == result_kind::ok; }
+	std::string message() const { return message_; }
+	[[deprecated]] std::string errorMessage() const { return message(); }
+
+	protected:
+	enum class result_kind
+	{
+		ok,
+		error
+	};
+
+	explicit result_base(result_kind kind, const std::string & message = "")
+		: kind_(kind)
+		, message_(message)
+	{}
+
+	explicit result_base(const result_base & other)
+		: kind_(other.kind_)
+		, message_(other.message_)
+	{}
+
+	virtual ~result_base() = default;
+
+	private:
+	result_kind kind_;
+	std::string message_;
+};
+
+template <typename T>
+class result_value_base : public result_base
 {
-	class result_base
+	public:
+	using value_type = T;
+
+	value_type const & value() const { return *value_; }
+	bool has_value() const { return bool(value_); }
+
+	protected:
+	std::unique_ptr<value_type> value_;
+
+	explicit result_value_base(
+		result_kind kind, const std::string & message = "")
+		: result_base(kind, message)
+	{}
+
+	explicit result_value_base(
+		result_kind kind,
+		const value_type & val,
+		const std::string & message = "")
+		: result_base(kind, message)
 	{
-		public:
-		enum Type
-		{
-			Ok,
-			LogicError,
-			RuntimeError
-		};
+		value_.reset(new value_type(val));
+	}
 
-		result_base const& base() const { return *this; }
-
-		explicit operator bool() const
-		{
-			return this->m_type == result_base::Ok;
-		}
-
-		Type type() const { return m_type; }
-
-		std::string errorMessage() const { return m_errorMessage; }
-
-		protected:
-		Type m_type;
-		std::string m_errorMessage; // Only populated if resultType is an error
-
-		explicit result_base(Type type, const std::string& message = "")
-			: m_type(type)
-			, m_errorMessage(message)
-		{
-		}
-
-		virtual ~result_base() = default;
-	};
-
-	template <typename T>
-	class result_value_base : public result_base
+	explicit result_value_base(result_value_base const & other)
+		: result_base(other)
 	{
-		public:
-		using value_type = T;
+		if (other.value_) value_.reset(new value_type(*other.value_));
+	}
 
-		value_type const& value() const { return *m_value; }
-		bool has_value() const { return m_value; }
+	explicit result_value_base(const result_base & other)
+		: result_base(other)
+	{}
 
-		protected:
-		std::unique_ptr<value_type> m_value;
-
-		explicit result_value_base(Type type, const std::string& message = "")
-			: result_base(type, message)
-		{
-		}
-
-		explicit result_value_base(
-			Type type, const value_type& val, const std::string& message = "")
-			: result_base(type, message)
-		{
-			m_value.reset(new value_type(val));
-		}
-
-		explicit result_value_base(result_value_base const& other)
-			: result_base(other)
-		{
-			if (other.m_value) m_value.reset(new value_type(*other.m_value));
-		}
-
-		result_value_base& operator=(result_value_base const& other)
-		{
-			result_base::operator=(other);
-			if (other.m_value) m_value.reset(new T(*other.m_value));
-			return *this;
-		}
-	};
-
-	template <>
-	class result_value_base<void> : public result_base
+	result_value_base & operator=(result_value_base const & other)
 	{
-		public:
-		using value_type = void;
+		result_base::operator=(other);
+		if (other.value_) value_.reset(new T(*other.value_));
+		return *this;
+	}
+};
 
-		protected:
-		using result_base::result_base;
-	};
+template <>
+class result_value_base<void> : public result_base
+{
+	public:
+	using value_type = void;
 
-	template <typename T>
-	class basic_result : public result_value_base<T>
+	protected:
+	// using result_base::result_base;
+	explicit result_value_base(const result_base & other)
+		: result_base(other)
+	{}
+	explicit result_value_base(
+		result_kind kind, const std::string & message = "")
+		: result_base(kind, message)
+	{}
+};
+
+template <typename T>
+class basic_result : public result_value_base<T>
+{
+	public:
+	using value_type = typename result_value_base<T>::value_type;
+
+	explicit basic_result(result_base const & other)
+		: result_value_base<T>(other)
+	{}
+
+	// With-value results..
+
+	static basic_result ok(value_type const & val)
 	{
-		public:
-		using value_type = typename result_value_base<T>::value_type;
+		return basic_result(result_base::result_kind::ok, val);
+	}
 
-		explicit basic_result(result_base const& other)
-			: result_value_base<T>(other.type(), other.errorMessage())
-		{
-		}
-
-		// With-value results..
-
-		static basic_result ok(value_type const& val)
-		{
-			return basic_result(result_base::Ok, val);
-		}
-
-		static basic_result
-		logicError(value_type const& val, std::string const& message)
-		{
-			return basic_result(result_base::LogicError, val, message);
-		}
-
-		static basic_result
-		runtimeError(value_type const& val, const std::string& message)
-		{
-			return basic_result(result_base::RuntimeError, val, message);
-		}
-
-		protected:
-		using result_value_base<T>::result_value_base;
-	};
-
-	template <>
-	class basic_result<void> : public result_value_base<void>
+	static basic_result
+		error(value_type const & val, std::string const & message)
 	{
-		public:
-		using value_type = typename result_value_base<void>::value_type;
+		return basic_result(result_base::result_kind::error, val, message);
+	}
 
-		explicit basic_result(result_base const& other)
-			: result_value_base<void>(other.type(), other.errorMessage())
-		{
-		}
+	protected:
+	using result_value_base<T>::result_value_base;
+};
 
-		// Value-less results.. (only kind as void is a value-less type)
+template <>
+class basic_result<void> : public result_value_base<void>
+{
+	public:
+	using value_type = typename result_value_base<void>::value_type;
 
-		static basic_result ok() { return basic_result(result_base::Ok); }
+	explicit basic_result(result_base const & other)
+		: result_value_base<void>(other)
+	{}
 
-		static basic_result logicError(std::string const& message)
-		{
-			return basic_result(result_base::LogicError, message);
-		}
+	// Value-less results.. (only kind as void is a value-less kind)
 
-		static basic_result runtimeError(std::string const& message)
-		{
-			return basic_result(result_base::RuntimeError, message);
-		}
+	static basic_result ok()
+	{
+		return basic_result(result_base::result_kind::ok);
+	}
 
-		protected:
-		using result_value_base<void>::result_value_base;
-	};
-} // namespace detail
-} // namespace lyra
+	static basic_result error(std::string const & message)
+	{
+		return basic_result(result_base::result_kind::error, message);
+	}
+
+	protected:
+	using result_value_base<void>::result_value_base;
+};
+}} // namespace lyra::detail
 
 #endif

@@ -7,6 +7,7 @@
 #ifndef LYRA_ARG_HPP
 #define LYRA_ARG_HPP
 
+#include "lyra/detail/print.hpp"
 #include "lyra/parser.hpp"
 
 namespace lyra
@@ -62,8 +63,9 @@ class arg : public bound_parser<arg>
 
 	parse_result parse(
 		detail::token_iterator const& tokens,
-		const option_style &) const override
+		const option_style & style) const override
 	{
+		LYRA_PRINT_SCOPE("arg::parse");
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
 
@@ -74,14 +76,22 @@ class arg : public bound_parser<arg>
 		if (value_choices)
 		{
 			auto choice_result = value_choices->contains_value(token.name);
-			if (!choice_result) return parse_result(choice_result);
+			if (!choice_result)
+			{
+				LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=", token.name);
+				return parse_result(choice_result);
+			}
 		}
 
 		auto result = valueRef->setValue(token.name);
 		if (!result)
+		{
+			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=", token.name);
 			return parse_result(result);
+		}
 		else
 		{
+			LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==", token.name);
 			auto remainingTokens = tokens;
 			remainingTokens.pop(token);
 			return parse_result::ok(detail::parse_state(

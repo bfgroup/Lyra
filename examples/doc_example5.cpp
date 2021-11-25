@@ -24,7 +24,7 @@ int main(int argc, const char** argv)
 	}
 	else
 	{
-		std::cerr << result.errorMessage() << "\n";
+		std::cerr << result.message() << "\n";
 		return 1;
 	}
 }

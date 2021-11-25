@@ -68,7 +68,7 @@ class literal : public parser
 		}
 		else
 		{
-			return parse_result(parser_result::runtimeError(
+			return parse_result(parser_result::error(
 				parser_result_type::no_match, "Expected '" + name + "'."));
 		}
 	}

@@ -10,6 +10,7 @@
 #include "lyra/arguments.hpp"
 #include "lyra/detail/deprecated_parser_customization.hpp"
 #include "lyra/detail/from_string.hpp"
+#include "lyra/detail/print.hpp"
 #include "lyra/exe_name.hpp"
 #include "lyra/group.hpp"
 #include "lyra/option_style.hpp"
@@ -333,8 +334,20 @@ end::reference[] */
 inline parse_result
 	cli::parse(args const & args, const option_style & style) const
 {
+	LYRA_PRINT_SCOPE("cli::parse");
 	m_exeName.set(args.exe_name());
-	return parse(detail::token_iterator(args, style), style);
+	detail::token_iterator args_tokens(args, style);
+	parse_result result = parse(args_tokens, style);
+	if (result && (result.value().type() == parser_result_type::no_match || result.value().type() == parser_result_type::matched))
+	{
+		if (result.value().have_tokens())
+		{
+			return parse_result::error(result.value(),
+				"Unrecognized token: "
+					+ result.value().remainingTokens().argument().name);
+		}
+	}
+	return result;
 }
 
 /* tag::reference[]

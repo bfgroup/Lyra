@@ -127,7 +127,7 @@ int main(int argc, const char ** argv)
 	}
 	if (!result) // <8>
 	{
-		std::cerr << result.errorMessage() << "\n";
+		std::cerr << result.message() << "\n";
 	}
 	return result ? 0 : 1;
 }

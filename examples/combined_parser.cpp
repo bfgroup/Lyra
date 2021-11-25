@@ -50,7 +50,7 @@ int main(int argc, const char** argv)
 
 	if (!result)
 	{
-		std::cerr << result.errorMessage() << "\n\n";
+		std::cerr << result.message() << "\n\n";
 	}
 	if (show_help or !result)
 	{

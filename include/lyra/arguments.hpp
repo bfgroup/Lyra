@@ -7,6 +7,7 @@
 #ifndef LYRA_ARGUMENTS_HPP
 #define LYRA_ARGUMENTS_HPP
 
+#include "lyra/detail/print.hpp"
 #include "lyra/exe_name.hpp"
 #include "lyra/parser.hpp"
 
@@ -92,7 +93,9 @@ class arguments : public parser
 			if (usage_text.size() > 0)
 			{
 				if (os.tellp() != std::ostringstream::pos_type(0)) os << " ";
-				if (p->is_group())
+				if (p->is_group() && p->is_optional())
+					os << "[ " << usage_text << " ]";
+				else if (p->is_group())
 					os << "{ " << usage_text << " }";
 				else if (p->is_optional())
 					os << "[" << usage_text << "]";
@@ -151,14 +154,19 @@ class arguments : public parser
 			case any: return parse_any(tokens, style);
 			case sequence: return parse_sequence(tokens, style);
 		}
-		return parse_result::logicError(
+		return parse_result::error(
 			detail::parse_state(parser_result_type::no_match, tokens),
 			"Unknown evaluation mode; not one of 'any', or 'sequence'.");
 	}
 
+	// Match in any order, any number of times. Returns an error if nothing
+	// matched.
 	parse_result parse_any(detail::token_iterator const & tokens,
 		const option_style & style) const
 	{
+		LYRA_PRINT_SCOPE("arguments::parse_any");
+		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=", tokens ? tokens.argument().name : "", "..");
+
 		struct ParserInfo
 		{
 			parser const * parser_p = nullptr;
@@ -172,6 +180,8 @@ class arguments : public parser
 
 		auto result = parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
+		auto error_result = parse_result::ok(
+			detail::parse_state(parser_result_type::no_match, tokens));
 		while (result.value().remainingTokens())
 		{
 			bool token_parsed = false;
@@ -184,16 +194,31 @@ class arguments : public parser
 				{
 					auto subparse_result = parse_info.parser_p->parse(
 						result.value().remainingTokens(), style);
-					// It's only an error if this is not a sub-parser. This
-					// makes it such that sub-parsers will report no_match
-					// trigerring consideration of other sub-parser
-					// alternatives. As the whole of the sub-parser is
-					// optional, but not parts of it.
-					if (!subparse_result && !parse_info.parser_p->is_group())
-						return subparse_result;
-					result = parse_result(subparse_result);
-					if (result.value().type() != parser_result_type::no_match)
+					if (!subparse_result)
 					{
+						LYRA_PRINT_DEBUG("(!)", get_usage_text(style),
+							"!=", result.value().remainingTokens().argument().name);
+						// Is the subparse error bad enough to trigger an
+						// immediate return? For example for an option syntax
+						// error.
+						if (subparse_result.has_value() &&
+							subparse_result.value().type()
+								== parser_result_type::short_circuit_all)
+							return subparse_result;
+						// For not severe errors, we save the error if it's
+						// the first so that in case no other parsers match
+						// we can report the earliest problem, as that's
+						// the likeliest issue.
+						if (error_result)
+							error_result = parse_result(subparse_result);
+					}
+					else if (subparse_result && subparse_result.value().type()
+						!= parser_result_type::no_match)
+					{
+						LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
+							"==", result.value().remainingTokens().argument().name,
+							"==>", subparse_result.value().type());
+						result = parse_result(subparse_result);
 						token_parsed = true;
 						parse_info.count += 1;
 						break;
@@ -203,10 +228,12 @@ class arguments : public parser
 
 			if (result.value().type() == parser_result_type::short_circuit_all)
 				return result;
+			// If something signaled and error, and hence we didn't match/parse
+			// anything, we indicate the error.
+			if (!token_parsed && !error_result)
+				return error_result;
 			if (!token_parsed)
-				return parse_result::runtimeError(result.value(),
-					"Unrecognized token: "
-						+ result.value().remainingTokens().argument().name);
+				break;
 		}
 		// Check missing required options. For bounded arguments we check
 		// bound min and max bounds against what we parsed. For the loosest
@@ -221,7 +248,7 @@ class arguments : public parser
 				|| (parser_cardinality.is_required()
 					&& (parseInfo.count < parser_cardinality.minimum)))
 			{
-				return parse_result::runtimeError(result.value(),
+				return parse_result::error(result.value(),
 					"Expected: " + parseInfo.parser_p->get_usage_text(style));
 			}
 		}
@@ -258,20 +285,27 @@ class arguments : public parser
 				&& (parser_cardinality.is_unbounded()
 					|| parse_info.count < parser_cardinality.maximum))
 			{
-				result = parse_info.parser_p->parse(
+				auto subresult = parse_info.parser_p->parse(
 					result.value().remainingTokens(), style);
-				parser_result_type result_type = result.value().type();
-				if (!result)
+				if (!subresult)
 				{
-					return result;
+					return subresult;
 				}
-				else if (result_type == parser_result_type::short_circuit_all)
+				switch (subresult.value().type())
 				{
-					return result;
-				}
-				else if (result_type == parser_result_type::matched)
-				{
-					parse_info.count += 1;
+					case parser_result_type::short_circuit_all:
+					{
+						return subresult;
+					}
+					case parser_result_type::matched:
+					{
+						result = subresult;
+						parse_info.count += 1;
+					}
+					case parser_result_type::no_match:
+					{
+						break;
+					}
 				}
 			}
 			// Check missing required options immediately as for sequential the
@@ -285,7 +319,7 @@ class arguments : public parser
 				|| (parser_cardinality.is_required()
 					&& (parse_info.count < parser_cardinality.minimum)))
 			{
-				return parse_result::runtimeError(result.value(),
+				return parse_result::error(result.value(),
 					"Expected: " + parse_info.parser_p->get_usage_text(style));
 			}
 		}

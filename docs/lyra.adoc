@@ -11,8 +11,8 @@
 :sectnumlevels: 2
 :stylesheet: amber.css
 :icons: font
-:source-highlighter: pygments
-:pygments-style: friendly
+:source-highlighter: rouge
+:rouge-style: base16.solarized
 :source-language: c++
 :toc: left
 :toclevels: 2
@@ -275,6 +275,30 @@ include::../include/lyra/val.hpp[tag=reference]
 :leveloffset: -2
 
 == History
+
+=== 1.7
+
+Even though most of the changes for this release are to fix various reported
+bug fixes, fixing those bugs has meant dealing with some long standing
+internal parser inconsistencies. While I try to not break backwards
+compatibility, I likely can't catch all of the corner cases people have
+discovered.
+
+WARNING: This release has some internal cleanup of the parser result types. It
+also has an externally visible change to the `parse` function result type. It
+renames the `errorMessage()` function to `message()`. The `errorMessage()`
+function is marked deprecated and will be removed in a future release.
+
+Changes:
+
+* *New*: Add capability to control the cardinality of argument groups.
+	-- _René Ferdinand Rivera Morell_
+* Fix previously removed error for when expected option specifications
+	do not have the required `-` prefix.
+	-- _René Ferdinand Rivera Morell_
+* Fix inconsistencies in parsing arguments in a group followed by other
+	arguments. (issue #49)
+	-- _René Ferdinand Rivera Morell_
 
 === 1.6
 
