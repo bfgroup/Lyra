@@ -1786,7 +1786,7 @@ class bound_parser : public composable_parser<Derived>
 	{
 		return m_cardinality;
 	}
-	std::string hint();
+	std::string hint() const;
 	Derived & hint(std::string const & hint);
 
 	template <
@@ -2042,7 +2042,7 @@ Derived & bound_parser<Derived>::choices(const T (&choice_values)[N])
 [source]
 ----
 template <typename Derived>
-std::string lyra::bound_parser<Derived>::hint()
+std::string lyra::bound_parser<Derived>::hint() const
 
 template <typename Derived>
 Derived & lyra::bound_parser<Derived>::hint(std::string const & hint)
@@ -2054,7 +2054,7 @@ The hint should not be modified anymore, once the parser is applied to arguments
 
 end::reference[] */
 template <typename Derived>
-std::string bound_parser<Derived>::hint()
+std::string bound_parser<Derived>::hint() const
 {
 	return m_hint;
 }
