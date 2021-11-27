@@ -276,11 +276,6 @@ include::../include/lyra/val.hpp[tag=reference]
 
 == History
 
-
-* Allow setting hint after construction of `lyra::bound_parser`.
-	-- _Max Ferger_
-
-
 === 1.7
 
 Even though most of the changes for this release are to fix various reported
@@ -298,6 +293,8 @@ Changes:
 
 * *New*: Add capability to control the cardinality of argument groups.
 	-- _René Ferdinand Rivera Morell_
+* *New*: Allow setting hint after construction of `lyra::bound_parser`.
+	-- _Max Ferger_
 * Fix previously removed error for when expected option specifications
 	do not have the required `-` prefix.
 	-- _René Ferdinand Rivera Morell_
