@@ -299,6 +299,10 @@ Changes:
 * Fix inconsistencies in parsing arguments in a group followed by other
 	arguments. (issue #49)
 	-- _René Ferdinand Rivera Morell_
+* Fix incorrectly accepting negative values for unsigned integer arguments.
+	The argument value conversion now checks the input for acceptable digits
+	in the input before attempting to parse it.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.6
 

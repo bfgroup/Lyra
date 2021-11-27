@@ -20,6 +20,6 @@ steps:
 - bash: |
     set -e
     pushd tests
-    b2 toolset=${TOOLSET} cxxstd=${CXXSTD}
+    b2 toolset=${TOOLSET} cxxstd=${CXXSTD} variant=debug,release
     popd
   displayName: Test

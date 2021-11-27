@@ -294,11 +294,52 @@ struct is_convertible_from_string<
 	: std::true_type
 {};
 
+template <typename, typename = void>
+struct validate_from_string
+{
+	static bool validate(const std::string &)
+	{
+		return true;
+	}
+};
+
+template <typename T>
+struct validate_from_string<
+	T,
+	typename std::enable_if<
+		std::is_unsigned<
+			typename detail::remove_cvref<T>::type>::value
+		>::type>
+{
+	static bool validate(const std::string & s)
+	{
+		return s.find_first_not_of("0123456789") == std::string::npos;
+	}
+};
+
+template <typename T>
+struct validate_from_string<
+	T,
+	typename std::enable_if<
+		std::is_integral<
+			typename detail::remove_cvref<T>::type>::value &&
+		std::is_signed<
+			typename detail::remove_cvref<T>::type>::value
+		>::type>
+{
+	static bool validate(const std::string & s)
+	{
+		return s.find_first_not_of("-0123456789") == std::string::npos;
+	}
+};
+
 template <typename S, typename T>
 inline bool from_string(S const & source, T & target)
 {
 	std::stringstream ss;
 	ss << source;
+	if (!validate_from_string<T>::validate(ss.str()))
+		return false;
 	T temp {};
 	ss >> temp;
 	if (!ss.fail() && ss.eof())
@@ -2092,6 +2133,7 @@ class arg : public bound_parser<arg>
 		detail::token_iterator const& tokens,
 		const option_style & style) const override
 	{
+		(void)style;
 		LYRA_PRINT_SCOPE("arg::parse");
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);

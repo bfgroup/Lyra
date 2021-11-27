@@ -65,6 +65,7 @@ class arg : public bound_parser<arg>
 		detail::token_iterator const& tokens,
 		const option_style & style) const override
 	{
+		(void)style;
 		LYRA_PRINT_SCOPE("arg::parse");
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
