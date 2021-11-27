@@ -1,4 +1,5 @@
 // Copyright 2018-2021 René Ferdinand Rivera Morell
+// Copyright 2021 Max Ferger
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -366,7 +367,8 @@ class bound_parser : public composable_parser<Derived>
 	{
 		return m_cardinality;
 	}
-	std::string hint() const { return m_hint; }
+	std::string hint() const;
+	Derived & hint(std::string const & hint);
 
 	template <
 		typename T,
@@ -610,6 +612,38 @@ Derived & bound_parser<Derived>::choices(const T (&choice_values)[N])
 {
 	value_choices = std::make_shared<detail::choices_set<T>>(
 		std::vector<T> { choice_values, choice_values + N });
+	return static_cast<Derived &>(*this);
+}
+
+/* tag::reference[]
+
+[#lyra_bound_parser_hint]
+=== `lyra::bound_parser::hint`
+
+[source]
+----
+template <typename Derived>
+std::string lyra::bound_parser<Derived>::hint() const
+
+template <typename Derived>
+Derived & lyra::bound_parser<Derived>::hint(std::string const & hint)
+----
+
+Selectors to read and write the hint of a variable-bound parser.
+
+The hint should not be modified anymore, once the parser is applied to arguments or used in a `lyra::composable_parser`.
+
+end::reference[] */
+template <typename Derived>
+std::string bound_parser<Derived>::hint() const
+{
+	return m_hint;
+}
+
+template <typename Derived>
+Derived & bound_parser<Derived>::hint(std::string const & hint)
+{
+	m_hint = hint;
 	return static_cast<Derived &>(*this);
 }
 

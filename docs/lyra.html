@@ -3095,6 +3095,24 @@ form the <code>check_choice</code> function is called with the parsed value and 
 <code>true</code> if it&#8217;s an allowed value.</p>
 </div>
 </div>
+<div class="sect4">
+<h5 id="lyra_bound_parser_hint"><a class="anchor" href="#lyra_bound_parser_hint"></a><code>lyra::bound_parser::hint</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">lyra</span><span class="o">::</span><span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">hint</span><span class="p">()</span> <span class="k">const</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
+<span class="n">Derived</span> <span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">hint</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">hint</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Selectors to read and write the hint of a variable-bound parser.</p>
+</div>
+<div class="paragraph">
+<p>The hint should not be modified anymore, once the parser is applied to arguments or used in a <code>lyra::composable_parser</code>.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -3117,6 +3135,13 @@ be retrieved with the
 <div class="sect1">
 <h2 id="_history"><a class="anchor" href="#_history"></a>14. History</h2>
 <div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Allow setting hint after construction of <code>lyra::bound_parser</code>.&#8201;&#8212;&#8201;<em>Max Ferger</em></p>
+</li>
+</ul>
+</div>
 <div class="sect2">
 <h3 id="_1_7"><a class="anchor" href="#_1_7"></a>14.1. 1.7</h3>
 <div class="paragraph">
