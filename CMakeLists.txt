@@ -39,8 +39,7 @@ target_include_directories(
   )
 
 # Add an alias to public name.
-add_library( bfg::Lyra ALIAS lyra )
-
+add_library( bfg::lyra ALIAS lyra )
 
 ## Installation Code
 include(GNUInstallDirs)
