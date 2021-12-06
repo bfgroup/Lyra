@@ -87,13 +87,13 @@ command.
 end::reference[] */
 inline command::command(const std::string & n)
 {
-	this->sequential().add_argument(literal(n)).add_argument(group().optional());
+	this->sequential().add_argument(literal(n)).add_argument(group().required());
 }
 inline command::command(
 	const std::string & n, const std::function<void(const group &)> & f)
 	: group(f)
 {
-	this->sequential().add_argument(literal(n)).add_argument(group().optional());
+	this->sequential().add_argument(literal(n)).add_argument(group().required());
 }
 
 /* tag::reference[]

@@ -70,6 +70,13 @@ class arg : public bound_parser<arg>
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
 
+		if (!tokens)
+		{
+			// Nothing to match against.
+			return parse_result::ok(
+				detail::parse_state(parser_result_type::no_match, tokens));
+		}
+
 		auto const& token = tokens.argument();
 
 		auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());

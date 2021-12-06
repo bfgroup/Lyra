@@ -2171,6 +2171,12 @@ class arg : public bound_parser<arg>
 		auto validationResult = validate();
 		if (!validationResult) return parse_result(validationResult);
 
+		if (!tokens)
+		{
+			return parse_result::ok(
+				detail::parse_state(parser_result_type::no_match, tokens));
+		}
+
 		auto const& token = tokens.argument();
 
 		auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());
@@ -2509,7 +2515,7 @@ class arguments : public parser
 		}
 
 		auto result = parse_result::ok(
-			detail::parse_state(parser_result_type::no_match, tokens));
+			detail::parse_state(parser_result_type::matched, tokens));
 		auto error_result = parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
 		while (result.value().remainingTokens())
@@ -2575,6 +2581,9 @@ class arguments : public parser
 	parse_result parse_sequence(detail::token_iterator const & tokens,
 		const option_style & style) const
 	{
+		LYRA_PRINT_SCOPE("arguments::parse_sequence");
+		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=", tokens ? tokens.argument().name : "", "..");
+
 		struct ParserInfo
 		{
 			parser const * parser_p = nullptr;
@@ -2587,40 +2596,38 @@ class arguments : public parser
 		}
 
 		auto result = parse_result::ok(
-			detail::parse_state(parser_result_type::no_match, tokens));
+			detail::parse_state(parser_result_type::matched, tokens));
 
-		for (size_t i = 0; i < parsers.size() && result.value().have_tokens();
-			 ++i)
+		for (std::size_t parser_i = 0; parser_i < parsers.size(); ++parser_i)
 		{
-			auto & parse_info = parser_info[i];
+			auto & parse_info = parser_info[parser_i];
 			auto parser_cardinality = parse_info.parser_p->cardinality();
-			while (result.value().have_tokens()
-				&& (parser_cardinality.is_unbounded()
-					|| parse_info.count < parser_cardinality.maximum))
+			do
 			{
 				auto subresult = parse_info.parser_p->parse(
 					result.value().remainingTokens(), style);
 				if (!subresult)
 				{
+					break;
+				}
+				if (subresult.value().type() == parser_result_type::short_circuit_all)
+				{
 					return subresult;
 				}
-				switch (subresult.value().type())
+				if (subresult.value().type() != parser_result_type::no_match)
 				{
-					case parser_result_type::short_circuit_all:
-					{
-						return subresult;
-					}
-					case parser_result_type::matched:
-					{
-						result = subresult;
-						parse_info.count += 1;
-					}
-					case parser_result_type::no_match:
-					{
-						break;
-					}
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
+						"==", result.value().remainingTokens()
+							? result.value().remainingTokens().argument().name
+							: "",
+						"==>", subresult.value().type());
+					result = subresult;
+					parse_info.count += 1;
 				}
 			}
+			while (result.value().have_tokens()
+				&& (parser_cardinality.is_unbounded()
+					|| parse_info.count < parser_cardinality.maximum));
 			if ((parser_cardinality.is_bounded()
 					&& (parse_info.count < parser_cardinality.minimum
 						|| parser_cardinality.maximum < parse_info.count))
@@ -2926,7 +2933,7 @@ class group : public arguments
 	{
 		LYRA_PRINT_SCOPE("group::parse");
 		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=",
-			tokens.argument().name);
+			tokens ? tokens.argument().name : "");
 		parse_result result = arguments::parse(tokens, style);
 		if (result && result.value().type() != parser_result_type::no_match
 			&& success_signal)
@@ -2936,12 +2943,13 @@ class group : public arguments
 		if (!result)
 		{
 			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
-				tokens.argument().name);
+				tokens ? tokens.argument().name : "");
 		}
 		else
 		{
 			LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-				tokens.argument().name, "==>", result.value().type());
+				tokens ? tokens.argument().name : "",
+				"==>", result.value().type());
 		}
 		return result;
 	}
@@ -3665,13 +3673,13 @@ command.
 end::reference[] */
 inline command::command(const std::string & n)
 {
-	this->sequential().add_argument(literal(n)).add_argument(group().optional());
+	this->sequential().add_argument(literal(n)).add_argument(group().required());
 }
 inline command::command(
 	const std::string & n, const std::function<void(const group &)> & f)
 	: group(f)
 {
-	this->sequential().add_argument(literal(n)).add_argument(group().optional());
+	this->sequential().add_argument(literal(n)).add_argument(group().required());
 }
 
 /* tag::reference[]

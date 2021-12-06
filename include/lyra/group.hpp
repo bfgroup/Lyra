@@ -40,7 +40,7 @@ class group : public arguments
 	{
 		LYRA_PRINT_SCOPE("group::parse");
 		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=",
-			tokens.argument().name);
+			tokens ? tokens.argument().name : "");
 		parse_result result = arguments::parse(tokens, style);
 		if (result && result.value().type() != parser_result_type::no_match
 			&& success_signal)
@@ -52,12 +52,13 @@ class group : public arguments
 		if (!result)
 		{
 			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
-				tokens.argument().name);
+				tokens ? tokens.argument().name : "");
 		}
 		else
 		{
 			LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-				tokens.argument().name, "==>", result.value().type());
+				tokens ? tokens.argument().name : "",
+				"==>", result.value().type());
 		}
 		return result;
 	}

@@ -179,7 +179,7 @@ class arguments : public parser
 		}
 
 		auto result = parse_result::ok(
-			detail::parse_state(parser_result_type::no_match, tokens));
+			detail::parse_state(parser_result_type::matched, tokens));
 		auto error_result = parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
 		while (result.value().remainingTokens())
@@ -258,6 +258,9 @@ class arguments : public parser
 	parse_result parse_sequence(detail::token_iterator const & tokens,
 		const option_style & style) const
 	{
+		LYRA_PRINT_SCOPE("arguments::parse_sequence");
+		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=", tokens ? tokens.argument().name : "", "..");
+
 		struct ParserInfo
 		{
 			parser const * parser_p = nullptr;
@@ -270,44 +273,42 @@ class arguments : public parser
 		}
 
 		auto result = parse_result::ok(
-			detail::parse_state(parser_result_type::no_match, tokens));
+			detail::parse_state(parser_result_type::matched, tokens));
 
 		// Sequential parsing means we walk through the given parsers in order
-		// and exhaust the tokens as we go.
-		for (size_t i = 0; i < parsers.size() && result.value().have_tokens();
-			 ++i)
+		// and exhaust the tokens as we match persers.
+		for (std::size_t parser_i = 0; parser_i < parsers.size(); ++parser_i)
 		{
-			auto & parse_info = parser_info[i];
+			auto & parse_info = parser_info[parser_i];
 			auto parser_cardinality = parse_info.parser_p->cardinality();
 			// This is a greedy sequential parsing algo. As it parsers the
 			// current argument as much as possible.
-			while (result.value().have_tokens()
-				&& (parser_cardinality.is_unbounded()
-					|| parse_info.count < parser_cardinality.maximum))
+			do
 			{
 				auto subresult = parse_info.parser_p->parse(
 					result.value().remainingTokens(), style);
 				if (!subresult)
 				{
+					break;
+				}
+				if (subresult.value().type() == parser_result_type::short_circuit_all)
+				{
 					return subresult;
 				}
-				switch (subresult.value().type())
+				if (subresult.value().type() != parser_result_type::no_match)
 				{
-					case parser_result_type::short_circuit_all:
-					{
-						return subresult;
-					}
-					case parser_result_type::matched:
-					{
-						result = subresult;
-						parse_info.count += 1;
-					}
-					case parser_result_type::no_match:
-					{
-						break;
-					}
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
+						"==", result.value().remainingTokens()
+							? result.value().remainingTokens().argument().name
+							: "",
+						"==>", subresult.value().type());
+					result = subresult;
+					parse_info.count += 1;
 				}
 			}
+			while (result.value().have_tokens()
+				&& (parser_cardinality.is_unbounded()
+					|| parse_info.count < parser_cardinality.maximum));
 			// Check missing required options immediately as for sequential the
 			// argument is greedy and will fully match here. For bounded
 			// arguments we check bound min and max bounds against what we
