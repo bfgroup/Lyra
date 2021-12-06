@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2021 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -134,6 +134,13 @@ class opt : public bound_parser<opt>
 			{
 				if (m_ref->isFlag())
 				{
+					if (remainingTokens.has_value_delimiter())
+					{
+						return parse_result::error(
+							{ parser_result_type::short_circuit_all, remainingTokens },
+							"Flag option '" + token.name + "' contains value '"
+								+ remainingTokens.value().name + "'.");
+					}
 					remainingTokens.pop(token);
 					auto flagRef
 						= static_cast<detail::BoundFlagRefBase *>(m_ref.get());
@@ -196,6 +203,8 @@ class opt : public bound_parser<opt>
 	{
 		if (opt_names.empty())
 			return result::error("No options supplied to opt");
+		if (m_ref->isFlag() && value_choices)
+			return result::error("Flag options cannot contain choices.");
 		for (auto const & name : opt_names)
 		{
 			if (name.empty())

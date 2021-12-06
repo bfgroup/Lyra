@@ -1,5 +1,5 @@
 /*
-Copyright 2019 René Ferdinand Rivera Morell
+Copyright 2019-2021 René Ferdinand Rivera Morell
 Distributed under the Boost Software License, Version 1.0.
 (See accompanying file LICENSE.txt or copy at
 http://www.boost.org/LICENSE_1_0.txt)
@@ -93,6 +93,25 @@ int main()
 		test(REQUIRE(
 			result.message().find("Expected argument following -f")
 			!= std::string::npos));
+	}
+	{
+		bool flag = true;
+		auto p = cli() | opt(flag)["--flag"]("A flag");
+		auto result = p.parse({ "TestApp", "--flag" });
+		test(REQUIRE(result));
+		test(REQUIRE(flag));
+	}
+	{
+		bool flag = true;
+		auto p = cli() | opt(flag)["--flag"]("A flag");
+		auto result = p.parse({ "TestApp", "--flag=value" });
+		test(REQUIRE(!result));
+	}
+	{
+		bool flag = true;
+		auto p = cli() | opt(flag)["--flag"]("A flag").choices("1", "2", "3");
+		auto result = p.parse({ "TestApp", "--flag" });
+		test(REQUIRE(!result));
 	}
 
 	return test;
