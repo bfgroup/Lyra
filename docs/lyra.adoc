@@ -305,6 +305,15 @@ Changes:
 	The argument value conversion now checks the input for acceptable digits
 	in the input before attempting to parse it.
 	-- _René Ferdinand Rivera Morell_
+* Fix sub-command arguments being ignored even when they are marked as
+	required.
+	-- _René Ferdinand Rivera Morell_
+* Fix assigned values for flag options (`--flag=no`) being ignore. They now
+	cause an error when specified.
+	-- _René Ferdinand Rivera Morell_
+* Fix choices being allowed for for flag options, but ignored. Specifying
+	choices on flag options now signal an error.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.6
 

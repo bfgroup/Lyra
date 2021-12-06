@@ -3183,6 +3183,18 @@ arguments. (issue #49)&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em
 The argument value conversion now checks the input for acceptable digits
 in the input before attempting to parse it.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
+<li>
+<p>Fix sub-command arguments being ignored even when they are marked as
+required.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Fix assigned values for flag options (<code>--flag=no</code>) being ignore. They now
+cause an error when specified.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Fix choices being allowed for for flag options, but ignored. Specifying
+choices on flag options now signal an error.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
 </ul>
 </div>
 </div>
