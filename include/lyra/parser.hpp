@@ -1,4 +1,4 @@
-// Copyright 2018-2021 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2021 Max Ferger
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
@@ -26,11 +26,11 @@
 namespace lyra {
 
 namespace detail {
+
 class parse_state
 {
 	public:
-	parse_state(
-		parser_result_type type,
+	parse_state(parser_result_type type,
 		token_iterator const & remaining_tokens,
 		size_t parsed_tokens = 0)
 		: result_type(type)
@@ -92,6 +92,7 @@ struct parser_cardinality
 		maximum = m;
 	}
 };
+
 } // namespace detail
 
 /* tag::reference[]
@@ -172,8 +173,7 @@ class parser
 		return "";
 	}
 
-	virtual parse_result parse(
-		detail::token_iterator const & tokens,
+	virtual parse_result parse(detail::token_iterator const & tokens,
 		const option_style & style) const = 0;
 
 	protected:
@@ -341,11 +341,10 @@ class bound_parser : public composable_parser<Derived>
 	bound_parser(Reference & ref, std::string const & hint);
 
 	template <typename Lambda>
-	bound_parser(
-		Lambda const & ref,
+	bound_parser(Lambda const & ref,
 		std::string const & hint,
-		typename std::
-			enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type
+		typename std::enable_if<detail::is_invocable<Lambda>::value,
+			ctor_lambda_e>::type
 		= ctor_lambda_e::val);
 
 	template <typename T>
@@ -370,13 +369,11 @@ class bound_parser : public composable_parser<Derived>
 	std::string hint() const;
 	Derived & hint(std::string const & hint);
 
-	template <
-		typename T,
+	template <typename T,
 		typename... Rest,
 		typename std::enable_if<!detail::is_invocable<T>::value, int>::type = 0>
 	Derived & choices(T val0, Rest... rest);
-	template <
-		typename Lambda,
+	template <typename Lambda,
 		typename std::enable_if<detail::is_invocable<Lambda>::value, int>::type
 		= 1>
 	Derived & choices(Lambda const & check_choice);
@@ -440,11 +437,10 @@ bound_parser<Derived>::bound_parser(Reference & ref, std::string const & hint)
 
 template <typename Derived>
 template <typename Lambda>
-bound_parser<Derived>::bound_parser(
-	Lambda const & ref,
+bound_parser<Derived>::bound_parser(Lambda const & ref,
 	std::string const & hint,
-	typename std::
-		enable_if<detail::is_invocable<Lambda>::value, ctor_lambda_e>::type)
+	typename std::enable_if<detail::is_invocable<Lambda>::value,
+		ctor_lambda_e>::type)
 	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref), hint)
 {}
 
@@ -585,8 +581,7 @@ form the `check_choice` function is called with the parsed value and returns
 
 end::reference[] */
 template <typename Derived>
-template <
-	typename T,
+template <typename T,
 	typename... Rest,
 	typename std::enable_if<!detail::is_invocable<T>::value, int>::type>
 Derived & bound_parser<Derived>::choices(T val0, Rest... rest)
@@ -596,8 +591,7 @@ Derived & bound_parser<Derived>::choices(T val0, Rest... rest)
 }
 
 template <typename Derived>
-template <
-	typename Lambda,
+template <typename Lambda,
 	typename std::enable_if<detail::is_invocable<Lambda>::value, int>::type>
 Derived & bound_parser<Derived>::choices(Lambda const & check_choice)
 {
@@ -631,7 +625,8 @@ Derived & lyra::bound_parser<Derived>::hint(std::string const & hint)
 
 Selectors to read and write the hint of a variable-bound parser.
 
-The hint should not be modified anymore, once the parser is applied to arguments or used in a `lyra::composable_parser`.
+The hint should not be modified anymore, once the parser is applied to arguments
+or used in a `lyra::composable_parser`.
 
 end::reference[] */
 template <typename Derived>

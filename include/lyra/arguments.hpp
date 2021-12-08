@@ -1,4 +1,4 @@
-// Copyright 2018-2020 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -15,6 +15,7 @@
 #include <sstream>
 
 namespace lyra {
+
 /* tag::reference[]
 
 [#lyra_arguments]
@@ -84,7 +85,8 @@ class arguments : public parser
 
 	// Internal..
 
-	virtual std::string get_usage_text(const option_style & style) const override
+	virtual std::string get_usage_text(
+		const option_style & style) const override
 	{
 		std::ostringstream os;
 		for (auto const & p : parsers)
@@ -106,7 +108,8 @@ class arguments : public parser
 		return os.str();
 	}
 
-	virtual std::string get_description_text(const option_style & style) const override
+	virtual std::string get_description_text(
+		const option_style & style) const override
 	{
 		std::ostringstream os;
 		for (auto const & p : parsers)
@@ -161,11 +164,12 @@ class arguments : public parser
 
 	// Match in any order, any number of times. Returns an error if nothing
 	// matched.
-	parse_result parse_any(detail::token_iterator const & tokens,
-		const option_style & style) const
+	parse_result parse_any(
+		detail::token_iterator const & tokens, const option_style & style) const
 	{
 		LYRA_PRINT_SCOPE("arguments::parse_any");
-		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=", tokens ? tokens.argument().name : "", "..");
+		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
+			"?=", tokens ? tokens.argument().name : "", "..");
 
 		struct ParserInfo
 		{
@@ -196,13 +200,13 @@ class arguments : public parser
 						result.value().remainingTokens(), style);
 					if (!subparse_result)
 					{
-						LYRA_PRINT_DEBUG("(!)", get_usage_text(style),
-							"!=", result.value().remainingTokens().argument().name);
+						LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
+							result.value().remainingTokens().argument().name);
 						// Is the subparse error bad enough to trigger an
 						// immediate return? For example for an option syntax
 						// error.
-						if (subparse_result.has_value() &&
-							subparse_result.value().type()
+						if (subparse_result.has_value()
+							&& subparse_result.value().type()
 								== parser_result_type::short_circuit_all)
 							return subparse_result;
 						// For not severe errors, we save the error if it's
@@ -212,11 +216,12 @@ class arguments : public parser
 						if (error_result)
 							error_result = parse_result(subparse_result);
 					}
-					else if (subparse_result && subparse_result.value().type()
-						!= parser_result_type::no_match)
+					else if (subparse_result
+						&& subparse_result.value().type()
+							!= parser_result_type::no_match)
 					{
-						LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
-							"==", result.value().remainingTokens().argument().name,
+						LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+							result.value().remainingTokens().argument().name,
 							"==>", subparse_result.value().type());
 						result = parse_result(subparse_result);
 						token_parsed = true;
@@ -230,10 +235,8 @@ class arguments : public parser
 				return result;
 			// If something signaled and error, and hence we didn't match/parse
 			// anything, we indicate the error.
-			if (!token_parsed && !error_result)
-				return error_result;
-			if (!token_parsed)
-				break;
+			if (!token_parsed && !error_result) return error_result;
+			if (!token_parsed) break;
 		}
 		// Check missing required options. For bounded arguments we check
 		// bound min and max bounds against what we parsed. For the loosest
@@ -255,11 +258,12 @@ class arguments : public parser
 		return result;
 	}
 
-	parse_result parse_sequence(detail::token_iterator const & tokens,
-		const option_style & style) const
+	parse_result parse_sequence(
+		detail::token_iterator const & tokens, const option_style & style) const
 	{
 		LYRA_PRINT_SCOPE("arguments::parse_sequence");
-		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=", tokens ? tokens.argument().name : "", "..");
+		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
+			"?=", tokens ? tokens.argument().name : "", "..");
 
 		struct ParserInfo
 		{
@@ -291,14 +295,15 @@ class arguments : public parser
 				{
 					break;
 				}
-				if (subresult.value().type() == parser_result_type::short_circuit_all)
+				if (subresult.value().type()
+					== parser_result_type::short_circuit_all)
 				{
 					return subresult;
 				}
 				if (subresult.value().type() != parser_result_type::no_match)
 				{
-					LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
-						"==", result.value().remainingTokens()
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+						result.value().remainingTokens()
 							? result.value().remainingTokens().argument().name
 							: "",
 						"==>", subresult.value().type());
@@ -337,14 +342,15 @@ class arguments : public parser
 	friend std::ostream & operator<<(
 		std::ostream & os, arguments const & parser)
 	{
-		const option_style & s = parser.opt_style ? *parser.opt_style : option_style::posix();
+		const option_style & s
+			= parser.opt_style ? *parser.opt_style : option_style::posix();
 		parser.print_help_text(os, s);
 		return os;
 	}
 
 	virtual const parser * get_named(const std::string & n) const override
 	{
-		for (auto & p: parsers)
+		for (auto & p : parsers)
 		{
 			const parser * result = p->get_named(n);
 			if (result) return result;

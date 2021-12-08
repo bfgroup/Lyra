@@ -1,4 +1,4 @@
-// Copyright 2018-2020 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -18,6 +18,7 @@
 #include <type_traits>
 
 namespace lyra {
+
 /* tag::reference[]
 
 [#lyra_cli]
@@ -76,8 +77,7 @@ class cli : protected arguments
 			: parser_ref(p)
 		{}
 
-		template <
-			typename T,
+		template <typename T,
 			typename std::enable_if<detail::is_convertible_from_string<
 				typename detail::remove_cvref<T>::type>::value>::
 				type * = nullptr>
@@ -85,8 +85,7 @@ class cli : protected arguments
 		{
 			typename detail::remove_cvref<T>::type result {};
 			if (parser_ref)
-				detail::from_string<
-					std::string,
+				detail::from_string<std::string,
 					typename detail::remove_cvref<T>::type>(
 					parser_ref->get_value(0), result);
 			return result;
@@ -130,28 +129,23 @@ class cli : protected arguments
 	}
 
 	// Parse from arguments.
-	parse_result parse(
-		args const & args) const
+	parse_result parse(args const & args) const
 	{
 		if (opt_style)
 			return parse(args, *opt_style);
 		else
 			return parse(args, option_style::posix());
 	}
-	parse_result parse(
-		args const & args,
-		const option_style & style) const;
+	parse_result parse(args const & args, const option_style & style) const;
 
 	// Backward compatability parse() that takes `parser_customization` and
 	// converts to `option_style`.
 	[[deprecated]] parse_result parse(
-		args const & args,
-		const parser_customization & customize) const
+		args const & args, const parser_customization & customize) const
 	{
-		return this->parse(args, option_style(
-			customize.token_delimiters(),
-			customize.option_prefix(), 2,
-			customize.option_prefix(), 1));
+		return this->parse(args,
+			option_style(customize.token_delimiters(),
+				customize.option_prefix(), 2, customize.option_prefix(), 1));
 	}
 
 	// Internal..
@@ -167,7 +161,8 @@ class cli : protected arguments
 	protected:
 	mutable exe_name m_exeName;
 
-	virtual std::string get_usage_text(const option_style & style) const override
+	virtual std::string get_usage_text(
+		const option_style & style) const override
 	{
 		if (!m_exeName.name().empty())
 			return m_exeName.name() + " " + arguments::get_usage_text(style);
@@ -331,14 +326,16 @@ it was. The state of variables bound to options is unspecified and any bound
 callbacks may have been called.
 
 end::reference[] */
-inline parse_result
-	cli::parse(args const & args, const option_style & style) const
+inline parse_result cli::parse(
+	args const & args, const option_style & style) const
 {
 	LYRA_PRINT_SCOPE("cli::parse");
 	m_exeName.set(args.exe_name());
 	detail::token_iterator args_tokens(args, style);
 	parse_result result = parse(args_tokens, style);
-	if (result && (result.value().type() == parser_result_type::no_match || result.value().type() == parser_result_type::matched))
+	if (result
+		&& (result.value().type() == parser_result_type::no_match
+			|| result.value().type() == parser_result_type::matched))
 	{
 		if (result.value().have_tokens())
 		{

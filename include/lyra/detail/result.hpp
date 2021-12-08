@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -11,6 +11,7 @@
 #include <string>
 
 namespace lyra { namespace detail {
+
 class result_base
 {
 	public:
@@ -39,7 +40,7 @@ class result_base
 
 	virtual ~result_base() = default;
 
-	result_base& operator=(const result_base &) = default;
+	result_base & operator=(const result_base &) = default;
 
 	private:
 	result_kind kind_;
@@ -63,8 +64,7 @@ class result_value_base : public result_base
 		: result_base(kind, message)
 	{}
 
-	explicit result_value_base(
-		result_kind kind,
+	explicit result_value_base(result_kind kind,
 		const value_type & val,
 		const std::string & message = "")
 		: result_base(kind, message)
@@ -124,8 +124,8 @@ class basic_result : public result_value_base<T>
 		return basic_result(result_base::result_kind::ok, val);
 	}
 
-	static basic_result
-		error(value_type const & val, std::string const & message)
+	static basic_result error(
+		value_type const & val, std::string const & message)
 	{
 		return basic_result(result_base::result_kind::error, val, message);
 	}
@@ -159,6 +159,7 @@ class basic_result<void> : public result_value_base<void>
 	protected:
 	using result_value_base<void>::result_value_base;
 };
+
 }} // namespace lyra::detail
 
 #endif

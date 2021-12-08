@@ -1,4 +1,4 @@
-// Copyright 2020 René Ferdinand Rivera Morell
+// Copyright 2020-2022 René Ferdinand Rivera Morell
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -6,11 +6,12 @@
 #ifndef LYRA_GROUP_HPP
 #define LYRA_GROUP_HPP
 
-#include "lyra/detail/print.hpp"
 #include "lyra/arguments.hpp"
+#include "lyra/detail/print.hpp"
 #include <functional>
 
 namespace lyra {
+
 /* tag::reference[]
 
 [#lyra_group]
@@ -34,13 +35,12 @@ class group : public arguments
 
 	virtual bool is_group() const override { return true; }
 
-	parse_result parse(
-		detail::token_iterator const & tokens,
+	parse_result parse(detail::token_iterator const & tokens,
 		const option_style & style) const override
 	{
 		LYRA_PRINT_SCOPE("group::parse");
-		LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=",
-			tokens ? tokens.argument().name : "");
+		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
+			"?=", tokens ? tokens.argument().name : "");
 		parse_result result = arguments::parse(tokens, style);
 		if (result && result.value().type() != parser_result_type::no_match
 			&& success_signal)
@@ -51,14 +51,14 @@ class group : public arguments
 		}
 		if (!result)
 		{
-			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
-				tokens ? tokens.argument().name : "");
+			LYRA_PRINT_DEBUG("(!)", get_usage_text(style),
+				"!=", tokens ? tokens.argument().name : "");
 		}
 		else
 		{
-			LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-				tokens ? tokens.argument().name : "",
-				"==>", result.value().type());
+			LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
+				"==", tokens ? tokens.argument().name : "", "==>",
+				result.value().type());
 		}
 		return result;
 	}
@@ -79,7 +79,7 @@ class group : public arguments
 
 	private:
 	std::function<void(const group &)> success_signal;
-	detail::parser_cardinality m_cardinality = {0,1};
+	detail::parser_cardinality m_cardinality = { 0, 1 };
 };
 
 /* tag::reference[]
@@ -103,7 +103,7 @@ Default constructing a `group` does not register the success callback.
 
 end::reference[] */
 inline group::group()
-	: m_cardinality(0,1)
+	: m_cardinality(0, 1)
 {}
 
 /* tag::reference[]

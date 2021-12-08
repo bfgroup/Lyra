@@ -29,7 +29,8 @@ class GenSingleInclude(object):
 	def run(self):
 		with open(self.args.dst_include, "w", encoding="UTF8") as dst_file:
 			dst_file.write('''\
-// Copyright 2018-2021 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright 2021 Max Ferger
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying

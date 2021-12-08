@@ -1,4 +1,4 @@
-// Copyright 2020 René Ferdinand Rivera Morell
+// Copyright 2020-2022 René Ferdinand Rivera Morell
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -87,13 +87,17 @@ command.
 end::reference[] */
 inline command::command(const std::string & n)
 {
-	this->sequential().add_argument(literal(n)).add_argument(group().required());
+	this->sequential()
+		.add_argument(literal(n))
+		.add_argument(group().required());
 }
 inline command::command(
 	const std::string & n, const std::function<void(const group &)> & f)
 	: group(f)
 {
-	this->sequential().add_argument(literal(n)).add_argument(group().required());
+	this->sequential()
+		.add_argument(literal(n))
+		.add_argument(group().required());
 }
 
 /* tag::reference[]

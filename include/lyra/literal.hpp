@@ -1,4 +1,4 @@
-// Copyright 2020 René Ferdinand Rivera Morell
+// Copyright 2020-2022 René Ferdinand Rivera Morell
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,6 +10,7 @@
 #include <string>
 
 namespace lyra {
+
 /* tag::reference[]
 
 [#lyra_literal]
@@ -38,9 +39,13 @@ class literal : public parser
 
 	// Internal.
 
-	virtual std::string get_usage_text(const option_style &) const override { return name; }
+	virtual std::string get_usage_text(const option_style &) const override
+	{
+		return name;
+	}
 
-	virtual std::string get_description_text(const option_style &) const override
+	virtual std::string get_description_text(
+		const option_style &) const override
 	{
 		return description;
 	}

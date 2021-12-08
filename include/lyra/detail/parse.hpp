@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -12,21 +12,18 @@
 
 #include <string>
 
-namespace lyra
+namespace lyra { namespace detail {
+
+template <typename S, typename T>
+parser_result parse_string(S const & source, T & target)
 {
-namespace detail
-{
-	template <typename S, typename T>
-	parser_result parse_string(S const& source, T& target)
-	{
-		if (from_string(source, target))
-			return parser_result::ok(parser_result_type::matched);
-		else
-			return parser_result::error(
-				parser_result_type::no_match,
-				"Unable to convert '" + source + "' to destination type");
-	}
-} // namespace detail
-} // namespace lyra
+	if (from_string(source, target))
+		return parser_result::ok(parser_result_type::matched);
+	else
+		return parser_result::error(parser_result_type::no_match,
+			"Unable to convert '" + source + "' to destination type");
+}
+
+}} // namespace lyra::detail
 
 #endif

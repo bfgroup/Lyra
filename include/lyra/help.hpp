@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -10,6 +10,7 @@
 #include "lyra/opt.hpp"
 
 namespace lyra {
+
 /* tag::reference[]
 
 [#lyra_help]
@@ -40,7 +41,8 @@ class help : public opt
 
 	help & description(const std::string & text);
 
-	virtual std::string get_description_text(const option_style &) const override
+	virtual std::string get_description_text(
+		const option_style &) const override
 	{
 		return description_text;
 	}
@@ -70,6 +72,7 @@ inline help & help::description(const std::string & text)
 	description_text = text;
 	return *this;
 }
+
 } // namespace lyra
 
 #endif

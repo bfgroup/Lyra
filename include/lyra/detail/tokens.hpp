@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -13,6 +13,7 @@
 #include <vector>
 
 namespace lyra { namespace detail {
+
 // Wraps a token coming from a token stream. These may not directly
 // correspond to strings as a single string may encode an option + its
 // argument if the : or = form is used
@@ -117,8 +118,7 @@ class token_iterator
 {
 	public:
 	template <typename Span>
-	explicit token_iterator(
-		Span const & args, const option_style & opt_style)
+	explicit token_iterator(Span const & args, const option_style & opt_style)
 		: style(opt_style)
 		, args_i(args.begin())
 		, args_e(args.end())
@@ -150,7 +150,8 @@ class token_iterator
 
 	token_iterator & pop(const token & /* opt */, const token & /* val */)
 	{
-		if (has_short_option_prefix() && args_i->size() > 2) ++args_i;
+		if (has_short_option_prefix() && args_i->size() > 2)
+			++args_i;
 		else if (!has_value_delimiter())
 			args_i += 2;
 		else
@@ -168,20 +169,25 @@ class token_iterator
 	// Current arg looks like a short option (-o).
 	bool has_short_option_prefix() const noexcept
 	{
-		return (args_i != args_e) && is_prefixed(style.short_option_prefix, style.short_option_size, *args_i);
+		return (args_i != args_e)
+			&& is_prefixed(
+				style.short_option_prefix, style.short_option_size, *args_i);
 	}
 
 	// Current arg looks like a long option (--option).
 	bool has_long_option_prefix() const noexcept
 	{
-		return (args_i != args_e) && is_prefixed(style.long_option_prefix, style.long_option_size, *args_i);
+		return (args_i != args_e)
+			&& is_prefixed(
+				style.long_option_prefix, style.long_option_size, *args_i);
 	}
 
 	// Current arg looks like a delimited option+value (--option=x, -o=x)
 	bool has_value_delimiter() const noexcept
 	{
 		return (args_i != args_e)
-			&& (args_i->find_first_of(style.value_delimiters) != std::string::npos);
+			&& (args_i->find_first_of(style.value_delimiters)
+				!= std::string::npos);
 	}
 
 	// Extract the current option token.
@@ -192,7 +198,8 @@ class token_iterator
 			if (has_value_delimiter())
 				// --option=x
 				return token(token_type::option,
-					args_i->substr(0, args_i->find_first_of(style.value_delimiters)));
+					args_i->substr(
+						0, args_i->find_first_of(style.value_delimiters)));
 			else
 				// --option
 				return token(token_type::option, *args_i);
@@ -201,7 +208,8 @@ class token_iterator
 		{
 			// -o (or possibly -abco)
 			return { token_type::option,
-				prefix_value(style.short_option_prefix, style.short_option_size)+(*args_i)[args_i_sub] };
+				prefix_value(style.short_option_prefix, style.short_option_size)
+					+ (*args_i)[args_i_sub] };
 		}
 		return token();
 	}
@@ -213,7 +221,8 @@ class token_iterator
 		if (has_option_prefix() && has_value_delimiter())
 			// --option=x, -o=x
 			return token(token_type::argument,
-				args_i->substr(args_i->find_first_of(style.value_delimiters) + 1));
+				args_i->substr(
+					args_i->find_first_of(style.value_delimiters) + 1));
 		else if (has_long_option_prefix())
 		{
 			if (args_i + 1 != args_e)
@@ -235,14 +244,16 @@ class token_iterator
 
 	token argument() const { return token(token_type::argument, *args_i); }
 
-	static bool is_prefixed(const std::string & prefix, std::size_t size, const std::string & s)
+	static bool is_prefixed(
+		const std::string & prefix, std::size_t size, const std::string & s)
 	{
 		if (!prefix.empty() && size > 0 && s.size() > size)
 		{
 			for (auto c : prefix)
 			{
 				// Checks that the option looks like "[<c>]{size}[^<c>]".
-				if (s[size] != c && s.find_last_not_of(c, size-1) == std::string::npos)
+				if (s[size] != c
+					&& s.find_last_not_of(c, size - 1) == std::string::npos)
 					return true;
 			}
 		}
@@ -250,7 +261,6 @@ class token_iterator
 	}
 
 	private:
-
 	const option_style & style;
 	std::vector<std::string>::const_iterator args_i;
 	std::vector<std::string>::const_iterator args_e;
@@ -258,20 +268,28 @@ class token_iterator
 
 	inline bool is_opt_prefix(char c) const noexcept
 	{
-		return is_prefix_char(style.long_option_prefix, style.long_option_size, c) ||
-			is_prefix_char(style.short_option_prefix, style.short_option_size, c);
+		return is_prefix_char(
+				   style.long_option_prefix, style.long_option_size, c)
+			|| is_prefix_char(
+				style.short_option_prefix, style.short_option_size, c);
 	}
 
-	inline bool is_prefix_char(const std::string & prefix, std::size_t size, std::string::value_type c) const noexcept
+	inline bool is_prefix_char(const std::string & prefix,
+		std::size_t size,
+		std::string::value_type c) const noexcept
 	{
-		return !prefix.empty() && size > 0 && prefix.find(c) != std::string::npos;
+		return !prefix.empty() && size > 0
+			&& prefix.find(c) != std::string::npos;
 	}
 
-	inline std::string prefix_value(const std::string & prefix, std::size_t size) const
+	inline std::string prefix_value(
+		const std::string & prefix, std::size_t size) const
 	{
-		return std::string(static_cast<typename std::string::size_type>(size), prefix[0]);
+		return std::string(
+			static_cast<typename std::string::size_type>(size), prefix[0]);
 	}
 };
+
 }} // namespace lyra::detail
 
 #endif

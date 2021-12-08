@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -10,8 +10,8 @@
 #include "lyra/detail/print.hpp"
 #include "lyra/parser.hpp"
 
-namespace lyra
-{
+namespace lyra {
+
 /* tag::reference[]
 
 [#lyra_arg]
@@ -61,8 +61,7 @@ class arg : public bound_parser<arg>
 
 	using parser::parse;
 
-	parse_result parse(
-		detail::token_iterator const& tokens,
+	parse_result parse(detail::token_iterator const & tokens,
 		const option_style & style) const override
 	{
 		(void)style;
@@ -77,16 +76,17 @@ class arg : public bound_parser<arg>
 				detail::parse_state(parser_result_type::no_match, tokens));
 		}
 
-		auto const& token = tokens.argument();
+		auto const & token = tokens.argument();
 
-		auto valueRef = static_cast<detail::BoundValueRefBase*>(m_ref.get());
+		auto valueRef = static_cast<detail::BoundValueRefBase *>(m_ref.get());
 
 		if (value_choices)
 		{
 			auto choice_result = value_choices->contains_value(token.name);
 			if (!choice_result)
 			{
-				LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=", token.name);
+				LYRA_PRINT_DEBUG(
+					"(!)", get_usage_text(style), "!=", token.name);
 				return parse_result(choice_result);
 			}
 		}
@@ -107,6 +107,7 @@ class arg : public bound_parser<arg>
 		}
 	}
 };
+
 } // namespace lyra
 
 #endif

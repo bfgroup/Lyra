@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -14,6 +14,7 @@
 #include <string>
 
 namespace lyra { namespace detail {
+
 struct NonCopyable
 {
 	NonCopyable() = default;
@@ -130,8 +131,7 @@ struct BoundLambda : BoundValueRefBase
 {
 	L m_lambda;
 
-	static_assert(
-		unary_lambda_traits<L>::isValid,
+	static_assert(unary_lambda_traits<L>::isValid,
 		"Supplied lambda must take exactly one argument");
 	explicit BoundLambda(L const & lambda)
 		: m_lambda(lambda)
@@ -149,8 +149,7 @@ struct BoundFlagLambda : BoundFlagRefBase
 {
 	L m_lambda;
 
-	static_assert(
-		unary_lambda_traits<L>::isValid,
+	static_assert(unary_lambda_traits<L>::isValid,
 		"Supplied lambda must take exactly one argument");
 	static_assert(
 		std::is_same<typename unary_lambda_traits<L>::ArgType, bool>::value,
@@ -162,8 +161,9 @@ struct BoundFlagLambda : BoundFlagRefBase
 
 	auto setFlag(bool flag) -> parser_result override
 	{
-		return LambdaInvoker<typename unary_lambda_traits<L>::ReturnType>::
-			invoke(m_lambda, flag);
+		return LambdaInvoker<
+			typename unary_lambda_traits<L>::ReturnType>::invoke(m_lambda,
+			flag);
 	}
 };
 
@@ -187,6 +187,7 @@ struct BoundVal : BoundValueRef<T>
 		return std::shared_ptr<BoundRef>(new BoundVal<T>(std::move(*this)));
 	}
 };
+
 }} // namespace lyra::detail
 
 #endif

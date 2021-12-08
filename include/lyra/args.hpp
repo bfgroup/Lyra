@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -12,13 +12,14 @@
 #include <vector>
 
 namespace lyra {
+
 /* tag::reference[]
 
 [#lyra_args]
 = `lyra::args`
 
-Transport for raw args (copied from main args, supplied via init list, or from a
-pair of iterators).
+Transport for raw args (copied from main args, supplied via init list, or from
+a pair of iterators).
 
 */ // end::reference[]
 class args
@@ -40,7 +41,7 @@ class args
 	template <typename It>
 	args(const It & start, const It & end)
 		: m_exeName(*start)
-		, m_args(start+1, end)
+		, m_args(start + 1, end)
 	{}
 
 	// The executable name taken from argument zero.
@@ -61,6 +62,7 @@ class args
 	std::string m_exeName;
 	std::vector<std::string> m_args;
 };
+
 } // namespace lyra
 
 #endif

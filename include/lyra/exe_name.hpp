@@ -1,4 +1,4 @@
-// Copyright 2018-2019 René Ferdinand Rivera Morell
+// Copyright 2018-2022 René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -12,8 +12,8 @@
 #include "lyra/parser.hpp"
 #include "lyra/parser_result.hpp"
 
-namespace lyra
-{
+namespace lyra {
+
 /* tag::reference[]
 
 [#lyra_exe_name]
@@ -29,21 +29,19 @@ class exe_name : public composable_parser<exe_name>
 	public:
 	exe_name()
 		: m_name(std::make_shared<std::string>("<executable>"))
-	{
-	}
+	{}
 
-	explicit exe_name(std::string& ref);
+	explicit exe_name(std::string & ref);
 
 	template <typename LambdaT>
-	explicit exe_name(LambdaT const& lambda);
+	explicit exe_name(LambdaT const & lambda);
 
 	std::string name() const;
-	parser_result set(std::string const& newName);
+	parser_result set(std::string const & newName);
 
 	// The exe name is not parsed out of the normal tokens, but is handled
 	// specially
-	virtual parse_result parse(
-		detail::token_iterator const& tokens,
+	virtual parse_result parse(detail::token_iterator const & tokens,
 		const option_style &) const override
 	{
 		return parse_result::ok(
@@ -77,7 +75,7 @@ Constructs with a target string to receive the name of the executable. When
 the `cli` is run the target string will contain the exec name.
 
 end::reference[] */
-inline exe_name::exe_name(std::string& ref)
+inline exe_name::exe_name(std::string & ref)
 	: exe_name()
 {
 	m_ref = std::make_shared<detail::BoundValueRef<std::string>>(ref);
@@ -95,7 +93,7 @@ when the `cli` runs.
 
 end::reference[] */
 template <typename LambdaT>
-exe_name::exe_name(LambdaT const& lambda)
+exe_name::exe_name(LambdaT const & lambda)
 	: exe_name()
 {
 	m_ref = std::make_shared<detail::BoundLambda<LambdaT>>(lambda);
@@ -138,7 +136,7 @@ Sets the executable name with the `newName` value. The new value is reflected
 in the bound string reference or callback.
 
 end::reference[] */
-inline parser_result exe_name::set(std::string const& newName)
+inline parser_result exe_name::set(std::string const & newName)
 {
 	auto lastSlash = newName.find_last_of("\\/");
 	auto filename = (lastSlash == std::string::npos)

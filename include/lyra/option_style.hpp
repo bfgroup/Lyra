@@ -1,4 +1,4 @@
-// Copyright 2021 René Ferdinand Rivera Morell
+// Copyright 2021-2022 René Ferdinand Rivera Morell
 
 #ifndef LYRA_OPTION_STYLE_HPP
 #define LYRA_OPTION_STYLE_HPP
@@ -46,8 +46,7 @@ struct option_style
 
 	// Construction..
 
-	option_style(
-		std::string && value_delimiters,
+	option_style(std::string && value_delimiters,
 		std::string && long_option_prefix = {},
 		std::size_t long_option_size = 0,
 		std::string && short_option_prefix = {},
@@ -109,12 +108,16 @@ end::reference[] */
 
 inline std::string option_style::long_option_string() const
 {
-	return long_option_size > 0 ? std::string(long_option_size, long_option_prefix[0]) : "";
+	return long_option_size > 0
+		? std::string(long_option_size, long_option_prefix[0])
+		: "";
 }
 
 inline std::string option_style::short_option_string() const
 {
-	return short_option_size > 0 ? std::string(short_option_size, short_option_prefix[0]) : "";
+	return short_option_size > 0
+		? std::string(short_option_size, short_option_prefix[0])
+		: "";
 }
 
 /* tag::reference[]
