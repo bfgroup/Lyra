@@ -25,7 +25,7 @@ environment:
     - {
         job_name: "VS 2017",
         COMPILER: "MSVC",
-        VSWHERE_LEGACY: "[15.0,16.0)",
+        VSWHERE_VERSION: "[15.0,16.0)",
         APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2017",
         TOOLSET: "msvc",
         TOOLSET_VERSION: "14.1",
