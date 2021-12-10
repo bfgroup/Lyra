@@ -2,7 +2,7 @@
 # subject to the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-# Copyright 2019 René Ferdinand Rivera Morell.
+# Copyright 2019-2022 René Ferdinand Rivera Morell.
 # Copyright 2020 Jayesh Vinay Badwaik
 
 trigger:
@@ -183,9 +183,6 @@ stages:
         VS 2019: {
           VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe,
           PLATFORM: x64, VM_IMAGE: 'windows-2019', TOOLSET: msvc, TOOLSET_VERSION: '14.2' }
-        VS 2017: {
-          VSWHERE_VERSION: '[15.0,16.0)', CXX: cl.exe, PLATFORM: x64, VM_IMAGE: 'vs2017-win2016',
-          TOOLSET: msvc, TOOLSET_VERSION: '14.1' }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
@@ -194,7 +191,7 @@ stages:
   - job: 'MinGW'
     strategy:
       matrix:
-        MinGW 8.1.0: { VM_IMAGE: 'vs2017-win2016',
+        MinGW 8.1.0: { VM_IMAGE: 'windows-latest',
           TOOLSET: gcc }
     pool:
       vmImage: $(VM_IMAGE)
