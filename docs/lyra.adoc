@@ -324,6 +324,20 @@ Changes:
 * Fix choices being allowed for for flag options, but ignored. Specifying
 	choices on flag options now signal an error.
 	-- _René Ferdinand Rivera Morell_
+* Tested with
+		Visual Studio 2019, VS 2022,
+		MinGW-64 (gcc 8.1.0),
+		Linux (
+			clang 3.9, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13;
+			gcc 5, 6, 7, 8, 9, 10, 11),
+		Xcode (
+			11.2.1, 11.3.1, 11.4.1, 11.5, 11.6, 11.7, 12.0.1, 12.2, 12.3,
+			12.4, 13.0),
+		on Azure Pipelines;
+	and with
+		VS 2015, VS 2017,
+		MinGW-64 (gcc 6.3, 7.3)
+		on AppVeyor.
 
 === 1.5.1
 
