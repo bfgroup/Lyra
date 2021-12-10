@@ -2,14 +2,14 @@
 # subject to the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE.txt)
 #
-# Copyright 2020-2021 René Ferdinand Rivera Morell.
+# Copyright 2020-2022 René Ferdinand Rivera Morell.
 
 branches:
   only:
-  - develop
-  - master
-  - /feature[/].*/
-  - /issue[/].*/
+    - develop
+    - master
+    - /feature[/].*/
+    - /issue[/].*/
 
 skip_commits:
   files:
@@ -22,60 +22,84 @@ skip_commits:
 
 environment:
   matrix:
-  - { job_name: 'VS 2015', COMPILER: "MSVC", VSWHERE_LEGACY: '[14.0,15.0)', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
-      TOOLSET: 'msvc', TOOLSET_VERSION: '14.0' }
-  - { job_name: 'MinGW-w64 7.3', COMPILER: "WIN-MINGW", CXXPATH: 'C:\\mingw-w64\\x86_64-7.3.0-posix-seh-rt_v5-rev0\\mingw64\\bin', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
-      TOOLSET: 'gcc' }
-  - { job_name: 'MinGW-w64 6.3', COMPILER: "WIN-MINGW", CXXPATH: 'C:\\mingw-w64\\x86_64-6.3.0-posix-seh-rt_v5-rev1\\mingw64\\bin', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015',
-      TOOLSET: 'gcc' }
+    - {
+        job_name: "VS 2017",
+        COMPILER: "MSVC",
+        VSWHERE_LEGACY: "[15.0,16.0)",
+        APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2017",
+        TOOLSET: "msvc",
+        TOOLSET_VERSION: "14.1",
+      }
+    - {
+        job_name: "VS 2015",
+        COMPILER: "MSVC",
+        VSWHERE_LEGACY: "[14.0,15.0)",
+        APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2015",
+        TOOLSET: "msvc",
+        TOOLSET_VERSION: "14.0",
+      }
+    - {
+        job_name: "MinGW-w64 7.3",
+        COMPILER: "WIN-MINGW",
+        CXXPATH: 'C:\\mingw-w64\\x86_64-7.3.0-posix-seh-rt_v5-rev0\\mingw64\\bin',
+        APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2015",
+        TOOLSET: "gcc",
+      }
+    - {
+        job_name: "MinGW-w64 6.3",
+        COMPILER: "WIN-MINGW",
+        CXXPATH: 'C:\\mingw-w64\\x86_64-6.3.0-posix-seh-rt_v5-rev1\\mingw64\\bin',
+        APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2015",
+        TOOLSET: "gcc",
+      }
 
 for:
-- matrix:
-    only:
-      - COMPILER: 'MSVC'
-  install:
-    - cmd: |
-        choco install vswhere
-        cd "%APPVEYOR_BUILD_FOLDER%/.."
-        curl "https://github.com/bfgroup/b2/archive/release.zip" -L -o b2.zip
-        7z x b2.zip
-        cd b2-release
-        bootstrap.bat
-        b2.exe install -d0 b2-install-layout=portable --prefix=%APPVEYOR_BUILD_FOLDER%/../bin
-        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
-        cd "%APPVEYOR_BUILD_FOLDER%"
-  build_script:
-    - cmd: |
-        echo .
-  test_script:
-    - cmd: |
-        echo TEST..
-        CALL .ci/windows-msvc-setup.cmd
-        cd %APPVEYOR_BUILD_FOLDER%/tests
-        %APPVEYOR_BUILD_FOLDER%/../bin/b2.exe --debug-configuration toolset=%TOOLSET%
-- matrix:
-    only:
-      - COMPILER: 'WIN-MINGW'
-  install:
-    - cmd: |
-        choco install vswhere
-        cd "%APPVEYOR_BUILD_FOLDER%/.."
-        curl "https://github.com/bfgroup/b2/archive/release.zip" -L -o b2.zip
-        7z x b2.zip
-        cd b2-release
-        set CXX_S=%CXX%
-        set CXX=
-        bootstrap.bat
-        set CXX=%CXX_S%
-        b2.exe install -d0 b2-install-layout=portable --prefix=%APPVEYOR_BUILD_FOLDER%/../bin
-        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
-        cd "%APPVEYOR_BUILD_FOLDER%"
-  build_script:
-    - cmd: |
-        echo .
-  test_script:
-    - cmd: |
-        echo TEST..
-        set PATH=%CXXPATH%;%PATH%
-        cd %APPVEYOR_BUILD_FOLDER%/tests
-        %APPVEYOR_BUILD_FOLDER%/../bin/b2.exe --debug-configuration toolset=%TOOLSET%
+  - matrix:
+      only:
+        - COMPILER: "MSVC"
+    install:
+      - cmd: |
+          choco install vswhere
+          cd "%APPVEYOR_BUILD_FOLDER%/.."
+          curl "https://github.com/bfgroup/b2/archive/release.zip" -L -o b2.zip
+          7z x b2.zip
+          cd b2-release
+          bootstrap.bat
+          b2.exe install -d0 b2-install-layout=portable --prefix=%APPVEYOR_BUILD_FOLDER%/../bin
+          echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+          cd "%APPVEYOR_BUILD_FOLDER%"
+    build_script:
+      - cmd: |
+          echo .
+    test_script:
+      - cmd: |
+          echo TEST..
+          CALL .ci/windows-msvc-setup.cmd
+          cd %APPVEYOR_BUILD_FOLDER%/tests
+          %APPVEYOR_BUILD_FOLDER%/../bin/b2.exe --debug-configuration toolset=%TOOLSET%
+  - matrix:
+      only:
+        - COMPILER: "WIN-MINGW"
+    install:
+      - cmd: |
+          choco install vswhere
+          cd "%APPVEYOR_BUILD_FOLDER%/.."
+          curl "https://github.com/bfgroup/b2/archive/release.zip" -L -o b2.zip
+          7z x b2.zip
+          cd b2-release
+          set CXX_S=%CXX%
+          set CXX=
+          bootstrap.bat
+          set CXX=%CXX_S%
+          b2.exe install -d0 b2-install-layout=portable --prefix=%APPVEYOR_BUILD_FOLDER%/../bin
+          echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+          cd "%APPVEYOR_BUILD_FOLDER%"
+    build_script:
+      - cmd: |
+          echo .
+    test_script:
+      - cmd: |
+          echo TEST..
+          set PATH=%CXXPATH%;%PATH%
+          cd %APPVEYOR_BUILD_FOLDER%/tests
+          %APPVEYOR_BUILD_FOLDER%/../bin/b2.exe --debug-configuration toolset=%TOOLSET%
