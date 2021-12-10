@@ -14,6 +14,7 @@
 :source-highlighter: rouge
 :rouge-style: base16.solarized
 :source-language: c++
+:tabsize: 4
 :toc: left
 :toclevels: 2
 :caution-caption: ⚑
