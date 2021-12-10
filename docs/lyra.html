@@ -980,15 +980,14 @@ pre.rouge .ss {
 </li>
 <li><a href="#_history">14. History</a>
 <ul class="sectlevel2">
-<li><a href="#_1_7">14.1. 1.7</a></li>
-<li><a href="#_1_6">14.2. 1.6</a></li>
-<li><a href="#_1_5_1">14.3. 1.5.1</a></li>
-<li><a href="#_1_5">14.4. 1.5</a></li>
-<li><a href="#_1_4">14.5. 1.4</a></li>
-<li><a href="#_1_3">14.6. 1.3</a></li>
-<li><a href="#_1_2">14.7. 1.2</a></li>
-<li><a href="#_1_1">14.8. 1.1</a></li>
-<li><a href="#_1_0">14.9. 1.0</a></li>
+<li><a href="#_1_6">14.1. 1.6</a></li>
+<li><a href="#_1_5_1">14.2. 1.5.1</a></li>
+<li><a href="#_1_5">14.3. 1.5</a></li>
+<li><a href="#_1_4">14.4. 1.4</a></li>
+<li><a href="#_1_3">14.5. 1.3</a></li>
+<li><a href="#_1_2">14.6. 1.2</a></li>
+<li><a href="#_1_1">14.7. 1.1</a></li>
+<li><a href="#_1_0">14.8. 1.0</a></li>
 </ul>
 </li>
 </ul>
@@ -3140,7 +3139,7 @@ be retrieved with the
 <h2 id="_history"><a class="anchor" href="#_history"></a>14. History</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_7"><a class="anchor" href="#_1_7"></a>14.1. 1.7</h3>
+<h3 id="_1_6"><a class="anchor" href="#_1_6"></a>14.1. 1.6</h3>
 <div class="paragraph">
 <p>Even though most of the changes for this release are to fix various reported
 bug fixes, fixing those bugs has meant dealing with some long standing
@@ -3169,10 +3168,23 @@ function is marked deprecated and will be removed in a future release.
 <div class="ulist">
 <ul>
 <li>
+<p><strong>New</strong>: Add <code>lyra::option_style</code> type to better customize the syntax of
+options allowed. This replaces the "old" <code>lyra::parser_customization</code> as a
+better way. The <code>lyra::parser_customization</code> is now deprecated, and will
+be removed at some future release.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p><strong>New</strong>: Add example to show how to count flags with cardinality greater than
+one (1). Shows how to handle increasing verbosity with <code>-vvvv</code>.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
 <p><strong>New</strong>: Add capability to control the cardinality of argument groups.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
 <p><strong>New</strong>: Allow setting hint after construction of <code>lyra::bound_parser</code>.&#8201;&#8212;&#8201;<em>Max Ferger</em></p>
+</li>
+<li>
+<p>Fix virtual overload hiding of <code>parse</code> method.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
 <p>Fix previously removed error for when expected option specifications
@@ -3203,37 +3215,14 @@ choices on flag options now signal an error.&#8201;&#8212;&#8201;<em>René Ferdi
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_6"><a class="anchor" href="#_1_6"></a>14.2. 1.6</h3>
-<div class="paragraph">
-<p>Changes:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>New</strong>: Add <code>lyra::option_style</code> type to better customize the syntax of
-options allowed. This replaces the "old" <code>lyra::parser_customization</code> as a
-better way. The <code>lyra::parser_customization</code> is now deprecated, and will
-be removed at some future release.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
-</li>
-<li>
-<p><strong>New</strong>: Add example to show how to count flags with cardinality greater than
-one (1). Shows how to handle increasing verbosity with <code>-vvvv</code>.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
-</li>
-<li>
-<p>Fix virtual overload hiding of <code>parse</code> method.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_1_5_1"><a class="anchor" href="#_1_5_1"></a>14.3. 1.5.1</h3>
+<h3 id="_1_5_1"><a class="anchor" href="#_1_5_1"></a>14.2. 1.5.1</h3>
 <div class="paragraph">
 <p>Minor change to bring back the missing option argument hints from the usage
 help output.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_5"><a class="anchor" href="#_1_5"></a>14.4. 1.5</h3>
+<h3 id="_1_5"><a class="anchor" href="#_1_5"></a>14.3. 1.5</h3>
 <div class="paragraph">
 <p>This release has some big changes in easy of use and functionality. There are
 now alternate interfaces for specifying and fetching arguments. Also the help
@@ -3325,7 +3314,7 @@ and with
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_4"><a class="anchor" href="#_1_4"></a>14.5. 1.4</h3>
+<h3 id="_1_4"><a class="anchor" href="#_1_4"></a>14.4. 1.4</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -3359,7 +3348,7 @@ and with
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_3"><a class="anchor" href="#_1_3"></a>14.6. 1.3</h3>
+<h3 id="_1_3"><a class="anchor" href="#_1_3"></a>14.5. 1.3</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -3404,7 +3393,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_2"><a class="anchor" href="#_1_2"></a>14.7. 1.2</h3>
+<h3 id="_1_2"><a class="anchor" href="#_1_2"></a>14.6. 1.2</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -3450,7 +3439,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_1"><a class="anchor" href="#_1_1"></a>14.8. 1.1</h3>
+<h3 id="_1_1"><a class="anchor" href="#_1_1"></a>14.7. 1.1</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -3495,7 +3484,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>14.9. 1.0</h3>
+<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>14.8. 1.0</h3>
 <div class="paragraph">
 <p>This is the initial base version based on Clara library. Changes from that
 library:</p>

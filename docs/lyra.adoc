@@ -276,7 +276,7 @@ include::../include/lyra/val.hpp[tag=reference]
 
 == History
 
-=== 1.7
+=== 1.6
 
 Even though most of the changes for this release are to fix various reported
 bug fixes, fixing those bugs has meant dealing with some long standing
@@ -291,10 +291,20 @@ function is marked deprecated and will be removed in a future release.
 
 Changes:
 
+* *New*: Add `lyra::option_style` type to better customize the syntax of
+	options allowed. This replaces the "old" `lyra::parser_customization` as a
+	better way. The `lyra::parser_customization` is now deprecated, and will
+	be removed at some future release.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Add example to show how to count flags with cardinality greater than
+	one (1). Shows how to handle increasing verbosity with `-vvvv`.
+	-- _René Ferdinand Rivera Morell_
 * *New*: Add capability to control the cardinality of argument groups.
 	-- _René Ferdinand Rivera Morell_
 * *New*: Allow setting hint after construction of `lyra::bound_parser`.
 	-- _Max Ferger_
+* Fix virtual overload hiding of `parse` method.
+	-- _René Ferdinand Rivera Morell_
 * Fix previously removed error for when expected option specifications
 	do not have the required `-` prefix.
 	-- _René Ferdinand Rivera Morell_
@@ -313,21 +323,6 @@ Changes:
 	-- _René Ferdinand Rivera Morell_
 * Fix choices being allowed for for flag options, but ignored. Specifying
 	choices on flag options now signal an error.
-	-- _René Ferdinand Rivera Morell_
-
-=== 1.6
-
-Changes:
-
-* *New*: Add `lyra::option_style` type to better customize the syntax of
-	options allowed. This replaces the "old" `lyra::parser_customization` as a
-	better way. The `lyra::parser_customization` is now deprecated, and will
-	be removed at some future release.
-	-- _René Ferdinand Rivera Morell_
-* *New*: Add example to show how to count flags with cardinality greater than
-	one (1). Shows how to handle increasing verbosity with `-vvvv`.
-	-- _René Ferdinand Rivera Morell_
-* Fix virtual overload hiding of `parse` method.
 	-- _René Ferdinand Rivera Morell_
 
 === 1.5.1
