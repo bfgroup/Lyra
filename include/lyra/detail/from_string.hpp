@@ -184,9 +184,9 @@ inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
 	else
 	{
 		T temp;
-		auto result = from_string(source, temp);
-		if (result) target = std::move(temp);
-		return result;
+		auto str_result = from_string(source, temp);
+		if (str_result) target = std::move(temp);
+		return str_result;
 	}
 }
 #endif // LYRA_CONFIG_OPTIONAL_TYPE

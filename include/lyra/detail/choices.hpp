@@ -119,8 +119,8 @@ struct choices_check : choices_base
 	Lambda checker;
 	using value_type = typename unary_lambda_traits<Lambda>::ArgType;
 
-	explicit choices_check(Lambda const & checker)
-		: checker(checker)
+	explicit choices_check(Lambda const & checker_)
+		: checker(checker_)
 	{}
 
 	// Checks if the given string val exists in the set of

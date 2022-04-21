@@ -29,7 +29,7 @@ class literal : public parser
 
 	// Help description.
 	literal & help(const std::string & text);
-	literal & operator()(std::string const & description);
+	literal & operator()(std::string const & description_);
 
 	// Singular argument allowed and required.
 	virtual detail::parser_cardinality cardinality() const override
@@ -139,9 +139,9 @@ inline literal & literal::help(const std::string & text)
 	description = text;
 	return *this;
 }
-inline literal & literal::operator()(std::string const & description)
+inline literal & literal::operator()(std::string const & description_)
 {
-	return this->help(description);
+	return this->help(description_);
 }
 
 } // namespace lyra

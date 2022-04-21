@@ -474,9 +474,9 @@ Derived & bound_parser<Derived>::help(const std::string & text)
 	return static_cast<Derived &>(*this);
 }
 template <typename Derived>
-Derived & bound_parser<Derived>::operator()(std::string const & help_text)
+Derived & bound_parser<Derived>::operator()(std::string const & help_text_)
 {
-	return this->help(help_text);
+	return this->help(help_text_);
 }
 
 /* tag::reference[]
