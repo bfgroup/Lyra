@@ -46,16 +46,16 @@ struct option_style
 
 	// Construction..
 
-	option_style(std::string && value_delimiters_,
-		std::string && long_option_prefix_ = {},
-		std::size_t long_option_size_ = 0,
-		std::string && short_option_prefix_ = {},
-		std::size_t short_option_size_ = 0)
-		: value_delimiters(std::move(value_delimiters_))
-		, long_option_prefix(std::move(long_option_prefix_))
-		, long_option_size(long_option_size_)
-		, short_option_prefix(std::move(short_option_prefix_))
-		, short_option_size(short_option_size_)
+	option_style(std::string && value_delimiters_chars,
+		std::string && long_option_prefix_chars = {},
+		std::size_t long_option_prefix_size = 0,
+		std::string && short_option_prefix_chars = {},
+		std::size_t short_option_prefix_size = 0)
+		: value_delimiters(std::move(value_delimiters_chars))
+		, long_option_prefix(std::move(long_option_prefix_chars))
+		, long_option_size(long_option_prefix_size)
+		, short_option_prefix(std::move(short_option_prefix_chars))
+		, short_option_size(short_option_prefix_size)
 	{}
 
 	// Definitions..
