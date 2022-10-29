@@ -41,15 +41,15 @@ class group : public arguments
 		LYRA_PRINT_SCOPE("group::parse");
 		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
 			"?=", tokens ? tokens.argument().name : "");
-		parse_result arg_result = arguments::parse(tokens, style);
-		if (arg_result && arg_result.value().type() != parser_result_type::no_match
+		parse_result p_result = arguments::parse(tokens, style);
+		if (p_result && p_result.value().type() != parser_result_type::no_match
 			&& success_signal)
 		{
 			// Trigger any success signal for parsing the argument as the group.
 			// This allows for executing handlers for commands.
 			this->success_signal(*this);
 		}
-		if (!arg_result)
+		if (!p_result)
 		{
 			LYRA_PRINT_DEBUG("(!)", get_usage_text(style),
 				"!=", tokens ? tokens.argument().name : "");
@@ -58,9 +58,9 @@ class group : public arguments
 		{
 			LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
 				"==", tokens ? tokens.argument().name : "", "==>",
-				arg_result.value().type());
+				p_result.value().type());
 		}
-		return arg_result;
+		return p_result;
 	}
 
 	group & optional();
