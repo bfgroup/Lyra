@@ -27,8 +27,8 @@ using std::to_string;
 
 struct print
 {
-	print(const char * scope_ = nullptr)
-		: scope(scope_)
+	print(const char * scope_name = nullptr)
+		: scope(scope_name)
 	{
 		if (is_debug) print::depth() += 1;
 		if (scope) debug(scope, "...");
