@@ -143,8 +143,8 @@ class arguments : public parser
 	{
 		for (auto const & p : parsers)
 		{
-			auto p_result = p->validate();
-			if (!p_result) return p_result;
+			auto parse_valid = p->validate();
+			if (!parse_valid) return parse_valid;
 		}
 		return result::ok();
 	}
