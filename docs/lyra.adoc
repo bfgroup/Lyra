@@ -277,6 +277,10 @@ include::../include/lyra/val.hpp[tag=reference]
 
 == History
 
+=== 1.6.1
+
+
+
 === 1.6
 
 Even though most of the changes for this release are to fix various reported
