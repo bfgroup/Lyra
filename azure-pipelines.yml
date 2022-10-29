@@ -28,7 +28,7 @@ pr:
 
 stages:
 
-- stage: Warn-All
+- stage: No_Warn
   jobs:
 
   - job: 'Linux'
@@ -68,7 +68,7 @@ stages:
     - template: .ci/azp-msvc-test.yml
 
 - stage: Test
-  dependsOn: [Warn-All]
+  dependsOn: [No_Warn]
   jobs:
 
   - job: 'Linux'
