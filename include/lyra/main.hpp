@@ -94,9 +94,9 @@ inline main::main(const std::string & text)
 
 [source]
 ----
-template <typename T> main & main::operator()(const T & parser_)
-template <typename T> main & main::add_argument(const T & parser_)
-template <typename T> main & main::operator|=(const T & parser_)
+template <typename T> main & main::operator()(const T & arg_parser)
+template <typename T> main & main::add_argument(const T & arg_parser)
+template <typename T> main & main::operator|=(const T & arg_parser)
 ----
 
 Adds a parser as an argument to the command line. These forward directly to the
@@ -105,21 +105,21 @@ like `lyra::opt` or `lyra::arg`.
 
 end::reference[] */
 template <typename T>
-main & main::operator()(const T & parser_)
+main & main::operator()(const T & arg_parser)
 {
-	cli::add_argument(parser_);
+	cli::add_argument(arg_parser);
 	return *this;
 }
 template <typename T>
-main & main::add_argument(const T & parser_)
+main & main::add_argument(const T & arg_parser)
 {
-	cli::add_argument(parser_);
+	cli::add_argument(arg_parser);
 	return *this;
 }
 template <typename T>
-main & main::operator|=(const T & parser_)
+main & main::operator|=(const T & arg_parser)
 {
-	cli::operator|=(parser_);
+	cli::operator|=(arg_parser);
 	return *this;
 }
 
