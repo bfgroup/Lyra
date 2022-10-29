@@ -28,7 +28,7 @@ pr:
 
 stages:
 
-- stage: Base
+- stage: Warn-All
   jobs:
 
   - job: 'Linux'
@@ -36,7 +36,7 @@ stages:
       matrix:
         GCC 12 Warn-All: {
           CXX: g++-12, PACKAGES: g++-12, VM_IMAGE: 'ubuntu-22.04',
-          TOOLSET: gcc, CXXSTD: "11,14,17,20", B2_ARGS: 'warnings=extra warnings-as-errors=on cxxflags="-Woverloaded-virtual -Wshadow"' }
+          TOOLSET: gcc, CXXSTD: "11,14,17,20", B2_ARGS: 'warnings=extra warnings-as-errors=on "cxxflags=-Woverloaded-virtual -Wshadow"' }
         Clang 15 Warn-All: {
           CXX: clang++-15, PACKAGES: clang-15, LLVM_OS: focal, LLVM_VER: 15, VM_IMAGE: 'ubuntu-22.04',
           TOOLSET: clang, CXXSTD: "11,14,17,20", B2_ARGS: "warnings=extra warnings-as-errors=on" }
@@ -68,7 +68,7 @@ stages:
     - template: .ci/azp-msvc-test.yml
 
 - stage: Test
-  dependsOn: [Base]
+  dependsOn: [Warn-All]
   jobs:
 
   - job: 'Linux'
