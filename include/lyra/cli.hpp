@@ -83,28 +83,28 @@ class cli : protected arguments
 				type * = nullptr>
 		operator T() const
 		{
-			typename detail::remove_cvref<T>::type v_result {};
+			typename detail::remove_cvref<T>::type converted_value {};
 			if (parser_ref)
 				detail::from_string<std::string,
 					typename detail::remove_cvref<T>::type>(
-					parser_ref->get_value(0), v_result);
-			return v_result;
+					parser_ref->get_value(0), converted_value);
+			return converted_value;
 		}
 
 		template <typename T>
 		operator std::vector<T>() const
 		{
-			std::vector<T> results;
+			std::vector<T> converted_value;
 			if (parser_ref)
 			{
 				for (size_t i = 0; i < parser_ref->get_value_count(); ++i)
 				{
 					T v;
 					if (detail::from_string(parser_ref->get_value(i), v))
-						results.push_back(v);
+						converted_value.push_back(v);
 				}
 			}
-			return results;
+			return converted_value;
 		}
 
 		operator std::string() const
