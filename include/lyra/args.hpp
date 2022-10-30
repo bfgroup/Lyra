@@ -32,9 +32,9 @@ class args
 	{}
 
 	// Construct directly from an initializer '{}'.
-	args(std::initializer_list<std::string> args)
-		: m_exeName(*args.begin())
-		, m_args(args.begin() + 1, args.end())
+	args(std::initializer_list<std::string> args_list)
+		: m_exeName(*args_list.begin())
+		, m_args(args_list.begin() + 1, args_list.end())
 	{}
 
 	// Construct from iterators.

@@ -459,24 +459,24 @@ end::reference[] */
 [source]
 ----
 template <typename Derived>
-Derived& bound_parser<Derived>::help(std::string const& text);
+Derived& bound_parser<Derived>::help(std::string const& help_description_text);
 template <typename Derived>
-Derived& bound_parser<Derived>::operator()(std::string const& help);
+Derived& bound_parser<Derived>::operator()(std::string const& help_description_text);
 ----
 
 Defines the help description of an argument.
 
 end::reference[] */
 template <typename Derived>
-Derived & bound_parser<Derived>::help(const std::string & text)
+Derived & bound_parser<Derived>::help(const std::string & help_description_text)
 {
-	m_description = text;
+	m_description = help_description_text;
 	return static_cast<Derived &>(*this);
 }
 template <typename Derived>
-Derived & bound_parser<Derived>::operator()(std::string const & help_text)
+Derived & bound_parser<Derived>::operator()(std::string const & help_description_text)
 {
-	return this->help(help_text);
+	return this->help(help_description_text);
 }
 
 /* tag::reference[]

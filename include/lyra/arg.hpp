@@ -91,11 +91,11 @@ class arg : public bound_parser<arg>
 			}
 		}
 
-		auto result = valueRef->setValue(token.name);
-		if (!result)
+		auto set_result = valueRef->setValue(token.name);
+		if (!set_result)
 		{
 			LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=", token.name);
-			return parse_result(result);
+			return parse_result(set_result);
 		}
 		else
 		{

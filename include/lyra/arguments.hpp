@@ -143,8 +143,8 @@ class arguments : public parser
 	{
 		for (auto const & p : parsers)
 		{
-			auto result = p->validate();
-			if (!result) return result;
+			auto parse_valid = p->validate();
+			if (!parse_valid) return parse_valid;
 		}
 		return result::ok();
 	}
@@ -182,11 +182,11 @@ class arguments : public parser
 			for (auto const & p : parsers) parser_info[i++].parser_p = p.get();
 		}
 
-		auto result = parse_result::ok(
+		auto p_result = parse_result::ok(
 			detail::parse_state(parser_result_type::matched, tokens));
 		auto error_result = parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
-		while (result.value().remainingTokens())
+		while (p_result.value().remainingTokens())
 		{
 			bool token_parsed = false;
 
@@ -197,11 +197,11 @@ class arguments : public parser
 					|| parse_info.count < parser_cardinality.maximum)
 				{
 					auto subparse_result = parse_info.parser_p->parse(
-						result.value().remainingTokens(), style);
+						p_result.value().remainingTokens(), style);
 					if (!subparse_result)
 					{
 						LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
-							result.value().remainingTokens().argument().name);
+							p_result.value().remainingTokens().argument().name);
 						// Is the subparse error bad enough to trigger an
 						// immediate return? For example for an option syntax
 						// error.
@@ -221,9 +221,9 @@ class arguments : public parser
 							!= parser_result_type::no_match)
 					{
 						LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-							result.value().remainingTokens().argument().name,
+							p_result.value().remainingTokens().argument().name,
 							"==>", subparse_result.value().type());
-						result = parse_result(subparse_result);
+						p_result = parse_result(subparse_result);
 						token_parsed = true;
 						parse_info.count += 1;
 						break;
@@ -231,8 +231,8 @@ class arguments : public parser
 				}
 			}
 
-			if (result.value().type() == parser_result_type::short_circuit_all)
-				return result;
+			if (p_result.value().type() == parser_result_type::short_circuit_all)
+				return p_result;
 			// If something signaled and error, and hence we didn't match/parse
 			// anything, we indicate the error.
 			if (!token_parsed && !error_result) return error_result;
@@ -251,11 +251,11 @@ class arguments : public parser
 				|| (parser_cardinality.is_required()
 					&& (parseInfo.count < parser_cardinality.minimum)))
 			{
-				return parse_result::error(result.value(),
+				return parse_result::error(p_result.value(),
 					"Expected: " + parseInfo.parser_p->get_usage_text(style));
 			}
 		}
-		return result;
+		return p_result;
 	}
 
 	parse_result parse_sequence(
@@ -276,7 +276,7 @@ class arguments : public parser
 			for (auto const & p : parsers) parser_info[i++].parser_p = p.get();
 		}
 
-		auto result = parse_result::ok(
+		auto p_result = parse_result::ok(
 			detail::parse_state(parser_result_type::matched, tokens));
 
 		// Sequential parsing means we walk through the given parsers in order
@@ -290,7 +290,7 @@ class arguments : public parser
 			do
 			{
 				auto subresult = parse_info.parser_p->parse(
-					result.value().remainingTokens(), style);
+					p_result.value().remainingTokens(), style);
 				if (!subresult)
 				{
 					break;
@@ -303,15 +303,15 @@ class arguments : public parser
 				if (subresult.value().type() != parser_result_type::no_match)
 				{
 					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-						result.value().remainingTokens()
-							? result.value().remainingTokens().argument().name
+						p_result.value().remainingTokens()
+							? p_result.value().remainingTokens().argument().name
 							: "",
 						"==>", subresult.value().type());
-					result = subresult;
+					p_result = subresult;
 					parse_info.count += 1;
 				}
 			}
-			while (result.value().have_tokens()
+			while (p_result.value().have_tokens()
 				&& (parser_cardinality.is_unbounded()
 					|| parse_info.count < parser_cardinality.maximum));
 			// Check missing required options immediately as for sequential the
@@ -325,13 +325,13 @@ class arguments : public parser
 				|| (parser_cardinality.is_required()
 					&& (parse_info.count < parser_cardinality.minimum)))
 			{
-				return parse_result::error(result.value(),
+				return parse_result::error(p_result.value(),
 					"Expected: " + parse_info.parser_p->get_usage_text(style));
 			}
 		}
 		// The return is just the last state as it contains any remaining tokens
 		// to parse.
-		return result;
+		return p_result;
 	}
 
 	virtual std::unique_ptr<parser> clone() const override
@@ -352,8 +352,8 @@ class arguments : public parser
 	{
 		for (auto & p : parsers)
 		{
-			const parser * result = p->get_named(n);
-			if (result) return result;
+			const parser * p_result = p->get_named(n);
+			if (p_result) return p_result;
 		}
 		return nullptr;
 	}

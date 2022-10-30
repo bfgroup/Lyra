@@ -84,27 +84,27 @@ class opt : public bound_parser<opt>
 	virtual std::string get_usage_text(
 		const option_style & style) const override
 	{
-		std::string result;
+		std::string usage;
 		for (std::size_t o = 0; o < opt_names.size(); ++o)
 		{
-			if (o > 0) result += "|";
-			result += format_opt(opt_names[o], style);
+			if (o > 0) usage += "|";
+			usage += format_opt(opt_names[o], style);
 		}
-		if (!m_hint.empty()) result += " <" + m_hint + ">";
-		return result;
+		if (!m_hint.empty()) usage += " <" + m_hint + ">";
+		return usage;
 	}
 
 	virtual help_text get_help_text(const option_style & style) const override
 	{
 		std::ostringstream oss;
 		bool first = true;
-		for (auto const & opt : opt_names)
+		for (auto const & opt_name : opt_names)
 		{
 			if (first)
 				first = false;
 			else
 				oss << ", ";
-			oss << format_opt(opt, style);
+			oss << format_opt(opt_name, style);
 		}
 		if (!m_hint.empty()) oss << " <" << m_hint << ">";
 		return { { oss.str(), m_description } };
@@ -145,13 +145,13 @@ class opt : public bound_parser<opt>
 					remainingTokens.pop(token);
 					auto flagRef
 						= static_cast<detail::BoundFlagRefBase *>(m_ref.get());
-					auto result = flagRef->setFlag(true);
-					if (!result) return parse_result(result);
+					auto flag_result = flagRef->setFlag(true);
+					if (!flag_result) return parse_result(flag_result);
 					LYRA_PRINT_DEBUG(
 						"(=)", get_usage_text(style), "==", token.name);
-					if (result.value() == parser_result_type::short_circuit_all)
+					if (flag_result.value() == parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
-							result.value(), remainingTokens));
+							flag_result.value(), remainingTokens));
 				}
 				else
 				{
@@ -169,21 +169,21 @@ class opt : public bound_parser<opt>
 							= value_choices->contains_value(argToken.name);
 						if (!choice_result) return parse_result(choice_result);
 					}
-					auto result = valueRef->setValue(argToken.name);
-					if (!result)
+					auto v_result = valueRef->setValue(argToken.name);
+					if (!v_result)
 					{
 						// Matched the option, but not the value. This is a
 						// hard fail that needs to skip subsequent parsing.
 						return parse_result::error(
 							{ parser_result_type::short_circuit_all,
 								remainingTokens },
-							result.message());
+							v_result.message());
 					}
 					LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
 						"==", token.name, argToken.name);
-					if (result.value() == parser_result_type::short_circuit_all)
+					if (v_result.value() == parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
-							result.value(), remainingTokens));
+							v_result.value(), remainingTokens));
 				}
 				return parse_result::ok(detail::parse_state(
 					parser_result_type::matched, remainingTokens));

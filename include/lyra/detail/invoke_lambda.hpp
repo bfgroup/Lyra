@@ -39,9 +39,9 @@ template <typename ArgType, typename L>
 inline parser_result invokeLambda(L const & lambda, std::string const & arg)
 {
 	ArgType temp {};
-	auto result = parse_string(arg, temp);
-	return !result
-		? result
+	auto p_result = parse_string(arg, temp);
+	return !p_result
+		? p_result
 		: LambdaInvoker<typename unary_lambda_traits<L>::ReturnType>::invoke(
 			lambda, temp);
 }
