@@ -51,8 +51,8 @@ using std::to_string;
 
 struct print
 {
-	print(const char * scope_ = nullptr)
-		: scope(scope_)
+	print(const char * scope_name = nullptr)
+		: scope(scope_name)
 	{
 		if (is_debug) print::depth() += 1;
 		if (scope) debug(scope, "...");
@@ -132,9 +132,9 @@ class args
 		, m_args(argv + 1, argv + argc)
 	{}
 
-	args(std::initializer_list<std::string> args_)
-		: m_exeName(*args_.begin())
-		, m_args(args_.begin() + 1, args_.end())
+	args(std::initializer_list<std::string> args_list)
+		: m_exeName(*args_list.begin())
+		, m_args(args_list.begin() + 1, args_list.end())
 	{}
 
 	template <typename It>
@@ -980,8 +980,8 @@ struct choices_check : choices_base
 	Lambda checker;
 	using value_type = typename unary_lambda_traits<Lambda>::ArgType;
 
-	explicit choices_check(Lambda const & checker_)
-		: checker(checker_)
+	explicit choices_check(Lambda const & checker_function)
+		: checker(checker_function)
 	{}
 
 	parser_result contains_value(std::string const & val) const override
@@ -1055,16 +1055,16 @@ struct option_style
 	std::size_t short_option_size = 0;
 
 
-	option_style(std::string && value_delimiters_,
-		std::string && long_option_prefix_ = {},
-		std::size_t long_option_size_ = 0,
-		std::string && short_option_prefix_ = {},
-		std::size_t short_option_size_ = 0)
-		: value_delimiters(std::move(value_delimiters_))
-		, long_option_prefix(std::move(long_option_prefix_))
-		, long_option_size(long_option_size_)
-		, short_option_prefix(std::move(short_option_prefix_))
-		, short_option_size(short_option_size_)
+	option_style(std::string && value_delimiters_chars,
+		std::string && long_option_prefix_chars = {},
+		std::size_t long_option_prefix_size = 0,
+		std::string && short_option_prefix_chars = {},
+		std::size_t short_option_prefix_size = 0)
+		: value_delimiters(std::move(value_delimiters_chars))
+		, long_option_prefix(std::move(long_option_prefix_chars))
+		, long_option_size(long_option_prefix_size)
+		, short_option_prefix(std::move(short_option_prefix_chars))
+		, short_option_size(short_option_prefix_size)
 	{}
 
 
@@ -1912,24 +1912,24 @@ end::reference[] */
 [source]
 ----
 template <typename Derived>
-Derived& bound_parser<Derived>::help(std::string const& text);
+Derived& bound_parser<Derived>::help(std::string const& help_description_text);
 template <typename Derived>
-Derived& bound_parser<Derived>::operator()(std::string const& help);
+Derived& bound_parser<Derived>::operator()(std::string const& help_description_text);
 ----
 
 Defines the help description of an argument.
 
 end::reference[] */
 template <typename Derived>
-Derived & bound_parser<Derived>::help(const std::string & text)
+Derived & bound_parser<Derived>::help(const std::string & help_description_text)
 {
-	m_description = text;
+	m_description = help_description_text;
 	return static_cast<Derived &>(*this);
 }
 template <typename Derived>
-Derived & bound_parser<Derived>::operator()(std::string const & help_text_)
+Derived & bound_parser<Derived>::operator()(std::string const & help_description_text)
 {
-	return this->help(help_text_);
+	return this->help(help_description_text);
 }
 
 /* tag::reference[]
@@ -2468,8 +2468,8 @@ class arguments : public parser
 	{
 		for (auto const & p : parsers)
 		{
-			auto p_result = p->validate();
-			if (!p_result) return p_result;
+			auto parse_valid = p->validate();
+			if (!parse_valid) return parse_valid;
 		}
 		return result::ok();
 	}
@@ -2923,13 +2923,13 @@ class group : public arguments
 		LYRA_PRINT_SCOPE("group::parse");
 		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
 			"?=", tokens ? tokens.argument().name : "");
-		parse_result arg_result = arguments::parse(tokens, style);
-		if (arg_result && arg_result.value().type() != parser_result_type::no_match
+		parse_result p_result = arguments::parse(tokens, style);
+		if (p_result && p_result.value().type() != parser_result_type::no_match
 			&& success_signal)
 		{
 			this->success_signal(*this);
 		}
-		if (!arg_result)
+		if (!p_result)
 		{
 			LYRA_PRINT_DEBUG("(!)", get_usage_text(style),
 				"!=", tokens ? tokens.argument().name : "");
@@ -2938,9 +2938,9 @@ class group : public arguments
 		{
 			LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
 				"==", tokens ? tokens.argument().name : "", "==>",
-				arg_result.value().type());
+				p_result.value().type());
 		}
-		return arg_result;
+		return p_result;
 	}
 
 	group & optional();
@@ -3154,28 +3154,28 @@ class cli : protected arguments
 				type * = nullptr>
 		operator T() const
 		{
-			typename detail::remove_cvref<T>::type v_result {};
+			typename detail::remove_cvref<T>::type converted_value {};
 			if (parser_ref)
 				detail::from_string<std::string,
 					typename detail::remove_cvref<T>::type>(
-					parser_ref->get_value(0), v_result);
-			return v_result;
+					parser_ref->get_value(0), converted_value);
+			return converted_value;
 		}
 
 		template <typename T>
 		operator std::vector<T>() const
 		{
-			std::vector<T> results;
+			std::vector<T> converted_value;
 			if (parser_ref)
 			{
 				for (size_t i = 0; i < parser_ref->get_value_count(); ++i)
 				{
 					T v;
 					if (detail::from_string(parser_ref->get_value(i), v))
-						results.push_back(v);
+						converted_value.push_back(v);
 				}
 			}
-			return results;
+			return converted_value;
 		}
 
 		operator std::string() const
@@ -3477,8 +3477,8 @@ class literal : public parser
 	public:
 	literal(std::string const & n);
 
-	literal & help(const std::string & text);
-	literal & operator()(std::string const & description_);
+	literal & help(const std::string & help_description_text);
+	literal & operator()(std::string const & help_description_text);
 
 	virtual detail::parser_cardinality cardinality() const override
 	{
@@ -3574,21 +3574,21 @@ end::reference[] */
 
 [source]
 ----
-literal& literal::help(const std::string& text)
-literal& literal::operator()(std::string const& description)
+literal& literal::help(const std::string& help_description_text)
+literal& literal::operator()(std::string const& help_description_text)
 ----
 
 Specify a help description for the literal.
 
 end::reference[] */
-inline literal & literal::help(const std::string & text)
+inline literal & literal::help(const std::string & help_description_text)
 {
-	description = text;
+	description = help_description_text;
 	return *this;
 }
-inline literal & literal::operator()(std::string const & description_)
+inline literal & literal::operator()(std::string const & help_description_text)
 {
-	return this->help(description_);
+	return this->help(help_description_text);
 }
 
 } // namespace lyra
@@ -3976,11 +3976,11 @@ class opt : public bound_parser<opt>
 	{
 		if (detail::token_iterator::is_prefixed(
 				style.short_option_prefix, style.short_option_size, opt_name))
-			return "-" + opt_name.substr(style.short_option_size);
+			return std::string("-") + opt_name.substr(style.short_option_size);
 
 		if (detail::token_iterator::is_prefixed(
 				style.long_option_prefix, style.long_option_size, opt_name))
-			return "--" + opt_name.substr(style.long_option_size);
+			return std::string("--") + opt_name.substr(style.long_option_size);
 
 		return opt_name;
 	}
@@ -4259,9 +4259,9 @@ inline main::main(const std::string & text)
 
 [source]
 ----
-template <typename T> main & main::operator()(const T & parser_)
-template <typename T> main & main::add_argument(const T & parser_)
-template <typename T> main & main::operator|=(const T & parser_)
+template <typename T> main & main::operator()(const T & arg_parser)
+template <typename T> main & main::add_argument(const T & arg_parser)
+template <typename T> main & main::operator|=(const T & arg_parser)
 ----
 
 Adds a parser as an argument to the command line. These forward directly to the
@@ -4270,21 +4270,21 @@ like `lyra::opt` or `lyra::arg`.
 
 end::reference[] */
 template <typename T>
-main & main::operator()(const T & parser_)
+main & main::operator()(const T & arg_parser)
 {
-	cli::add_argument(parser_);
+	cli::add_argument(arg_parser);
 	return *this;
 }
 template <typename T>
-main & main::add_argument(const T & parser_)
+main & main::add_argument(const T & arg_parser)
 {
-	cli::add_argument(parser_);
+	cli::add_argument(arg_parser);
 	return *this;
 }
 template <typename T>
-main & main::operator|=(const T & parser_)
+main & main::operator|=(const T & arg_parser)
 {
-	cli::operator|=(parser_);
+	cli::operator|=(arg_parser);
 	return *this;
 }
 

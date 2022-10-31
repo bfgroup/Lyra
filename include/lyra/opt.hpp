@@ -240,11 +240,11 @@ class opt : public bound_parser<opt>
 	{
 		if (detail::token_iterator::is_prefixed(
 				style.short_option_prefix, style.short_option_size, opt_name))
-			return "-" + opt_name.substr(style.short_option_size);
+			return std::string("-") + opt_name.substr(style.short_option_size);
 
 		if (detail::token_iterator::is_prefixed(
 				style.long_option_prefix, style.long_option_size, opt_name))
-			return "--" + opt_name.substr(style.long_option_size);
+			return std::string("--") + opt_name.substr(style.long_option_size);
 
 		return opt_name;
 	}
