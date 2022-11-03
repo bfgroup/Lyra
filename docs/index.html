@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.16">
+<meta name="generator" content="Asciidoctor 2.0.17">
 <meta name="copyright" content="Copyright 2019-2020 René Ferdinand Rivera Morell">
 <title>Lyra&#8201;&#8212;&#8201;C++11 CLI Parsing Library</title>
 <style>
@@ -1014,7 +1014,7 @@ auto cli = lyra::cli()
 <pre class="pygments highlight"><code data-lang="cpp">auto result = cli.parse( { argc, argv } );
 if ( !result )
 {
-	std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.errorMessage() &lt;&lt; std::endl;
+	std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.message() &lt;&lt; std::endl;
 	exit(1);
 }
 
