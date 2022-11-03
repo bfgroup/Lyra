@@ -68,7 +68,7 @@ stages:
           TOOLSET: clang, CXXSTD: "11,14,17,20", B2_ARGS: "warnings=extra warnings-as-errors=on" }
     pool:
       vmImage: 'ubuntu-22.04'
-    container: $[ variable['CONTAINER'] ]
+    container: $[ variables['CONTAINER'] ]
     steps:
     - template: .ci/azp-linux-test.yml
 
