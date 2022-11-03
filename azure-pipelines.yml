@@ -61,16 +61,16 @@ stages:
     strategy:
       matrix:
         GCC 12 Warn-All: {
-          CXX: g++-12, PACKAGES: g++-12, CONTAINER: linux_gcc12,
+          CXX: g++-12, CONTAINER: linux_gcc12,
           TOOLSET: gcc, CXXSTD: "11,14,17,20", B2_ARGS: 'warnings=extra warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow' }
         Clang 15 Warn-All: {
-          CXX: clang++-15, PACKAGES: clang-15, LLVM_OS: focal, LLVM_VER: 15, CONTAINER: linux_gcc12,
+          CXX: clang++-15, CONTAINER: linux_gcc12,
           TOOLSET: clang, CXXSTD: "11,14,17,20", B2_ARGS: "warnings=extra warnings-as-errors=on" }
     pool:
       vmImage: 'ubuntu-22.04'
     container: $[ variables['CONTAINER'] ]
     steps:
-    - template: .ci/azp-linux-test.yml
+    - template: .ci/azp-linux-docker-test.yml
 
   - job: 'Xcode'
     strategy:
