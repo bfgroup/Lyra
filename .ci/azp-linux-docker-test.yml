@@ -1,6 +1,12 @@
 steps:
 - bash: |
     set -e
+    uname -a
+    apt-get -o Acquire::Retries=3 update
+    apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip
+  displayName: Install Deps
+- bash: |
+    set -e
     pushd ..
     wget "https://github.com/bfgroup/b2/archive/release.zip" -O b2.zip
     unzip b2.zip
