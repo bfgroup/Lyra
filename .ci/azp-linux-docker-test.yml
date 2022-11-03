@@ -3,7 +3,7 @@ steps:
     set -e
     uname -a
     id
-    apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip
+    su -c "apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip"
   displayName: Install Deps
 - bash: |
     set -e
@@ -12,7 +12,7 @@ steps:
     unzip b2.zip
     cd b2-release
     CXX= ./bootstrap.sh
-    CXX= sudo ./b2 install b2-install-layout=portable --prefix=/usr/bin
+    CXX= su -c "./b2 install b2-install-layout=portable --prefix=/usr/bin"
     popd
     CXX_PATH=`which ${CXX}`
     echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
