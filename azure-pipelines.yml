@@ -28,29 +28,29 @@ pr:
 
 resources:
   containers:
-    - { container: linux_gcc13, image: teeks99/gcc-ubuntu:13_20221020_1227 }
-    - { container: linux_gcc12, image: teeks99/gcc-ubuntu:12_20221001_1312 }
-    - { container: linux_gcc11, image: teeks99/gcc-ubuntu:11 }
-    - { container: linux_gcc10, image: teeks99/gcc-ubuntu:10 }
-    - { container: linux_gcc9, image: teeks99/gcc-ubuntu:9 }
-    - { container: linux_gcc8, image: teeks99/gcc-ubuntu:8 }
-    - { container: linux_gcc7, image: teeks99/gcc-ubuntu:7 }
-    - { container: linux_gcc6, image: teeks99/gcc-ubuntu:6 }
-    - { container: linux_gcc5, image: teeks99/gcc-ubuntu:5 }
-    - { container: linux_clang16, image: teeks99/clang-ubuntu:16_20221004_0023 }
-    - { container: linux_clang15, image: teeks99/clang-ubuntu:15 }
-    - { container: linux_clang14, image: teeks99/clang-ubuntu:14 }
-    - { container: linux_clang13, image: teeks99/clang-ubuntu:13 }
-    - { container: linux_clang12, image: teeks99/clang-ubuntu:12 }
-    - { container: linux_clang11, image: teeks99/clang-ubuntu:11 }
-    - { container: linux_clang10, mimage: teeks99/clang-ubuntu:10 }
-    - { container: linux_clang9, image: teeks99/clang-ubuntu:9 }
-    - { container: linux_clang8, image: teeks99/clang-ubuntu:8 }
-    - { container: linux_clang7, image: teeks99/clang-ubuntu:7 }
-    - { container: linux_clang6, image: teeks99/clang-ubuntu:6 }
-    - { container: linux_clang5, image: teeks99/clang-ubuntu:5 }
-    - { container: linux_clang4, image: teeks99/clang-ubuntu:4 }
-    - { container: linux_clang3, image: teeks99/clang-ubuntu:3.9 }
+    - { container: linux_gcc13, image: 'teeks99/gcc-ubuntu:13_20221020_1227' }
+    - { container: linux_gcc12, image: 'teeks99/gcc-ubuntu:12_20221001_1312' }
+    - { container: linux_gcc11, image: 'teeks99/gcc-ubuntu:11' }
+    - { container: linux_gcc10, image: 'teeks99/gcc-ubuntu:10' }
+    - { container: linux_gcc9, image: 'teeks99/gcc-ubuntu:9' }
+    - { container: linux_gcc8, image: 'teeks99/gcc-ubuntu:8' }
+    - { container: linux_gcc7, image: 'teeks99/gcc-ubuntu:7' }
+    - { container: linux_gcc6, image: 'teeks99/gcc-ubuntu:6' }
+    - { container: linux_gcc5, image: 'teeks99/gcc-ubuntu:5' }
+    - { container: linux_clang16, image: 'teeks99/clang-ubuntu:16_20221004_0023' }
+    - { container: linux_clang15, image: 'teeks99/clang-ubuntu:15' }
+    - { container: linux_clang14, image: 'teeks99/clang-ubuntu:14' }
+    - { container: linux_clang13, image: 'teeks99/clang-ubuntu:13' }
+    - { container: linux_clang12, image: 'teeks99/clang-ubuntu:12' }
+    - { container: linux_clang11, image: 'teeks99/clang-ubuntu:11' }
+    - { container: linux_clang10, image: 'teeks99/clang-ubuntu:10' }
+    - { container: linux_clang9, image: 'teeks99/clang-ubuntu:9' }
+    - { container: linux_clang8, image: 'teeks99/clang-ubuntu:8' }
+    - { container: linux_clang7, image: 'teeks99/clang-ubuntu:7' }
+    - { container: linux_clang6, image: 'teeks99/clang-ubuntu:6' }
+    - { container: linux_clang5, image: 'teeks99/clang-ubuntu:5' }
+    - { container: linux_clang4, image: 'teeks99/clang-ubuntu:4' }
+    - { container: linux_clang3, image: 'teeks99/clang-ubuntu:3.9' }
 
 stages:
 
