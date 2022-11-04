@@ -9,7 +9,7 @@ steps:
     set -e
     uname -a
     id
-    sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip cmake
+    sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip cmake wget
   displayName: Install Deps
 - bash: |
     set -e
