@@ -12,7 +12,7 @@ steps:
     sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip cmake
   displayName: Install Deps
 - bash: |
-    set +e
+    set -e
     pushd ..
     wget "https://github.com/bfgroup/b2/archive/release.zip" -O b2.zip
     unzip b2.zip
