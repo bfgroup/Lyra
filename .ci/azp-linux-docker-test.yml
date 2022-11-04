@@ -13,13 +13,14 @@ steps:
   displayName: Install Deps
 - bash: |
     set -e
-    pushd ..
+    SAVED_PWD=`pwd`
+    cd ..
     wget "https://github.com/bfgroup/b2/archive/release.zip" -O b2.zip
     unzip b2.zip
     cd b2-release
     CXX= ./bootstrap.sh
     CXX= sudo ./b2 install b2-install-layout=portable --prefix=/usr/bin
-    popd
+    cd "${SAVED_PWD}"
     CXX_PATH=`which ${CXX}`
     echo "CXX=${CXX}"
     echo "CXX_PATH=${CXX_PATH}"
@@ -29,23 +30,26 @@ steps:
   displayName: Install B2
 - bash: |
     set -e
-    pushd tests
+    SAVED_PWD=`pwd`
+    cd tests
     b2 toolset=${TOOLSET} cxxstd=${CXXSTD} variant=debug,release ${B2_ARGS}
-    popd
+    cd "${SAVED_PWD}"
   displayName: Test
 - bash: |
     set -e
     SOURCE=$PWD
     mkdir -p ../run
     mkdir -p ../build
-    pushd ../build
+    SAVED_PWD=`pwd`
+    cd ../build
       cmake -DCMAKE_INSTALL_PREFIX=../run $SOURCE -DCMAKE_CXX_STANDARD=11
       make install
-    popd
+    cd "${SAVED_PWD}"
     mkdir -p ../test
-    pushd ../test
+    SAVED_PWD=`pwd`
+    cd ../test
       cmake -DCMAKE_PREFIX_PATH=$SOURCE/../run  $SOURCE/tests/lib_use_test -DCMAKE_CXX_STANDARD=11
       make
       ctest
-    popd
+    cd "${SAVED_PWD}"
   displayName: CMake Test
