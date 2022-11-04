@@ -104,13 +104,13 @@ stages:
       matrix:
         GCC 13: { CXX: g++-13, CONTAINER: linux_gcc13, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
         GCC 12: { CXX: g++-12, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
-        GCC 11: { CXX: g++-11, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
-        GCC 10: { CXX: g++-10, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
-        GCC 9: { CXX: g++-9, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
-        GCC 8: { CXX: g++-8, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
-        GCC 7: { CXX: g++-7, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17" }
-        GCC 6: { CXX: g++-6, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17" }
-        GCC 5: { CXX: g++-5, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14" }
+        GCC 11: { CXX: g++-11, CONTAINER: linux_gcc11, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
+        GCC 10: { CXX: g++-10, CONTAINER: linux_gcc10, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
+        GCC 9: { CXX: g++-9, CONTAINER: linux_gcc9, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
+        GCC 8: { CXX: g++-8, CONTAINER: linux_gcc8, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
+        GCC 7: { CXX: g++-7, CONTAINER: linux_gcc7, TOOLSET: gcc, CXXSTD: "11,14,17" }
+        GCC 6: { CXX: g++-6, CONTAINER: linux_gcc6, TOOLSET: gcc, CXXSTD: "11,14,17" }
+        GCC 5: { CXX: g++-5, CONTAINER: linux_gcc5, TOOLSET: gcc, CXXSTD: "11,14" }
         Clang 16: { CXX: clang++-16, CONTAINER: linux_clang16, TOOLSET: clang, CXXSTD: "11,14,17,20" }
         Clang 15: { CXX: clang++-15, CONTAINER: linux_clang15, TOOLSET: clang, CXXSTD: "11,14,17,20" }
         Clang 14: { CXX: clang++-14, CONTAINER: linux_clang14, TOOLSET: clang, CXXSTD: "11,14,17,20" }

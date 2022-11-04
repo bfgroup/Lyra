@@ -1,5 +1,6 @@
 steps:
 - script: |
+    which docker
     /tmp/docker exec -t -u root container mv /etc/sudoers /etc/sudoers.bak
     /tmp/docker exec -t -u root container apt-get -qq update
     /tmp/docker exec -t -u root container apt-get -qq install sudo
