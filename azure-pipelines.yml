@@ -128,7 +128,7 @@ stages:
     pool: { vmImage: 'ubuntu-22.04' }
     container: $[ variables['CONTAINER'] ]
     steps:
-    - template: .ci/azp-linux-test.yml
+    - template: .ci/azp-linux-docker-test.yml
 
   - job: 'Xcode'
     strategy:
