@@ -4,11 +4,12 @@ steps:
     /tmp/docker exec -t -u root container apt-get -qq update
     /tmp/docker exec -t -u root container apt-get -qq install sudo
     /tmp/docker exec -t -u root container mv /etc/sudoers.bak /etc/sudoers
+  displayName: Sudorize
 - bash: |
     set -e
     uname -a
     id
-    sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip
+    sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip cmake
   displayName: Install Deps
 - bash: |
     set -e
