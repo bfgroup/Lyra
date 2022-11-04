@@ -12,44 +12,40 @@ steps:
     sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip cmake
   displayName: Install Deps
 - bash: |
-    set -e
-    SAVED_PWD=`pwd`
-    cd ..
+    set +e
+    pushd ..
     wget "https://github.com/bfgroup/b2/archive/release.zip" -O b2.zip
     unzip b2.zip
     cd b2-release
     CXX= ./bootstrap.sh
     CXX= sudo ./b2 install b2-install-layout=portable --prefix=/usr/bin
-    cd "${SAVED_PWD}"
     CXX_PATH=`which ${CXX}`
     echo "CXX=${CXX}"
     echo "CXX_PATH=${CXX_PATH}"
     echo "TOOLSET=${TOOLSET}"
     echo "HOME=${HOME}"
     echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+    popd
   displayName: Install B2
 - bash: |
     set -e
-    SAVED_PWD=`pwd`
-    cd tests
+    pushd tests
     b2 toolset=${TOOLSET} cxxstd=${CXXSTD} variant=debug,release ${B2_ARGS}
-    cd "${SAVED_PWD}"
+    popd
   displayName: Test
 - bash: |
     set -e
     SOURCE=$PWD
     mkdir -p ../run
     mkdir -p ../build
-    SAVED_PWD=`pwd`
-    cd ../build
+    pushd ../build
       cmake -DCMAKE_INSTALL_PREFIX=../run $SOURCE -DCMAKE_CXX_STANDARD=11
       make install
-    cd "${SAVED_PWD}"
+    popd
     mkdir -p ../test
-    SAVED_PWD=`pwd`
-    cd ../test
+    pushd ../test
       cmake -DCMAKE_PREFIX_PATH=$SOURCE/../run  $SOURCE/tests/lib_use_test -DCMAKE_CXX_STANDARD=11
       make
       ctest
-    cd "${SAVED_PWD}"
+    popd
   displayName: CMake Test
