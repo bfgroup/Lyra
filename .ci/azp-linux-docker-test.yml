@@ -21,6 +21,10 @@ steps:
     CXX= sudo ./b2 install b2-install-layout=portable --prefix=/usr/bin
     popd
     CXX_PATH=`which ${CXX}`
+    echo "CXX=${CXX}"
+    echo "CXX_PATH=${CXX_PATH}"
+    echo "TOOLSET=${TOOLSET}"
+    echo "HOME=${HOME}"
     echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
   displayName: Install B2
 - bash: |
