@@ -68,7 +68,7 @@ stages:
           CXX: clang++-16, CONTAINER: linux_clang16,
           TOOLSET: clang, CXXSTD: "11,14,17,20",
           B2_ARGS: "warnings=extra warnings-as-errors=on" }
-    pool: { vmImage: 'ubuntu-22.04' }
+    pool: { vmImage: 'ubuntu-20.04' }
     container: $[ variables['CONTAINER'] ]
     steps:
     - template: .ci/azp-linux-docker-test.yml
@@ -125,7 +125,7 @@ stages:
         Clang 5.0: { CXX: clang++-5.0, CONTAINER: linux_clang5, TOOLSET: clang, CXXSTD: "11,14,17" }
         Clang 4.0: { CXX: clang++-4.0, CONTAINER: linux_clang4, TOOLSET: clang, CXXSTD: "11,14" }
         Clang 3.9: { CXX: clang++-3.9, CONTAINER: linux_clang3, TOOLSET: clang, CXXSTD: "11" }
-    pool: { vmImage: 'ubuntu-22.04' }
+    pool: { vmImage: 'ubuntu-20.04' }
     container: $[ variables['CONTAINER'] ]
     steps:
     - template: .ci/azp-linux-docker-test.yml
