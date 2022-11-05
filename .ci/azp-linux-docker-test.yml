@@ -10,7 +10,11 @@ steps:
     set -e
     uname -a
     id
-    sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip cmake wget
+    sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip wget
+    cd ${HOME}
+    wget https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3-linux-x86_64.tar.gz -O cmake.tgz
+    tar zxvf cmake.tgz
+    mv cmake-3.24.3-linux-x86_64 cmake
   displayName: Install Deps
 - bash: |
     set -e
@@ -45,7 +49,7 @@ steps:
     popd
     mkdir -p ../test
     pushd ../test
-      cmake -DCMAKE_PREFIX_PATH=$SOURCE/../run  $SOURCE/tests/lib_use_test -DCMAKE_CXX_STANDARD=11
+      ${HOME}/cmake/bin/cmake -DCMAKE_PREFIX_PATH=$SOURCE/../run  $SOURCE/tests/lib_use_test -DCMAKE_CXX_STANDARD=11
       make
       ctest
     popd
