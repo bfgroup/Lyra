@@ -1,12 +1,12 @@
 steps:
 - script: |
     cd %BUILD_SOURCESDIRECTORY%/..
-    curl "https://github.com/niXman/mingw-builds-binaries/releases/download/%MINGW_VERSION%-%MINGW_RT%/x86_64-%MINGW_VERSION%-release-posix-seh-%MINGW_RT%.7z" -L -o mingw.zip
+    curl "https://github.com/niXman/mingw-builds-binaries/releases/download/%MINGW_VERSION%-%MINGW_RT%/x86_64-%MINGW_VERSION%-release-posix-seh-%MINGW_RT%.7z" -L -o mingw.7z
   displayName: Download MinGW
 - task: ExtractFiles@1
   inputs:
-    archiveFilePatterns: $(Build.SourcesDirectory)/../mingw.zip
-    destinationFolder: /
+    archiveFilePatterns: $(Build.SourcesDirectory)/../mingw.7z
+    destinationFolder: $(Build.SourcesDirectory)/../
     cleanDestinationFolder: false
   displayName: Extract MinGW
 - script: |
@@ -20,7 +20,7 @@ steps:
     cleanDestinationFolder: false
   displayName: Extract B2
 - script: |
-    echo using gcc ^: ^: C:/mingw/bin/g++.exe  ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+    echo using gcc ^: ^: %BUILD_SOURCESDIRECTORY%/../mingw/bin/g++.exe  ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
     cd %BUILD_SOURCESDIRECTORY%/../b2-release
     cmd.exe /c bootstrap.bat
     b2.exe install b2-install-layout=portable --prefix=%BUILD_SOURCESDIRECTORY%/../bin
