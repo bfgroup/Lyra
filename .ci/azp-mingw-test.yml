@@ -20,7 +20,7 @@ steps:
     cleanDestinationFolder: false
   displayName: Extract B2
 - script: |
-    echo using gcc ^: ^: /mingw/bin/g++.exe  ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+    echo using gcc ^: ^: /mingww64/bin/g++.exe  ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
     cd %BUILD_SOURCESDIRECTORY%/../b2-release
     cmd.exe /c bootstrap.bat
     b2.exe install b2-install-layout=portable --prefix=%BUILD_SOURCESDIRECTORY%/../bin
