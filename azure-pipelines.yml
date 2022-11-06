@@ -167,9 +167,9 @@ stages:
   - job: 'MinGW'
     strategy:
       matrix:
-        MinGW 12.2.0: { VM_IMAGE: 'windows-latest', MINGW_VERSION: '12.2.0', MINGW_RT: 'rt_v10-rev0' }
-        MinGW 11.2.0: { VM_IMAGE: 'windows-latest', MINGW_VERSION: '11.2.0', MINGW_RT: 'rt_v9-rev1' }
+        MinGW 12.2.0: { MINGW_VERSION: '12.2.0', MINGW_RT: 'rt_v10-rev0', CXXSTD: "11,14,17,20" }
+        MinGW 11.2.0: { MINGW_VERSION: '11.2.0', MINGW_RT: 'rt_v9-rev1', CXXSTD: "11,14,17,20" }
     pool:
-      vmImage: $(VM_IMAGE)
+      vmImage: 'windows-latest'
     steps:
     - template: .ci/azp-mingw-test.yml
