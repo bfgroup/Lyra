@@ -167,8 +167,8 @@ stages:
   - job: 'MinGW'
     strategy:
       matrix:
-        MinGW 8.1.0: { VM_IMAGE: 'windows-latest',
-          TOOLSET: gcc }
+        MinGW 12.2.0: { VM_IMAGE: 'windows-latest', MINGW_VERSION: '12.2.0', MINGW_RT: 'rt_v10-rev0' }
+        MinGW 11.2.0: { VM_IMAGE: 'windows-latest', MINGW_VERSION: '11.2.0', MINGW_RT: 'rt_v9-rev1' }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
