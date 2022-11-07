@@ -7,7 +7,7 @@
 branches:
   only:
     - develop
-    - master
+    - release
     - /feature[/].*/
     - /issue[/].*/
 
