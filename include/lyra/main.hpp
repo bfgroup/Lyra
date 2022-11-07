@@ -94,9 +94,9 @@ inline main::main(const std::string & text)
 
 [source]
 ----
-template <typename T> main & main::operator()(const T & parser)
-template <typename T> main & main::add_argument(const T & parser)
-template <typename T> main & main::operator|=(const T & parser)
+template <typename T> main & main::operator()(const T & arg_parser)
+template <typename T> main & main::add_argument(const T & arg_parser)
+template <typename T> main & main::operator|=(const T & arg_parser)
 ----
 
 Adds a parser as an argument to the command line. These forward directly to the
@@ -105,21 +105,21 @@ like `lyra::opt` or `lyra::arg`.
 
 end::reference[] */
 template <typename T>
-main & main::operator()(const T & parser)
+main & main::operator()(const T & arg_parser)
 {
-	cli::add_argument(parser);
+	cli::add_argument(arg_parser);
 	return *this;
 }
 template <typename T>
-main & main::add_argument(const T & parser)
+main & main::add_argument(const T & arg_parser)
 {
-	cli::add_argument(parser);
+	cli::add_argument(arg_parser);
 	return *this;
 }
 template <typename T>
-main & main::operator|=(const T & parser)
+main & main::operator|=(const T & arg_parser)
 {
-	cli::operator|=(parser);
+	cli::operator|=(arg_parser);
 	return *this;
 }
 
@@ -225,13 +225,13 @@ end::reference[] */
 template <typename L>
 int main::operator()(const args & argv, L action)
 {
-	auto result = cli::parse(argv);
-	if (!result) std::cerr << result.message() << "\n\n";
-	if (show_help || !result)
+	auto cli_result = cli::parse(argv);
+	if (!cli_result) std::cerr << cli_result.message() << "\n\n";
+	if (show_help || !cli_result)
 		std::cout << *this << "\n";
 	else
 		return action(*this);
-	return result ? 0 : 1;
+	return cli_result ? 0 : 1;
 }
 template <typename L>
 int main::operator()(int argc, const char ** argv, L action)

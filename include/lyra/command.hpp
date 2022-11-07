@@ -59,7 +59,7 @@ class command : public group
 	template <typename P>
 	command & add_argument(P const & p);
 	template <typename P>
-	command & operator|=(parser const & p);
+	command & operator|=(P const & p);
 
 	// Internal.
 	virtual std::unique_ptr<parser> clone() const override
@@ -141,7 +141,7 @@ inline command & command::operator()(std::string const & description)
 template <typename P>
 command & command::add_argument(P const & p);
 template <typename P>
-command & command::operator|=(parser const & p);
+command & command::operator|=(P const & p);
 ----
 
 Adds the given argument parser to the considered arguments for this `comand`.
@@ -156,7 +156,7 @@ command & command::add_argument(P const & p)
 	return *this;
 }
 template <typename P>
-command & command::operator|=(parser const & p)
+command & command::operator|=(P const & p)
 {
 	return this->add_argument(p);
 }

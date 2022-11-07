@@ -26,31 +26,59 @@ pr:
     include:
     - develop
 
+resources:
+  containers:
+    - { container: linux_gcc13, image: 'teeks99/gcc-ubuntu:13_20221020_1227', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc12, image: 'teeks99/gcc-ubuntu:12_20221001_1312', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc11, image: 'teeks99/gcc-ubuntu:11', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc10, image: 'teeks99/gcc-ubuntu:10', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc9, image: 'teeks99/gcc-ubuntu:9', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc8, image: 'teeks99/gcc-ubuntu:8', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc7, image: 'teeks99/gcc-ubuntu:7', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc6, image: 'teeks99/gcc-ubuntu:6', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc5, image: 'teeks99/gcc-ubuntu:5', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang16, image: 'teeks99/clang-ubuntu:16_20221004_0023', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang15, image: 'teeks99/clang-ubuntu:15', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang14, image: 'teeks99/clang-ubuntu:14', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang13, image: 'teeks99/clang-ubuntu:13', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang12, image: 'teeks99/clang-ubuntu:12', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang11, image: 'teeks99/clang-ubuntu:11', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang10, image: 'teeks99/clang-ubuntu:10', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang9, image: 'teeks99/clang-ubuntu:9', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang8, image: 'teeks99/clang-ubuntu:8', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang7, image: 'teeks99/clang-ubuntu:7', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang6, image: 'teeks99/clang-ubuntu:6', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang5, image: 'teeks99/clang-ubuntu:5', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang4, image: 'teeks99/clang-ubuntu:4', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang3, image: 'teeks99/clang-ubuntu:3.9', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+
 stages:
 
-- stage: Base
+- stage: No_Warn
   jobs:
 
   - job: 'Linux'
     strategy:
       matrix:
-        GCC 11 Warn-All: {
-          CXX: g++-11, PACKAGES: g++-11, VM_IMAGE: 'ubuntu-20.04',
-          TOOLSET: gcc, CXXSTD: "11,14,17,20", B2_ARGS: "warnings=extra warnings-as-errors=on cxxflags=-Woverloaded-virtual" }
-        Clang 13 Warn-All: {
-          CXX: clang++-13, PACKAGES: clang-13, LLVM_OS: focal, LLVM_VER: 13, VM_IMAGE: 'ubuntu-20.04',
-          TOOLSET: clang, CXXSTD: "11,14,17,20", B2_ARGS: "warnings=extra warnings-as-errors=on" }
-    pool:
-      vmImage: $(VM_IMAGE)
+        GCC 13 Warn-All: {
+          CXX: g++-13, CONTAINER: linux_gcc13,
+          TOOLSET: gcc, CXXSTD: "11,14,17,20",
+          B2_ARGS: 'warnings=extra warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow' }
+        Clang 16 Warn-All: {
+          CXX: clang++-16, CONTAINER: linux_clang16,
+          TOOLSET: clang, CXXSTD: "11,14,17,20",
+          B2_ARGS: "warnings=extra warnings-as-errors=on" }
+    pool: { vmImage: 'ubuntu-20.04' }
+    container: $[ variables['CONTAINER'] ]
     steps:
-    - template: .ci/azp-linux-test.yml
+    - template: .ci/azp-linux-docker-test.yml
 
   - job: 'Xcode'
     strategy:
       matrix:
-        Xcode 13.0: {
-          CXX: clang++, VM_IMAGE: 'macOS-11', XCODE_VERSION: "13.0",
-          TOOLSET: clang, CXXSTD: "11,14,17,20" }
+        Xcode 14.1 Warn-All: {
+          CXX: clang++, VM_IMAGE: 'macOS-12', XCODE_VERSION: "14.1",
+          TOOLSET: clang, CXXSTD: "11,14,17,20", B2_ARGS: "warnings=extra warnings-as-errors=on" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
@@ -62,115 +90,60 @@ stages:
         VS 2022 Warn-All: {
           VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe, B2_ARGS: "warnings=extra warnings-as-errors=on",
           PLATFORM: x64, VM_IMAGE: 'windows-2022', TOOLSET: msvc, TOOLSET_VERSION: '14.3' }
-        VS 2022: {
-          VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe,
-          PLATFORM: x64, VM_IMAGE: 'windows-2022', TOOLSET: msvc, TOOLSET_VERSION: '14.3' }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
     - template: .ci/azp-msvc-test.yml
 
 - stage: Test
-  dependsOn: [Base]
+  dependsOn: [No_Warn]
   jobs:
 
   - job: 'Linux'
     strategy:
       matrix:
-        GCC 11: {
-          CXX: g++-11, PACKAGES: g++-11, VM_IMAGE: 'ubuntu-20.04',
-          TOOLSET: gcc, CXXSTD: "11,14,17,20" }
-        GCC 10: {
-          CXX: g++-10, PACKAGES: g++-10, VM_IMAGE: 'ubuntu-20.04',
-          TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
-        GCC 9: {
-          CXX: g++-9, PACKAGES: g++-9, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
-        GCC 8: {
-          CXX: g++-8, PACKAGES: g++-8, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
-        GCC 7: {
-          CXX: g++-7, PACKAGES: g++-7, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: gcc, CXXSTD: "11,14,17" }
-        GCC 6: {
-          CXX: g++-6, PACKAGES: g++-6, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: gcc, CXXSTD: "11,14,17" }
-        GCC 5: {
-          CXX: g++-5, PACKAGES: g++-5, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: gcc, CXXSTD: "11,14" }
-        Clang 13: {
-          CXX: clang++-13, PACKAGES: clang-13, LLVM_OS: focal, LLVM_VER: 13, VM_IMAGE: 'ubuntu-20.04',
-          TOOLSET: clang, CXXSTD: "11,14,17,20" }
-        Clang 12: {
-          CXX: clang++-12, PACKAGES: clang-12, LLVM_OS: focal, LLVM_VER: 12, VM_IMAGE: 'ubuntu-20.04',
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Clang 11: {
-          CXX: clang++-11, PACKAGES: clang-11, LLVM_OS: focal, LLVM_VER: 11, VM_IMAGE: 'ubuntu-20.04',
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Clang 10: {
-          CXX: clang++-10, PACKAGES: clang-10, LLVM_OS: bionic, LLVM_VER: 10, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Clang 9: {
-          CXX: clang++-9, PACKAGES: clang-9, LLVM_OS: bionic, LLVM_VER: 9, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Clang 8: {
-          CXX: clang++-8, PACKAGES: clang-8, LLVM_OS: bionic, LLVM_VER: 8, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14,17" }
-        Clang 7: {
-          CXX: clang++-7, PACKAGES: clang-7, LLVM_OS: bionic, LLVM_VER: 7, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14,17" }
-        Clang 6.0: {
-          CXX: clang++-6.0, PACKAGES: clang-6.0, LLVM_OS: bionic, LLVM_VER: 6.0, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14,17" }
-        Clang 5.0: {
-          CXX: clang++-5.0, PACKAGES: clang-5.0, LLVM_OS: bionic, LLVM_VER: 5.0, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14,17" }
-        Clang 4.0: {
-          CXX: clang++-4.0, PACKAGES: clang-4.0, LLVM_OS: xenial, LLVM_VER: 4.0, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11,14" }
-        Clang 3.9: {
-          CXX: clang++-3.9, PACKAGES: clang-3.9, LLVM_OS: xenial, LLVM_VER: 3.9, VM_IMAGE: 'ubuntu-18.04',
-          TOOLSET: clang, CXXSTD: "11" }
-    pool:
-      vmImage: $(VM_IMAGE)
+        GCC 13: { CXX: g++-13, CONTAINER: linux_gcc13, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
+        GCC 12: { CXX: g++-12, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
+        GCC 11: { CXX: g++-11, CONTAINER: linux_gcc11, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
+        GCC 10: { CXX: g++-10, CONTAINER: linux_gcc10, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
+        GCC 9: { CXX: g++-9, CONTAINER: linux_gcc9, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
+        GCC 8: { CXX: g++-8, CONTAINER: linux_gcc8, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
+        GCC 7: { CXX: g++-7, CONTAINER: linux_gcc7, TOOLSET: gcc, CXXSTD: "11,14,17" }
+        GCC 6: { CXX: g++-6, CONTAINER: linux_gcc6, TOOLSET: gcc, CXXSTD: "11,14,17" }
+        GCC 5: { CXX: g++-5, CONTAINER: linux_gcc5, TOOLSET: gcc, CXXSTD: "11,14" }
+        Clang 16: { CXX: clang++-16, CONTAINER: linux_clang16, TOOLSET: clang, CXXSTD: "11,14,17,20" }
+        Clang 15: { CXX: clang++-15, CONTAINER: linux_clang15, TOOLSET: clang, CXXSTD: "11,14,17,20" }
+        Clang 14: { CXX: clang++-14, CONTAINER: linux_clang14, TOOLSET: clang, CXXSTD: "11,14,17,20" }
+        Clang 13: { CXX: clang++-13, CONTAINER: linux_clang13, TOOLSET: clang, CXXSTD: "11,14,17,20" }
+        Clang 12: { CXX: clang++-12, CONTAINER: linux_clang12, TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+        Clang 11: { CXX: clang++-11, CONTAINER: linux_clang11, TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+        Clang 10: { CXX: clang++-10, CONTAINER: linux_clang10, TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+        Clang 9: { CXX: clang++-9, CONTAINER: linux_clang9, TOOLSET: clang, CXXSTD: "11,14,17,2a" }
+        Clang 8: { CXX: clang++-8, CONTAINER: linux_clang8, TOOLSET: clang, CXXSTD: "11,14,17" }
+        Clang 7: { CXX: clang++-7, CONTAINER: linux_clang7, TOOLSET: clang, CXXSTD: "11,14,17" }
+        Clang 6.0: { CXX: clang++-6.0, CONTAINER: linux_clang6, TOOLSET: clang, CXXSTD: "11,14,17" }
+        Clang 5.0: { CXX: clang++-5.0, CONTAINER: linux_clang5, TOOLSET: clang, CXXSTD: "11,14,17" }
+        Clang 4.0: { CXX: clang++-4.0, CONTAINER: linux_clang4, TOOLSET: clang, CXXSTD: "11,14" }
+        Clang 3.9: { CXX: clang++-3.9, CONTAINER: linux_clang3, TOOLSET: clang, CXXSTD: "11" }
+    pool: { vmImage: 'ubuntu-20.04' }
+    container: $[ variables['CONTAINER'] ]
     steps:
-    - template: .ci/azp-linux-test.yml
+    - template: .ci/azp-linux-docker-test.yml
 
   - job: 'Xcode'
     strategy:
       matrix:
-        Xcode 12.4: {
-          CXX: clang++, VM_IMAGE: 'macOS-11', XCODE_VERSION: "12.4",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 12.3: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.3",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 12.2: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.2",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 12.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.1",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 12.0.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "12.0.1",
+        Xcode 14.1: {
+          CXX: clang++, VM_IMAGE: 'macOS-12', XCODE_VERSION: "14.1",
+          TOOLSET: clang, CXXSTD: "11,14,17,20" }
+        Xcode 13.4.1: {
+          CXX: clang++, VM_IMAGE: 'macOS-12', XCODE_VERSION: "13.4.1",
+          TOOLSET: clang, CXXSTD: "11,14,17,20" }
+        Xcode 12.5.1: {
+          CXX: clang++, VM_IMAGE: 'macOS-11', XCODE_VERSION: "12.5.1",
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
         Xcode 11.7: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.7",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 11.6: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.6",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 11.5: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.5",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 11.4.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.4.1",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 11.3.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.3.1",
-          TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Xcode 11.2.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-10.15', XCODE_VERSION: "11.2.1",
+          CXX: clang++, VM_IMAGE: 'macOS-11', XCODE_VERSION: "11.7",
           TOOLSET: clang, CXXSTD: "11,14,17,2a" }
     pool:
       vmImage: $(VM_IMAGE)
@@ -180,6 +153,9 @@ stages:
   - job: 'Visual_Studio'
     strategy:
       matrix:
+        VS 2022: {
+          VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe,
+          PLATFORM: x64, VM_IMAGE: 'windows-2022', TOOLSET: msvc, TOOLSET_VERSION: '14.3' }
         VS 2019: {
           VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe,
           PLATFORM: x64, VM_IMAGE: 'windows-2019', TOOLSET: msvc, TOOLSET_VERSION: '14.2' }
@@ -191,9 +167,9 @@ stages:
   - job: 'MinGW'
     strategy:
       matrix:
-        MinGW 8.1.0: { VM_IMAGE: 'windows-latest',
-          TOOLSET: gcc }
+        MinGW 12.2.0: { MINGW_VERSION: '12.2.0', MINGW_RT: 'rt_v10-rev0', CXXSTD: "11,14,17,20" }
+        MinGW 11.2.0: { MINGW_VERSION: '11.2.0', MINGW_RT: 'rt_v9-rev1', CXXSTD: "11,14,17,20" }
     pool:
-      vmImage: $(VM_IMAGE)
+      vmImage: 'windows-latest'
     steps:
     - template: .ci/azp-mingw-test.yml

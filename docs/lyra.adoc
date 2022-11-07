@@ -1,8 +1,8 @@
 = Lyra
-:copyright: Copyright 2019 René Ferdinand Rivera Morell
+:copyright: Copyright 2019-2022 René Ferdinand Rivera Morell
 :author: René Ferdinand Rivera Morell
 :email: grafikrobot@gmail.com
-:revnumber: 1.6
+:revnumber: 1.6.1
 :version-label!:
 :reproducible:
 :nofooter:
@@ -276,6 +276,17 @@ include::../include/lyra/val.hpp[tag=reference]
 :leveloffset: -2
 
 == History
+
+=== 1.6.1
+
+Only bug fixes for compile warnings and a pair of bad argument names.
+
+Changes:
+
+* Fix variable name shadowing warnings.
+	-- _Sadie Powell_
+* Fix `command::operator|=` function signature.
+	-- _Henrik Gaßmann_
 
 === 1.6
 

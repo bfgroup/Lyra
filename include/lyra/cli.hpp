@@ -83,28 +83,28 @@ class cli : protected arguments
 				type * = nullptr>
 		operator T() const
 		{
-			typename detail::remove_cvref<T>::type result {};
+			typename detail::remove_cvref<T>::type converted_value {};
 			if (parser_ref)
 				detail::from_string<std::string,
 					typename detail::remove_cvref<T>::type>(
-					parser_ref->get_value(0), result);
-			return result;
+					parser_ref->get_value(0), converted_value);
+			return converted_value;
 		}
 
 		template <typename T>
 		operator std::vector<T>() const
 		{
-			std::vector<T> result;
+			std::vector<T> converted_value;
 			if (parser_ref)
 			{
 				for (size_t i = 0; i < parser_ref->get_value_count(); ++i)
 				{
 					T v;
 					if (detail::from_string(parser_ref->get_value(i), v))
-						result.push_back(v);
+						converted_value.push_back(v);
 				}
 			}
-			return result;
+			return converted_value;
 		}
 
 		operator std::string() const
@@ -332,19 +332,19 @@ inline parse_result cli::parse(
 	LYRA_PRINT_SCOPE("cli::parse");
 	m_exeName.set(args.exe_name());
 	detail::token_iterator args_tokens(args, style);
-	parse_result result = parse(args_tokens, style);
-	if (result
-		&& (result.value().type() == parser_result_type::no_match
-			|| result.value().type() == parser_result_type::matched))
+	parse_result p_result = parse(args_tokens, style);
+	if (p_result
+		&& (p_result.value().type() == parser_result_type::no_match
+			|| p_result.value().type() == parser_result_type::matched))
 	{
-		if (result.value().have_tokens())
+		if (p_result.value().have_tokens())
 		{
-			return parse_result::error(result.value(),
+			return parse_result::error(p_result.value(),
 				"Unrecognized token: "
-					+ result.value().remainingTokens().argument().name);
+					+ p_result.value().remainingTokens().argument().name);
 		}
 	}
-	return result;
+	return p_result;
 }
 
 /* tag::reference[]

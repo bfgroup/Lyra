@@ -86,9 +86,9 @@ struct BoundValueRef<std::vector<T>> : BoundValueRefBase
 	auto setValue(std::string const & arg) -> parser_result override
 	{
 		T temp;
-		auto result = parse_string(arg, temp);
-		if (result) m_ref.push_back(temp);
-		return result;
+		auto str_result = parse_string(arg, temp);
+		if (str_result) m_ref.push_back(temp);
+		return str_result;
 	}
 
 	virtual size_t get_value_count() const override { return m_ref.size(); }
@@ -96,9 +96,9 @@ struct BoundValueRef<std::vector<T>> : BoundValueRefBase
 	{
 		if (i < m_ref.size())
 		{
-			std::string result;
-			detail::to_string(m_ref[i], result);
-			return result;
+			std::string str_result;
+			detail::to_string(m_ref[i], str_result);
+			return str_result;
 		}
 		return "";
 	}

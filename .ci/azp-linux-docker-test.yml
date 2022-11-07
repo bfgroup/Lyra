@@ -1,0 +1,56 @@
+steps:
+- script: |
+    which docker
+    /tmp/docker exec -t -u root container mv /etc/sudoers /etc/sudoers.bak
+    /tmp/docker exec -t -u root container apt-get -qq update
+    /tmp/docker exec -t -u root container apt-get -qq install sudo
+    /tmp/docker exec -t -u root container mv /etc/sudoers.bak /etc/sudoers
+  displayName: Sudorize
+- bash: |
+    set -e
+    uname -a
+    id
+    sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip wget
+    cd ${HOME}
+    wget https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3-linux-x86_64.tar.gz -O cmake.tgz
+    tar zxvf cmake.tgz
+    mv cmake-3.24.3-linux-x86_64 cmake
+  displayName: Install Deps
+- bash: |
+    set -e
+    pushd ..
+    wget "https://github.com/bfgroup/b2/archive/release.zip" -O b2.zip
+    unzip b2.zip
+    cd b2-release
+    CXX= ./bootstrap.sh
+    CXX= sudo ./b2 install b2-install-layout=portable --prefix=/usr/bin
+    CXX_PATH=`which ${CXX}`
+    echo "CXX=${CXX}"
+    echo "CXX_PATH=${CXX_PATH}"
+    echo "TOOLSET=${TOOLSET}"
+    echo "HOME=${HOME}"
+    echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+    popd
+  displayName: Install B2
+- bash: |
+    set -e
+    pushd tests
+    b2 toolset=${TOOLSET} cxxstd=${CXXSTD} variant=debug,release ${B2_ARGS}
+    popd
+  displayName: Test
+- bash: |
+    set -e
+    SOURCE=$PWD
+    mkdir -p ../run
+    mkdir -p ../build
+    pushd ../build
+      ${HOME}/cmake/bin/cmake -DCMAKE_INSTALL_PREFIX=../run $SOURCE -DCMAKE_CXX_STANDARD=11
+      make install
+    popd
+    mkdir -p ../test
+    pushd ../test
+      ${HOME}/cmake/bin/cmake -DCMAKE_PREFIX_PATH=$SOURCE/../run  $SOURCE/tests/lib_use_test -DCMAKE_CXX_STANDARD=11
+      make
+      ${HOME}/cmake/bin/ctest
+    popd
+  displayName: CMake Test

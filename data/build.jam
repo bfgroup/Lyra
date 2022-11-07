@@ -4,6 +4,7 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import path ;
+import os ;
 
 local lyra_headers = [ SORT [ glob $(BFG_LYRA_INCLUDE)/lyra/*.hpp $(BFG_LYRA_INCLUDE)/lyra/*/*.hpp ] ] ;
 
@@ -19,9 +20,15 @@ rule gen_lyra_hpp
 	LOCATE on $(<) = $(BFG_LYRA_DATA)/single_include/lyra ;
 }
 
+.PYTHON = python3 ;
+if [ os.on-windows ]
+{
+	.PYTHON = python ;
+}
+
 actions gen_lyra_hpp
 {
-	python3 $(BFG_LYRA_ROOT)/tools/gen_single_include.py "--src-include-dir=$(BFG_LYRA_ROOT)/include" "--src-include=lyra/lyra.hpp" "--dst-include=$(<)"
+	$(.PYTHON) $(BFG_LYRA_ROOT)/tools/gen_single_include.py "--src-include-dir=$(BFG_LYRA_ROOT)/include" "--src-include=lyra/lyra.hpp" "--dst-include=$(<)"
 }
 
 local lyra_headers_relative = ;
