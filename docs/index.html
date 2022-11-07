@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.17">
-<meta name="copyright" content="Copyright 2019-2020 René Ferdinand Rivera Morell">
+<meta name="copyright" content="Copyright 2019-2022 René Ferdinand Rivera Morell">
 <title>Lyra&#8201;&#8212;&#8201;C++11 CLI Parsing Library</title>
 <style>
 @import url(https://fonts.googleapis.com/css2?family=Comfortaa&display=swap);
@@ -840,6 +840,88 @@ a { color: inherit; }
 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge, pre.rouge .w {
+  color: #586e75;
+}
+pre.rouge .err {
+  color: #002b36;
+  background-color: #dc322f;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cm, pre.rouge .cpf, pre.rouge .c1, pre.rouge .cs {
+  color: #657b83;
+}
+pre.rouge .cp {
+  color: #b58900;
+}
+pre.rouge .nt {
+  color: #b58900;
+}
+pre.rouge .o, pre.rouge .ow {
+  color: #93a1a1;
+}
+pre.rouge .p, pre.rouge .pi {
+  color: #93a1a1;
+}
+pre.rouge .gi {
+  color: #859900;
+}
+pre.rouge .gd {
+  color: #dc322f;
+}
+pre.rouge .gh {
+  color: #268bd2;
+  background-color: #002b36;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kn, pre.rouge .kp, pre.rouge .kr, pre.rouge .kv {
+  color: #6c71c4;
+}
+pre.rouge .kc {
+  color: #cb4b16;
+}
+pre.rouge .kt {
+  color: #cb4b16;
+}
+pre.rouge .kd {
+  color: #cb4b16;
+}
+pre.rouge .s, pre.rouge .sb, pre.rouge .sc, pre.rouge .dl, pre.rouge .sd, pre.rouge .s2, pre.rouge .sh, pre.rouge .sx, pre.rouge .s1 {
+  color: #859900;
+}
+pre.rouge .sa {
+  color: #6c71c4;
+}
+pre.rouge .sr {
+  color: #2aa198;
+}
+pre.rouge .si {
+  color: #d33682;
+}
+pre.rouge .se {
+  color: #d33682;
+}
+pre.rouge .nn {
+  color: #b58900;
+}
+pre.rouge .nc {
+  color: #b58900;
+}
+pre.rouge .no {
+  color: #b58900;
+}
+pre.rouge .na {
+  color: #268bd2;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mf, pre.rouge .mh, pre.rouge .mi, pre.rouge .il, pre.rouge .mo, pre.rouge .mx {
+  color: #859900;
+}
+pre.rouge .ss {
+  color: #859900;
+}
+</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -915,9 +997,9 @@ Stats
 Tests
 </td>
 <td class="hdlist2">
-<p><span class="image"><a class="image" href="https://dev.azure.com/bfgroup/Lyra"><img src="https://img.shields.io/azure-devops/build/bfgroup/6b664745-b518-4d13-8e46-807d74231e73/2/master?label=master&amp;logo=azuredevops" alt="Azure DevOps"></a></span>
+<p><span class="image"><a class="image" href="https://dev.azure.com/bfgroup/Lyra"><img src="https://img.shields.io/azure-devops/build/bfgroup/6b664745-b518-4d13-8e46-807d74231e73/2/release?label=release&amp;logo=azuredevops" alt="Azure DevOps"></a></span>
 <span class="image"><a class="image" href="https://dev.azure.com/bfgroup/Lyra"><img src="https://img.shields.io/azure-devops/build/bfgroup/6b664745-b518-4d13-8e46-807d74231e73/2/develop?label=develop&amp;logo=azuredevops" alt="Azure DevOps"></a></span>
-<span class="image"><a class="image" href="https://ci.appveyor.com/project/bfgroup/lyra"><img src="https://img.shields.io/appveyor/build/bfgroup/lyra/master?label=master&amp;logo=appveyor" alt="AppVeyor"></a></span>
+<span class="image"><a class="image" href="https://ci.appveyor.com/project/bfgroup/lyra"><img src="https://img.shields.io/appveyor/build/bfgroup/lyra/release?label=release&amp;logo=appveyor" alt="AppVeyor"></a></span>
 <span class="image"><a class="image" href="https://ci.appveyor.com/project/bfgroup/lyra"><img src="https://img.shields.io/appveyor/build/bfgroup/lyra/develop?label=develop&amp;logo=appveyor" alt="AppVeyor"></a></span></p>
 </td>
 </tr>
@@ -999,11 +1081,11 @@ easy and generic sub-command specifications.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="cpp">int width = 0;
-auto cli = lyra::cli()
-    | lyra::opt( width, "width" )
-        ["-w"]["--width"]
-        ("How wide should it be?");</code></pre>
+<pre class="rouge highlight"><code data-lang="cpp"><span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">auto</span> <span class="n">cli</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="p">()</span>
+    <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span> <span class="n">width</span><span class="p">,</span> <span class="s">"width"</span> <span class="p">)</span>
+        <span class="p">[</span><span class="s">"-w"</span><span class="p">][</span><span class="s">"--width"</span><span class="p">]</span>
+        <span class="p">(</span><span class="s">"How wide should it be?"</span><span class="p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1011,14 +1093,14 @@ auto cli = lyra::cli()
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="cpp">auto result = cli.parse( { argc, argv } );
-if ( !result )
-{
-	std::cerr &lt;&lt; "Error in command line: " &lt;&lt; result.message() &lt;&lt; std::endl;
-	exit(1);
-}
+<pre class="rouge highlight"><code data-lang="cpp"><span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span> <span class="p">{</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">}</span> <span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">result</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error in command line: "</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+	<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
 
-// Everything was ok, width will have a value if supplied on command line.</code></pre>
+<span class="c1">// Everything was ok, width will have a value if supplied on command line.</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1029,22 +1111,22 @@ if ( !result )
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="cpp">int width = 0;
-std::string name;
-bool doIt = false;
-std::string command;
-auto cli
-    = lyra::opt( width, "width" )
-        ["-w"]["--width"]
-        ("How wide should it be?")
-    | lyra::opt( name, "name" )
-        ["-n"]["--name"]
-        ("By what name should I be known")
-    | lyra::opt( doIt )
-        ["-d"]["--doit"]
-        ("Do the thing" )
-    | lyra::arg( command, "command" )
-        ("which command to run");</code></pre>
+<pre class="rouge highlight"><code data-lang="cpp"><span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
+<span class="kt">bool</span> <span class="n">doIt</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">command</span><span class="p">;</span>
+<span class="k">auto</span> <span class="n">cli</span>
+    <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span> <span class="n">width</span><span class="p">,</span> <span class="s">"width"</span> <span class="p">)</span>
+        <span class="p">[</span><span class="s">"-w"</span><span class="p">][</span><span class="s">"--width"</span><span class="p">]</span>
+        <span class="p">(</span><span class="s">"How wide should it be?"</span><span class="p">)</span>
+    <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span> <span class="n">name</span><span class="p">,</span> <span class="s">"name"</span> <span class="p">)</span>
+        <span class="p">[</span><span class="s">"-n"</span><span class="p">][</span><span class="s">"--name"</span><span class="p">]</span>
+        <span class="p">(</span><span class="s">"By what name should I be known"</span><span class="p">)</span>
+    <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span> <span class="n">doIt</span> <span class="p">)</span>
+        <span class="p">[</span><span class="s">"-d"</span><span class="p">][</span><span class="s">"--doit"</span><span class="p">]</span>
+        <span class="p">(</span><span class="s">"Do the thing"</span> <span class="p">)</span>
+    <span class="o">|</span> <span class="n">lyra</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span> <span class="n">command</span><span class="p">,</span> <span class="s">"command"</span> <span class="p">)</span>
+        <span class="p">(</span><span class="s">"which command to run"</span><span class="p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">

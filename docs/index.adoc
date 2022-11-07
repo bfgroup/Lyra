@@ -1,5 +1,5 @@
 = Lyra -- C++11 CLI Parsing Library
-:copyright: Copyright 2019-2020 René Ferdinand Rivera Morell
+:copyright: Copyright 2019-2022 René Ferdinand Rivera Morell
 :version-label!:
 :reproducible:
 :nofooter:
@@ -8,7 +8,8 @@
 :sectnumlevels: 2
 :stylesheet: amber.css
 :icons: font
-:source-highlighter: pygments
+:source-highlighter: rouge
+:rouge-style: base16.solarized
 :source-language: c++
 :toc: left
 :toclevels: 5
