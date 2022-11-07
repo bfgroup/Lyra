@@ -141,7 +141,7 @@ inline command & command::operator()(std::string const & description)
 template <typename P>
 command & command::add_argument(P const & p);
 template <typename P>
-command & command::operator|=(parser const & p);
+command & command::operator|=(P const & p);
 ----
 
 Adds the given argument parser to the considered arguments for this `comand`.

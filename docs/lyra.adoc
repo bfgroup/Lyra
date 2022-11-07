@@ -279,7 +279,14 @@ include::../include/lyra/val.hpp[tag=reference]
 
 === 1.6.1
 
+Only bug fixes for compile warnings and a pair of bad argument names.
 
+Changes:
+
+* Fix variable name shadowing warnings.
+	-- _Sadie Powell_
+* Fix `command::operator|=` function signature.
+	-- _Henrik Gaßmann_
 
 === 1.6
 

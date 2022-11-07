@@ -2392,7 +2392,7 @@ underlying literal of the command.</p>
 <pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">P</span><span class="p">&gt;</span>
 <span class="n">command</span> <span class="o">&amp;</span> <span class="n">command</span><span class="o">::</span><span class="n">add_argument</span><span class="p">(</span><span class="n">P</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
 <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">P</span><span class="p">&gt;</span>
-<span class="n">command</span> <span class="o">&amp;</span> <span class="n">command</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">parser</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span></code></pre>
+<span class="n">command</span> <span class="o">&amp;</span> <span class="n">command</span><span class="o">::</span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">P</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3141,7 +3141,22 @@ be retrieved with the
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_1_6_1"><a class="anchor" href="#_1_6_1"></a>14.1. 1.6.1</h3>
-
+<div class="paragraph">
+<p>Only bug fixes for compile warnings and a pair of bad argument names.</p>
+</div>
+<div class="paragraph">
+<p>Changes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Fix variable name shadowing warnings.&#8201;&#8212;&#8201;<em>Sadie Powell</em></p>
+</li>
+<li>
+<p>Fix <code>command::operator|=</code> function signature.&#8201;&#8212;&#8201;<em>Henrik Gaßmann</em></p>
+</li>
+</ul>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_1_6"><a class="anchor" href="#_1_6"></a>14.2. 1.6</h3>
