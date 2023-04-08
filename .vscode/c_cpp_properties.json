@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "intelliSenseMode": "${default}",
+            "compilerPath": "",
+            "cStandard": "c18",
+            "cppStandard": "c++11",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "/usr/include/c++/12.2.0"
+            ]
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c18",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "clang-x64",
+            "compilerArgs": [
+                "-std=c++11"
+            ]
+        }
+    ],
+    "version": 4
+}
