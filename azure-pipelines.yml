@@ -2,7 +2,7 @@
 # subject to the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-# Copyright 2019-2022 René Ferdinand Rivera Morell.
+# Copyright 2019-2023 René Ferdinand Rivera Morell.
 # Copyright 2020 Jayesh Vinay Badwaik
 
 trigger:
@@ -28,8 +28,8 @@ pr:
 
 resources:
   containers:
-    - { container: linux_gcc13, image: 'teeks99/gcc-ubuntu:13_20221020_1227', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc12, image: 'teeks99/gcc-ubuntu:12_20221001_1312', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc13, image: 'teeks99/gcc-ubuntu:13', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc12, image: 'teeks99/gcc-ubuntu:12', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
     - { container: linux_gcc11, image: 'teeks99/gcc-ubuntu:11', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
     - { container: linux_gcc10, image: 'teeks99/gcc-ubuntu:10', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
     - { container: linux_gcc9, image: 'teeks99/gcc-ubuntu:9', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
@@ -37,7 +37,7 @@ resources:
     - { container: linux_gcc7, image: 'teeks99/gcc-ubuntu:7', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
     - { container: linux_gcc6, image: 'teeks99/gcc-ubuntu:6', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
     - { container: linux_gcc5, image: 'teeks99/gcc-ubuntu:5', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang16, image: 'teeks99/clang-ubuntu:16_20221004_0023', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_clang16, image: 'teeks99/clang-ubuntu:16', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
     - { container: linux_clang15, image: 'teeks99/clang-ubuntu:15', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
     - { container: linux_clang14, image: 'teeks99/clang-ubuntu:14', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
     - { container: linux_clang13, image: 'teeks99/clang-ubuntu:13', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
