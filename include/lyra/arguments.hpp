@@ -8,11 +8,13 @@
 #define LYRA_ARGUMENTS_HPP
 
 #include "lyra/detail/print.hpp"
+#include "lyra/detail/trait_utils.hpp"
 #include "lyra/exe_name.hpp"
 #include "lyra/parser.hpp"
 
 #include <functional>
 #include <sstream>
+#include <type_traits>
 
 namespace lyra {
 
@@ -69,10 +71,14 @@ class arguments : public parser
 	arguments & operator|=(arguments const & other);
 
 	// Concat composition.
-	template <typename T>
-	arguments operator|(T const & other) const
+	template <typename T, typename U>
+	friend typename std::enable_if<
+		std::is_base_of<arguments,
+			typename detail::remove_cvref<T>::type>::value,
+		T &>::type
+		operator|(T & self, U const & other)
 	{
-		return arguments(*this) |= other;
+		return self |= other;
 	}
 
 	// Parsing mode.
@@ -231,7 +237,8 @@ class arguments : public parser
 				}
 			}
 
-			if (p_result.value().type() == parser_result_type::short_circuit_all)
+			if (p_result.value().type()
+				== parser_result_type::short_circuit_all)
 				return p_result;
 			// If something signaled and error, and hence we didn't match/parse
 			// anything, we indicate the error.
@@ -285,7 +292,7 @@ class arguments : public parser
 		{
 			auto & parse_info = parser_info[parser_i];
 			auto parser_cardinality = parse_info.parser_p->cardinality();
-			// This is a greedy sequential parsing algo. As it parsers the
+			// This is a greedy sequential parsing algo. As it parses the
 			// current argument as much as possible.
 			do
 			{
@@ -300,13 +307,17 @@ class arguments : public parser
 				{
 					return subresult;
 				}
-				if (subresult.value().type() != parser_result_type::no_match)
+				LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+					p_result.value().remainingTokens()
+						? p_result.value().remainingTokens().argument().name
+						: "",
+					"==>", subresult.value().type());
+				if (subresult.value().type() == parser_result_type::no_match)
 				{
-					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-						p_result.value().remainingTokens()
-							? p_result.value().remainingTokens().argument().name
-							: "",
-						"==>", subresult.value().type());
+					break;
+				}
+				else
+				{
 					p_result = subresult;
 					parse_info.count += 1;
 				}

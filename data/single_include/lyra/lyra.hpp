@@ -2350,6 +2350,7 @@ inline parser_result exe_name::set(std::string const & newName)
 
 #include <functional>
 #include <sstream>
+#include <type_traits>
 
 namespace lyra {
 
@@ -2398,10 +2399,14 @@ class arguments : public parser
 	arguments & add_argument(arguments const & other);
 	arguments & operator|=(arguments const & other);
 
-	template <typename T>
-	arguments operator|(T const & other) const
+	template <typename T, typename U>
+	friend typename std::enable_if<
+		std::is_base_of<arguments,
+			typename detail::remove_cvref<T>::type>::value,
+		T &>::type
+		operator|(T & self, U const & other)
 	{
-		return arguments(*this) |= other;
+		return self |= other;
 	}
 
 	arguments & sequential();
@@ -2547,7 +2552,8 @@ class arguments : public parser
 				}
 			}
 
-			if (p_result.value().type() == parser_result_type::short_circuit_all)
+			if (p_result.value().type()
+				== parser_result_type::short_circuit_all)
 				return p_result;
 			if (!token_parsed && !error_result) return error_result;
 			if (!token_parsed) break;
@@ -2606,13 +2612,17 @@ class arguments : public parser
 				{
 					return subresult;
 				}
-				if (subresult.value().type() != parser_result_type::no_match)
+				LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+					p_result.value().remainingTokens()
+						? p_result.value().remainingTokens().argument().name
+						: "",
+					"==>", subresult.value().type());
+				if (subresult.value().type() == parser_result_type::no_match)
 				{
-					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-						p_result.value().remainingTokens()
-							? p_result.value().remainingTokens().argument().name
-							: "",
-						"==>", subresult.value().type());
+					break;
+				}
+				else
+				{
 					p_result = subresult;
 					parse_info.count += 1;
 				}
