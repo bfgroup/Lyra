@@ -277,6 +277,13 @@ include::../include/lyra/val.hpp[tag=reference]
 
 == History
 
+=== 1.7
+
+Changes:
+
+* Fix `operator|` loosing group subtype causing invalid parsing.
+	-- _René Ferdinand Rivera Morell_
+
 === 1.6.1
 
 Only bug fixes for compile warnings and a pair of bad argument names.
