@@ -283,6 +283,8 @@ Changes:
 
 * Fix `operator|` loosing group subtype causing invalid parsing.
 	-- _René Ferdinand Rivera Morell_
+* Fix crash when no arguments are given to the parsing.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.6.1
 

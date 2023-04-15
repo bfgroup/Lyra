@@ -27,21 +27,23 @@ class args
 	public:
 	// Construct from usual main() function arguments.
 	args(int argc, char const * const * argv)
-		: m_exeName(argv[0])
-		, m_args(argv + 1, argv + argc)
+		: m_exeName((argv && (argc >= 1)) ? argv[0] : "")
+		, m_args((argv && (argc >= 1)) ? argv + 1 : nullptr, argv + argc)
 	{}
 
 	// Construct directly from an initializer '{}'.
 	args(std::initializer_list<std::string> args_list)
-		: m_exeName(*args_list.begin())
-		, m_args(args_list.begin() + 1, args_list.end())
+		: m_exeName(args_list.size() >= 1 ? *args_list.begin() : "")
+		, m_args(
+			  args_list.size() >= 1 ? args_list.begin() + 1 : args_list.end(),
+			  args_list.end())
 	{}
 
 	// Construct from iterators.
 	template <typename It>
 	args(const It & start, const It & end)
-		: m_exeName(*start)
-		, m_args(start + 1, end)
+		: m_exeName(start != end ? *start : "")
+		, m_args(start != end ? start + 1 : end, end)
 	{}
 
 	// The executable name taken from argument zero.

@@ -13,8 +13,8 @@
 #define LYRA_VERSION_HPP
 
 #define LYRA_VERSION_MAJOR 1
-#define LYRA_VERSION_MINOR 6
-#define LYRA_VERSION_PATCH 1
+#define LYRA_VERSION_MINOR 7
+#define LYRA_VERSION_PATCH 0
 
 #define LYRA_VERSION \
 	(((LYRA_VERSION_MAJOR)*10000000) + ((LYRA_VERSION_MINOR)*100000) \
@@ -128,19 +128,21 @@ class args
 {
 	public:
 	args(int argc, char const * const * argv)
-		: m_exeName(argv[0])
-		, m_args(argv + 1, argv + argc)
+		: m_exeName((argv && (argc >= 1)) ? argv[0] : "")
+		, m_args((argv && (argc >= 1)) ? argv + 1 : nullptr, argv + argc)
 	{}
 
 	args(std::initializer_list<std::string> args_list)
-		: m_exeName(*args_list.begin())
-		, m_args(args_list.begin() + 1, args_list.end())
+		: m_exeName(args_list.size() >= 1 ? *args_list.begin() : "")
+		, m_args(
+			  args_list.size() >= 1 ? args_list.begin() + 1 : args_list.end(),
+			  args_list.end())
 	{}
 
 	template <typename It>
 	args(const It & start, const It & end)
-		: m_exeName(*start)
-		, m_args(start + 1, end)
+		: m_exeName(start != end ? *start : "")
+		, m_args(start != end ? start + 1 : end, end)
 	{}
 
 	std::string exe_name() const { return m_exeName; }
