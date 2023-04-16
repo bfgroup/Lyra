@@ -2408,7 +2408,16 @@ class arguments : public parser
 		T &>::type
 		operator|(T & self, U const & other)
 	{
-		return self |= other;
+		return static_cast<T &>(self.add_argument(other));
+	}
+	template <typename T, typename U>
+	friend typename std::enable_if<
+		std::is_base_of<arguments,
+			typename detail::remove_cvref<T>::type>::value,
+		T &>::type
+		operator|(T && self, U const & other)
+	{
+		return static_cast<T &>(self.add_argument(other));
 	}
 
 	arguments & sequential();
