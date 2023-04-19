@@ -71,21 +71,17 @@ struct choices_set : choices_base
 	// Returns a comma separated list of the allowed values.
 	std::string to_string() const
 	{
-		std::string result;
+		std::string text;
 		for (const T & val : values)
 		{
-			if (!result.empty()) result += ", ";
+			if (!text.empty()) text += ", ";
 			std::string val_string;
 			if (detail::to_string(val, val_string))
-			{
-				result += val_string;
-			}
+				text += val_string;
 			else
-			{
-				result += "<value error>";
-			}
+				text += "<value error>";
 		}
-		return result;
+		return text;
 	}
 
 	protected:

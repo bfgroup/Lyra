@@ -752,9 +752,9 @@ struct BoundValueRef : BoundValueRefBase
 	{
 		if (i == 0)
 		{
-			std::string result;
-			detail::to_string(m_ref, result);
-			return result;
+			std::string text;
+			detail::to_string(m_ref, text);
+			return text;
 		}
 		return "";
 	}
@@ -938,21 +938,17 @@ struct choices_set : choices_base
 
 	std::string to_string() const
 	{
-		std::string result;
+		std::string text;
 		for (const T & val : values)
 		{
-			if (!result.empty()) result += ", ";
+			if (!text.empty()) text += ", ";
 			std::string val_string;
 			if (detail::to_string(val, val_string))
-			{
-				result += val_string;
-			}
+				text += val_string;
 			else
-			{
-				result += "<value error>";
-			}
+				text += "<value error>";
 		}
-		return result;
+		return text;
 	}
 
 	protected:
@@ -1489,6 +1485,7 @@ inline std::unique_ptr<my_printer> make_printer(my_output & os_)
 class printer
 {
 	public:
+	virtual ~printer() = default;
 	virtual printer & heading(const std::string & txt) = 0;
 	virtual printer & paragraph(const std::string & txt, std::size_t indent = 0)
 		= 0;
@@ -2232,29 +2229,29 @@ class arg : public bound_parser<arg>
 
 	virtual std::string get_usage_text(const option_style &) const override
 	{
-		std::string result;
+		std::string text;
 		if (!m_hint.empty())
 		{
 			auto c = cardinality();
 			if (c.is_required())
 			{
 				for (size_t i = 0; i < c.minimum; ++i)
-					(((result += (i > 0 ? " " : "")) += "<") += m_hint) += ">";
+					(((text += (i > 0 ? " " : "")) += "<") += m_hint) += ">";
 				if (c.is_unbounded())
-					(((result += (c.is_required() ? " " : "")) += "[<")
+					(((text += (c.is_required() ? " " : "")) += "[<")
 						+= m_hint)
 						+= ">...]";
 			}
 			else if (c.is_unbounded())
 			{
-				((result += "[<") += m_hint) += ">...]";
+				((text += "[<") += m_hint) += ">...]";
 			}
 			else
 			{
-				((result += "<") += m_hint) += ">";
+				((text += "<") += m_hint) += ">";
 			}
 		}
-		return result;
+		return text;
 	}
 
 	virtual help_text get_help_text(const option_style & style) const override
@@ -2541,41 +2538,41 @@ class arguments : public parser
 	virtual std::string get_usage_text(
 		const option_style & style) const override
 	{
-		std::string result;
+		std::string text;
 		for (auto const & p : parsers)
 		{
 			std::string usage_text = p->get_usage_text(style);
 			if (usage_text.size() > 0)
 			{
-				if (!result.empty()) result += " ";
+				if (!text.empty()) text += " ";
 				if (p->is_group() && p->is_optional())
-					((result += "[ ") += usage_text) += " ]";
+					((text += "[ ") += usage_text) += " ]";
 				else if (p->is_group())
-					((result += "{ ") += usage_text) += " }";
+					((text += "{ ") += usage_text) += " }";
 				else if (p->is_optional())
-					((result += "[") += usage_text) += "]";
+					((text += "[") += usage_text) += "]";
 				else
-					result += usage_text;
+					text += usage_text;
 			}
 		}
-		return result;
+		return text;
 	}
 
 	virtual std::string get_description_text(
 		const option_style & style) const override
 	{
-		std::string result;
+		std::string text;
 		for (auto const & p : parsers)
 		{
 			if (p->is_group()) continue;
 			auto child_description = p->get_description_text(style);
 			if (!child_description.empty())
 			{
-				if (!result.empty()) result += "\n";
-				result += child_description;
+				if (!text.empty()) text += "\n";
+				text += child_description;
 			}
 		}
-		return result;
+		return text;
 	}
 
 	virtual help_text get_help_text(const option_style & style) const override
@@ -4012,14 +4009,14 @@ class opt : public bound_parser<opt>
 
 	virtual help_text get_help_text(const option_style & style) const override
 	{
-		std::string result;
+		std::string text;
 		for (auto const & opt_name : opt_names)
 		{
-			if (!result.empty()) result += ", ";
-			result += format_opt(opt_name, style);
+			if (!text.empty()) text += ", ";
+			text += format_opt(opt_name, style);
 		}
-		if (!m_hint.empty()) ((result += " <") += m_hint) += ">";
-		return { { result, m_description } };
+		if (!m_hint.empty()) ((text += " <") += m_hint) += ">";
+		return { { text, m_description } };
 	}
 
 	virtual bool is_named(const std::string & n) const override

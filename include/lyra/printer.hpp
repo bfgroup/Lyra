@@ -50,6 +50,7 @@ inline std::unique_ptr<my_printer> make_printer(my_output & os_)
 class printer
 {
 	public:
+	virtual ~printer() = default;
 	virtual printer & heading(const std::string & txt) = 0;
 	virtual printer & paragraph(const std::string & txt, std::size_t indent = 0)
 		= 0;

@@ -103,41 +103,41 @@ class arguments : public parser
 	virtual std::string get_usage_text(
 		const option_style & style) const override
 	{
-		std::string result;
+		std::string text;
 		for (auto const & p : parsers)
 		{
 			std::string usage_text = p->get_usage_text(style);
 			if (usage_text.size() > 0)
 			{
-				if (!result.empty()) result += " ";
+				if (!text.empty()) text += " ";
 				if (p->is_group() && p->is_optional())
-					((result += "[ ") += usage_text) += " ]";
+					((text += "[ ") += usage_text) += " ]";
 				else if (p->is_group())
-					((result += "{ ") += usage_text) += " }";
+					((text += "{ ") += usage_text) += " }";
 				else if (p->is_optional())
-					((result += "[") += usage_text) += "]";
+					((text += "[") += usage_text) += "]";
 				else
-					result += usage_text;
+					text += usage_text;
 			}
 		}
-		return result;
+		return text;
 	}
 
 	virtual std::string get_description_text(
 		const option_style & style) const override
 	{
-		std::string result;
+		std::string text;
 		for (auto const & p : parsers)
 		{
 			if (p->is_group()) continue;
 			auto child_description = p->get_description_text(style);
 			if (!child_description.empty())
 			{
-				if (!result.empty()) result += "\n";
-				result += child_description;
+				if (!text.empty()) text += "\n";
+				text += child_description;
 			}
 		}
-		return result;
+		return text;
 	}
 
 	// Return a container of the individual help text for the composed parsers.

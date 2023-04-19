@@ -64,9 +64,9 @@ struct BoundValueRef : BoundValueRefBase
 	{
 		if (i == 0)
 		{
-			std::string result;
-			detail::to_string(m_ref, result);
-			return result;
+			std::string text;
+			detail::to_string(m_ref, text);
+			return text;
 		}
 		return "";
 	}

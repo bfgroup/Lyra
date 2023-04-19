@@ -32,29 +32,29 @@ class arg : public bound_parser<arg>
 
 	virtual std::string get_usage_text(const option_style &) const override
 	{
-		std::string result;
+		std::string text;
 		if (!m_hint.empty())
 		{
 			auto c = cardinality();
 			if (c.is_required())
 			{
 				for (size_t i = 0; i < c.minimum; ++i)
-					(((result += (i > 0 ? " " : "")) += "<") += m_hint) += ">";
+					(((text += (i > 0 ? " " : "")) += "<") += m_hint) += ">";
 				if (c.is_unbounded())
-					(((result += (c.is_required() ? " " : "")) += "[<")
+					(((text += (c.is_required() ? " " : "")) += "[<")
 						+= m_hint)
 						+= ">...]";
 			}
 			else if (c.is_unbounded())
 			{
-				((result += "[<") += m_hint) += ">...]";
+				((text += "[<") += m_hint) += ">...]";
 			}
 			else
 			{
-				((result += "<") += m_hint) += ">";
+				((text += "<") += m_hint) += ">";
 			}
 		}
-		return result;
+		return text;
 	}
 
 	virtual help_text get_help_text(const option_style & style) const override
