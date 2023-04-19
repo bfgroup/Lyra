@@ -11,7 +11,6 @@
 #include "lyra/detail/result.hpp"
 #include "lyra/detail/unary_lambda_traits.hpp"
 #include "lyra/parser_result.hpp"
-#include <algorithm>
 #include <initializer_list>
 #include <string>
 #include <type_traits>
@@ -58,10 +57,10 @@ struct choices_set : choices_base
 			return parser_result::error(
 				parser_result_type::no_match, parse.message());
 		}
-		bool result = std::count(values.begin(), values.end(), value) > 0;
-		if (result)
+		for (const T & allowed_value : values)
 		{
-			return parser_result::ok(parser_result_type::matched);
+			if (allowed_value == value)
+				return parser_result::ok(parser_result_type::matched);
 		}
 		// We consider not finding a choice a parse error.
 		return parser_result::error(parser_result_type::no_match,

@@ -10,6 +10,8 @@
 #include "lyra/detail/print.hpp"
 #include "lyra/parser.hpp"
 
+#include <string>
+
 namespace lyra {
 
 /* tag::reference[]
@@ -30,28 +32,29 @@ class arg : public bound_parser<arg>
 
 	virtual std::string get_usage_text(const option_style &) const override
 	{
-		std::ostringstream oss;
+		std::string result;
 		if (!m_hint.empty())
 		{
 			auto c = cardinality();
 			if (c.is_required())
 			{
 				for (size_t i = 0; i < c.minimum; ++i)
-					oss << (i > 0 ? " " : "") << "<" << m_hint << ">";
+					(((result += (i > 0 ? " " : "")) += "<") += m_hint) += ">";
 				if (c.is_unbounded())
-					oss << (c.is_required() ? " " : "") << "[<" << m_hint
-						<< ">...]";
+					(((result += (c.is_required() ? " " : "")) += "[<")
+						+= m_hint)
+						+= ">...]";
 			}
 			else if (c.is_unbounded())
 			{
-				oss << "[<" << m_hint << ">...]";
+				((result += "[<") += m_hint) += ">...]";
 			}
 			else
 			{
-				oss << "<" << m_hint << ">";
+				((result += "<") += m_hint) += ">";
 			}
 		}
-		return oss.str();
+		return result;
 	}
 
 	virtual help_text get_help_text(const option_style & style) const override

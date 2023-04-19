@@ -63,6 +63,7 @@ src = [
 	'include/lyra/option_style.hpp',
 	'include/lyra/parser.hpp',
 	'include/lyra/parser_result.hpp',
+	'include/lyra/printer.hpp',
 	'include/lyra/val.hpp',
 	'include/lyra/version.hpp'
 ]

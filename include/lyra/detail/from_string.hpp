@@ -9,7 +9,6 @@
 
 #include "lyra/detail/trait_utils.hpp"
 
-#include <algorithm>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -148,8 +147,7 @@ inline bool from_string(S const & source, bool & target)
 {
 	std::string srcLC;
 	to_string(source, srcLC);
-	std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(),
-		[](char c) { return static_cast<char>(::tolower(c)); });
+	for (std::string::value_type & c : srcLC) c = ::tolower(c);
 	if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes"
 		|| srcLC == "on")
 		target = true;
@@ -174,8 +172,7 @@ inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
 {
 	std::string srcLC;
 	to_string(source, srcLC);
-	std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(),
-		[](char c) { return static_cast<char>(::tolower(c)); });
+	for (std::string::value_type & c : srcLC) c = ::tolower(c);
 	if (srcLC == "<nullopt>")
 	{
 		target.reset();

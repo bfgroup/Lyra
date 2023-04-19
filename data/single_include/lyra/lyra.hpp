@@ -30,7 +30,10 @@
 #ifndef LYRA_DETAIL_PRINT_HPP
 #define LYRA_DETAIL_PRINT_HPP
 
-#include <iostream>
+#if LYRA_DEBUG
+#	include <iostream>
+#endif
+
 #include <string>
 
 #ifndef LYRA_DEBUG
@@ -48,6 +51,8 @@ std::string to_string(T && t)
 }
 
 using std::to_string;
+
+#if LYRA_DEBUG
 
 struct print
 {
@@ -89,6 +94,8 @@ struct print
 		return d;
 	}
 };
+
+#endif
 
 }} // namespace lyra::detail
 
@@ -236,7 +243,6 @@ struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
 
 #endif
 
-#include <algorithm>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -365,8 +371,7 @@ inline bool from_string(S const & source, bool & target)
 {
 	std::string srcLC;
 	to_string(source, srcLC);
-	std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(),
-		[](char c) { return static_cast<char>(::tolower(c)); });
+	for (std::string::value_type & c : srcLC) c = ::tolower(c);
 	if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes"
 		|| srcLC == "on")
 		target = true;
@@ -391,8 +396,7 @@ inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
 {
 	std::string srcLC;
 	to_string(source, srcLC);
-	std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(),
-		[](char c) { return static_cast<char>(::tolower(c)); });
+	for (std::string::value_type & c : srcLC) c = ::tolower(c);
 	if (srcLC == "<nullopt>")
 	{
 		target.reset();
@@ -879,7 +883,6 @@ struct BoundVal : BoundValueRef<T>
 #ifndef LYRA_DETAIL_CHOICES_HPP
 #define LYRA_DETAIL_CHOICES_HPP
 
-#include <algorithm>
 #include <initializer_list>
 #include <string>
 #include <type_traits>
@@ -923,10 +926,10 @@ struct choices_set : choices_base
 			return parser_result::error(
 				parser_result_type::no_match, parse.message());
 		}
-		bool result = std::count(values.begin(), values.end(), value) > 0;
-		if (result)
+		for (const T & allowed_value : values)
 		{
-			return parser_result::ok(parser_result_type::matched);
+			if (allowed_value == value)
+				return parser_result::ok(parser_result_type::matched);
 		}
 		return parser_result::error(parser_result_type::no_match,
 			"Value '" + val
@@ -1439,6 +1442,119 @@ class token_iterator
 
 #endif
 
+#ifndef LYRA_PRINTER_HPP
+#define LYRA_PRINTER_HPP
+
+#include <memory>
+#include <ostream>
+#include <string>
+
+namespace lyra {
+
+/* tag::reference[]
+
+[#lyra_printer]
+= `lyra::printer`
+
+A `printer` is an interface to manage formatting for output. Mostly the output
+is for the help text of lyra cli parsers. The interface abstracts away specifics
+of the output device and any visual arrangement, i.e. padding, coloring, etc.
+
+[source]
+----
+virtual printer & printer::heading(
+	const std::string & txt) = 0;
+virtual printer & printer::paragraph(
+	const std::string & txt,
+	std::size_t indent = 0) = 0;
+virtual printer & printer::option(
+	const std::string & opt,
+	const std::string & description,
+	std::size_t indent = 0) = 0;
+----
+
+You can customize the printing output by implementing a subclass of
+`lyra::printer` and implementing a corresponding `make_printer` factory
+function which matches the output to the printer. For example:
+
+[source]
+----
+inline std::unique_ptr<my_printer> make_printer(my_output & os_)
+{
+	return std::unique_ptr<my_printer>(new my_output(os_));
+}
+----
+
+*/ // end::reference[]
+class printer
+{
+	public:
+	virtual printer & heading(const std::string & txt) = 0;
+	virtual printer & paragraph(const std::string & txt, std::size_t indent = 0)
+		= 0;
+	virtual printer & option(const std::string & opt,
+		const std::string & description,
+		std::size_t indent = 0)
+		= 0;
+};
+
+/* tag::reference[]
+
+[#lyra_ostream_printer]
+= `lyra::ostream_printer`
+
+A <<lyra_printer>> that uses `std::ostream` for output. This is the one used in
+the case of printing to the standard output channels of `std::cout` and
+`std::cerr`.
+
+*/ // end::reference[]
+class ostream_printer : public printer
+{
+	public:
+	explicit ostream_printer(std::ostream & os_)
+		: os(os_)
+	{}
+	virtual printer & heading(const std::string & txt) override
+	{
+		os << txt << "\n";
+		return *this;
+	}
+	virtual printer & paragraph(
+		const std::string & txt, std::size_t indent = 0) override
+	{
+		const std::string indent_str(indent, ' ');
+		os << indent_str << txt << "\n\n";
+		return *this;
+	}
+	virtual printer & option(const std::string & opt,
+		const std::string & description,
+		std::size_t indent = 0) override
+	{
+		const std::string indent_str(indent, ' ');
+		const std::string opt_pad(26 - indent - 1, ' ');
+		if (opt.size() > opt_pad.size())
+			os << indent_str << opt << "\n"
+			   << indent_str << opt_pad << " " << description << "\n";
+		else
+			os << indent_str << opt
+			   << opt_pad.substr(0, opt_pad.size() - opt.size()) << " "
+			   << description << "\n";
+		return *this;
+	}
+
+	protected:
+	std::ostream & os;
+};
+
+inline std::unique_ptr<printer> make_printer(std::ostream & os_)
+{
+	return std::unique_ptr<printer>(new ostream_printer(os_));
+}
+
+} // namespace lyra
+
+#endif
+
 #ifndef LYRA_VAL_HPP
 #define LYRA_VAL_HPP
 
@@ -1629,33 +1745,24 @@ class parser
 		return "";
 	}
 
-	virtual parse_result parse(detail::token_iterator const & tokens,
-		const option_style & style) const = 0;
+	virtual parse_result parse(
+		detail::token_iterator const & tokens, const option_style & style) const
+		= 0;
 
 	protected:
-	void print_help_text(std::ostream & os, const option_style & style) const
+	void print_help_text(printer & p, const option_style & style) const
 	{
 		std::string usage_test = get_usage_text(style);
 		if (!usage_test.empty())
-			os << "USAGE:\n"
-			   << "  " << get_usage_text(style) << "\n\n";
+			p.heading("USAGE:").paragraph(get_usage_text(style), 2);
 
 		std::string description_test = get_description_text(style);
-		if (!description_test.empty())
-			os << get_description_text(style) << "\n";
+		if (!description_test.empty()) p.paragraph(get_description_text(style));
 
-		os << "OPTIONS, ARGUMENTS:\n";
-		const std::string::size_type left_col_size = 26 - 3;
-		const std::string left_pad(left_col_size, ' ');
+		p.heading("OPTIONS, ARGUMENTS:");
 		for (auto const & cols : get_help_text(style))
 		{
-			if (cols.option.size() > left_pad.size())
-				os << "  " << cols.option << "\n  " << left_pad << " "
-				   << cols.description << "\n";
-			else
-				os << "  " << cols.option
-				   << left_pad.substr(0, left_pad.size() - cols.option.size())
-				   << " " << cols.description << "\n";
+			p.option(cols.option, cols.description, 2);
 		}
 	}
 };
@@ -1916,7 +2023,8 @@ end::reference[] */
 template <typename Derived>
 Derived& bound_parser<Derived>::help(std::string const& help_description_text);
 template <typename Derived>
-Derived& bound_parser<Derived>::operator()(std::string const& help_description_text);
+Derived& bound_parser<Derived>::operator()(std::string const&
+help_description_text);
 ----
 
 Defines the help description of an argument.
@@ -1929,7 +2037,8 @@ Derived & bound_parser<Derived>::help(const std::string & help_description_text)
 	return static_cast<Derived &>(*this);
 }
 template <typename Derived>
-Derived & bound_parser<Derived>::operator()(std::string const & help_description_text)
+Derived & bound_parser<Derived>::operator()(
+	std::string const & help_description_text)
 {
 	return this->help(help_description_text);
 }
@@ -2101,6 +2210,8 @@ Derived & bound_parser<Derived>::hint(std::string const & hint)
 
 #endif
 
+#include <string>
+
 namespace lyra {
 
 /* tag::reference[]
@@ -2121,28 +2232,29 @@ class arg : public bound_parser<arg>
 
 	virtual std::string get_usage_text(const option_style &) const override
 	{
-		std::ostringstream oss;
+		std::string result;
 		if (!m_hint.empty())
 		{
 			auto c = cardinality();
 			if (c.is_required())
 			{
 				for (size_t i = 0; i < c.minimum; ++i)
-					oss << (i > 0 ? " " : "") << "<" << m_hint << ">";
+					(((result += (i > 0 ? " " : "")) += "<") += m_hint) += ">";
 				if (c.is_unbounded())
-					oss << (c.is_required() ? " " : "") << "[<" << m_hint
-						<< ">...]";
+					(((result += (c.is_required() ? " " : "")) += "[<")
+						+= m_hint)
+						+= ">...]";
 			}
 			else if (c.is_unbounded())
 			{
-				oss << "[<" << m_hint << ">...]";
+				((result += "[<") += m_hint) += ">...]";
 			}
 			else
 			{
-				oss << "<" << m_hint << ">";
+				((result += "<") += m_hint) += ">";
 			}
 		}
-		return oss.str();
+		return result;
 	}
 
 	virtual help_text get_help_text(const option_style & style) const override
@@ -2351,7 +2463,6 @@ inline parser_result exe_name::set(std::string const & newName)
 #endif
 
 #include <functional>
-#include <sstream>
 #include <type_traits>
 
 namespace lyra {
@@ -2430,37 +2541,41 @@ class arguments : public parser
 	virtual std::string get_usage_text(
 		const option_style & style) const override
 	{
-		std::ostringstream os;
+		std::string result;
 		for (auto const & p : parsers)
 		{
 			std::string usage_text = p->get_usage_text(style);
 			if (usage_text.size() > 0)
 			{
-				if (os.tellp() != std::ostringstream::pos_type(0)) os << " ";
+				if (!result.empty()) result += " ";
 				if (p->is_group() && p->is_optional())
-					os << "[ " << usage_text << " ]";
+					((result += "[ ") += usage_text) += " ]";
 				else if (p->is_group())
-					os << "{ " << usage_text << " }";
+					((result += "{ ") += usage_text) += " }";
 				else if (p->is_optional())
-					os << "[" << usage_text << "]";
+					((result += "[") += usage_text) += "]";
 				else
-					os << usage_text;
+					result += usage_text;
 			}
 		}
-		return os.str();
+		return result;
 	}
 
 	virtual std::string get_description_text(
 		const option_style & style) const override
 	{
-		std::ostringstream os;
+		std::string result;
 		for (auto const & p : parsers)
 		{
 			if (p->is_group()) continue;
 			auto child_description = p->get_description_text(style);
-			if (!child_description.empty()) os << child_description << "\n";
+			if (!child_description.empty())
+			{
+				if (!result.empty()) result += "\n";
+				result += child_description;
+			}
 		}
-		return os.str();
+		return result;
 	}
 
 	virtual help_text get_help_text(const option_style & style) const override
@@ -2659,12 +2774,12 @@ class arguments : public parser
 		return make_clone<arguments>(this);
 	}
 
-	friend std::ostream & operator<<(
-		std::ostream & os, arguments const & parser)
+	template <typename T>
+	T & print_help(T & os) const
 	{
-		const option_style & s
-			= parser.opt_style ? *parser.opt_style : option_style::posix();
-		parser.print_help_text(os, s);
+		const option_style & s = opt_style ? *opt_style : option_style::posix();
+		std::unique_ptr<printer> p = make_printer(os);
+		this->print_help_text(*p, s);
 		return os;
 	}
 
@@ -2839,6 +2954,27 @@ template <typename T>
 T & arguments::get(size_t i)
 {
 	return static_cast<T &>(*parsers.at(i));
+}
+
+/* tag::reference[]
+=== `lyra::operator<<`
+
+[source]
+----
+template <typename T>
+T & operator<<(T & os, arguments const & a);
+----
+
+Prints the help text for the arguments to the given stream `os`. The `os` stream
+is not used directly for printing out. Instead a <<lyra_printer>> object is
+created by calling `lyra::make_printer(os)`. This indirection allows one to
+customize how the output is generated.
+
+end::reference[] */
+template <typename T>
+T & operator<<(T & os, arguments const & a)
+{
+	return a.print_help(os);
 }
 
 } // namespace lyra
@@ -3214,10 +3350,8 @@ class cli : protected arguments
 	cli & style(const option_style & style);
 	cli & style(option_style && style);
 
-	friend std::ostream & operator<<(std::ostream & os, cli const & parser)
-	{
-		return os << static_cast<const arguments &>(parser);
-	}
+	template <typename T>
+	friend T & operator<<(T & os, cli const & c);
 
 	parse_result parse(args const & args) const
 	{
@@ -3454,6 +3588,27 @@ inline cli & cli::style(option_style && style)
 {
 	opt_style = std::make_shared<option_style>(std::move(style));
 	return *this;
+}
+
+/* tag::reference[]
+=== `lyra::operator<<`
+
+[source]
+----
+template <typename T>
+T & operator<<(T & os, cli const & c);
+----
+
+Prints the help text for the cli to the given stream `os`. The `os` stream
+is not used directly for printing out. Instead a <<lyra_printer>> object is
+created by calling `lyra::make_printer(os)`. This indirection allows one to
+customize how the output is generated.
+
+end::reference[] */
+template <typename T>
+T & operator<<(T & os, cli const & c)
+{
+	return c.print_help(os);
 }
 
 } // namespace lyra
@@ -3775,7 +3930,9 @@ command & command::operator|=(P const & p)
 #ifndef LYRA_OPT_HPP
 #define LYRA_OPT_HPP
 
+
 #include <memory>
+#include <string>
 
 namespace lyra {
 
@@ -3855,25 +4012,22 @@ class opt : public bound_parser<opt>
 
 	virtual help_text get_help_text(const option_style & style) const override
 	{
-		std::ostringstream oss;
-		bool first = true;
+		std::string result;
 		for (auto const & opt_name : opt_names)
 		{
-			if (first)
-				first = false;
-			else
-				oss << ", ";
-			oss << format_opt(opt_name, style);
+			if (!result.empty()) result += ", ";
+			result += format_opt(opt_name, style);
 		}
-		if (!m_hint.empty()) oss << " <" << m_hint << ">";
-		return { { oss.str(), m_description } };
+		if (!m_hint.empty()) ((result += " <") += m_hint) += ">";
+		return { { result, m_description } };
 	}
 
 	virtual bool is_named(const std::string & n) const override
 	{
-		return bound_parser::is_named(n)
-			|| (std::find(opt_names.begin(), opt_names.end(), n)
-				!= opt_names.end());
+		if (bound_parser::is_named(n)) return true;
+		for (auto & name : opt_names)
+			if (n == name) return true;
+		return false;
 	}
 
 	using parser::parse;
@@ -3908,7 +4062,8 @@ class opt : public bound_parser<opt>
 					if (!flag_result) return parse_result(flag_result);
 					LYRA_PRINT_DEBUG(
 						"(=)", get_usage_text(style), "==", token.name);
-					if (flag_result.value() == parser_result_type::short_circuit_all)
+					if (flag_result.value()
+						== parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
 							flag_result.value(), remainingTokens));
 				}
@@ -3938,7 +4093,8 @@ class opt : public bound_parser<opt>
 					}
 					LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
 						"==", token.name, argToken.name);
-					if (v_result.value() == parser_result_type::short_circuit_all)
+					if (v_result.value()
+						== parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
 							v_result.value(), remainingTokens));
 				}

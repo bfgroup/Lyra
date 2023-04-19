@@ -123,10 +123,8 @@ class cli : protected arguments
 	cli & style(option_style && style);
 
 	// Stream out generates the help output.
-	friend std::ostream & operator<<(std::ostream & os, cli const & parser)
-	{
-		return os << static_cast<const arguments &>(parser);
-	}
+	template <typename T>
+	friend T & operator<<(T & os, cli const & c);
 
 	// Parse from arguments.
 	parse_result parse(args const & args) const
@@ -369,6 +367,27 @@ inline cli & cli::style(option_style && style)
 {
 	opt_style = std::make_shared<option_style>(std::move(style));
 	return *this;
+}
+
+/* tag::reference[]
+=== `lyra::operator<<`
+
+[source]
+----
+template <typename T>
+T & operator<<(T & os, cli const & c);
+----
+
+Prints the help text for the cli to the given stream `os`. The `os` stream
+is not used directly for printing out. Instead a <<lyra_printer>> object is
+created by calling `lyra::make_printer(os)`. This indirection allows one to
+customize how the output is generated.
+
+end::reference[] */
+template <typename T>
+T & operator<<(T & os, cli const & c)
+{
+	return c.print_help(os);
 }
 
 } // namespace lyra

@@ -11,7 +11,9 @@
 #include "lyra/detail/trait_utils.hpp"
 #include "lyra/parser.hpp"
 #include "lyra/val.hpp"
+
 #include <memory>
+#include <string>
 
 namespace lyra {
 
@@ -96,25 +98,22 @@ class opt : public bound_parser<opt>
 
 	virtual help_text get_help_text(const option_style & style) const override
 	{
-		std::ostringstream oss;
-		bool first = true;
+		std::string result;
 		for (auto const & opt_name : opt_names)
 		{
-			if (first)
-				first = false;
-			else
-				oss << ", ";
-			oss << format_opt(opt_name, style);
+			if (!result.empty()) result += ", ";
+			result += format_opt(opt_name, style);
 		}
-		if (!m_hint.empty()) oss << " <" << m_hint << ">";
-		return { { oss.str(), m_description } };
+		if (!m_hint.empty()) ((result += " <") += m_hint) += ">";
+		return { { result, m_description } };
 	}
 
 	virtual bool is_named(const std::string & n) const override
 	{
-		return bound_parser::is_named(n)
-			|| (std::find(opt_names.begin(), opt_names.end(), n)
-				!= opt_names.end());
+		if (bound_parser::is_named(n)) return true;
+		for (auto & name : opt_names)
+			if (n == name) return true;
+		return false;
 	}
 
 	using parser::parse;
@@ -149,7 +148,8 @@ class opt : public bound_parser<opt>
 					if (!flag_result) return parse_result(flag_result);
 					LYRA_PRINT_DEBUG(
 						"(=)", get_usage_text(style), "==", token.name);
-					if (flag_result.value() == parser_result_type::short_circuit_all)
+					if (flag_result.value()
+						== parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
 							flag_result.value(), remainingTokens));
 				}
@@ -181,7 +181,8 @@ class opt : public bound_parser<opt>
 					}
 					LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
 						"==", token.name, argToken.name);
-					if (v_result.value() == parser_result_type::short_circuit_all)
+					if (v_result.value()
+						== parser_result_type::short_circuit_all)
 						return parse_result::ok(detail::parse_state(
 							v_result.value(), remainingTokens));
 				}

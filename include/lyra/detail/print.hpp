@@ -6,7 +6,10 @@
 #ifndef LYRA_DETAIL_PRINT_HPP
 #define LYRA_DETAIL_PRINT_HPP
 
-#include <iostream>
+#if LYRA_DEBUG
+#	include <iostream>
+#endif
+
 #include <string>
 
 #ifndef LYRA_DEBUG
@@ -24,6 +27,8 @@ std::string to_string(T && t)
 }
 
 using std::to_string;
+
+#if LYRA_DEBUG
 
 struct print
 {
@@ -65,6 +70,8 @@ struct print
 		return d;
 	}
 };
+
+#endif
 
 }} // namespace lyra::detail
 

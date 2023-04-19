@@ -975,7 +975,9 @@ pre.rouge .ss {
 <li><a href="#lyra_parser">13.14. <code>lyra::parser</code></a></li>
 <li><a href="#lyra_composable_parser">13.15. <code>lyra::composable_parser</code></a></li>
 <li><a href="#lyra_bound_parser">13.16. <code>lyra::bound_parser</code></a></li>
-<li><a href="#lyra_val">13.17. <code>lyra::val</code></a></li>
+<li><a href="#lyra_printer">13.17. <code>lyra::printer</code></a></li>
+<li><a href="#lyra_ostream_printer">13.18. <code>lyra::ostream_printer</code></a></li>
+<li><a href="#lyra_val">13.19. <code>lyra::val</code></a></li>
 </ul>
 </li>
 <li><a href="#_history">14. History</a>
@@ -2218,6 +2220,21 @@ parsers. This means that there is no ordering enforced.</p>
 <p>Get a modifyable reference to one of the parsers specified.</p>
 </div>
 </div>
+<div class="sect4">
+<h5 id="_lyraoperator"><a class="anchor" href="#_lyraoperator"></a><code>lyra::operator&lt;&lt;</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="n">T</span> <span class="o">&amp;</span> <span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;</span> <span class="n">os</span><span class="p">,</span> <span class="n">arguments</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">a</span><span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Prints the help text for the arguments to the given stream <code>os</code>. The <code>os</code> stream
+is not used directly for printing out. Instead a <a href="#lyra_printer"><code>lyra::printer</code></a> object is
+created by calling <code>lyra::make_printer(os)</code>. This indirection allows one to
+customize how the output is generated.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -2323,6 +2340,21 @@ callbacks may have been called.</p>
 </div>
 <div class="paragraph">
 <p>Specifies the <a href="#lyra_option_style"><code>lyra::option_style</code></a> to accept for this instance.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lyraoperator_2"><a class="anchor" href="#_lyraoperator_2"></a><code>lyra::operator&lt;&lt;</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="n">T</span> <span class="o">&amp;</span> <span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;</span> <span class="n">os</span><span class="p">,</span> <span class="n">cli</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">c</span><span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Prints the help text for the cli to the given stream <code>os</code>. The <code>os</code> stream
+is not used directly for printing out. Instead a <a href="#lyra_printer"><code>lyra::printer</code></a> object is
+created by calling <code>lyra::make_printer(os)</code>. This indirection allows one to
+customize how the output is generated.</p>
 </div>
 </div>
 </div>
@@ -3028,7 +3060,8 @@ contain all the specified values.</p>
 <pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
 <span class="n">Derived</span><span class="o">&amp;</span> <span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">help</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">help_description_text</span><span class="p">);</span>
 <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Derived</span><span class="p">&gt;</span>
-<span class="n">Derived</span><span class="o">&amp;</span> <span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="k">operator</span><span class="p">()(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">help_description_text</span><span class="p">);</span></code></pre>
+<span class="n">Derived</span><span class="o">&amp;</span> <span class="n">bound_parser</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="k">operator</span><span class="p">()(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span>
+<span class="n">help_description_text</span><span class="p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3121,7 +3154,49 @@ or used in a <code>lyra::composable_parser</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_val"><a class="anchor" href="#lyra_val"></a>13.17. <code>lyra::val</code></h3>
+<h3 id="lyra_printer"><a class="anchor" href="#lyra_printer"></a>13.17. <code>lyra::printer</code></h3>
+<div class="paragraph">
+<p>A <code>printer</code> is an interface to manage formatting for output. Mostly the output
+is for the help text of lyra cli parsers. The interface abstracts away specifics
+of the output device and any visual arrangement, i.e. padding, coloring, etc.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="k">virtual</span> <span class="n">printer</span> <span class="o">&amp;</span> <span class="n">printer</span><span class="o">::</span><span class="n">heading</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">txt</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">virtual</span> <span class="n">printer</span> <span class="o">&amp;</span> <span class="n">printer</span><span class="o">::</span><span class="n">paragraph</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">txt</span><span class="p">,</span>
+    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">indent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">virtual</span> <span class="n">printer</span> <span class="o">&amp;</span> <span class="n">printer</span><span class="o">::</span><span class="n">option</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">opt</span><span class="p">,</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">description</span><span class="p">,</span>
+    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">indent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can customize the printing output by implementing a subclass of
+<code>lyra::printer</code> and implementing a corresponding <code>make_printer</code> factory
+function which matches the output to the printer. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="kr">inline</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">my_printer</span><span class="o">&gt;</span> <span class="n">make_printer</span><span class="p">(</span><span class="n">my_output</span> <span class="o">&amp;</span> <span class="n">os_</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">my_printer</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">my_output</span><span class="p">(</span><span class="n">os_</span><span class="p">));</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lyra_ostream_printer"><a class="anchor" href="#lyra_ostream_printer"></a>13.18. <code>lyra::ostream_printer</code></h3>
+<div class="paragraph">
+<p>A <a href="#lyra_printer"><code>lyra::printer</code></a> that uses <code>std::ostream</code> for output. This is the one used in
+the case of printing to the standard output channels of <code>std::cout</code> and
+<code>std::cerr</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lyra_val"><a class="anchor" href="#lyra_val"></a>13.19. <code>lyra::val</code></h3>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="c++"><span class="k">auto</span> <span class="nf">val</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;&amp;</span> <span class="n">v</span><span class="p">);</span>
@@ -3152,6 +3227,10 @@ be retrieved with the
 </li>
 <li>
 <p>Fix crash when no arguments are given to the parsing.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p><strong>New</strong>: Make printing help text configurable to make it possible to avoid using
+iostreams.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 </ul>
 </div>

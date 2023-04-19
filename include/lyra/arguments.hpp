@@ -11,9 +11,9 @@
 #include "lyra/detail/trait_utils.hpp"
 #include "lyra/exe_name.hpp"
 #include "lyra/parser.hpp"
+#include "lyra/printer.hpp"
 
 #include <functional>
-#include <sstream>
 #include <type_traits>
 
 namespace lyra {
@@ -103,37 +103,41 @@ class arguments : public parser
 	virtual std::string get_usage_text(
 		const option_style & style) const override
 	{
-		std::ostringstream os;
+		std::string result;
 		for (auto const & p : parsers)
 		{
 			std::string usage_text = p->get_usage_text(style);
 			if (usage_text.size() > 0)
 			{
-				if (os.tellp() != std::ostringstream::pos_type(0)) os << " ";
+				if (!result.empty()) result += " ";
 				if (p->is_group() && p->is_optional())
-					os << "[ " << usage_text << " ]";
+					((result += "[ ") += usage_text) += " ]";
 				else if (p->is_group())
-					os << "{ " << usage_text << " }";
+					((result += "{ ") += usage_text) += " }";
 				else if (p->is_optional())
-					os << "[" << usage_text << "]";
+					((result += "[") += usage_text) += "]";
 				else
-					os << usage_text;
+					result += usage_text;
 			}
 		}
-		return os.str();
+		return result;
 	}
 
 	virtual std::string get_description_text(
 		const option_style & style) const override
 	{
-		std::ostringstream os;
+		std::string result;
 		for (auto const & p : parsers)
 		{
 			if (p->is_group()) continue;
 			auto child_description = p->get_description_text(style);
-			if (!child_description.empty()) os << child_description << "\n";
+			if (!child_description.empty())
+			{
+				if (!result.empty()) result += "\n";
+				result += child_description;
+			}
 		}
-		return os.str();
+		return result;
 	}
 
 	// Return a container of the individual help text for the composed parsers.
@@ -359,12 +363,12 @@ class arguments : public parser
 		return make_clone<arguments>(this);
 	}
 
-	friend std::ostream & operator<<(
-		std::ostream & os, arguments const & parser)
+	template <typename T>
+	T & print_help(T & os) const
 	{
-		const option_style & s
-			= parser.opt_style ? *parser.opt_style : option_style::posix();
-		parser.print_help_text(os, s);
+		const option_style & s = opt_style ? *opt_style : option_style::posix();
+		std::unique_ptr<printer> p = make_printer(os);
+		this->print_help_text(*p, s);
 		return os;
 	}
 
@@ -540,6 +544,27 @@ template <typename T>
 T & arguments::get(size_t i)
 {
 	return static_cast<T &>(*parsers.at(i));
+}
+
+/* tag::reference[]
+=== `lyra::operator<<`
+
+[source]
+----
+template <typename T>
+T & operator<<(T & os, arguments const & a);
+----
+
+Prints the help text for the arguments to the given stream `os`. The `os` stream
+is not used directly for printing out. Instead a <<lyra_printer>> object is
+created by calling `lyra::make_printer(os)`. This indirection allows one to
+customize how the output is generated.
+
+end::reference[] */
+template <typename T>
+T & operator<<(T & os, arguments const & a)
+{
+	return a.print_help(os);
 }
 
 } // namespace lyra

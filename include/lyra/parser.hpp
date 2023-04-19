@@ -17,6 +17,7 @@
 #include "lyra/detail/trait_utils.hpp"
 #include "lyra/option_style.hpp"
 #include "lyra/parser_result.hpp"
+#include "lyra/printer.hpp"
 #include "lyra/val.hpp"
 
 #include <memory>
@@ -173,33 +174,24 @@ class parser
 		return "";
 	}
 
-	virtual parse_result parse(detail::token_iterator const & tokens,
-		const option_style & style) const = 0;
+	virtual parse_result parse(
+		detail::token_iterator const & tokens, const option_style & style) const
+		= 0;
 
 	protected:
-	void print_help_text(std::ostream & os, const option_style & style) const
+	void print_help_text(printer & p, const option_style & style) const
 	{
 		std::string usage_test = get_usage_text(style);
 		if (!usage_test.empty())
-			os << "USAGE:\n"
-			   << "  " << get_usage_text(style) << "\n\n";
+			p.heading("USAGE:").paragraph(get_usage_text(style), 2);
 
 		std::string description_test = get_description_text(style);
-		if (!description_test.empty())
-			os << get_description_text(style) << "\n";
+		if (!description_test.empty()) p.paragraph(get_description_text(style));
 
-		os << "OPTIONS, ARGUMENTS:\n";
-		const std::string::size_type left_col_size = 26 - 3;
-		const std::string left_pad(left_col_size, ' ');
+		p.heading("OPTIONS, ARGUMENTS:");
 		for (auto const & cols : get_help_text(style))
 		{
-			if (cols.option.size() > left_pad.size())
-				os << "  " << cols.option << "\n  " << left_pad << " "
-				   << cols.description << "\n";
-			else
-				os << "  " << cols.option
-				   << left_pad.substr(0, left_pad.size() - cols.option.size())
-				   << " " << cols.description << "\n";
+			p.option(cols.option, cols.description, 2);
 		}
 	}
 };
@@ -461,7 +453,8 @@ end::reference[] */
 template <typename Derived>
 Derived& bound_parser<Derived>::help(std::string const& help_description_text);
 template <typename Derived>
-Derived& bound_parser<Derived>::operator()(std::string const& help_description_text);
+Derived& bound_parser<Derived>::operator()(std::string const&
+help_description_text);
 ----
 
 Defines the help description of an argument.
@@ -474,7 +467,8 @@ Derived & bound_parser<Derived>::help(const std::string & help_description_text)
 	return static_cast<Derived &>(*this);
 }
 template <typename Derived>
-Derived & bound_parser<Derived>::operator()(std::string const & help_description_text)
+Derived & bound_parser<Derived>::operator()(
+	std::string const & help_description_text)
 {
 	return this->help(help_description_text);
 }
