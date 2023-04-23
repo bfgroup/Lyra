@@ -1747,7 +1747,12 @@ class parser
 		= 0;
 
 	protected:
-	void print_help_text(printer & p, const option_style & style) const
+	virtual void print_help_text(printer & p, const option_style & style) const
+	{
+		print_help_text_summary(p, style);
+		print_help_text_details(p, style);
+	}
+	virtual void print_help_text_summary(printer & p, const option_style & style) const
 	{
 		std::string usage_test = get_usage_text(style);
 		if (!usage_test.empty())
@@ -1755,7 +1760,9 @@ class parser
 
 		std::string description_test = get_description_text(style);
 		if (!description_test.empty()) p.paragraph(get_description_text(style));
-
+	}
+	virtual void print_help_text_details(printer & p, const option_style & style) const
+	{
 		p.heading("OPTIONS, ARGUMENTS:");
 		for (auto const & cols : get_help_text(style))
 		{
@@ -2580,7 +2587,6 @@ class arguments : public parser
 		help_text text;
 		for (auto const & p : parsers)
 		{
-			if (p->is_group()) text.push_back({ "", "" });
 			auto child_help = p->get_help_text(style);
 			text.insert(text.end(), child_help.begin(), child_help.end());
 		}
@@ -2774,9 +2780,8 @@ class arguments : public parser
 	template <typename T>
 	T & print_help(T & os) const
 	{
-		const option_style & s = opt_style ? *opt_style : option_style::posix();
 		std::unique_ptr<printer> p = make_printer(os);
-		this->print_help_text(*p, s);
+		this->print_help_text(*p, get_option_style());
 		return os;
 	}
 
@@ -2792,10 +2797,13 @@ class arguments : public parser
 
 	protected:
 	std::shared_ptr<option_style> opt_style;
-
-	private:
 	std::vector<std::unique_ptr<parser>> parsers;
 	evaluation eval_mode = any;
+
+	option_style get_option_style() const
+	{
+		return opt_style ? *opt_style : option_style::posix();
+	}
 };
 
 /* tag::reference[]
@@ -3817,9 +3825,48 @@ class command : public group
 	template <typename P>
 	command & operator|=(P const & p);
 
+	command & brief_help(bool brief = true);
+
 	virtual std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<command>(this);
+	}
+
+	virtual std::string get_usage_text(
+		const option_style & style) const override
+	{
+		return parsers[0]->get_usage_text(style) + " "
+			+ parsers[1]->get_usage_text(style);
+	}
+
+	virtual help_text get_help_text(const option_style & style) const override
+	{
+		if (expanded_help_details)
+		{
+			help_text text;
+			text.push_back({ "", "" });
+			auto c = parsers[0]->get_help_text(style);
+			text.insert(text.end(), c.begin(), c.end());
+			text.push_back({ "", "" });
+			auto o = parsers[1]->get_help_text(style);
+			text.insert(text.end(), o.begin(), o.end());
+			return text;
+		}
+		else
+			return parsers[0]->get_help_text(style);
+	}
+
+	protected:
+	bool expanded_help_details = true;
+
+	virtual void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		p.heading("OPTIONS, ARGUMENTS:");
+		for (auto const & cols : parsers[1]->get_help_text(style))
+		{
+			p.option(cols.option, cols.description, 2);
+		}
 	}
 };
 
@@ -3915,6 +3962,28 @@ command & command::operator|=(P const & p)
 {
 	return this->add_argument(p);
 }
+
+/* tag::reference[]
+[#lyra_command_abrief_help]
+=== `lyra::command::brief_help`
+
+[source]
+----
+command & command::brief_help(bool brief = true);
+----
+
+Enables, or disables with `false`, brief output of the top level help. Brief
+output only prints out the command name and description for the top level
+help (i.e. `std::cout << cli`). You can output the full command, options, and
+arguments by printing the command (i.e. `std::cout << command`).
+
+end::reference[] */
+inline command & command::brief_help(bool brief)
+{
+	expanded_help_details = !brief;
+	return *this;
+}
+
 
 } // namespace lyra
 

@@ -146,7 +146,6 @@ class arguments : public parser
 		help_text text;
 		for (auto const & p : parsers)
 		{
-			if (p->is_group()) text.push_back({ "", "" });
 			auto child_help = p->get_help_text(style);
 			text.insert(text.end(), child_help.begin(), child_help.end());
 		}
@@ -366,9 +365,8 @@ class arguments : public parser
 	template <typename T>
 	T & print_help(T & os) const
 	{
-		const option_style & s = opt_style ? *opt_style : option_style::posix();
 		std::unique_ptr<printer> p = make_printer(os);
-		this->print_help_text(*p, s);
+		this->print_help_text(*p, get_option_style());
 		return os;
 	}
 
@@ -384,10 +382,13 @@ class arguments : public parser
 
 	protected:
 	std::shared_ptr<option_style> opt_style;
-
-	private:
 	std::vector<std::unique_ptr<parser>> parsers;
 	evaluation eval_mode = any;
+
+	option_style get_option_style() const
+	{
+		return opt_style ? *opt_style : option_style::posix();
+	}
 };
 
 /* tag::reference[]

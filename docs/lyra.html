@@ -2434,6 +2434,20 @@ The argument is added to the sub-group argument instead of this one. Hence it
 has the effect of adding arguments <strong>after</strong> the command name.</p>
 </div>
 </div>
+<div class="sect4">
+<h5 id="lyra_command_abrief_help"><a class="anchor" href="#lyra_command_abrief_help"></a><code>lyra::command::brief_help</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="n">command</span> <span class="o">&amp;</span> <span class="n">command</span><span class="o">::</span><span class="n">brief_help</span><span class="p">(</span><span class="kt">bool</span> <span class="n">brief</span> <span class="o">=</span> <span class="nb">true</span><span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Enables, or disables with <code>false</code>, brief output of the top level help. Brief
+output only prints out the command name and description for the top level
+help (i.e. <code>std::cout &lt;&lt; cli</code>). You can output the full command, options, and
+arguments by printing the command (i.e. <code>std::cout &lt;&lt; command</code>).</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -3231,6 +3245,10 @@ be retrieved with the
 <li>
 <p><strong>New</strong>: Make printing help text configurable to make it possible to avoid using
 iostreams.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p><strong>New</strong>: Implements a new <code>brief_help</code> mode for a <code>command</code> that only prints
+out the command name and description.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 </ul>
 </div>

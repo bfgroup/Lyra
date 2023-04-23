@@ -61,10 +61,52 @@ class command : public group
 	template <typename P>
 	command & operator|=(P const & p);
 
+	// Settings.
+	command & brief_help(bool brief = true);
+
 	// Internal.
 	virtual std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<command>(this);
+	}
+
+	virtual std::string get_usage_text(
+		const option_style & style) const override
+	{
+		return parsers[0]->get_usage_text(style) + " "
+			+ parsers[1]->get_usage_text(style);
+	}
+
+	virtual help_text get_help_text(const option_style & style) const override
+	{
+		if (expanded_help_details)
+		{
+			help_text text;
+			text.push_back({ "", "" });
+			auto c = parsers[0]->get_help_text(style);
+			text.insert(text.end(), c.begin(), c.end());
+			text.push_back({ "", "" });
+			auto o = parsers[1]->get_help_text(style);
+			text.insert(text.end(), o.begin(), o.end());
+			return text;
+		}
+		else
+			return parsers[0]->get_help_text(style);
+	}
+
+	protected:
+	bool expanded_help_details = true;
+
+	virtual void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		// This avoid printing out the "internal" group brackets "{}" for the
+		// command arguments.
+		p.heading("OPTIONS, ARGUMENTS:");
+		for (auto const & cols : parsers[1]->get_help_text(style))
+		{
+			p.option(cols.option, cols.description, 2);
+		}
 	}
 };
 
@@ -160,6 +202,28 @@ command & command::operator|=(P const & p)
 {
 	return this->add_argument(p);
 }
+
+/* tag::reference[]
+[#lyra_command_abrief_help]
+=== `lyra::command::brief_help`
+
+[source]
+----
+command & command::brief_help(bool brief = true);
+----
+
+Enables, or disables with `false`, brief output of the top level help. Brief
+output only prints out the command name and description for the top level
+help (i.e. `std::cout << cli`). You can output the full command, options, and
+arguments by printing the command (i.e. `std::cout << command`).
+
+end::reference[] */
+inline command & command::brief_help(bool brief)
+{
+	expanded_help_details = !brief;
+	return *this;
+}
+
 
 } // namespace lyra
 
