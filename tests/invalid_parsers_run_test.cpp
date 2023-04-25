@@ -33,8 +33,7 @@ int main()
 		auto result = cli.parse({ "TestApp", "-o", "filename" });
 		test(REQUIRE(!result));
 		test(REQUIRE(
-			result.message().find("Option name must begin with '-'")
-			== 0));
+			result.message().find("Option name must begin with '-'") == 0));
 	}
 
 	return test;

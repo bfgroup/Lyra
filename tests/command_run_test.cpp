@@ -14,9 +14,7 @@ int main(int, const char **)
 	bfg::mini_test::scope test;
 
 	{
-		auto cli = lyra::cli()
-			| command("one")
-			| command("two");
+		auto cli = lyra::cli() | command("one") | command("two");
 		test(REQUIRE(cli.parse({ "TestApp", "one" })));
 		test(REQUIRE(cli.parse({ "TestApp", "two" })));
 		test(REQUIRE(cli.parse({ "TestApp" })));
@@ -24,8 +22,7 @@ int main(int, const char **)
 	{
 		std::string one = "one";
 		int two = 2;
-		auto cli = lyra::cli()
-			| command("one").add_argument(arg(one, "one"))
+		auto cli = lyra::cli() | command("one").add_argument(arg(one, "one"))
 			| command("two").add_argument(arg(two, "two"));
 		test(REQUIRE(cli.parse({ "TestApp", "one" })));
 		test(REQUIRE(cli.parse({ "TestApp", "two" })));
@@ -42,12 +39,11 @@ int main(int, const char **)
 		bool d = false;
 		auto cli = lyra::cli()
 			| command("one")
-				.add_argument(opt(a, "a").name("--a").optional())
-				.add_argument(opt(b, "b").name("--b").optional())
+				  .add_argument(opt(a, "a").name("--a").optional())
+				  .add_argument(opt(b, "b").name("--b").optional())
 			| command("two")
-				.add_argument(opt(c, "c").name("--c").optional())
-				.add_argument(opt(d, "d").name("--d").optional())
-			;
+				  .add_argument(opt(c, "c").name("--c").optional())
+				  .add_argument(opt(d, "d").name("--d").optional());
 		test(REQUIRE(cli.parse({ "TestApp", "one", "--a=1" })));
 		test(REQUIRE(cli.parse({ "TestApp", "two", "--c=1" })));
 		test(REQUIRE(cli.parse({ "TestApp" })));

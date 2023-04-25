@@ -184,7 +184,8 @@ class parser
 		print_help_text_summary(p, style);
 		print_help_text_details(p, style);
 	}
-	virtual void print_help_text_summary(printer & p, const option_style & style) const
+	virtual void print_help_text_summary(
+		printer & p, const option_style & style) const
 	{
 		std::string usage_test = get_usage_text(style);
 		if (!usage_test.empty())
@@ -193,7 +194,8 @@ class parser
 		std::string description_test = get_description_text(style);
 		if (!description_test.empty()) p.paragraph(get_description_text(style));
 	}
-	virtual void print_help_text_details(printer & p, const option_style & style) const
+	virtual void print_help_text_details(
+		printer & p, const option_style & style) const
 	{
 		p.heading("OPTIONS, ARGUMENTS:");
 		for (auto const & cols : get_help_text(style))

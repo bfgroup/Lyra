@@ -10,7 +10,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <iostream>
 #include <lyra/lyra.hpp>
 
-int main(int argc, const char** argv)
+int main(int argc, const char ** argv)
 {
 	// Where we read in the argument values:
 	int width = 0;
@@ -20,12 +20,10 @@ int main(int argc, const char** argv)
 	// The parser with the multiple option arguments. They are composed
 	// together by the "|" operator.
 	auto cli
-		= lyra::opt(width, "width")
-			  ["-w"]["--width"]("How wide should it be?")
-		| lyra::opt(name, "name")
-			  ["-n"]["--name"]("By what name should I be known")
-		| lyra::opt(doIt)
-			  ["-d"]["--doit"]("Do the thing");
+		= lyra::opt(width, "width")["-w"]["--width"]("How wide should it be?")
+		| lyra::opt(name, "name")["-n"]["--name"](
+			"By what name should I be known")
+		| lyra::opt(doIt)["-d"]["--doit"]("Do the thing");
 
 	// ...
 	// end::part1[]
@@ -42,7 +40,8 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	std::cout << "width = " << width << ", name = " << name << ", doIt = " << doIt << "\n";
+	std::cout << "width = " << width << ", name = " << name
+			  << ", doIt = " << doIt << "\n";
 	return 0;
 }
 // end::part2[]

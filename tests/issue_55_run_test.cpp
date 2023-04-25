@@ -8,9 +8,9 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include "mini_test.hpp"
 #include <lyra/lyra.hpp>
 
+#include <cstdint>
 #include <iostream>
 #include <string>
-#include <cstdint>
 
 int main()
 {
@@ -29,29 +29,25 @@ int main()
 
 	{
 		i32 = 7;
-		auto result = cli.parse(
-			{ "test_app", "--i32", "-1" });
+		auto result = cli.parse({ "test_app", "--i32", "-1" });
 		test(REQUIRE(result));
 		test(REQUIRE(i32 == -1));
 	}
 	{
 		u32 = 7;
-		auto result = cli.parse(
-			{ "test_app", "--u32", "-1" });
+		auto result = cli.parse({ "test_app", "--u32", "-1" });
 		test(REQUIRE(!result));
 		test(REQUIRE(u32 == 7));
 	}
 	{
 		i64 = 7;
-		auto result = cli.parse(
-			{ "test_app", "--i64", "-1" });
+		auto result = cli.parse({ "test_app", "--i64", "-1" });
 		test(REQUIRE(result));
 		test(REQUIRE(i64 == -1));
 	}
 	{
 		u64 = 7;
-		auto result = cli.parse(
-			{ "test_app", "--u64", "-1" });
+		auto result = cli.parse({ "test_app", "--u64", "-1" });
 		test(REQUIRE(!result));
 		test(REQUIRE(u64 == 7));
 	}

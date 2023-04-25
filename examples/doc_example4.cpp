@@ -9,13 +9,12 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <iostream>
 #include <lyra/lyra.hpp>
 
-int main(int argc, const char** argv)
+int main(int argc, const char ** argv)
 {
 	int repeat = 0;
 	std::string message;
 	// Ex: <exe> --repeat=10 "Hello world."
-	auto cli
-		= lyra::opt(repeat, "-repeat")["--repeat"]
+	auto cli = lyra::opt(repeat, "-repeat")["--repeat"]
 		| lyra::arg(message, "message");
 	if (cli.parse({ argc, argv }))
 	{

@@ -5,7 +5,6 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-
 /* tag::doc[]
 
 = More Main
@@ -30,13 +29,11 @@ end::doc[] */
 
 int main(int argc, const char ** argv)
 {
-	return lyra::main()
-		(lyra::opt(lyra::val(0), "x")["-x"]) // <1>
-		(lyra::opt(lyra::val(0), "y")["-y"])
-		(lyra::arg(lyra::val(5), "z")) // <2>
-		(argc, argv, [](lyra::main & m)
-		{
-			std::cout << (int(m["-x"]) + int(m["-y"]))*int(m["z"]) << "\n";
+	return lyra::main()(lyra::opt(lyra::val(0), "x")["-x"]) // <1>
+		(lyra::opt(lyra::val(0), "y")["-y"])(
+			lyra::arg(lyra::val(5), "z")) // <2>
+		(argc, argv, [](lyra::main & m) {
+			std::cout << (int(m["-x"]) + int(m["-y"])) * int(m["z"]) << "\n";
 			return 0;
 		});
 }

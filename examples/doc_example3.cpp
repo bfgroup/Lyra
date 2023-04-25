@@ -10,7 +10,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <lyra/lyra.hpp>
 
 // tag::part1[]
-int main(int argc, const char** argv)
+int main(int argc, const char ** argv)
 {
 	// Where we read in the argument values:
 	int width = 0;
@@ -19,14 +19,11 @@ int main(int argc, const char** argv)
 	bool show_help = false; // <1>
 
 	// The parser with the multiple option arguments and help option.
-	auto cli
-		= lyra::help(show_help) // <2>
-		| lyra::opt(width, "width")
-			  ["-w"]["--width"]("How wide should it be?")
-		| lyra::opt(name, "name")
-			  ["-n"]["--name"]("By what name should I be known")
-		| lyra::opt(doIt)
-			  ["-d"]["--doit"]("Do the thing");
+	auto cli = lyra::help(show_help) // <2>
+		| lyra::opt(width, "width")["-w"]["--width"]("How wide should it be?")
+		| lyra::opt(name, "name")["-n"]["--name"](
+			"By what name should I be known")
+		| lyra::opt(doIt)["-d"]["--doit"]("Do the thing");
 
 	// ...
 	// end::part1[]
@@ -51,7 +48,8 @@ int main(int argc, const char** argv)
 		return 0;
 	}
 
-	std::cout << "width = " << width << ", name = " << name << ", doIt = " << doIt << "\n";
+	std::cout << "width = " << width << ", name = " << name
+			  << ", doIt = " << doIt << "\n";
 	return 0;
 }
 // end::part2[]

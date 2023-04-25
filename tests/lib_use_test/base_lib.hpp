@@ -7,7 +7,6 @@ http://www.boost.org/LICENSE_1_0.txt)
 
 #include <lyra/lyra.hpp>
 
-namespace L
-{
+namespace L {
 int lib_args(int argc, const char ** argv);
 }

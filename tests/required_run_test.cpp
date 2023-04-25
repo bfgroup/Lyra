@@ -5,8 +5,8 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <lyra/lyra.hpp>
 #include "mini_test.hpp"
+#include <lyra/lyra.hpp>
 
 int main()
 {
@@ -17,65 +17,47 @@ int main()
 	{
 		std::string name;
 		int number = 1;
-		auto cli =
-			opt(name, "name")["--name"]
-			| opt(number, "number")["--number"];
+		auto cli
+			= opt(name, "name")["--name"] | opt(number, "number")["--number"];
 		auto result = cli.parse({ "TestApp", "--name", "foo" });
-		test
-			(REQUIRE(result))
-			(REQUIRE(name == "foo"))
-			(REQUIRE(number == 1));
+		test(REQUIRE(result))(REQUIRE(name == "foo"))(REQUIRE(number == 1));
 	}
 	// .optional() and value present
 	{
 		std::string name;
 		int number = 1;
-		auto cli =
-			opt(name, "name")["--name"].optional()
+		auto cli = opt(name, "name")["--name"].optional()
 			| opt(number, "number")["--number"];
 		auto result = cli.parse({ "TestApp", "--name", "foo" });
-		test
-			(REQUIRE(result))
-			(REQUIRE(name == "foo"))
-			(REQUIRE(number == 1));
+		test(REQUIRE(result))(REQUIRE(name == "foo"))(REQUIRE(number == 1));
 	}
 	// .optional() and value not present
 	{
 		std::string name;
 		int number = 1;
-		auto cli =
-			opt(name, "name")["--name"].optional()
+		auto cli = opt(name, "name")["--name"].optional()
 			| opt(number, "number")["--number"];
 		auto result = cli.parse({ "TestApp", "--number", "42" });
-		test
-			(REQUIRE(result))
-			(REQUIRE(name == ""))
-			(REQUIRE(number == 42));
+		test(REQUIRE(result))(REQUIRE(name == ""))(REQUIRE(number == 42));
 	}
 	// .required() and value present
 	{
 		std::string name;
 		int number = 1;
-		auto cli =
-			opt(name, "name")["--name"].required()
+		auto cli = opt(name, "name")["--name"].required()
 			| opt(number, "number")["--number"];
 		auto result = cli.parse({ "TestApp", "--name", "foo" });
-		test
-			(REQUIRE(result))
-			(REQUIRE(name == "foo"))
-			(REQUIRE(number == 1));
+		test(REQUIRE(result))(REQUIRE(name == "foo"))(REQUIRE(number == 1));
 	}
 	// .required() and value not present
 	{
 		std::string name;
 		int number = 1;
-		auto cli =
-			opt(name, "name")["--name"].required()
+		auto cli = opt(name, "name")["--name"].required()
 			| opt(number, "number")["--number"];
 		auto result = cli.parse({ "TestApp", "--number", "42" });
-		test
-			(REQUIRE(!result))
-			(REQUIRE(result.message() == "Expected: --name <name>"));
+		test(REQUIRE(!result))(
+			REQUIRE(result.message() == "Expected: --name <name>"));
 	}
 
 	return test;
