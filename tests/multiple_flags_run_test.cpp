@@ -5,34 +5,26 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <lyra/lyra.hpp>
 #include "mini_test.hpp"
+#include <lyra/lyra.hpp>
 
 int main()
 {
-    using namespace lyra;
-    bfg::mini_test::scope test;
+	using namespace lyra;
+	bfg::mini_test::scope test;
 
-    {
-        bool a = false, b = false, c = false;
-        auto cli = opt( a )["-a"] | opt( b )["-b"] | opt( c )["-c"];
-        auto result = cli.parse({ "TestApp", "-a", "-b", "-c" });
-        test
-            (REQUIRE(result))
-            (REQUIRE(a))
-            (REQUIRE(b))
-            (REQUIRE(c));
-    }
-    {
-        bool a = false, b = false, c = false;
-        auto cli = opt( a )["-a"] | opt( b )["-b"] | opt( c )["-c"];
-        auto result = cli.parse({ "TestApp", "-abc" });
-        test
-            (REQUIRE(result))
-            (REQUIRE(a))
-            (REQUIRE(b))
-            (REQUIRE(c));
-    }
+	{
+		bool a = false, b = false, c = false;
+		auto cli = opt(a)["-a"] | opt(b)["-b"] | opt(c)["-c"];
+		auto result = cli.parse({ "TestApp", "-a", "-b", "-c" });
+		test(REQUIRE(result))(REQUIRE(a))(REQUIRE(b))(REQUIRE(c));
+	}
+	{
+		bool a = false, b = false, c = false;
+		auto cli = opt(a)["-a"] | opt(b)["-b"] | opt(c)["-c"];
+		auto result = cli.parse({ "TestApp", "-abc" });
+		test(REQUIRE(result))(REQUIRE(a))(REQUIRE(b))(REQUIRE(c));
+	}
 
-    return test;
+	return test;
 }

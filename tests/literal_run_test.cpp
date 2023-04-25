@@ -5,20 +5,20 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <lyra/lyra.hpp>
 #include "mini_test.hpp"
+#include <lyra/lyra.hpp>
 
 int main()
 {
-    using namespace lyra;
-    bfg::mini_test::scope test;
-    std::string name;
-    auto p = cli() | literal("one");
+	using namespace lyra;
+	bfg::mini_test::scope test;
+	std::string name;
+	auto p = cli() | literal("one");
 
-    test(REQUIRE(p.parse( { "TestApp", "one" } )));
-    test(REQUIRE(!p.parse( { "TestApp", "two" } )));
-    test(REQUIRE(!p.parse( { "TestApp", "one", "two" } )));
-    test(REQUIRE(!p.parse( { "TestApp", "two", "one" } )));
+	test(REQUIRE(p.parse({ "TestApp", "one" })));
+	test(REQUIRE(!p.parse({ "TestApp", "two" })));
+	test(REQUIRE(!p.parse({ "TestApp", "one", "two" })));
+	test(REQUIRE(!p.parse({ "TestApp", "two", "one" })));
 
-    return test;
+	return test;
 }

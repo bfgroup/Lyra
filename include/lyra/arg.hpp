@@ -41,8 +41,7 @@ class arg : public bound_parser<arg>
 				for (size_t i = 0; i < c.minimum; ++i)
 					(((text += (i > 0 ? " " : "")) += "<") += m_hint) += ">";
 				if (c.is_unbounded())
-					(((text += (c.is_required() ? " " : "")) += "[<")
-						+= m_hint)
+					(((text += (c.is_required() ? " " : "")) += "[<") += m_hint)
 						+= ">...]";
 			}
 			else if (c.is_unbounded())

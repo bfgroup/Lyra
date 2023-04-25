@@ -10,18 +10,17 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <iostream>
 #include <lyra/lyra.hpp>
 
-int main(int argc, const char** argv)
+int main(int argc, const char ** argv)
 {
 	// Where we read in the argument value:
 	int width = 0;
 
 	// The parser with the one option argument:
 	auto cli = lyra::cli();
-	cli.add_argument(
-		lyra::opt(width, "width")
-			.name("-w")
-			.name("--width")
-			.help("How wide should it be?"));
+	cli.add_argument(lyra::opt(width, "width")
+						 .name("-w")
+						 .name("--width")
+						 .help("How wide should it be?"));
 
 	// Parse the program arguments:
 	auto result = cli.parse({ argc, argv });

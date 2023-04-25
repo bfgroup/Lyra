@@ -30,7 +30,8 @@ int main(int argc, const char ** argv)
 	return lyra::main() // <1>
 		("-x", 0)("-y", 0)("z", 5) // <2>
 		(argc, argv, [](lyra::main & m) { // <3>
-			std::cout << (int(m["-x"]) + int(m["-y"])) * int(m["z"]) << "\n"; // <4>
+			std::cout << (int(m["-x"]) + int(m["-y"])) * int(m["z"])
+					  << "\n"; // <4>
 			return 0; // <5>
 		});
 }

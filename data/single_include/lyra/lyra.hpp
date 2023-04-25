@@ -8,37 +8,34 @@
 #ifndef LYRA_LYRA_HPP
 #define LYRA_LYRA_HPP
 
-
 #ifndef LYRA_VERSION_HPP
-#define LYRA_VERSION_HPP
+#	define LYRA_VERSION_HPP
 
-#define LYRA_VERSION_MAJOR 1
-#define LYRA_VERSION_MINOR 7
-#define LYRA_VERSION_PATCH 0
+#	define LYRA_VERSION_MAJOR 1
+#	define LYRA_VERSION_MINOR 7
+#	define LYRA_VERSION_PATCH 0
 
-#define LYRA_VERSION \
-	(((LYRA_VERSION_MAJOR)*10000000) + ((LYRA_VERSION_MINOR)*100000) \
-		+ (LYRA_VERSION_PATCH))
+#	define LYRA_VERSION \
+		(((LYRA_VERSION_MAJOR)*10000000) + ((LYRA_VERSION_MINOR)*100000) \
+			+ (LYRA_VERSION_PATCH))
 
 #endif // LYRA_VERSION_HPP
 
-
 #ifndef LYRA_ARG_HPP
-#define LYRA_ARG_HPP
+#	define LYRA_ARG_HPP
 
+#	ifndef LYRA_DETAIL_PRINT_HPP
+#		define LYRA_DETAIL_PRINT_HPP
 
-#ifndef LYRA_DETAIL_PRINT_HPP
-#define LYRA_DETAIL_PRINT_HPP
+#		if LYRA_DEBUG
+#			include <iostream>
+#		endif
 
-#if LYRA_DEBUG
-#	include <iostream>
-#endif
+#		include <string>
 
-#include <string>
-
-#ifndef LYRA_DEBUG
-#	define LYRA_DEBUG 0
-#endif
+#		ifndef LYRA_DEBUG
+#			define LYRA_DEBUG 0
+#		endif
 
 namespace lyra { namespace detail {
 
@@ -52,7 +49,7 @@ std::string to_string(T && t)
 
 using std::to_string;
 
-#if LYRA_DEBUG
+#		if LYRA_DEBUG
 
 struct print
 {
@@ -95,30 +92,29 @@ struct print
 	}
 };
 
-#endif
+#		endif
 
 }} // namespace lyra::detail
 
-#if LYRA_DEBUG
-#	define LYRA_PRINT_SCOPE ::lyra::detail::print lyra_print_scope
-#	define LYRA_PRINT_DEBUG lyra_print_scope.debug
-#else
-#	define LYRA_PRINT_SCOPE(...) while (false)
-#	define LYRA_PRINT_DEBUG(...) while (false)
-#endif
+#		if LYRA_DEBUG
+#			define LYRA_PRINT_SCOPE ::lyra::detail::print lyra_print_scope
+#			define LYRA_PRINT_DEBUG lyra_print_scope.debug
+#		else
+#			define LYRA_PRINT_SCOPE(...) while (false)
+#			define LYRA_PRINT_DEBUG(...) while (false)
+#		endif
 
-#endif
+#	endif
 
-#ifndef LYRA_PARSER_HPP
-#define LYRA_PARSER_HPP
+#	ifndef LYRA_PARSER_HPP
+#		define LYRA_PARSER_HPP
 
+#		ifndef LYRA_ARGS_HPP
+#			define LYRA_ARGS_HPP
 
-#ifndef LYRA_ARGS_HPP
-#define LYRA_ARGS_HPP
-
-#include <initializer_list>
-#include <string>
-#include <vector>
+#			include <initializer_list>
+#			include <string>
+#			include <vector>
 
 namespace lyra {
 
@@ -171,21 +167,19 @@ class args
 
 } // namespace lyra
 
-#endif
+#		endif
 
-#ifndef LYRA_DETAIL_BOUND_HPP
-#define LYRA_DETAIL_BOUND_HPP
+#		ifndef LYRA_DETAIL_BOUND_HPP
+#			define LYRA_DETAIL_BOUND_HPP
 
+#			ifndef LYRA_DETAIL_FROM_STRING_HPP
+#				define LYRA_DETAIL_FROM_STRING_HPP
 
-#ifndef LYRA_DETAIL_FROM_STRING_HPP
-#define LYRA_DETAIL_FROM_STRING_HPP
+#				ifndef LYRA_DETAIL_TRAIT_UTILS_HPP
+#					define LYRA_DETAIL_TRAIT_UTILS_HPP
 
-
-#ifndef LYRA_DETAIL_TRAIT_UTILS_HPP
-#define LYRA_DETAIL_TRAIT_UTILS_HPP
-
-#include <type_traits>
-#include <utility>
+#					include <type_traits>
+#					include <utility>
 
 namespace lyra { namespace detail {
 
@@ -241,20 +235,20 @@ struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
 
 }} // namespace lyra::detail
 
-#endif
+#				endif
 
-#include <sstream>
-#include <string>
-#include <type_traits>
+#				include <sstream>
+#				include <string>
+#				include <type_traits>
 
-#ifndef LYRA_CONFIG_OPTIONAL_TYPE
-#	ifdef __has_include
-#		if __has_include(<optional>) && __cplusplus >= 201703L
-#			include <optional>
-#			define LYRA_CONFIG_OPTIONAL_TYPE std::optional
-#		endif
-#	endif
-#endif
+#				ifndef LYRA_CONFIG_OPTIONAL_TYPE
+#					ifdef __has_include
+#						if __has_include(<optional>) && __cplusplus >= 201703L
+#							include <optional>
+#							define LYRA_CONFIG_OPTIONAL_TYPE std::optional
+#						endif
+#					endif
+#				endif
 
 namespace lyra { namespace detail {
 
@@ -285,7 +279,7 @@ inline bool to_string(bool source, std::string & target)
 	return true;
 }
 
-#ifdef LYRA_CONFIG_OPTIONAL_TYPE
+#				ifdef LYRA_CONFIG_OPTIONAL_TYPE
 template <typename T>
 inline bool to_string(
 	LYRA_CONFIG_OPTIONAL_TYPE<T> & source, std::string & target)
@@ -296,7 +290,7 @@ inline bool to_string(
 		target = "<nullopt>";
 	return true;
 }
-#endif // LYRA_CONFIG_OPTIONAL_TYPE
+#				endif // LYRA_CONFIG_OPTIONAL_TYPE
 
 template <typename, typename = void>
 struct is_convertible_from_string : std::false_type
@@ -383,7 +377,7 @@ inline bool from_string(S const & source, bool & target)
 	return true;
 }
 
-#ifdef LYRA_CONFIG_OPTIONAL_TYPE
+#				ifdef LYRA_CONFIG_OPTIONAL_TYPE
 template <typename T>
 struct is_convertible_from_string<T,
 	typename std::enable_if<
@@ -410,29 +404,26 @@ inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
 		return str_result;
 	}
 }
-#endif // LYRA_CONFIG_OPTIONAL_TYPE
+#				endif // LYRA_CONFIG_OPTIONAL_TYPE
 
 }} // namespace lyra::detail
 
-#endif
+#			endif
 
-#ifndef LYRA_DETAIL_INVOKE_LAMBDA_HPP
-#define LYRA_DETAIL_INVOKE_LAMBDA_HPP
+#			ifndef LYRA_DETAIL_INVOKE_LAMBDA_HPP
+#				define LYRA_DETAIL_INVOKE_LAMBDA_HPP
 
+#				ifndef LYRA_DETAIL_PARSE_HPP
+#					define LYRA_DETAIL_PARSE_HPP
 
-#ifndef LYRA_DETAIL_PARSE_HPP
-#define LYRA_DETAIL_PARSE_HPP
+#					ifndef LYRA_PARSER_RESULT_HPP
+#						define LYRA_PARSER_RESULT_HPP
 
+#						ifndef LYRA_DETAIL_RESULT_HPP
+#							define LYRA_DETAIL_RESULT_HPP
 
-#ifndef LYRA_PARSER_RESULT_HPP
-#define LYRA_PARSER_RESULT_HPP
-
-
-#ifndef LYRA_DETAIL_RESULT_HPP
-#define LYRA_DETAIL_RESULT_HPP
-
-#include <memory>
-#include <string>
+#							include <memory>
+#							include <string>
 
 namespace lyra { namespace detail {
 
@@ -540,7 +531,6 @@ class basic_result : public result_value_base<T>
 		: result_value_base<T>(other)
 	{}
 
-
 	static basic_result ok(value_type const & val)
 	{
 		return basic_result(result_base::result_kind::ok, val);
@@ -566,7 +556,6 @@ class basic_result<void> : public result_value_base<void>
 		: result_value_base<void>(other)
 	{}
 
-
 	static basic_result ok()
 	{
 		return basic_result(result_base::result_kind::ok);
@@ -583,8 +572,8 @@ class basic_result<void> : public result_value_base<void>
 
 }} // namespace lyra::detail
 
-#endif
-#include <string>
+#						endif
+#						include <string>
 
 namespace lyra {
 
@@ -612,9 +601,9 @@ using parser_result = detail::basic_result<parser_result_type>;
 
 } // namespace lyra
 
-#endif
+#					endif
 
-#include <string>
+#					include <string>
 
 namespace lyra { namespace detail {
 
@@ -630,12 +619,12 @@ parser_result parse_string(S const & source, T & target)
 
 }} // namespace lyra::detail
 
-#endif
+#				endif
 
-#ifndef LYRA_DETAIL_UNARY_LAMBDA_TRAITS_HPP
-#define LYRA_DETAIL_UNARY_LAMBDA_TRAITS_HPP
+#				ifndef LYRA_DETAIL_UNARY_LAMBDA_TRAITS_HPP
+#					define LYRA_DETAIL_UNARY_LAMBDA_TRAITS_HPP
 
-#include <type_traits>
+#					include <type_traits>
 
 namespace lyra { namespace detail {
 
@@ -660,7 +649,7 @@ struct unary_lambda_traits<ReturnT (ClassT::*)(ArgT) const>
 
 }} // namespace lyra::detail
 
-#endif
+#				endif
 
 namespace lyra { namespace detail {
 
@@ -698,8 +687,8 @@ inline parser_result invokeLambda(L const & lambda, std::string const & arg)
 
 }} // namespace lyra::detail
 
-#endif
-#include <string>
+#			endif
+#			include <string>
 
 namespace lyra { namespace detail {
 
@@ -878,15 +867,15 @@ struct BoundVal : BoundValueRef<T>
 
 }} // namespace lyra::detail
 
-#endif
+#		endif
 
-#ifndef LYRA_DETAIL_CHOICES_HPP
-#define LYRA_DETAIL_CHOICES_HPP
+#		ifndef LYRA_DETAIL_CHOICES_HPP
+#			define LYRA_DETAIL_CHOICES_HPP
 
-#include <initializer_list>
-#include <string>
-#include <type_traits>
-#include <vector>
+#			include <initializer_list>
+#			include <string>
+#			include <type_traits>
+#			include <vector>
 
 namespace lyra { namespace detail {
 
@@ -1005,16 +994,15 @@ struct choices_check : choices_base
 
 }} // namespace lyra::detail
 
-#endif
+#		endif
 
-#ifndef LYRA_DETAIL_TOKENS_HPP
-#define LYRA_DETAIL_TOKENS_HPP
+#		ifndef LYRA_DETAIL_TOKENS_HPP
+#			define LYRA_DETAIL_TOKENS_HPP
 
+#			ifndef LYRA_OPTION_STYLE_HPP
+#				define LYRA_OPTION_STYLE_HPP
 
-#ifndef LYRA_OPTION_STYLE_HPP
-#define LYRA_OPTION_STYLE_HPP
-
-#include <string>
+#				include <string>
 
 namespace lyra {
 
@@ -1055,7 +1043,6 @@ struct option_style
 	std::string short_option_prefix;
 	std::size_t short_option_size = 0;
 
-
 	option_style(std::string && value_delimiters_chars,
 		std::string && long_option_prefix_chars = {},
 		std::size_t long_option_prefix_size = 0,
@@ -1068,10 +1055,8 @@ struct option_style
 		, short_option_size(short_option_prefix_size)
 	{}
 
-
 	std::string long_option_string() const;
 	std::string short_option_string() const;
-
 
 	static const option_style & posix();
 	static const option_style & posix_brief();
@@ -1174,10 +1159,10 @@ inline const option_style & option_style::windows()
 
 } // namespace lyra
 
-#endif
+#			endif
 
-#include <string>
-#include <vector>
+#			include <string>
+#			include <vector>
 
 namespace lyra { namespace detail {
 
@@ -1436,14 +1421,14 @@ class token_iterator
 
 }} // namespace lyra::detail
 
-#endif
+#		endif
 
-#ifndef LYRA_PRINTER_HPP
-#define LYRA_PRINTER_HPP
+#		ifndef LYRA_PRINTER_HPP
+#			define LYRA_PRINTER_HPP
 
-#include <memory>
-#include <ostream>
-#include <string>
+#			include <memory>
+#			include <ostream>
+#			include <string>
 
 namespace lyra {
 
@@ -1550,12 +1535,12 @@ inline std::unique_ptr<printer> make_printer(std::ostream & os_)
 
 } // namespace lyra
 
-#endif
+#		endif
 
-#ifndef LYRA_VAL_HPP
-#define LYRA_VAL_HPP
+#		ifndef LYRA_VAL_HPP
+#			define LYRA_VAL_HPP
 
-#include <memory>
+#			include <memory>
 
 namespace lyra {
 
@@ -1589,11 +1574,11 @@ inline detail::BoundVal<std::string> val(const char * v)
 
 } // namespace lyra
 
-#endif
+#		endif
 
-#include <memory>
-#include <string>
-#include <type_traits>
+#		include <memory>
+#		include <string>
+#		include <type_traits>
 
 namespace lyra {
 
@@ -1752,7 +1737,8 @@ class parser
 		print_help_text_summary(p, style);
 		print_help_text_details(p, style);
 	}
-	virtual void print_help_text_summary(printer & p, const option_style & style) const
+	virtual void print_help_text_summary(
+		printer & p, const option_style & style) const
 	{
 		std::string usage_test = get_usage_text(style);
 		if (!usage_test.empty())
@@ -1761,7 +1747,8 @@ class parser
 		std::string description_test = get_description_text(style);
 		if (!description_test.empty()) p.paragraph(get_description_text(style));
 	}
-	virtual void print_help_text_details(printer & p, const option_style & style) const
+	virtual void print_help_text_details(
+		printer & p, const option_style & style) const
 	{
 		p.heading("OPTIONS, ARGUMENTS:");
 		for (auto const & cols : get_help_text(style))
@@ -2212,9 +2199,9 @@ Derived & bound_parser<Derived>::hint(std::string const & hint)
 
 } // namespace lyra
 
-#endif
+#	endif
 
-#include <string>
+#	include <string>
 
 namespace lyra {
 
@@ -2245,8 +2232,7 @@ class arg : public bound_parser<arg>
 				for (size_t i = 0; i < c.minimum; ++i)
 					(((text += (i > 0 ? " " : "")) += "<") += m_hint) += ">";
 				if (c.is_unbounded())
-					(((text += (c.is_required() ? " " : "")) += "[<")
-						+= m_hint)
+					(((text += (c.is_required() ? " " : "")) += "[<") += m_hint)
 						+= ">...]";
 			}
 			else if (c.is_unbounded())
@@ -2319,12 +2305,10 @@ class arg : public bound_parser<arg>
 #endif
 
 #ifndef LYRA_ARGUMENTS_HPP
-#define LYRA_ARGUMENTS_HPP
+#	define LYRA_ARGUMENTS_HPP
 
-
-#ifndef LYRA_EXE_NAME_HPP
-#define LYRA_EXE_NAME_HPP
-
+#	ifndef LYRA_EXE_NAME_HPP
+#		define LYRA_EXE_NAME_HPP
 
 namespace lyra {
 
@@ -2464,10 +2448,10 @@ inline parser_result exe_name::set(std::string const & newName)
 
 } // namespace lyra
 
-#endif
+#	endif
 
-#include <functional>
-#include <type_traits>
+#	include <functional>
+#	include <type_traits>
 
 namespace lyra {
 
@@ -2540,7 +2524,6 @@ class arguments : public parser
 
 	template <typename T>
 	T & get(size_t i);
-
 
 	virtual std::string get_usage_text(
 		const option_style & style) const override
@@ -2857,7 +2840,6 @@ inline arguments::arguments(const arguments & other)
 
 end::reference[] */
 
-
 /* tag::reference[]
 [#lyra_arguments_add_argument]
 === `lyra::arguments::add_argument`
@@ -2987,13 +2969,12 @@ T & operator<<(T & os, arguments const & a)
 #endif
 
 #ifndef LYRA_CLI_HPP
-#define LYRA_CLI_HPP
+#	define LYRA_CLI_HPP
 
+#	ifndef LYRA_DETAIL_DEPRECATED_PARSER_CUSTOMIZATION_HPP
+#		define LYRA_DETAIL_DEPRECATED_PARSER_CUSTOMIZATION_HPP
 
-#ifndef LYRA_DETAIL_DEPRECATED_PARSER_CUSTOMIZATION_HPP
-#define LYRA_DETAIL_DEPRECATED_PARSER_CUSTOMIZATION_HPP
-
-#include <string>
+#		include <string>
 
 namespace lyra {
 
@@ -3047,12 +3028,12 @@ struct default_parser_customization : parser_customization
 
 } // namespace lyra
 
-#endif
+#	endif
 
-#ifndef LYRA_GROUP_HPP
-#define LYRA_GROUP_HPP
+#	ifndef LYRA_GROUP_HPP
+#		define LYRA_GROUP_HPP
 
-#include <functional>
+#		include <functional>
 
 namespace lyra {
 
@@ -3253,9 +3234,9 @@ inline group & group::cardinality(size_t n, size_t m)
 
 } // namespace lyra
 
-#endif
+#	endif
 
-#include <type_traits>
+#	include <type_traits>
 
 namespace lyra {
 
@@ -3375,7 +3356,6 @@ class cli : protected arguments
 				customize.option_prefix(), 2, customize.option_prefix(), 1));
 	}
 
-
 	using arguments::parse;
 	using arguments::get_named;
 
@@ -3441,7 +3421,6 @@ inline cli::cli(const cli & other)
 == Specification
 
 end::reference[] */
-
 
 /* tag::reference[]
 [#lyra_cli_add_argument]
@@ -3621,8 +3600,7 @@ T & operator<<(T & os, cli const & c)
 #endif
 
 #ifndef LYRA_CLI_PARSER_HPP
-#define LYRA_CLI_PARSER_HPP
-
+#	define LYRA_CLI_PARSER_HPP
 
 namespace lyra {
 
@@ -3633,13 +3611,12 @@ using cli_parser = cli;
 #endif
 
 #ifndef LYRA_COMMAND_HPP
-#define LYRA_COMMAND_HPP
+#	define LYRA_COMMAND_HPP
 
+#	ifndef LYRA_LITERAL_HPP
+#		define LYRA_LITERAL_HPP
 
-#ifndef LYRA_LITERAL_HPP
-#define LYRA_LITERAL_HPP
-
-#include <string>
+#		include <string>
 
 namespace lyra {
 
@@ -3665,7 +3642,6 @@ class literal : public parser
 	{
 		return { 1, 1 };
 	}
-
 
 	virtual std::string get_usage_text(const option_style &) const override
 	{
@@ -3774,9 +3750,9 @@ inline literal & literal::operator()(std::string const & help_description_text)
 
 } // namespace lyra
 
-#endif
-#include <functional>
-#include <string>
+#	endif
+#	include <functional>
+#	include <string>
 
 namespace lyra {
 
@@ -3984,21 +3960,18 @@ inline command & command::brief_help(bool brief)
 	return *this;
 }
 
-
 } // namespace lyra
 
 #endif
 
 #ifndef LYRA_HELP_HPP
-#define LYRA_HELP_HPP
+#	define LYRA_HELP_HPP
 
+#	ifndef LYRA_OPT_HPP
+#		define LYRA_OPT_HPP
 
-#ifndef LYRA_OPT_HPP
-#define LYRA_OPT_HPP
-
-
-#include <memory>
-#include <string>
+#		include <memory>
+#		include <string>
 
 namespace lyra {
 
@@ -4025,7 +3998,6 @@ class opt : public bound_parser<opt>
 		val
 	};
 
-
 	explicit opt(bool & ref);
 
 	template <typename L>
@@ -4033,7 +4005,6 @@ class opt : public bound_parser<opt>
 		typename std::enable_if<detail::is_invocable<L>::value,
 			ctor_lambda_e>::type
 		= ctor_lambda_e::val);
-
 
 	template <typename T>
 	opt(T & ref,
@@ -4058,10 +4029,8 @@ class opt : public bound_parser<opt>
 		: bound_parser(val.move_to_shared(), hint)
 	{}
 
-
 	opt & name(const std::string & opt_name);
 	opt & operator[](std::string const & opt_name);
-
 
 	virtual std::string get_usage_text(
 		const option_style & style) const override
@@ -4348,7 +4317,7 @@ inline opt & opt::operator[](const std::string & opt_name)
 
 } // namespace lyra
 
-#endif
+#	endif
 
 namespace lyra {
 
@@ -4419,10 +4388,9 @@ inline help & help::description(const std::string & text)
 #endif
 
 #ifndef LYRA_MAIN_HPP
-#define LYRA_MAIN_HPP
+#	define LYRA_MAIN_HPP
 
-
-#include <iostream>
+#	include <iostream>
 
 namespace lyra {
 

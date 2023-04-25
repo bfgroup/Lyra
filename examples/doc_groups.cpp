@@ -54,9 +54,8 @@ int main(int argc, const char ** argv)
 		.add_argument(lyra::opt(aspect, "aspect") // <1>
 						  .name("--aspect")
 						  .help("Full-screen aspect ratio window."))
-		.add_argument(lyra::group([&](const lyra::group &) {
-						  show_full_screen = false;
-					  }) // <2>
+		.add_argument(lyra::group(
+			[&](const lyra::group &) { show_full_screen = false; }) // <2>
 						  .add_argument(lyra::opt(width, "width") // <3>
 											.required()
 											.name("--width")
@@ -78,8 +77,7 @@ int main(int argc, const char ** argv)
 	// Check that the arguments where valid.
 	if (!result)
 	{
-		std::cerr << "Error in command line: " << result.message()
-				  << std::endl;
+		std::cerr << "Error in command line: " << result.message() << std::endl;
 		return 1;
 	}
 

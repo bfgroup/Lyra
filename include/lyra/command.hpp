@@ -224,7 +224,6 @@ inline command & command::brief_help(bool brief)
 	return *this;
 }
 
-
 } // namespace lyra
 
 #endif

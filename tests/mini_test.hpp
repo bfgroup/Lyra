@@ -23,8 +23,7 @@ struct scope
 	{
 		return (*this)("", pass, expression, file, line);
 	}
-	scope & operator()(
-		const std::string & message,
+	scope & operator()(const std::string & message,
 		bool pass,
 		const std::string & expression,
 		char const * file,

@@ -5,7 +5,6 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-
 /* tag::doc[]
 
 = Counting Flags
@@ -28,12 +27,10 @@ end::doc[] */
 int main(int argc, const char ** argv)
 {
 	int verbose = 0; // <1>
-	return lyra::main()
-		(lyra::opt(
-			[&](bool){ verbose += 1; }) // <2>
-			["-v"].cardinality(0,5)) // <3>
-		(argc, argv, [&](lyra::main &)
-		{
+	return lyra::main()(lyra::opt([&](bool) { verbose += 1; }) // <2>
+							["-v"]
+								.cardinality(0, 5)) // <3>
+		(argc, argv, [&](lyra::main &) {
 			std::cout << verbose << "\n"; // <4>
 			return 0;
 		});

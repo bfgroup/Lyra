@@ -5,21 +5,18 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <lyra/lyra.hpp>
 #include "base_lib.hpp"
+#include <lyra/lyra.hpp>
 
-namespace L
-{
+namespace L {
 int lib_args(int argc, const char ** argv)
 {
 	using namespace lyra;
 	bool flag = false;
-	auto p = cli() | opt( flag, "true|false" )
-			["-f"]
-			("A flag");
+	auto p = cli() | opt(flag, "true|false")["-f"]("A flag");
 
 	flag = false;
 	auto result = p.parse(args(argc, argv));
 	return bool(result);
 }
-}
+} // namespace L

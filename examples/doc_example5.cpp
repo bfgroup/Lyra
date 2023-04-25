@@ -9,13 +9,12 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <iostream>
 #include <lyra/lyra.hpp>
 
-int main(int argc, const char** argv)
+int main(int argc, const char ** argv)
 {
 	std::string choice;
 	// Ex: <exe> --choice=red
 	auto cli = lyra::cli()
-		| lyra::opt(choice, "-c")["--choice"]
-			  .choices("red", "green", "blue");
+		| lyra::opt(choice, "-c")["--choice"].choices("red", "green", "blue");
 	auto result = cli.parse({ argc, argv });
 	if (result)
 	{

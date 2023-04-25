@@ -5,35 +5,35 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <lyra/lyra.hpp>
 #include "mini_test.hpp"
+#include <lyra/lyra.hpp>
 
 int main()
 {
-    using namespace lyra;
-    bfg::mini_test::scope test;
-    std::string name;
-    auto p = cli() | opt(name, "name")["-n"]["--name"]("the name to use");
+	using namespace lyra;
+	bfg::mini_test::scope test;
+	std::string name;
+	auto p = cli() | opt(name, "name")["-n"]["--name"]("the name to use");
 
-    name = "";
-    p.parse( { "TestApp", "-n", "Vader" } );
-    test(REQUIRE(name == "Vader"));
+	name = "";
+	p.parse({ "TestApp", "-n", "Vader" });
+	test(REQUIRE(name == "Vader"));
 
-    name = "";
-    p.parse( { "TestApp", "--name", "Vader" } );
-    test(REQUIRE(name == "Vader"));
+	name = "";
+	p.parse({ "TestApp", "--name", "Vader" });
+	test(REQUIRE(name == "Vader"));
 
-    name = "";
-    p.parse( { "TestApp", "-n=Vader" } );
-    test(REQUIRE(name == "Vader"));
+	name = "";
+	p.parse({ "TestApp", "-n=Vader" });
+	test(REQUIRE(name == "Vader"));
 
-    name = "";
-    p.parse( { "TestApp" } );
-    test(REQUIRE(name == ""));
+	name = "";
+	p.parse({ "TestApp" });
+	test(REQUIRE(name == ""));
 
-    name = "";
-    p.parse( { "TestApp", "-f" } );
-    test(REQUIRE(name == ""));
+	name = "";
+	p.parse({ "TestApp", "-f" });
+	test(REQUIRE(name == ""));
 
-    return test;
+	return test;
 }

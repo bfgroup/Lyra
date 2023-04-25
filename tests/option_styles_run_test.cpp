@@ -66,22 +66,13 @@ void test_style(bfg::mini_test::scope & test, const lyra::option_style & style)
 		const std::string i = "'" + style.short_option_prefix + "' '"
 			+ style.value_delimiters + "'";
 		a = false, b = false, c = false;
-		test(
-			i,
-			REQUIRE(cli.parse(
-				{ "TestApp",
-				  p + "a",
-				  p + "b",
-				  p + "c",
-				  p + "x",
-				  "3",
-				  p + "y",
-				  "6.6" },
+		test(i,
+			REQUIRE(cli.parse({ "TestApp", p + "a", p + "b", p + "c", p + "x",
+								  "3", p + "y", "6.6" },
 				style)));
 		test(i, REQUIRE(a))(i, REQUIRE(b))(i, REQUIRE(c));
 		a = false, b = false, c = false;
-		test(
-			i,
+		test(i,
 			REQUIRE(cli.parse(
 				{ "TestApp", p + "abc", p + "x", "3", p + "y", "6.6" },
 				style)));
@@ -99,10 +90,7 @@ void test_style(bfg::mini_test::scope & test, const lyra::option_style & style)
 		test(i, REQUIRE(!cli.parse({ "TestApp", p + "x3garbage" })));
 		test(i, REQUIRE(x == 0));
 		x = 0;
-		test(
-			i,
-			REQUIRE(
-				!cli.parse({ "TestApp", p + "x" + d + "3garbage" })));
+		test(i, REQUIRE(!cli.parse({ "TestApp", p + "x" + d + "3garbage" })));
 		test(i, REQUIRE(x == 0));
 		x = 0;
 		test(i, REQUIRE(!cli.parse({ "TestApp", p + "x", "3garbage" })));
@@ -121,8 +109,7 @@ void test_style(bfg::mini_test::scope & test, const lyra::option_style & style)
 		test(i, REQUIRE(cli.parse({ "TestApp", p + "int-x", "3" })));
 		test(i, REQUIRE(x == 3));
 		x = 0;
-		test(
-			i, REQUIRE(cli.parse({ "TestApp", p + "int-x" + d + "3" })));
+		test(i, REQUIRE(cli.parse({ "TestApp", p + "int-x" + d + "3" })));
 		test(i, REQUIRE(x == 3));
 		x = 0;
 		test(i, REQUIRE(!cli.parse({ "TestApp", p + "int-x3" })));

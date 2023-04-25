@@ -37,14 +37,13 @@ int main()
 	}
 	{
 		std::string named_required;
-		auto opt_required
-			= lyra::opt(named_required, "required-arg")["--required"](
-				"You must supply this arg");
-		test(REQUIRE(
-			opt_required.get_usage_text(option_style::posix()).find("--required")
+		auto opt_required = lyra::opt(named_required,
+			"required-arg")["--required"]("You must supply this arg");
+		test(REQUIRE(opt_required.get_usage_text(option_style::posix())
+						 .find("--required")
 			!= std::string::npos));
-		test(REQUIRE(
-			opt_required.get_usage_text(option_style::posix()).find("<required-arg>")
+		test(REQUIRE(opt_required.get_usage_text(option_style::posix())
+						 .find("<required-arg>")
 			!= std::string::npos));
 	}
 

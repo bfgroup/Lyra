@@ -127,9 +127,8 @@ int main()
 
 		auto cli = lyra::help(show_help)
 			| lyra::opt(name, "name")["-n"]["--name"].required()
-			| (lyra::group([&](const lyra::group &) {
-				  use_grade_id = true;
-			  }) | lyra::opt(id, "id")["--id"].required()
+			| (lyra::group([&](const lyra::group &) { use_grade_id = true; })
+				| lyra::opt(id, "id")["--id"].required()
 				| lyra::opt(grade, "grade")["--grade"].required());
 		{
 			show_help = false;

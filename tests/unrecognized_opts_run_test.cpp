@@ -5,8 +5,8 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <lyra/lyra.hpp>
 #include "mini_test.hpp"
+#include <lyra/lyra.hpp>
 #include <string>
 
 int main()
@@ -16,14 +16,13 @@ int main()
 
 	{
 		bool a = false;
-		auto cli = lyra::cli() | opt( a )["-a"];
-		auto result = cli.parse( { "TestApp", "-b" } );
-		test
-			(REQUIRE( !result ))
-			(REQUIRE( result.message().find( "Unrecognized token") != std::string::npos ))
-			(REQUIRE( result.message().find( "-b" ) != std::string::npos ));
+		auto cli = lyra::cli() | opt(a)["-a"];
+		auto result = cli.parse({ "TestApp", "-b" });
+		test(REQUIRE(!result))(REQUIRE(
+			result.message().find("Unrecognized token") != std::string::npos))(
+			REQUIRE(result.message().find("-b") != std::string::npos));
 	}
-	#if 0 // Test case for https://github.com/bfgroup/Lyra/issues/24
+#if 0 // Test case for https://github.com/bfgroup/Lyra/issues/24
 	{
 		bool o = false;
 		std::string a;
@@ -36,7 +35,7 @@ int main()
 			(REQUIRE( result.message().find( "Unrecognized token") != std::string::npos ))
 			(REQUIRE( result.message().find( "--function" ) != std::string::npos ));
 	}
-	#endif
+#endif
 
 	return test;
 }

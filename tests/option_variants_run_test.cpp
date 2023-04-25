@@ -18,8 +18,7 @@ int main()
 	bool sdf = false;
 	auto cli = opt(a)["-a"]["--flag-a"] | opt(b)["-b"]["--flag-b"]
 		| opt(c)["-c"]["--flag-c"] | opt(x, "int-x")["-x"]["--int-x"]
-		| opt(y, "float-y")["-y"]["--float-y"]
-		| opt(sdf)["-sdf"];
+		| opt(y, "float-y")["-y"]["--float-y"] | opt(sdf)["-sdf"];
 
 	a = false, b = false, c = false;
 	test(REQUIRE(

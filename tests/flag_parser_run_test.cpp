@@ -82,16 +82,14 @@ int main()
 		auto result = p.parse({ "TestApp", "-f", "what" });
 		test(REQUIRE(!result));
 		test(REQUIRE(
-			result.message().find("Unable to convert")
-			!= std::string::npos));
+			result.message().find("Unable to convert") != std::string::npos));
 	}
 	{
 		bool flag = false;
 		auto p = cli() | opt(flag, "true|false")["-f"]("A flag");
 		auto result = p.parse({ "TestApp", "-f" });
 		test(REQUIRE(!result));
-		test(REQUIRE(
-			result.message().find("Expected argument following -f")
+		test(REQUIRE(result.message().find("Expected argument following -f")
 			!= std::string::npos));
 	}
 	{

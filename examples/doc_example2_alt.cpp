@@ -10,7 +10,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <iostream>
 #include <lyra/lyra.hpp>
 
-int main(int argc, const char** argv)
+int main(int argc, const char ** argv)
 {
 	// Where we read in the argument values:
 	int width = 0;
@@ -21,11 +21,15 @@ int main(int argc, const char** argv)
 	// together by the "|" operator.
 	auto cli = lyra::cli();
 	cli.add_argument(lyra::opt(width, "width")
-		.name("-w").name("--width").help("How wide should it be?"));
+						 .name("-w")
+						 .name("--width")
+						 .help("How wide should it be?"));
 	cli.add_argument(lyra::opt(name, "name")
-		.name("-n").name("--name").help("By what name should I be known"));
-	cli.add_argument(lyra::opt(doIt)
-		.name("-d").name("--doit").help("Do the thing"));
+						 .name("-n")
+						 .name("--name")
+						 .help("By what name should I be known"));
+	cli.add_argument(
+		lyra::opt(doIt).name("-d").name("--doit").help("Do the thing"));
 
 	// Parse the program arguments:
 	auto result = cli.parse({ argc, argv });
@@ -37,7 +41,8 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	std::cout << "width = " << width << ", name = " << name << ", doIt = " << doIt << "\n";
+	std::cout << "width = " << width << ", name = " << name
+			  << ", doIt = " << doIt << "\n";
 	return 0;
 }
 // end::doc[]
