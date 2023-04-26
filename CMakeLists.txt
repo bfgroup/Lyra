@@ -20,12 +20,30 @@
 
 # Only need the basic minimum of project, add_library, and
 # target_include_directories commands.
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.12 )
 
 # Don't set VERSION, as that's a pita to keep up to date with the version
 # header. And don't set LANGUAGES as we are multi-language and header
 # only, so it's irrelevant.
-project( lyra )
+project( lyra
+	VERSION "1.6"
+	DESCRIPTION "A simple to use, composing, header only, command line arguments parser for C++ 11 and beyond."
+	HOMEPAGE_URL "https://github.com/bfgroup/Lyra"
+)
+set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "${PROJECT_NAME} developers")
+set(CPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}")
+set(CPACK_DEBIAN_PACKAGE_NAME "lib${CPACK_PACKAGE_NAME}-dev")
+set(CPACK_RPM_PACKAGE_NAME "lib${CPACK_PACKAGE_NAME}-devel")
+set(CPACK_PACKAGE_HOMEPAGE_URL "${PROJECT_HOMEPAGE_URL}")
+set(CPACK_PACKAGE_MAINTAINER "${CPACK_PACKAGE_VENDOR}")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_MAINTAINER}")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.adoc")
+
+include(GNUInstallDirs)
+string(REPLACE "/${CMAKE_LIBRARY_ARCHITECTURE}" "" INSTALL_LIBDIR_ARCHIND "${CMAKE_INSTALL_LIBDIR}")
 
 # Simple INTERFACE, and header only, library target.
 add_library( lyra INTERFACE )
@@ -35,20 +53,21 @@ target_include_directories(
   lyra
   INTERFACE
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
 # Add an alias to public name.
 add_library( bfg::lyra ALIAS lyra )
 
-## Installation Code
-include(GNUInstallDirs)
+set(LYRA_INSTALL_CONFIGDIR "${INSTALL_LIBDIR_ARCHIND}/cmake/lyra")
+set(PkgConfigTemplatesDir "${CMAKE_CURRENT_SOURCE_DIR}/data/pkgconfig")
 
+## Installation Code
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
   ${PROJECT_SOURCE_DIR}/data/cmake/lyraConfig.cmake.in
   ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra
+  INSTALL_DESTINATION "${LYRA_INSTALL_CONFIGDIR}"
   )
 
 install(
@@ -60,19 +79,26 @@ install(
   EXPORT lyraTarget
   FILE  lyraTarget.cmake
   NAMESPACE bfg::
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake
+  DESTINATION "${LYRA_INSTALL_CONFIGDIR}"
   )
 
 install(
-  DIRECTORY ${PROJECT_SOURCE_DIR}/include
-  DESTINATION  ${CMAKE_INSTALL_PREFIX}
+  DIRECTORY ${PROJECT_SOURCE_DIR}/include/lyra
+  DESTINATION  ${CMAKE_INSTALL_INCLUDEDIR}
   )
 
 install(
   FILES
   ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake/
+  DESTINATION "${LYRA_INSTALL_CONFIGDIR}"
   )
 
+set(PKG_CONFIG_FILE_NAME "${PROJECT_BINARY_DIR}/${PROJECT_NAME}.pc")
+configure_file("${PkgConfigTemplatesDir}/pkgconfig.pc.in" "${PKG_CONFIG_FILE_NAME}" @ONLY)
+install(FILES "${PKG_CONFIG_FILE_NAME}"
+	DESTINATION "${INSTALL_LIBDIR_ARCHIND}/pkgconfig"
+)
+
+include(CPack)
 
 
