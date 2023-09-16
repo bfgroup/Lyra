@@ -38,6 +38,7 @@ struct parser_customization
 {
 	virtual std::string token_delimiters() const = 0;
 	virtual std::string option_prefix() const = 0;
+	virtual ~parser_customization() {}
 };
 
 /* tag::reference[]
