@@ -63,11 +63,11 @@ stages:
         GCC 13 Warn-All: {
           CXX: g++-13, CONTAINER: linux_gcc13,
           TOOLSET: gcc, CXXSTD: "11,14,17,20",
-          B2_ARGS: 'warnings=extra warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow' }
+          B2_ARGS: "warnings=pedantic warnings-as-errors=on cxxflags=-Wnon-virtual-dtor cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wzero-as-null-pointer-constant" }
         Clang 16 Warn-All: {
           CXX: clang++-16, CONTAINER: linux_clang16,
           TOOLSET: clang, CXXSTD: "11,14,17,20",
-          B2_ARGS: "warnings=extra warnings-as-errors=on" }
+          B2_ARGS: "warnings=pedantic warnings-as-errors=on cxxflags=-Wnon-virtual-dtor cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wzero-as-null-pointer-constant" }
     pool: { vmImage: 'ubuntu-20.04' }
     container: $[ variables['CONTAINER'] ]
     steps:
@@ -78,7 +78,8 @@ stages:
       matrix:
         Xcode 14.1 Warn-All: {
           CXX: clang++, VM_IMAGE: 'macOS-12', XCODE_VERSION: "14.1",
-          TOOLSET: clang, CXXSTD: "11,14,17,20", B2_ARGS: "warnings=extra warnings-as-errors=on" }
+          TOOLSET: clang, CXXSTD: "11,14,17,20",
+          B2_ARGS: "warnings=pedantic warnings-as-errors=on cxxflags=-Wnon-virtual-dtor cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wzero-as-null-pointer-constant" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
