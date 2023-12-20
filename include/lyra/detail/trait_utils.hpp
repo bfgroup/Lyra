@@ -23,7 +23,7 @@ struct is_callable
 	template <class U>
 	static auto test(...) -> decltype(std::false_type());
 
-	static constexpr bool value = decltype(test<F>(0))::value;
+	static constexpr bool value = decltype(test<F>(nullptr))::value;
 };
 
 template <class T>
@@ -49,7 +49,7 @@ struct is_invocable
 	static auto test(...) -> decltype(std::false_type());
 
 	static constexpr bool value
-		= decltype(test<typename remove_cvref<F>::type>(0))::value;
+		= decltype(test<typename remove_cvref<F>::type>(nullptr))::value;
 };
 
 // C++11 compatible void_t equivalent.
