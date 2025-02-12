@@ -170,14 +170,14 @@ stages:
   - job: 'Xcode'
     strategy:
       matrix:
-        Xcode 15.2: {
-          CXX: clang++, VM_IMAGE: 'macOS-13', XCODE_VERSION: "15.2",
+        Xcode 16.2: {
+          CXX: clang++, VM_IMAGE: 'macOS-14', XCODE_VERSION: "16.2",
+          TOOLSET: clang, CXXSTD: "11,14,17,20" }
+        Xcode 15.4: {
+          CXX: clang++, VM_IMAGE: 'macOS-14', XCODE_VERSION: "15.4",
           TOOLSET: clang, CXXSTD: "11,14,17,20" }
         Xcode 14.3.1: {
           CXX: clang++, VM_IMAGE: 'macOS-13', XCODE_VERSION: "14.3.1",
-          TOOLSET: clang, CXXSTD: "11,14,17,20" }
-        Xcode 13.4.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-12', XCODE_VERSION: "13.4.1",
           TOOLSET: clang, CXXSTD: "11,14,17,20" }
     pool:
       vmImage: $(VM_IMAGE)
