@@ -296,6 +296,9 @@ Changes:
 	-- _René Ferdinand Rivera Morell_
 * Fix crash when changing settings of a command and adding subsequent arguments.
 	-- _René Ferdinand Rivera Morell_
+* Fix short option values being ignored in the case where the value separator
+	is past the short option and in the value itself.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.6.1
 

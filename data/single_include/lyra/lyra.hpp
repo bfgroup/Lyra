@@ -1186,7 +1186,11 @@ class token_iterator
 
 	token value() const
 	{
-		if (has_option_prefix() && has_value_delimiter())
+		if (has_short_option_prefix()
+			&& (args_i->find_first_of(style.value_delimiters)
+				== (style.short_option_size + 1)))
+			return token(token_type::argument, args_i->substr(3));
+		else if (has_long_option_prefix() && has_value_delimiter())
 			return token(token_type::argument,
 				args_i->substr(
 					args_i->find_first_of(style.value_delimiters) + 1));
