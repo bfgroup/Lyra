@@ -849,6 +849,7 @@ std::string long_option_prefix;
 std::size_t long_option_size = 0;
 std::string short_option_prefix;
 std::size_t short_option_size = 0;
+opt_print_order options_print_order = opt_print_order::per_declaration;
 ----
 
 * `value_delimiters` -- Specifies a set of characters that are accepted as a
@@ -862,27 +863,40 @@ std::size_t short_option_size = 0;
 	prefix for short options (i.e. single-char multi-options).
 * `short_option_size` -- The number of prefix characters that indicates a short
 	option. A value of zero (0) indicates that short options are not accepted.
+* `options_print_order` -- The order to print the options section of the help
+	text. Possible values: `per_declaration`, `sorted_short_first`,
+	`sorted_long_first`.
 
 end::reference[] */
 struct option_style
 {
+	enum class opt_print_order : unsigned char
+	{
+		per_declaration = 0,
+		sorted_short_first,
+		sorted_long_first
+	};
+
 	std::string value_delimiters;
 	std::string long_option_prefix;
 	std::size_t long_option_size = 0;
 	std::string short_option_prefix;
 	std::size_t short_option_size = 0;
+	opt_print_order options_print_order = opt_print_order::per_declaration;
 
 
 	option_style(std::string && value_delimiters_chars,
 		std::string && long_option_prefix_chars = {},
 		std::size_t long_option_prefix_size = 0,
 		std::string && short_option_prefix_chars = {},
-		std::size_t short_option_prefix_size = 0)
+		std::size_t short_option_prefix_size = 0,
+		opt_print_order options_print_order = opt_print_order::per_declaration)
 		: value_delimiters(std::move(value_delimiters_chars))
 		, long_option_prefix(std::move(long_option_prefix_chars))
 		, long_option_size(long_option_prefix_size)
 		, short_option_prefix(std::move(short_option_prefix_chars))
 		, short_option_size(short_option_prefix_size)
+		, options_print_order(options_print_order)
 	{}
 
 
@@ -893,6 +907,26 @@ struct option_style
 	static const option_style & posix();
 	static const option_style & posix_brief();
 	static const option_style & windows();
+
+
+	bool opt_print_order_less(
+		const std::string & a, const std::string & b) const
+	{
+		const auto l = long_option_string();
+		const auto s = short_option_string();
+		const bool a_l = a.substr(0, l.size()) == l;
+		const bool a_s = !a_l && (a.substr(0, s.size()) == s);
+		const bool b_l = b.substr(0, l.size()) == l;
+		const bool b_s = !b_l && (b.substr(0, s.size()) == s);
+		if (!a_l && !a_s) return false;
+		if (!b_l && !b_s) return true;
+		if ((a_l == b_l) && (a_s == b_s)) return a < b;
+		if (options_print_order == opt_print_order::sorted_short_first)
+			return (a_s && b_l);
+		else if (options_print_order == opt_print_order::sorted_long_first)
+			return (b_s && a_l);
+		return a < b;
+	}
 };
 
 /* tag::reference[]
@@ -1507,6 +1541,7 @@ inline std::unique_ptr<printer> make_printer(std::ostream & os_)
 
 #endif
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -1684,7 +1719,14 @@ class parser
 		printer & p, const option_style & style) const
 	{
 		p.heading("OPTIONS, ARGUMENTS:");
-		for (auto const & cols : get_help_text(style))
+		auto rows = get_help_text(style);
+		if (style.options_print_order
+			!= option_style::opt_print_order::per_declaration)
+			std::stable_sort(rows.begin(), rows.end(),
+				[&style](const help_text_item & a, const help_text_item & b) {
+					return style.opt_print_order_less(a.option, b.option);
+				});
+		for (auto const & cols : rows)
 		{
 			p.option(cols.option, cols.description, 2);
 		}
@@ -2218,7 +2260,8 @@ class arg : public bound_parser<arg>
 			{
 				LYRA_PRINT_DEBUG(
 					"(!)", get_usage_text(style), "!=", token.name);
-				return parse_result(choice_result);
+				return parse_result::ok(
+					detail::parse_state(parser_result_type::no_match, tokens));
 			}
 		}
 
@@ -2282,8 +2325,9 @@ class arguments : public parser
 	public:
 	enum evaluation
 	{
-		any = 0,
-		sequence = 1
+		eval_any = 0,
+		eval_sequence = 1,
+		eval_relaxed = 2,
 	};
 
 	arguments() = default;
@@ -2321,6 +2365,7 @@ class arguments : public parser
 
 	arguments & sequential();
 	arguments & inclusive();
+	arguments & relaxed();
 
 	template <typename T>
 	T & get(std::size_t i);
@@ -2392,12 +2437,13 @@ class arguments : public parser
 	{
 		switch (eval_mode)
 		{
-			case any: return parse_any(tokens, style);
-			case sequence: return parse_sequence(tokens, style);
+			case eval_any:
+			case eval_relaxed: return parse_any(tokens, style);
+			case eval_sequence: return parse_sequence(tokens, style);
 		}
 		return parse_result::error(
 			detail::parse_state(parser_result_type::no_match, tokens),
-			"Unknown evaluation mode; not one of 'any', or 'sequence'.");
+			"Unknown evaluation mode; not one of 'any', 'sequence', or 'relaxed'.");
 	}
 
 	parse_result parse_any(
@@ -2442,7 +2488,7 @@ class arguments : public parser
 							&& subparse_result.value().type()
 								== parser_result_type::short_circuit_all)
 							return subparse_result;
-						if (error_result)
+						else if (error_result)
 							error_result = parse_result(subparse_result);
 					}
 					else if (subparse_result
@@ -2463,8 +2509,20 @@ class arguments : public parser
 			if (p_result.value().type()
 				== parser_result_type::short_circuit_all)
 				return p_result;
-			if (!token_parsed && !error_result) return error_result;
-			if (!token_parsed) break;
+			else if (!token_parsed && eval_mode == eval_relaxed)
+			{
+				LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
+					"==", p_result.value().remainingTokens().argument().name,
+					"==> skipped");
+				auto remainingTokens = p_result.value().remainingTokens();
+				remainingTokens.pop(remainingTokens.argument());
+				p_result = parse_result::ok(detail::parse_state(
+					parser_result_type::matched, remainingTokens));
+			}
+			else if (!token_parsed && !error_result)
+				return error_result;
+			else if (!token_parsed)
+				break;
 		}
 		for (auto & parseInfo : parser_info)
 		{
@@ -2577,11 +2635,18 @@ class arguments : public parser
 	protected:
 	std::shared_ptr<option_style> opt_style;
 	std::vector<std::unique_ptr<parser>> parsers;
-	evaluation eval_mode = any;
+	evaluation eval_mode = eval_any;
 
 	option_style get_option_style() const
 	{
 		return opt_style ? *opt_style : option_style::posix();
+	}
+
+	option_style & ref_option_style()
+	{
+		if (!opt_style)
+			opt_style = std::make_shared<option_style>(option_style::posix());
+		return *opt_style;
 	}
 };
 
@@ -2699,7 +2764,7 @@ This is useful for sub-commands and structured command lines.
 end::reference[] */
 inline arguments & arguments::sequential()
 {
-	eval_mode = sequence;
+	eval_mode = eval_sequence;
 	return *this;
 }
 
@@ -2718,7 +2783,27 @@ parsers. This means that there is no ordering enforced.
 end::reference[] */
 inline arguments & arguments::inclusive()
 {
-	eval_mode = any;
+	eval_mode = eval_any;
+	return *this;
+}
+
+/* tag::reference[]
+=== `lyra::arguments::relaxed`
+
+[source]
+----
+arguments & arguments::relaxed();
+----
+
+Sets the parsing mode for the arguments to "relaxed any". When parsing the
+arguments it attempts to match each parsed argument with all the available
+parsers. This means that there is no ordering enforced. Unknown, i.e. failed,
+parsing are ignored.
+
+end::reference[] */
+inline arguments & arguments::relaxed()
+{
+	eval_mode = eval_relaxed;
 	return *this;
 }
 
@@ -3349,6 +3434,8 @@ class cli : protected arguments
 
 	cli & style(const option_style & style);
 	cli & style(option_style && style);
+	cli & style_print_short_first();
+	cli & style_print_long_first();
 
 	template <typename T>
 	friend T & operator<<(T & os, cli const & c);
@@ -3369,6 +3456,10 @@ class cli : protected arguments
 			option_style(customize.token_delimiters(),
 				customize.option_prefix(), 2, customize.option_prefix(), 1));
 	}
+
+	cli & sequential() { return arguments::sequential(), *this; }
+	cli & inclusive() { return arguments::inclusive(), *this; }
+	cli & relaxed() { return arguments::relaxed(), *this; }
 
 
 	using arguments::parse;
@@ -3586,6 +3677,44 @@ inline cli & cli::style(const option_style & style)
 inline cli & cli::style(option_style && style)
 {
 	opt_style = std::make_shared<option_style>(std::move(style));
+	return *this;
+}
+
+/* tag::reference[]
+[#lyra_cli_style_print_short_first]
+=== `lyra::cli::style_print_short_first`
+
+[source]
+----
+lyra::cli & lyra::cli::style_print_short_first()
+----
+
+Specifies print options sorted with short options appearing first.
+
+end::reference[] */
+inline cli & cli::style_print_short_first()
+{
+	ref_option_style().options_print_order
+		= option_style::opt_print_order::sorted_short_first;
+	return *this;
+}
+
+/* tag::reference[]
+[#lyra_cli_style_print_long_first]
+=== `lyra::cli::style_print_long_first`
+
+[source]
+----
+lyra::cli & lyra::cli::style_print_long_first()
+----
+
+Specifies print options sorted with long options appearing first.
+
+end::reference[] */
+inline cli & cli::style_print_long_first()
+{
+	ref_option_style().options_print_order
+		= option_style::opt_print_order::sorted_long_first;
 	return *this;
 }
 

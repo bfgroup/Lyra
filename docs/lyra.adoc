@@ -290,6 +290,11 @@ Changes:
 	-- _René Ferdinand Rivera Morell_
 * *New*: Adds printing default/initial value for options in help output.
 	-- _René Ferdinand Rivera Morell_
+* *New*: Add `relaxed` parsing to support "bag of options" style command lines.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Add ordering/sorting of printed option details specified in the
+	`option_style::options_print_order` value.
+	-- _René Ferdinand Rivera Morell_
 * Fix `operator|` loosing group subtype causing invalid parsing.
 	-- _René Ferdinand Rivera Morell_
 * Fix crash when no arguments are given to the parsing.
