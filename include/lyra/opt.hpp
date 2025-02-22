@@ -101,12 +101,12 @@ class opt : public bound_parser<opt>
 		return usage;
 	}
 
-	help_text get_help_text(const option_style & style) const override
+	help_text get_help_text(const option_style & style, size_t indent) const override
 	{
-		std::string text;
+		std::string text = std::string(indent, ' ');
 		for (auto const & opt_name : opt_names)
 		{
-			if (!text.empty()) text += ", ";
+			if (!text.empty() && !(text.back() == ' ')) text += ", ";
 			text += format_opt(opt_name, style);
 		}
 		if (!m_hint.empty()) ((text += " <") += m_hint) += ">";

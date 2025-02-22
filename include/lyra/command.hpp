@@ -99,21 +99,21 @@ class command : public group
 			+ parsers[1]->get_usage_text(style);
 	}
 
-	help_text get_help_text(const option_style & style) const override
+	help_text get_help_text(const option_style & style, size_t indent) const override
 	{
 		if (expanded_help_details)
 		{
 			help_text text;
 			text.push_back({ "", "" });
-			auto c = parsers[0]->get_help_text(style);
+			auto c = parsers[0]->get_help_text(style, indent + 2);
 			text.insert(text.end(), c.begin(), c.end());
 			text.push_back({ "", "" });
-			auto o = parsers[1]->get_help_text(style);
+			auto o = parsers[1]->get_help_text(style, indent + 2);
 			text.insert(text.end(), o.begin(), o.end());
 			return text;
 		}
 		else
-			return parsers[0]->get_help_text(style);
+			return parsers[0]->get_help_text(style, indent + 2);
 	}
 
 	protected:
@@ -125,7 +125,7 @@ class command : public group
 		// This avoid printing out the "internal" group brackets "{}" for the
 		// command arguments.
 		p.heading("OPTIONS, ARGUMENTS:");
-		for (auto const & cols : parsers[1]->get_help_text(style))
+		for (auto const & cols : parsers[1]->get_help_text(style, 0))
 		{
 			p.option(cols.option, cols.description, 2);
 		}

@@ -61,9 +61,9 @@ class arg : public bound_parser<arg>
 		return text;
 	}
 
-	help_text get_help_text(const option_style & style) const override
+	help_text get_help_text(const option_style & style, size_t indent) const override
 	{
-		return { { get_usage_text(style), m_description } };
+		return { { std::string(indent, ' ') + get_usage_text(style), m_description } };
 	}
 
 	using parser::parse;

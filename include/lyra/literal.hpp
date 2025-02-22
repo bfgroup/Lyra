@@ -51,9 +51,11 @@ class literal : public parser
 		return description;
 	}
 
-	help_text get_help_text(const option_style &) const override
+	help_text get_help_text(const option_style &, size_t indent) const override
 	{
-		return { { name, description } };
+		std::string name_str = std::string(indent, ' ') + "\033[1m" + name + "\033[0m";
+		std::string description_str = "\033[3m" + description + "\033[0m";
+		return { { name_str, description_str } };
 	}
 
 	using parser::parse;

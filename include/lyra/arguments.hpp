@@ -148,12 +148,12 @@ class arguments : public parser
 	}
 
 	// Return a container of the individual help text for the composed parsers.
-	help_text get_help_text(const option_style & style) const override
+	help_text get_help_text(const option_style & style, size_t indent) const override
 	{
 		help_text text;
 		for (auto const & p : parsers)
 		{
-			auto child_help = p->get_help_text(style);
+			auto child_help = p->get_help_text(style, indent + 2);
 			text.insert(text.end(), child_help.begin(), child_help.end());
 		}
 		return text;
