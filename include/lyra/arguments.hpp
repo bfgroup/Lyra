@@ -53,9 +53,12 @@ class arguments : public parser
 	enum evaluation
 	{
 		// Any of the arguments, in any order, are valid. I.e. an inclusive-or.
-		any = 0,
+		eval_any = 0,
 		// All arguments, in sequence, matched. I.e. conjunctive-and.
-		sequence = 1
+		eval_sequence = 1,
+		// Any of the arguments, in any order, are valid and uknown arguments
+		// do not cause parsing errors.
+		eval_relaxed = 2,
 	};
 
 	arguments() = default;
@@ -98,6 +101,7 @@ class arguments : public parser
 	// Parsing mode.
 	arguments & sequential();
 	arguments & inclusive();
+	arguments & relaxed();
 
 	// Access.
 	template <typename T>
@@ -172,12 +176,13 @@ class arguments : public parser
 	{
 		switch (eval_mode)
 		{
-			case any: return parse_any(tokens, style);
-			case sequence: return parse_sequence(tokens, style);
+			case eval_any:
+			case eval_relaxed: return parse_any(tokens, style);
+			case eval_sequence: return parse_sequence(tokens, style);
 		}
 		return parse_result::error(
 			detail::parse_state(parser_result_type::no_match, tokens),
-			"Unknown evaluation mode; not one of 'any', or 'sequence'.");
+			"Unknown evaluation mode; not one of 'any', 'sequence', or 'relaxed'.");
 	}
 
 	// Match in any order, any number of times. Returns an error if nothing
@@ -231,7 +236,7 @@ class arguments : public parser
 						// the first so that in case no other parsers match
 						// we can report the earliest problem, as that's
 						// the likeliest issue.
-						if (error_result)
+						else if (error_result)
 							error_result = parse_result(subparse_result);
 					}
 					else if (subparse_result
@@ -252,10 +257,25 @@ class arguments : public parser
 			if (p_result.value().type()
 				== parser_result_type::short_circuit_all)
 				return p_result;
+			// Nothing matched for the current arg and we are doing relaxed
+			// parsing. Hence we need to skip over that unknown arg to continue
+			// trying the rest.
+			else if (!token_parsed && eval_mode == eval_relaxed)
+			{
+				LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
+					"==", p_result.value().remainingTokens().argument().name,
+					"==> skipped");
+				auto remainingTokens = p_result.value().remainingTokens();
+				remainingTokens.pop(remainingTokens.argument());
+				p_result = parse_result::ok(detail::parse_state(
+					parser_result_type::matched, remainingTokens));
+			}
 			// If something signaled and error, and hence we didn't match/parse
-			// anything, we indicate the error.
-			if (!token_parsed && !error_result) return error_result;
-			if (!token_parsed) break;
+			// anything, we indicate the error if not in relaxed mode.
+			else if (!token_parsed && !error_result)
+				return error_result;
+			else if (!token_parsed)
+				break;
 		}
 		// Check missing required options. For bounded arguments we check
 		// bound min and max bounds against what we parsed. For the loosest
@@ -383,11 +403,18 @@ class arguments : public parser
 	protected:
 	std::shared_ptr<option_style> opt_style;
 	std::vector<std::unique_ptr<parser>> parsers;
-	evaluation eval_mode = any;
+	evaluation eval_mode = eval_any;
 
 	option_style get_option_style() const
 	{
 		return opt_style ? *opt_style : option_style::posix();
+	}
+
+	option_style & ref_option_style()
+	{
+		if (!opt_style)
+			opt_style = std::make_shared<option_style>(option_style::posix());
+		return *opt_style;
 	}
 };
 
@@ -506,7 +533,7 @@ This is useful for sub-commands and structured command lines.
 end::reference[] */
 inline arguments & arguments::sequential()
 {
-	eval_mode = sequence;
+	eval_mode = eval_sequence;
 	return *this;
 }
 
@@ -525,7 +552,27 @@ parsers. This means that there is no ordering enforced.
 end::reference[] */
 inline arguments & arguments::inclusive()
 {
-	eval_mode = any;
+	eval_mode = eval_any;
+	return *this;
+}
+
+/* tag::reference[]
+=== `lyra::arguments::relaxed`
+
+[source]
+----
+arguments & arguments::relaxed();
+----
+
+Sets the parsing mode for the arguments to "relaxed any". When parsing the
+arguments it attempts to match each parsed argument with all the available
+parsers. This means that there is no ordering enforced. Unknown, i.e. failed,
+parsing are ignored.
+
+end::reference[] */
+inline arguments & arguments::relaxed()
+{
+	eval_mode = eval_relaxed;
 	return *this;
 }
 

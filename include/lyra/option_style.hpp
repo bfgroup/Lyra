@@ -23,6 +23,7 @@ std::string long_option_prefix;
 std::size_t long_option_size = 0;
 std::string short_option_prefix;
 std::size_t short_option_size = 0;
+opt_print_order options_print_order = opt_print_order::per_declaration;
 ----
 
 * `value_delimiters` -- Specifies a set of characters that are accepted as a
@@ -36,15 +37,26 @@ std::size_t short_option_size = 0;
 	prefix for short options (i.e. single-char multi-options).
 * `short_option_size` -- The number of prefix characters that indicates a short
 	option. A value of zero (0) indicates that short options are not accepted.
+* `options_print_order` -- The order to print the options section of the help
+	text. Possible values: `per_declaration`, `sorted_short_first`,
+	`sorted_long_first`.
 
 end::reference[] */
 struct option_style
 {
+	enum class opt_print_order : unsigned char
+	{
+		per_declaration = 0,
+		sorted_short_first,
+		sorted_long_first
+	};
+
 	std::string value_delimiters;
 	std::string long_option_prefix;
 	std::size_t long_option_size = 0;
 	std::string short_option_prefix;
 	std::size_t short_option_size = 0;
+	opt_print_order options_print_order = opt_print_order::per_declaration;
 
 	// Construction..
 
@@ -52,12 +64,14 @@ struct option_style
 		std::string && long_option_prefix_chars = {},
 		std::size_t long_option_prefix_size = 0,
 		std::string && short_option_prefix_chars = {},
-		std::size_t short_option_prefix_size = 0)
+		std::size_t short_option_prefix_size = 0,
+		opt_print_order options_print_order = opt_print_order::per_declaration)
 		: value_delimiters(std::move(value_delimiters_chars))
 		, long_option_prefix(std::move(long_option_prefix_chars))
 		, long_option_size(long_option_prefix_size)
 		, short_option_prefix(std::move(short_option_prefix_chars))
 		, short_option_size(short_option_prefix_size)
+		, options_print_order(options_print_order)
 	{}
 
 	// Definitions..
@@ -70,6 +84,27 @@ struct option_style
 	static const option_style & posix();
 	static const option_style & posix_brief();
 	static const option_style & windows();
+
+	// Comparisons for sorting print order.
+
+	bool opt_print_order_less(
+		const std::string & a, const std::string & b) const
+	{
+		const auto l = long_option_string();
+		const auto s = short_option_string();
+		const bool a_l = a.substr(0, l.size()) == l;
+		const bool a_s = !a_l && (a.substr(0, s.size()) == s);
+		const bool b_l = b.substr(0, l.size()) == l;
+		const bool b_s = !b_l && (b.substr(0, s.size()) == s);
+		if (!a_l && !a_s) return false;
+		if (!b_l && !b_s) return true;
+		if ((a_l == b_l) && (a_s == b_s)) return a < b;
+		if (options_print_order == opt_print_order::sorted_short_first)
+			return (a_s && b_l);
+		else if (options_print_order == opt_print_order::sorted_long_first)
+			return (b_s && a_l);
+		return a < b;
+	}
 };
 
 /* tag::reference[]

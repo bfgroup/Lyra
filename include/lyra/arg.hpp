@@ -94,7 +94,8 @@ class arg : public bound_parser<arg>
 			{
 				LYRA_PRINT_DEBUG(
 					"(!)", get_usage_text(style), "!=", token.name);
-				return parse_result(choice_result);
+				return parse_result::ok(
+					detail::parse_state(parser_result_type::no_match, tokens));
 			}
 		}
 

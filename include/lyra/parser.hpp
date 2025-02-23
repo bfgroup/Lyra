@@ -17,6 +17,7 @@
 #include "lyra/parser_result.hpp"
 #include "lyra/printer.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -201,7 +202,14 @@ class parser
 		printer & p, const option_style & style) const
 	{
 		p.heading("OPTIONS, ARGUMENTS:");
-		for (auto const & cols : get_help_text(style, 0))
+		auto rows = get_help_text(style, 0);
+		if (style.options_print_order
+			!= option_style::opt_print_order::per_declaration)
+			std::stable_sort(rows.begin(), rows.end(),
+				[&style](const help_text_item & a, const help_text_item & b) {
+					return style.opt_print_order_less(a.option, b.option);
+				});
+		for (auto const & cols : rows)
 		{
 			p.option(cols.option, cols.description, 2);
 		}

@@ -129,8 +129,11 @@ class cli : protected arguments
 
 	value_result operator[](const std::string & n);
 
+	// Style control.
 	cli & style(const option_style & style);
 	cli & style(option_style && style);
+	cli & style_print_short_first();
+	cli & style_print_long_first();
 
 	// Stream out generates the help output.
 	template <typename T>
@@ -155,6 +158,10 @@ class cli : protected arguments
 			option_style(customize.token_delimiters(),
 				customize.option_prefix(), 2, customize.option_prefix(), 1));
 	}
+
+	cli & sequential() { return arguments::sequential(), *this; }
+	cli & inclusive() { return arguments::inclusive(), *this; }
+	cli & relaxed() { return arguments::relaxed(), *this; }
 
 	// Internal..
 
@@ -375,6 +382,44 @@ inline cli & cli::style(const option_style & style)
 inline cli & cli::style(option_style && style)
 {
 	opt_style = std::make_shared<option_style>(std::move(style));
+	return *this;
+}
+
+/* tag::reference[]
+[#lyra_cli_style_print_short_first]
+=== `lyra::cli::style_print_short_first`
+
+[source]
+----
+lyra::cli & lyra::cli::style_print_short_first()
+----
+
+Specifies print options sorted with short options appearing first.
+
+end::reference[] */
+inline cli & cli::style_print_short_first()
+{
+	ref_option_style().options_print_order
+		= option_style::opt_print_order::sorted_short_first;
+	return *this;
+}
+
+/* tag::reference[]
+[#lyra_cli_style_print_long_first]
+=== `lyra::cli::style_print_long_first`
+
+[source]
+----
+lyra::cli & lyra::cli::style_print_long_first()
+----
+
+Specifies print options sorted with long options appearing first.
+
+end::reference[] */
+inline cli & cli::style_print_long_first()
+{
+	ref_option_style().options_print_order
+		= option_style::opt_print_order::sorted_long_first;
 	return *this;
 }
 

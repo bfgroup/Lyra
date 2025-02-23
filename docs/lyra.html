@@ -2219,6 +2219,20 @@ parsers. This means that there is no ordering enforced.</p>
 </div>
 </div>
 <div class="sect4">
+<h5 id="_lyraargumentsrelaxed"><a class="anchor" href="#_lyraargumentsrelaxed"></a><code>lyra::arguments::relaxed</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="n">arguments</span> <span class="o">&amp;</span> <span class="n">arguments</span><span class="o">::</span><span class="n">relaxed</span><span class="p">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sets the parsing mode for the arguments to "relaxed any". When parsing the
+arguments it attempts to match each parsed argument with all the available
+parsers. This means that there is no ordering enforced. Unknown, i.e. failed,
+parsing are ignored.</p>
+</div>
+</div>
+<div class="sect4">
 <h5 id="_lyraargumentsget"><a class="anchor" href="#_lyraargumentsget"></a><code>lyra::arguments::get</code></h5>
 <div class="listingblock">
 <div class="content">
@@ -2350,6 +2364,28 @@ callbacks may have been called.</p>
 </div>
 <div class="paragraph">
 <p>Specifies the <a href="#lyra_option_style"><code>lyra::option_style</code></a> to accept for this instance.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="lyra_cli_style_print_short_first"><a class="anchor" href="#lyra_cli_style_print_short_first"></a><code>lyra::cli::style_print_short_first</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="n">lyra</span><span class="o">::</span><span class="n">cli</span> <span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="o">::</span><span class="n">style_print_short_first</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Specifies print options sorted with short options appearing first.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="lyra_cli_style_print_long_first"><a class="anchor" href="#lyra_cli_style_print_long_first"></a><code>lyra::cli::style_print_long_first</code></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="n">lyra</span><span class="o">::</span><span class="n">cli</span> <span class="o">&amp;</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="o">::</span><span class="n">style_print_long_first</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Specifies print options sorted with long options appearing first.</p>
 </div>
 </div>
 <div class="sect4">
@@ -2862,7 +2898,8 @@ One can add multiple short spellings at once with <code>-abc</code>.</p>
 <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">long_option_prefix</span><span class="p">;</span>
 <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">long_option_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">short_option_prefix</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">short_option_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></code></pre>
+<span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">short_option_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">opt_print_order</span> <span class="n">options_print_order</span> <span class="o">=</span> <span class="n">opt_print_order</span><span class="o">::</span><span class="n">per_declaration</span><span class="p">;</span></code></pre>
 </div>
 </div>
 <div class="ulist">
@@ -2887,6 +2924,11 @@ prefix for short options (i.e. single-char multi-options).</p>
 <li>
 <p><code>short_option_size</code>&#8201;&#8212;&#8201;The number of prefix characters that indicates a short
 option. A value of zero (0) indicates that short options are not accepted.</p>
+</li>
+<li>
+<p><code>options_print_order</code>&#8201;&#8212;&#8201;The order to print the options section of the help
+text. Possible values: <code>per_declaration</code>, <code>sorted_short_first</code>,
+<code>sorted_long_first</code>.</p>
 </li>
 </ul>
 </div>
@@ -3258,6 +3300,13 @@ out the command name and description.&#8201;&#8212;&#8201;<em>René Ferdinand Ri
 <p><strong>New</strong>: Adds printing default/initial value for options in help output.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
+<p><strong>New</strong>: Add <code>relaxed</code> parsing to support "bag of options" style command lines.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p><strong>New</strong>: Add ordering/sorting of printed option details specified in the
+<code>option_style::options_print_order</code> value.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
 <p>Fix <code>operator|</code> loosing group subtype causing invalid parsing.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
@@ -3265,6 +3314,13 @@ out the command name and description.&#8201;&#8212;&#8201;<em>René Ferdinand Ri
 </li>
 <li>
 <p>Fix crash when changing settings of a command and adding subsequent arguments.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Fix short option values being ignored in the case where the value separator
+is past the short option and in the value itself.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Fix choice limited args from erroring early.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 </ul>
 </div>
