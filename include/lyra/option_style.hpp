@@ -65,13 +65,13 @@ struct option_style
 		std::size_t long_option_prefix_size = 0,
 		std::string && short_option_prefix_chars = {},
 		std::size_t short_option_prefix_size = 0,
-		opt_print_order options_print_order = opt_print_order::per_declaration)
+		opt_print_order options_print_order_ = opt_print_order::per_declaration)
 		: value_delimiters(std::move(value_delimiters_chars))
 		, long_option_prefix(std::move(long_option_prefix_chars))
 		, long_option_size(long_option_prefix_size)
 		, short_option_prefix(std::move(short_option_prefix_chars))
 		, short_option_size(short_option_prefix_size)
-		, options_print_order(options_print_order)
+		, options_print_order(options_print_order_)
 	{}
 
 	// Definitions..
