@@ -58,7 +58,7 @@ class exe_name : public composable_parser<exe_name>
 	}
 
 	protected:
-	std::string get_print_order_key(const option_style & style) const override
+	std::string get_print_order_key(const option_style &) const override
 	{
 		return m_name ? *m_name : "";
 	}

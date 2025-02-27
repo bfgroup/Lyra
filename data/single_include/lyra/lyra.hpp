@@ -1539,8 +1539,7 @@ class ostream_printer : public printer
 	explicit ostream_printer(std::ostream & os_)
 		: os(os_)
 	{}
-	printer & heading(
-		const option_style & style, const std::string & txt) override
+	printer & heading(const option_style &, const std::string & txt) override
 	{
 		os << txt << "\n";
 		return *this;
@@ -1733,8 +1732,7 @@ class parser
 		return "";
 	}
 
-	virtual void print_help_text_details(
-		printer & p, const option_style & style) const
+	virtual void print_help_text_details(printer &, const option_style &) const
 	{}
 
 	protected:
@@ -2290,7 +2288,7 @@ class arg : public bound_parser<arg>
 	}
 
 	protected:
-	std::string get_print_order_key(const option_style & style) const override
+	std::string get_print_order_key(const option_style &) const override
 	{
 		return this->hint();
 	}
@@ -3039,7 +3037,7 @@ class exe_name : public composable_parser<exe_name>
 	}
 
 	protected:
-	std::string get_print_order_key(const option_style & style) const override
+	std::string get_print_order_key(const option_style &) const override
 	{
 		return m_name ? *m_name : "";
 	}
@@ -3855,7 +3853,7 @@ class literal : public parser
 	std::string name;
 	std::string description;
 
-	std::string get_print_order_key(const option_style & style) const override
+	std::string get_print_order_key(const option_style &) const override
 	{
 		return name;
 	}

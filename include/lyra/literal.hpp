@@ -83,7 +83,7 @@ class literal : public parser
 	std::string name;
 	std::string description;
 
-	std::string get_print_order_key(const option_style & style) const override
+	std::string get_print_order_key(const option_style &) const override
 	{
 		return name;
 	}

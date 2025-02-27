@@ -111,8 +111,7 @@ class ostream_printer : public printer
 	explicit ostream_printer(std::ostream & os_)
 		: os(os_)
 	{}
-	printer & heading(
-		const option_style & style, const std::string & txt) override
+	printer & heading(const option_style &, const std::string & txt) override
 	{
 		os << txt << "\n";
 		return *this;

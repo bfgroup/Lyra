@@ -169,8 +169,7 @@ class parser
 		return "";
 	}
 
-	virtual void print_help_text_details(
-		printer & p, const option_style & style) const
+	virtual void print_help_text_details(printer &, const option_style &) const
 	{}
 
 	protected:

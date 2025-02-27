@@ -111,7 +111,7 @@ class arg : public bound_parser<arg>
 	}
 
 	protected:
-	std::string get_print_order_key(const option_style & style) const override
+	std::string get_print_order_key(const option_style &) const override
 	{
 		return this->hint();
 	}
