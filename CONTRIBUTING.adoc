@@ -21,7 +21,7 @@ of test they are:
 (`0`) if the checks in it all work. Or will return failure (`>0`) if any
 of the checks in it do not work.
 
-`*-compile_test.cpp`:: A source that is only compiled, i.e. not linked and
+`*_compile_test.cpp`:: A source that is only compiled, i.e. not linked and
 doesn't produce an executable. If the source file compiles it's considered
 a successful test.
 
@@ -45,9 +45,10 @@ running tests is straightforward also.
 
 If you don't already have it, install a recent B2 release. If there's a
 package available for you platform you can use it. Any version >= 4 should work
-You can also use a source B2 release >= 4.3. Using portable layout option to install it someplace in your path:
+You can also use a source B2 release >= 4.3. Using portable layout option to
+install it someplace in your path:
 
-. Download and unpack a link:https://github.com/boostorg/build/releases/latest[release archive].
+. Download and unpack a link:https://github.com/bfgroup/b2/releases/latest[release archive].
 . Build it per it's instructions.
 . Use the portable install instead of the default (standard) install:
   `b2 install b2-install-layout=portable --prefix=/usr/local/bin`
@@ -66,7 +67,7 @@ all tests pass for all current C++ standard version from 11 onwards. You can
 do that directly with B2 with:
 
 ```
-> b2 cxxstd=11,14,17,20
+> b2 cxxstd=11,14,17,20,23
 ```
 
 === Testing Manually
