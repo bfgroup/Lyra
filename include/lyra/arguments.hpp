@@ -409,8 +409,8 @@ class arguments : public parser
 		printer & p, const option_style & style) const override
 	{
 		for_each_print_ordered_parser(style, parsers.begin(), parsers.end(),
-			[&](const option_style & style, const parser & q) {
-				q.print_help_text_details(p, style);
+			[&](const option_style & s, const parser & q) {
+				q.print_help_text_details(p, s);
 			});
 	}
 };
