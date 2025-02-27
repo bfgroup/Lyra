@@ -6,6 +6,8 @@
 #ifndef LYRA_PRINTER_HPP
 #define LYRA_PRINTER_HPP
 
+#include "lyra/option_style.hpp"
+
 #include <cstddef>
 #include <memory>
 #include <ostream>
@@ -25,14 +27,25 @@ of the output device and any visual arrangement, i.e. padding, coloring, etc.
 [source]
 ----
 virtual printer & printer::heading(
+	const option_style & style,
 	const std::string & txt) = 0;
 virtual printer & printer::paragraph(
-	const std::string & txt,
-	std::size_t indent = 0) = 0;
+	const option_style & style,
+	const std::string & txt) = 0;
 virtual printer & printer::option(
+	const option_style & style,
 	const std::string & opt,
-	const std::string & description,
-	std::size_t indent = 0) = 0;
+	const std::string & description) = 0;
+----
+
+Indenting levels is implemented at the base and the indent is available for
+concrete implementations to apply as needed.
+
+[source]
+----
+virtual printer & indent(int levels = 1);
+virtual printer & dedent(int levels = 1);
+virtual int get_indent_level() const;
 ----
 
 You can customize the printing output by implementing a subclass of
@@ -52,13 +65,34 @@ class printer
 {
 	public:
 	virtual ~printer() = default;
-	virtual printer & heading(const std::string & txt) = 0;
-	virtual printer & paragraph(const std::string & txt, std::size_t indent = 0)
+	virtual printer & heading(
+		const option_style & style, const std::string & txt)
 		= 0;
-	virtual printer & option(const std::string & opt,
-		const std::string & description,
-		std::size_t indent = 0)
+	virtual printer & paragraph(
+		const option_style & style, const std::string & txt)
 		= 0;
+	virtual printer & option(const option_style & style,
+		const std::string & opt,
+		const std::string & description)
+		= 0;
+	virtual printer & indent(int levels = 1)
+	{
+		indent_level += levels;
+		return *this;
+	}
+	virtual printer & dedent(int levels = 1)
+	{
+		indent_level -= levels;
+		return *this;
+	}
+	virtual int get_indent_level() const
+	{
+		if (indent_level < 0) return 0;
+		return indent_level;
+	}
+
+	protected:
+	int indent_level = 0;
 };
 
 /* tag::reference[]
@@ -77,24 +111,28 @@ class ostream_printer : public printer
 	explicit ostream_printer(std::ostream & os_)
 		: os(os_)
 	{}
-	printer & heading(const std::string & txt) override
+	printer & heading(
+		const option_style & style, const std::string & txt) override
 	{
 		os << txt << "\n";
 		return *this;
 	}
 	printer & paragraph(
-		const std::string & txt, std::size_t indent = 0) override
+		const option_style & style, const std::string & txt) override
 	{
-		const std::string indent_str(indent, ' ');
+		const std::string indent_str(
+			get_indent_level() * style.indent_size, ' ');
 		os << indent_str << txt << "\n\n";
 		return *this;
 	}
-	printer & option(const std::string & opt,
-		const std::string & description,
-		std::size_t indent = 0) override
+	printer & option(const option_style & style,
+		const std::string & opt,
+		const std::string & description) override
 	{
-		const std::string indent_str(indent, ' ');
-		const std::string opt_pad(26 - indent - 1, ' ');
+		const std::string indent_str(
+			get_indent_level() * style.indent_size, ' ');
+		const std::string opt_pad(
+			26 - get_indent_level() * style.indent_size - 1, ' ');
 		if (opt.size() > opt_pad.size())
 			os << indent_str << opt << "\n"
 			   << indent_str << opt_pad << " " << description << "\n";

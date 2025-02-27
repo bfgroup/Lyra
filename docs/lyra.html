@@ -2930,6 +2930,11 @@ option. A value of zero (0) indicates that short options are not accepted.</p>
 text. Possible values: <code>per_declaration</code>, <code>sorted_short_first</code>,
 <code>sorted_long_first</code>.</p>
 </li>
+<li>
+<p><code>indent_size</code>&#8201;&#8212;&#8201;The character count to indent argument detail description.
+This affects the indenting of usage detail, the arguments, and any
+sub-commands/arguments recursively. The default is "2".</p>
+</li>
 </ul>
 </div>
 <div class="sect3">
@@ -3011,50 +3016,6 @@ only available as individual long options, for example <code>/A</code>.</p>
 </div>
 <div class="sect3">
 <h4 id="lyra_parser_specification"><a class="anchor" href="#lyra_parser_specification"></a>Specification</h4>
-<div class="sect4">
-<h5 id="lyra_parser_help_text_item"><a class="anchor" href="#lyra_parser_help_text_item"></a><code>lyra::parser::help_text_item</code></h5>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">struct</span> <span class="nc">lyra</span><span class="o">::</span><span class="n">parser</span><span class="o">::</span><span class="n">help_text_item</span>
-<span class="p">{</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">option</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">description</span><span class="p">;</span>
-<span class="p">};</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Holds the help information for a single argument option. The <code>option</code> member is
-the long name of the option. And the <code>description</code> is the text describing the
-option. A list of them is returned from the <code>lyra::parser::get_help_text</code>
-method.</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="lyra_parser_help_text"><a class="anchor" href="#lyra_parser_help_text"></a><code>lyra::parser::help_text</code></h5>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">using</span> <span class="n">help_text</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">help_text_item</span><span class="o">&gt;</span><span class="p">;</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The set of help texts for any options in the sub-parsers to this one, if any.</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="lyra_parser_get_help_text"><a class="anchor" href="#lyra_parser_get_help_text"></a><code>lyra::parser::get_help_text</code></h5>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="c++"><span class="k">virtual</span> <span class="n">help_text</span> <span class="n">get_help_text</span><span class="p">(</span><span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Collects, and returns, the set of help items for the sub-parser arguments in
-this parser, if any. The default is to return an empty set. Which is what most
-parsers will return. Parsers like <code>arguments</code>, <code>group</code>, and <code>cli</code> will return a
-set for the arguments defined. This is called to print out the help text from
-the stream operator.</p>
-</div>
-</div>
 <div class="sect4">
 <h5 id="lyra_parser_get_usage_text"><a class="anchor" href="#lyra_parser_get_usage_text"></a><code>lyra::parser::get_usage_text</code></h5>
 <div class="listingblock">
@@ -3229,14 +3190,26 @@ of the output device and any visual arrangement, i.e. padding, coloring, etc.</p
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="c++"><span class="k">virtual</span> <span class="n">printer</span> <span class="o">&amp;</span> <span class="n">printer</span><span class="o">::</span><span class="n">heading</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span> <span class="n">style</span><span class="p">,</span>
     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">txt</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="k">virtual</span> <span class="n">printer</span> <span class="o">&amp;</span> <span class="n">printer</span><span class="o">::</span><span class="n">paragraph</span><span class="p">(</span>
-    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">txt</span><span class="p">,</span>
-    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">indent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span> <span class="n">style</span><span class="p">,</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">txt</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="k">virtual</span> <span class="n">printer</span> <span class="o">&amp;</span> <span class="n">printer</span><span class="o">::</span><span class="n">option</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">option_style</span> <span class="o">&amp;</span> <span class="n">style</span><span class="p">,</span>
     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">opt</span><span class="p">,</span>
-    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">description</span><span class="p">,</span>
-    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">indent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></code></pre>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">description</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Indenting levels is implemented at the base and the indent is available for
+concrete implementations to apply as needed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="k">virtual</span> <span class="n">printer</span> <span class="o">&amp;</span> <span class="n">indent</span><span class="p">(</span><span class="kt">int</span> <span class="n">levels</span> <span class="o">=</span> <span class="mi">1</span><span class="p">);</span>
+<span class="k">virtual</span> <span class="n">printer</span> <span class="o">&amp;</span> <span class="n">dedent</span><span class="p">(</span><span class="kt">int</span> <span class="n">levels</span> <span class="o">=</span> <span class="mi">1</span><span class="p">);</span>
+<span class="k">virtual</span> <span class="kt">int</span> <span class="n">get_indent_level</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3290,7 +3263,7 @@ be retrieved with the
 <ul>
 <li>
 <p><strong>New</strong>: Make printing help text configurable to make it possible to avoid using
-iostreams.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+iostreams for output.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
 <p><strong>New</strong>: Implements a new <code>brief_help</code> mode for a <code>command</code> that only prints
@@ -3307,6 +3280,9 @@ out the command name and description.&#8201;&#8212;&#8201;<em>René Ferdinand Ri
 <code>option_style::options_print_order</code> value.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
+<p><strong>New</strong>: Improve output readability by indenting sub-commands.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
 <p>Fix <code>operator|</code> loosing group subtype causing invalid parsing.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
@@ -3321,6 +3297,25 @@ is past the short option and in the value itself.&#8201;&#8212;&#8201;<em>René 
 </li>
 <li>
 <p>Fix choice limited args from erroring early.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Refactored the way help is printed to allow individual parsers to customize
+their output through the <code>printer</code> object.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Tested with
+	Visual Studio 2019, VS 2022,
+	MinGW-64 (gcc 8.1.0),
+	Linux (
+		clang 3.9, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19;
+		gcc 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+	Xcode (
+		14.3.1, 15.4, 16.2),
+	on Azure Pipelines;
+and with
+	VS 2015, VS 2017,
+	MinGW-64 (gcc 6.3, 7.3, 8.1)
+	on AppVeyor.</p>
 </li>
 </ul>
 </div>

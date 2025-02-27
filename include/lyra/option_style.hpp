@@ -40,6 +40,9 @@ opt_print_order options_print_order = opt_print_order::per_declaration;
 * `options_print_order` -- The order to print the options section of the help
 	text. Possible values: `per_declaration`, `sorted_short_first`,
 	`sorted_long_first`.
+* `indent_size` -- The character count to indent argument detail description.
+	This affects the indenting of usage detail, the arguments, and any
+	sub-commands/arguments recursively. The default is "2".
 
 end::reference[] */
 struct option_style
@@ -57,6 +60,7 @@ struct option_style
 	std::string short_option_prefix;
 	std::size_t short_option_size = 0;
 	opt_print_order options_print_order = opt_print_order::per_declaration;
+	std::size_t indent_size = 2;
 
 	// Construction..
 
@@ -65,13 +69,15 @@ struct option_style
 		std::size_t long_option_prefix_size = 0,
 		std::string && short_option_prefix_chars = {},
 		std::size_t short_option_prefix_size = 0,
-		opt_print_order options_print_order_ = opt_print_order::per_declaration)
+		opt_print_order options_print_order_ = opt_print_order::per_declaration,
+		std::size_t indent_size_ = 2)
 		: value_delimiters(std::move(value_delimiters_chars))
 		, long_option_prefix(std::move(long_option_prefix_chars))
 		, long_option_size(long_option_prefix_size)
 		, short_option_prefix(std::move(short_option_prefix_chars))
 		, short_option_size(short_option_prefix_size)
 		, options_print_order(options_print_order_)
+		, indent_size(indent_size_)
 	{}
 
 	// Definitions..

@@ -61,11 +61,6 @@ class arg : public bound_parser<arg>
 		return text;
 	}
 
-	help_text get_help_text(const option_style & style) const override
-	{
-		return { { get_usage_text(style), m_description } };
-	}
-
 	using parser::parse;
 
 	parse_result parse(detail::token_iterator const & tokens,
@@ -113,6 +108,18 @@ class arg : public bound_parser<arg>
 			return parse_result::ok(detail::parse_state(
 				parser_result_type::matched, remainingTokens));
 		}
+	}
+
+	protected:
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return this->hint();
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		p.option(style, get_usage_text(style), m_description);
 	}
 };
 

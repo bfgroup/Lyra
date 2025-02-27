@@ -101,18 +101,6 @@ class opt : public bound_parser<opt>
 		return usage;
 	}
 
-	help_text get_help_text(const option_style & style) const override
-	{
-		std::string text;
-		for (auto const & opt_name : opt_names)
-		{
-			if (!text.empty()) text += ", ";
-			text += format_opt(opt_name, style);
-		}
-		if (!m_hint.empty()) ((text += " <") += m_hint) += ">";
-		return { { text, m_description } };
-	}
-
 	bool is_named(const std::string & n) const override
 	{
 		if (bound_parser::is_named(n)) return true;
@@ -264,6 +252,24 @@ class opt : public bound_parser<opt>
 			return style.short_option_string() + opt_name.substr(1);
 		else
 			return opt_name;
+	}
+
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return format_opt(opt_names[0], style);
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		std::string text;
+		for (auto const & opt_name : opt_names)
+		{
+			if (!text.empty()) text += ", ";
+			text += format_opt(opt_name, style);
+		}
+		if (!m_hint.empty()) ((text += " <") += m_hint) += ">";
+		p.option(style, text, m_description);
 	}
 };
 

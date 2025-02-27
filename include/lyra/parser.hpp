@@ -20,9 +20,8 @@
 #include <algorithm>
 #include <cstddef>
 #include <memory>
+#include <numeric>
 #include <string>
-#include <type_traits>
-#include <vector>
 
 namespace lyra {
 
@@ -128,19 +127,6 @@ end::reference[] */
 class parser
 {
 	public:
-	struct help_text_item
-	{
-		std::string option;
-		std::string description;
-	};
-
-	using help_text = std::vector<help_text_item>;
-
-	[[deprecated]] help_text get_help_text() const { return {}; }
-	[[deprecated]] std::string get_usage_text() const { return ""; }
-	[[deprecated]] std::string get_description_text() const { return ""; }
-
-	virtual help_text get_help_text(const option_style &) const { return {}; }
 	virtual std::string get_usage_text(const option_style &) const
 	{
 		return "";
@@ -178,36 +164,61 @@ class parser
 		detail::token_iterator const & tokens, const option_style & style) const
 		= 0;
 
+	virtual std::string get_print_order_key(const option_style &) const
+	{
+		return "";
+	}
+
+	virtual void print_help_text_details(
+		printer & p, const option_style & style) const
+	{}
+
 	protected:
 	virtual void print_help_text(printer & p, const option_style & style) const
 	{
 		print_help_text_summary(p, style);
+		p.heading(style, "OPTIONS, ARGUMENTS:");
+		p.indent();
 		print_help_text_details(p, style);
+		p.dedent();
 	}
+
 	virtual void print_help_text_summary(
 		printer & p, const option_style & style) const
 	{
-		std::string usage_test = get_usage_text(style);
-		if (!usage_test.empty())
-			p.heading("USAGE:").paragraph(get_usage_text(style), 2);
+		std::string usage_text = get_usage_text(style);
+		if (!usage_text.empty())
+			p.heading(style, "USAGE:")
+				.indent()
+				.paragraph(style, usage_text)
+				.dedent();
 
-		std::string description_test = get_description_text(style);
-		if (!description_test.empty()) p.paragraph(get_description_text(style));
+		std::string description_text = get_description_text(style);
+		if (!description_text.empty()) p.paragraph(style, description_text);
 	}
-	virtual void print_help_text_details(
-		printer & p, const option_style & style) const
+
+	template <typename I, typename F>
+	void for_each_print_ordered_parser(
+		const option_style & style, I b, I e, F f) const
 	{
-		p.heading("OPTIONS, ARGUMENTS:");
-		auto rows = get_help_text(style);
 		if (style.options_print_order
 			!= option_style::opt_print_order::per_declaration)
-			std::stable_sort(rows.begin(), rows.end(),
-				[&style](const help_text_item & a, const help_text_item & b) {
-					return style.opt_print_order_less(a.option, b.option);
-				});
-		for (auto const & cols : rows)
 		{
-			p.option(cols.option, cols.description, 2);
+			std::vector<std::size_t> order_index(std::distance(b, e));
+			std::iota(order_index.begin(), order_index.end(), 0);
+			std::stable_sort(order_index.begin(), order_index.end(),
+				[&](std::size_t i, std::size_t j) {
+					const parser & pa = **(b + i);
+					const parser & pb = **(b + j);
+					return style.opt_print_order_less(
+						pa.get_print_order_key(style),
+						pb.get_print_order_key(style));
+				});
+			for (auto i : order_index) f(style, **(b + i));
+		}
+		else
+		{
+			while (b != e) f(style, **(b++));
 		}
 	}
 };
@@ -216,47 +227,6 @@ class parser
 
 [#lyra_parser_specification]
 == Specification
-
-[#lyra_parser_help_text_item]
-=== `lyra::parser::help_text_item`
-
-[source]
-----
-struct lyra::parser::help_text_item
-{
-	std::string option;
-	std::string description;
-};
-----
-
-Holds the help information for a single argument option. The `option` member is
-the long name of the option. And the `description` is the text describing the
-option. A list of them is returned from the `lyra::parser::get_help_text`
-method.
-
-[#lyra_parser_help_text]
-=== `lyra::parser::help_text`
-
-[source]
-----
-using help_text = std::vector<help_text_item>;
-----
-
-The set of help texts for any options in the sub-parsers to this one, if any.
-
-[#lyra_parser_get_help_text]
-=== `lyra::parser::get_help_text`
-
-[source]
-----
-virtual help_text get_help_text(const option_style &) const;
-----
-
-Collects, and returns, the set of help items for the sub-parser arguments in
-this parser, if any. The default is to return an empty set. Which is what most
-parsers will return. Parsers like `arguments`, `group`, and `cli` will return a
-set for the arguments defined. This is called to print out the help text from
-the stream operator.
 
 [#lyra_parser_get_usage_text]
 === `lyra::parser::get_usage_text`

@@ -866,6 +866,9 @@ opt_print_order options_print_order = opt_print_order::per_declaration;
 * `options_print_order` -- The order to print the options section of the help
 	text. Possible values: `per_declaration`, `sorted_short_first`,
 	`sorted_long_first`.
+* `indent_size` -- The character count to indent argument detail description.
+	This affects the indenting of usage detail, the arguments, and any
+	sub-commands/arguments recursively. The default is "2".
 
 end::reference[] */
 struct option_style
@@ -883,6 +886,7 @@ struct option_style
 	std::string short_option_prefix;
 	std::size_t short_option_size = 0;
 	opt_print_order options_print_order = opt_print_order::per_declaration;
+	std::size_t indent_size = 2;
 
 
 	option_style(std::string && value_delimiters_chars,
@@ -890,13 +894,15 @@ struct option_style
 		std::size_t long_option_prefix_size = 0,
 		std::string && short_option_prefix_chars = {},
 		std::size_t short_option_prefix_size = 0,
-		opt_print_order options_print_order_ = opt_print_order::per_declaration)
+		opt_print_order options_print_order_ = opt_print_order::per_declaration,
+		std::size_t indent_size_ = 2)
 		: value_delimiters(std::move(value_delimiters_chars))
 		, long_option_prefix(std::move(long_option_prefix_chars))
 		, long_option_size(long_option_prefix_size)
 		, short_option_prefix(std::move(short_option_prefix_chars))
 		, short_option_size(short_option_prefix_size)
 		, options_print_order(options_print_order_)
+		, indent_size(indent_size_)
 	{}
 
 
@@ -1429,6 +1435,7 @@ struct choices_check : choices_base
 #ifndef LYRA_PRINTER_HPP
 #define LYRA_PRINTER_HPP
 
+
 #include <cstddef>
 #include <memory>
 #include <ostream>
@@ -1448,14 +1455,25 @@ of the output device and any visual arrangement, i.e. padding, coloring, etc.
 [source]
 ----
 virtual printer & printer::heading(
+	const option_style & style,
 	const std::string & txt) = 0;
 virtual printer & printer::paragraph(
-	const std::string & txt,
-	std::size_t indent = 0) = 0;
+	const option_style & style,
+	const std::string & txt) = 0;
 virtual printer & printer::option(
+	const option_style & style,
 	const std::string & opt,
-	const std::string & description,
-	std::size_t indent = 0) = 0;
+	const std::string & description) = 0;
+----
+
+Indenting levels is implemented at the base and the indent is available for
+concrete implementations to apply as needed.
+
+[source]
+----
+virtual printer & indent(int levels = 1);
+virtual printer & dedent(int levels = 1);
+virtual int get_indent_level() const;
 ----
 
 You can customize the printing output by implementing a subclass of
@@ -1475,13 +1493,34 @@ class printer
 {
 	public:
 	virtual ~printer() = default;
-	virtual printer & heading(const std::string & txt) = 0;
-	virtual printer & paragraph(const std::string & txt, std::size_t indent = 0)
+	virtual printer & heading(
+		const option_style & style, const std::string & txt)
 		= 0;
-	virtual printer & option(const std::string & opt,
-		const std::string & description,
-		std::size_t indent = 0)
+	virtual printer & paragraph(
+		const option_style & style, const std::string & txt)
 		= 0;
+	virtual printer & option(const option_style & style,
+		const std::string & opt,
+		const std::string & description)
+		= 0;
+	virtual printer & indent(int levels = 1)
+	{
+		indent_level += levels;
+		return *this;
+	}
+	virtual printer & dedent(int levels = 1)
+	{
+		indent_level -= levels;
+		return *this;
+	}
+	virtual int get_indent_level() const
+	{
+		if (indent_level < 0) return 0;
+		return indent_level;
+	}
+
+	protected:
+	int indent_level = 0;
 };
 
 /* tag::reference[]
@@ -1500,24 +1539,28 @@ class ostream_printer : public printer
 	explicit ostream_printer(std::ostream & os_)
 		: os(os_)
 	{}
-	printer & heading(const std::string & txt) override
+	printer & heading(
+		const option_style & style, const std::string & txt) override
 	{
 		os << txt << "\n";
 		return *this;
 	}
 	printer & paragraph(
-		const std::string & txt, std::size_t indent = 0) override
+		const option_style & style, const std::string & txt) override
 	{
-		const std::string indent_str(indent, ' ');
+		const std::string indent_str(
+			get_indent_level() * style.indent_size, ' ');
 		os << indent_str << txt << "\n\n";
 		return *this;
 	}
-	printer & option(const std::string & opt,
-		const std::string & description,
-		std::size_t indent = 0) override
+	printer & option(const option_style & style,
+		const std::string & opt,
+		const std::string & description) override
 	{
-		const std::string indent_str(indent, ' ');
-		const std::string opt_pad(26 - indent - 1, ' ');
+		const std::string indent_str(
+			get_indent_level() * style.indent_size, ' ');
+		const std::string opt_pad(
+			26 - get_indent_level() * style.indent_size - 1, ' ');
 		if (opt.size() > opt_pad.size())
 			os << indent_str << opt << "\n"
 			   << indent_str << opt_pad << " " << description << "\n";
@@ -1544,9 +1587,8 @@ inline std::unique_ptr<printer> make_printer(std::ostream & os_)
 #include <algorithm>
 #include <cstddef>
 #include <memory>
+#include <numeric>
 #include <string>
-#include <type_traits>
-#include <vector>
 
 namespace lyra {
 
@@ -1649,19 +1691,6 @@ end::reference[] */
 class parser
 {
 	public:
-	struct help_text_item
-	{
-		std::string option;
-		std::string description;
-	};
-
-	using help_text = std::vector<help_text_item>;
-
-	[[deprecated]] help_text get_help_text() const { return {}; }
-	[[deprecated]] std::string get_usage_text() const { return ""; }
-	[[deprecated]] std::string get_description_text() const { return ""; }
-
-	virtual help_text get_help_text(const option_style &) const { return {}; }
 	virtual std::string get_usage_text(const option_style &) const
 	{
 		return "";
@@ -1699,36 +1728,61 @@ class parser
 		detail::token_iterator const & tokens, const option_style & style) const
 		= 0;
 
+	virtual std::string get_print_order_key(const option_style &) const
+	{
+		return "";
+	}
+
+	virtual void print_help_text_details(
+		printer & p, const option_style & style) const
+	{}
+
 	protected:
 	virtual void print_help_text(printer & p, const option_style & style) const
 	{
 		print_help_text_summary(p, style);
+		p.heading(style, "OPTIONS, ARGUMENTS:");
+		p.indent();
 		print_help_text_details(p, style);
+		p.dedent();
 	}
+
 	virtual void print_help_text_summary(
 		printer & p, const option_style & style) const
 	{
-		std::string usage_test = get_usage_text(style);
-		if (!usage_test.empty())
-			p.heading("USAGE:").paragraph(get_usage_text(style), 2);
+		std::string usage_text = get_usage_text(style);
+		if (!usage_text.empty())
+			p.heading(style, "USAGE:")
+				.indent()
+				.paragraph(style, usage_text)
+				.dedent();
 
-		std::string description_test = get_description_text(style);
-		if (!description_test.empty()) p.paragraph(get_description_text(style));
+		std::string description_text = get_description_text(style);
+		if (!description_text.empty()) p.paragraph(style, description_text);
 	}
-	virtual void print_help_text_details(
-		printer & p, const option_style & style) const
+
+	template <typename I, typename F>
+	void for_each_print_ordered_parser(
+		const option_style & style, I b, I e, F f) const
 	{
-		p.heading("OPTIONS, ARGUMENTS:");
-		auto rows = get_help_text(style);
 		if (style.options_print_order
 			!= option_style::opt_print_order::per_declaration)
-			std::stable_sort(rows.begin(), rows.end(),
-				[&style](const help_text_item & a, const help_text_item & b) {
-					return style.opt_print_order_less(a.option, b.option);
-				});
-		for (auto const & cols : rows)
 		{
-			p.option(cols.option, cols.description, 2);
+			std::vector<std::size_t> order_index(std::distance(b, e));
+			std::iota(order_index.begin(), order_index.end(), 0);
+			std::stable_sort(order_index.begin(), order_index.end(),
+				[&](std::size_t i, std::size_t j) {
+					const parser & pa = **(b + i);
+					const parser & pb = **(b + j);
+					return style.opt_print_order_less(
+						pa.get_print_order_key(style),
+						pb.get_print_order_key(style));
+				});
+			for (auto i : order_index) f(style, **(b + i));
+		}
+		else
+		{
+			while (b != e) f(style, **(b++));
 		}
 	}
 };
@@ -1737,47 +1791,6 @@ class parser
 
 [#lyra_parser_specification]
 == Specification
-
-[#lyra_parser_help_text_item]
-=== `lyra::parser::help_text_item`
-
-[source]
-----
-struct lyra::parser::help_text_item
-{
-	std::string option;
-	std::string description;
-};
-----
-
-Holds the help information for a single argument option. The `option` member is
-the long name of the option. And the `description` is the text describing the
-option. A list of them is returned from the `lyra::parser::get_help_text`
-method.
-
-[#lyra_parser_help_text]
-=== `lyra::parser::help_text`
-
-[source]
-----
-using help_text = std::vector<help_text_item>;
-----
-
-The set of help texts for any options in the sub-parsers to this one, if any.
-
-[#lyra_parser_get_help_text]
-=== `lyra::parser::get_help_text`
-
-[source]
-----
-virtual help_text get_help_text(const option_style &) const;
-----
-
-Collects, and returns, the set of help items for the sub-parser arguments in
-this parser, if any. The default is to return an empty set. Which is what most
-parsers will return. Parsers like `arguments`, `group`, and `cli` will return a
-set for the arguments defined. This is called to print out the help text from
-the stream operator.
 
 [#lyra_parser_get_usage_text]
 === `lyra::parser::get_usage_text`
@@ -2228,11 +2241,6 @@ class arg : public bound_parser<arg>
 		return text;
 	}
 
-	help_text get_help_text(const option_style & style) const override
-	{
-		return { { get_usage_text(style), m_description } };
-	}
-
 	using parser::parse;
 
 	parse_result parse(detail::token_iterator const & tokens,
@@ -2279,6 +2287,18 @@ class arg : public bound_parser<arg>
 			return parse_result::ok(detail::parse_state(
 				parser_result_type::matched, remainingTokens));
 		}
+	}
+
+	protected:
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return this->hint();
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		p.option(style, get_usage_text(style), m_description);
 	}
 };
 
@@ -2405,17 +2425,6 @@ class arguments : public parser
 				if (!text.empty()) text += "\n";
 				text += child_description;
 			}
-		}
-		return text;
-	}
-
-	help_text get_help_text(const option_style & style) const override
-	{
-		help_text text;
-		for (auto const & p : parsers)
-		{
-			auto child_help = p->get_help_text(style);
-			text.insert(text.end(), child_help.begin(), child_help.end());
 		}
 		return text;
 	}
@@ -2647,6 +2656,15 @@ class arguments : public parser
 		if (!opt_style)
 			opt_style = std::make_shared<option_style>(option_style::posix());
 		return *opt_style;
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		for_each_print_ordered_parser(style, parsers.begin(), parsers.end(),
+			[&](const option_style & style, const parser & q) {
+				q.print_help_text_details(p, style);
+			});
 	}
 };
 
@@ -3018,6 +3036,12 @@ class exe_name : public composable_parser<exe_name>
 	std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<exe_name>(this);
+	}
+
+	protected:
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return m_name ? *m_name : "";
 	}
 
 	private:
@@ -3799,11 +3823,6 @@ class literal : public parser
 		return description;
 	}
 
-	help_text get_help_text(const option_style &) const override
-	{
-		return { { name, description } };
-	}
-
 	using parser::parse;
 
 	parse_result parse(detail::token_iterator const & tokens,
@@ -3835,6 +3854,17 @@ class literal : public parser
 	protected:
 	std::string name;
 	std::string description;
+
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return name;
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		p.option(style, name, description);
+	}
 };
 
 /* tag::reference[]
@@ -3899,7 +3929,6 @@ inline literal & literal::operator()(std::string const & help_description_text)
 
 #include <cstddef>
 #include <functional>
-#include <memory>
 #include <string>
 
 namespace lyra {
@@ -3979,33 +4008,29 @@ class command : public group
 			+ parsers[1]->get_usage_text(style);
 	}
 
-	help_text get_help_text(const option_style & style) const override
-	{
-		if (expanded_help_details)
-		{
-			help_text text;
-			text.push_back({ "", "" });
-			auto c = parsers[0]->get_help_text(style);
-			text.insert(text.end(), c.begin(), c.end());
-			text.push_back({ "", "" });
-			auto o = parsers[1]->get_help_text(style);
-			text.insert(text.end(), o.begin(), o.end());
-			return text;
-		}
-		else
-			return parsers[0]->get_help_text(style);
-	}
-
 	protected:
 	bool expanded_help_details = true;
+
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return parsers[0]->get_print_order_key(style);
+	}
 
 	void print_help_text_details(
 		printer & p, const option_style & style) const override
 	{
-		p.heading("OPTIONS, ARGUMENTS:");
-		for (auto const & cols : parsers[1]->get_help_text(style))
+		if (expanded_help_details)
 		{
-			p.option(cols.option, cols.description, 2);
+			p.option(style, "", "");
+			parsers[0]->print_help_text_details(p, style);
+			p.option(style, "", "");
+			p.indent();
+			parsers[1]->print_help_text_details(p, style);
+			p.dedent();
+		}
+		else
+		{
+			parsers[0]->print_help_text_details(p, style);
 		}
 	}
 };
@@ -4217,18 +4242,6 @@ class opt : public bound_parser<opt>
 		return usage;
 	}
 
-	help_text get_help_text(const option_style & style) const override
-	{
-		std::string text;
-		for (auto const & opt_name : opt_names)
-		{
-			if (!text.empty()) text += ", ";
-			text += format_opt(opt_name, style);
-		}
-		if (!m_hint.empty()) ((text += " <") += m_hint) += ">";
-		return { { text, m_description } };
-	}
-
 	bool is_named(const std::string & n) const override
 	{
 		if (bound_parser::is_named(n)) return true;
@@ -4378,6 +4391,24 @@ class opt : public bound_parser<opt>
 			return style.short_option_string() + opt_name.substr(1);
 		else
 			return opt_name;
+	}
+
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return format_opt(opt_names[0], style);
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		std::string text;
+		for (auto const & opt_name : opt_names)
+		{
+			if (!text.empty()) text += ", ";
+			text += format_opt(opt_name, style);
+		}
+		if (!m_hint.empty()) ((text += " <") += m_hint) += ">";
+		p.option(style, text, m_description);
 	}
 };
 

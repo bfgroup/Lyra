@@ -57,6 +57,12 @@ class exe_name : public composable_parser<exe_name>
 		return make_clone<exe_name>(this);
 	}
 
+	protected:
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return m_name ? *m_name : "";
+	}
+
 	private:
 	std::shared_ptr<std::string> m_name;
 	std::shared_ptr<detail::BoundValueRefBase> m_ref;

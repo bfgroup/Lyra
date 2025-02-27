@@ -14,7 +14,6 @@
 
 #include <cstddef>
 #include <functional>
-#include <memory>
 #include <string>
 
 namespace lyra {
@@ -99,35 +98,31 @@ class command : public group
 			+ parsers[1]->get_usage_text(style);
 	}
 
-	help_text get_help_text(const option_style & style) const override
-	{
-		if (expanded_help_details)
-		{
-			help_text text;
-			text.push_back({ "", "" });
-			auto c = parsers[0]->get_help_text(style);
-			text.insert(text.end(), c.begin(), c.end());
-			text.push_back({ "", "" });
-			auto o = parsers[1]->get_help_text(style);
-			text.insert(text.end(), o.begin(), o.end());
-			return text;
-		}
-		else
-			return parsers[0]->get_help_text(style);
-	}
-
 	protected:
 	bool expanded_help_details = true;
+
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return parsers[0]->get_print_order_key(style);
+	}
 
 	void print_help_text_details(
 		printer & p, const option_style & style) const override
 	{
-		// This avoid printing out the "internal" group brackets "{}" for the
+		// This avoids printing out the "internal" group brackets "{}" for the
 		// command arguments.
-		p.heading("OPTIONS, ARGUMENTS:");
-		for (auto const & cols : parsers[1]->get_help_text(style))
+		if (expanded_help_details)
 		{
-			p.option(cols.option, cols.description, 2);
+			p.option(style, "", "");
+			parsers[0]->print_help_text_details(p, style);
+			p.option(style, "", "");
+			p.indent();
+			parsers[1]->print_help_text_details(p, style);
+			p.dedent();
+		}
+		else
+		{
+			parsers[0]->print_help_text_details(p, style);
 		}
 	}
 };

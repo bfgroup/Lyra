@@ -51,11 +51,6 @@ class literal : public parser
 		return description;
 	}
 
-	help_text get_help_text(const option_style &) const override
-	{
-		return { { name, description } };
-	}
-
 	using parser::parse;
 
 	parse_result parse(detail::token_iterator const & tokens,
@@ -87,6 +82,17 @@ class literal : public parser
 	protected:
 	std::string name;
 	std::string description;
+
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return name;
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		p.option(style, name, description);
+	}
 };
 
 /* tag::reference[]

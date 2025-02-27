@@ -147,18 +147,6 @@ class arguments : public parser
 		return text;
 	}
 
-	// Return a container of the individual help text for the composed parsers.
-	help_text get_help_text(const option_style & style) const override
-	{
-		help_text text;
-		for (auto const & p : parsers)
-		{
-			auto child_help = p->get_help_text(style);
-			text.insert(text.end(), child_help.begin(), child_help.end());
-		}
-		return text;
-	}
-
 	detail::parser_cardinality cardinality() const override { return { 0, 0 }; }
 
 	result validate() const override
@@ -415,6 +403,15 @@ class arguments : public parser
 		if (!opt_style)
 			opt_style = std::make_shared<option_style>(option_style::posix());
 		return *opt_style;
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		for_each_print_ordered_parser(style, parsers.begin(), parsers.end(),
+			[&](const option_style & style, const parser & q) {
+				q.print_help_text_details(p, style);
+			});
 	}
 };
 
