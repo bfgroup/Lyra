@@ -4,11 +4,16 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import path ;
+import regex ;
 import os ;
 
 path-constant BFG_LYRA_ROOT : .. ;
 path-constant BFG_LYRA_INCLUDE : ../include ;
 path-constant BFG_LYRA_DATA : ../data ;
+
+local lyra_version = [ regex.grep $(BFG_LYRA_INCLUDE)/lyra : version.hpp :
+	"LYRA_VERSION_[^ ]+ ([0-9]+)" : 1 ] ;
+lyra_version = $(lyra_version[2]).$(lyra_version[4]).$(lyra_version[6]) ;
 
 local lyra_headers = [ SORT [ glob
 	$(BFG_LYRA_INCLUDE)/lyra/*.hpp
@@ -83,7 +88,7 @@ local meson_build_header_join_str = ",
 # ----
 
 project('Lyra','cpp',
-	version: '1.6',
+	version: '"$(lyra_version)"',
 	default_options : ['cpp_std=c++11', 'cpp_eh=none', 'b_lto=true', 'warning_level=3'],
 	license: 'BSL-1.0')
 
