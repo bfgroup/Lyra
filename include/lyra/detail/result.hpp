@@ -19,7 +19,6 @@ class result_base
 	explicit operator bool() const { return is_ok(); }
 	bool is_ok() const { return kind_ == result_kind::ok; }
 	std::string message() const { return message_; }
-	[[deprecated]] std::string errorMessage() const { return message(); }
 
 	protected:
 	enum class result_kind

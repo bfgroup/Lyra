@@ -149,16 +149,6 @@ class cli : protected arguments
 	}
 	parse_result parse(args const & args, const option_style & style) const;
 
-	// Backward compatibility parse() that takes `parser_customization` and
-	// converts to `option_style`.
-	[[deprecated]] parse_result parse(
-		args const & args, const parser_customization & customize) const
-	{
-		return this->parse(args,
-			option_style(customize.token_delimiters(),
-				customize.option_prefix(), 2, customize.option_prefix(), 1));
-	}
-
 	cli & sequential() { return arguments::sequential(), *this; }
 	cli & inclusive() { return arguments::inclusive(), *this; }
 	cli & relaxed() { return arguments::relaxed(), *this; }

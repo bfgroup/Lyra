@@ -299,7 +299,6 @@ class result_base
 	explicit operator bool() const { return is_ok(); }
 	bool is_ok() const { return kind_ == result_kind::ok; }
 	std::string message() const { return message_; }
-	[[deprecated]] std::string errorMessage() const { return message(); }
 
 	protected:
 	enum class result_kind
@@ -3470,14 +3469,6 @@ class cli : protected arguments
 			return parse(args, option_style::posix());
 	}
 	parse_result parse(args const & args, const option_style & style) const;
-
-	[[deprecated]] parse_result parse(
-		args const & args, const parser_customization & customize) const
-	{
-		return this->parse(args,
-			option_style(customize.token_delimiters(),
-				customize.option_prefix(), 2, customize.option_prefix(), 1));
-	}
 
 	cli & sequential() { return arguments::sequential(), *this; }
 	cli & inclusive() { return arguments::inclusive(), *this; }
