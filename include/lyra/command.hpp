@@ -94,8 +94,9 @@ class command : public group
 
 	std::string get_usage_text(const option_style & style) const override
 	{
-		return parsers[0]->get_usage_text(style) + " "
-			+ parsers[1]->get_usage_text(style);
+		auto tail = parsers[1]->get_usage_text(style);
+		return parsers[0]->get_usage_text(style)
+			+ (tail.empty() ? (tail) : (" " + tail));
 	}
 
 	protected:

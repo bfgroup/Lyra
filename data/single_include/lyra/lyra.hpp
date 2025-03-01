@@ -2538,10 +2538,8 @@ class arguments : public parser
 						|| parser_cardinality.maximum < parseInfo.count))
 				|| (parser_cardinality.is_required()
 					&& (parseInfo.count < parser_cardinality.minimum)))
-			{
-				return parse_result::error(p_result.value(),
-					"Expected: " + parseInfo.parser_p->get_usage_text(style));
-			}
+				return make_parse_error(
+					tokens, *parseInfo.parser_p, p_result, style);
 		}
 		return p_result;
 	}
@@ -2607,12 +2605,25 @@ class arguments : public parser
 						|| parser_cardinality.maximum < parse_info.count))
 				|| (parser_cardinality.is_required()
 					&& (parse_info.count < parser_cardinality.minimum)))
-			{
-				return parse_result::error(p_result.value(),
-					"Expected: " + parse_info.parser_p->get_usage_text(style));
-			}
+				return make_parse_error(
+					tokens, *parse_info.parser_p, p_result, style);
 		}
 		return p_result;
+	}
+
+	template <typename R>
+	parse_result make_parse_error(const detail::token_iterator & tokens,
+		const parser & parser_p,
+		const R & p_result,
+		const option_style & style) const
+	{
+		if (tokens)
+			return parse_result::error(p_result.value(),
+				"Unrecognized argument '" + tokens.argument().name
+					+ "' while parsing: " + parser_p.get_usage_text(style));
+		else
+			return parse_result::error(p_result.value(),
+				"Expected: " + parser_p.get_usage_text(style));
 	}
 
 	std::unique_ptr<parser> clone() const override
@@ -3993,8 +4004,9 @@ class command : public group
 
 	std::string get_usage_text(const option_style & style) const override
 	{
-		return parsers[0]->get_usage_text(style) + " "
-			+ parsers[1]->get_usage_text(style);
+		auto tail = parsers[1]->get_usage_text(style);
+		return parsers[0]->get_usage_text(style)
+			+ (tail.empty() ? (tail) : (" " + tail));
 	}
 
 	protected:
