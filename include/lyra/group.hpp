@@ -49,7 +49,10 @@ class group : public arguments
 		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
 			"?=", tokens ? tokens.argument().name : "");
 		parse_result p_result = arguments::parse(tokens, style);
-		if (p_result && p_result.value().type() != parser_result_type::no_match
+		if (p_result
+			&& (p_result.value().type() == parser_result_type::matched
+				|| p_result.value().type()
+					== parser_result_type::short_circuit_all)
 			&& success_signal)
 		{
 			// Trigger any success signal for parsing the argument as the group.

@@ -6,8 +6,7 @@
 			"cStandard": "c18",
 			"cppStandard": "c++11",
 			"includePath": [
-				"${workspaceFolder}/include",
-				"/usr/include/c++/12.2.0"
+				"${workspaceFolder}/include"
 			],
 			"compileCommands": "${workspaceFolder}/compile_commands.json"
 		},

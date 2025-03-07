@@ -4,21 +4,16 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "examples/combined_parser (build)",
+			"label": "Compile DB",
 			"type": "shell",
 			"command": "b2",
-			"args": [
-				"cxxstd=11",
-				"toolset=clang",
-				"cxxflags=-fcolor-diagnostics",
-				"combined_parser"
-			],
+			"args": ["--command-database", "all"],
 			"options": {
-				"cwd": "examples"
+				"cwd": "${workspaceFolder}"
 			},
 			"group": {
 				"kind": "build",
-				"isDefault": true
+				"isDefault": false
 			},
 			"presentation": {
 				"echo": true,
@@ -28,9 +23,7 @@
 				"showReuseMessage": true,
 				"clear": true
 			},
-			"problemMatcher": [
-				"$gcc"
-			]
+			"problemMatcher": ["$gcc"]
 		}
 	]
 }

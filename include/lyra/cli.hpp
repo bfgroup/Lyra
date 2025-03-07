@@ -339,7 +339,8 @@ inline parse_result cli::parse(
 	parse_result p_result = parse(args_tokens, style);
 	if (p_result
 		&& (p_result.value().type() == parser_result_type::no_match
-			|| p_result.value().type() == parser_result_type::matched))
+			|| p_result.value().type() == parser_result_type::matched
+			|| p_result.value().type() == parser_result_type::empty_match))
 	{
 		if (p_result.value().have_tokens())
 		{

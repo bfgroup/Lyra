@@ -179,40 +179,38 @@ class arguments : public parser
 		detail::token_iterator const & tokens, const option_style & style) const
 	{
 		LYRA_PRINT_SCOPE("arguments::parse_any");
-		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
-			"?=", tokens ? tokens.argument().name : "", "..");
 
-		struct ParserInfo
-		{
-			parser const * parser_p = nullptr;
-			std::size_t count = 0;
-		};
-		std::vector<ParserInfo> parser_info(parsers.size());
-		{
-			std::size_t i = 0;
-			for (auto const & p : parsers) parser_info[i++].parser_p = p.get();
-		}
-
-		auto p_result = parse_result::ok(
-			detail::parse_state(parser_result_type::matched, tokens));
-		auto error_result = parse_result::ok(
+		std::vector<std::size_t> parsing_count(parsers.size(), 0);
+		auto parsing_result = parse_result::ok(
+			detail::parse_state(parser_result_type::empty_match, tokens));
+		auto nomatch_result = parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
-		while (p_result.value().remainingTokens())
+
+		while (parsing_result.value().remainingTokens())
 		{
+			LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=",
+				parsing_result.value().remainingTokens()
+					? parsing_result.value().remainingTokens().argument().name
+					: "",
+				"..");
 			bool token_parsed = false;
 
-			for (auto & parse_info : parser_info)
+			auto parsing_count_i = parsing_count.begin();
+			for (auto & p : parsers)
 			{
-				auto parser_cardinality = parse_info.parser_p->cardinality();
+				auto parser_cardinality = p->cardinality();
 				if (parser_cardinality.is_unbounded()
-					|| parse_info.count < parser_cardinality.maximum)
+					|| *parsing_count_i < parser_cardinality.maximum)
 				{
-					auto subparse_result = parse_info.parser_p->parse(
-						p_result.value().remainingTokens(), style);
+					auto subparse_result = p->parse(
+						parsing_result.value().remainingTokens(), style);
 					if (!subparse_result)
 					{
 						LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
-							p_result.value().remainingTokens().argument().name);
+							parsing_result.value()
+								.remainingTokens()
+								.argument()
+								.name);
 						// Is the subparse error bad enough to trigger an
 						// immediate return? For example for an option syntax
 						// error.
@@ -224,63 +222,92 @@ class arguments : public parser
 						// the first so that in case no other parsers match
 						// we can report the earliest problem, as that's
 						// the likeliest issue.
-						else if (error_result)
-							error_result = parse_result(subparse_result);
+						else if (nomatch_result)
+							nomatch_result = parse_result(subparse_result);
+					}
+					else if (subparse_result
+						&& subparse_result.value().type()
+							== parser_result_type::empty_match)
+					{
+						LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+							parsing_result.value()
+								.remainingTokens()
+								.argument()
+								.name,
+							"==>", subparse_result.value().type());
+						parsing_result = parse_result(subparse_result);
 					}
 					else if (subparse_result
 						&& subparse_result.value().type()
 							!= parser_result_type::no_match)
 					{
 						LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-							p_result.value().remainingTokens().argument().name,
+							parsing_result.value()
+								.remainingTokens()
+								.argument()
+								.name,
 							"==>", subparse_result.value().type());
-						p_result = parse_result(subparse_result);
+						parsing_result = parse_result(subparse_result);
 						token_parsed = true;
-						parse_info.count += 1;
+						*parsing_count_i += 1;
 						break;
 					}
 				}
+				++parsing_count_i;
 			}
 
-			if (p_result.value().type()
+			if (parsing_result.value().type()
 				== parser_result_type::short_circuit_all)
-				return p_result;
-			// Nothing matched for the current arg and we are doing relaxed
-			// parsing. Hence we need to skip over that unknown arg to continue
-			// trying the rest.
-			else if (!token_parsed && eval_mode == eval_relaxed)
+				return parsing_result;
+			if (!token_parsed)
 			{
-				LYRA_PRINT_DEBUG("(=)", get_usage_text(style),
-					"==", p_result.value().remainingTokens().argument().name,
-					"==> skipped");
-				auto remainingTokens = p_result.value().remainingTokens();
-				remainingTokens.pop(remainingTokens.argument());
-				p_result = parse_result::ok(detail::parse_state(
-					parser_result_type::matched, remainingTokens));
+				// Nothing matched for the current arg and we are doing relaxed
+				// parsing. Hence we need to skip over that unknown arg to
+				// continue trying the rest.
+				if (eval_mode == eval_relaxed)
+				{
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+						parsing_result.value()
+							.remainingTokens()
+							.argument()
+							.name,
+						"==> skipped");
+					auto remainingTokens
+						= parsing_result.value().remainingTokens();
+					remainingTokens.pop(remainingTokens.argument());
+					parsing_result = parse_result::ok(detail::parse_state(
+						parser_result_type::empty_match, remainingTokens));
+				}
+				// If something signaled and error, and hence we didn't
+				// match/parse anything, we indicate the error if not in relaxed
+				// mode.
+				else if (!nomatch_result)
+					return nomatch_result;
+				// Encountered something unrecognized. We stop and report the
+				// result.
+				else
+					break;
 			}
-			// If something signaled and error, and hence we didn't match/parse
-			// anything, we indicate the error if not in relaxed mode.
-			else if (!token_parsed && !error_result)
-				return error_result;
-			else if (!token_parsed)
-				break;
 		}
 		// Check missing required options. For bounded arguments we check
 		// bound min and max bounds against what we parsed. For the loosest
 		// required arguments we check for only the minimum. As the upper
 		// bound could be infinite.
-		for (auto & parseInfo : parser_info)
 		{
-			auto parser_cardinality = parseInfo.parser_p->cardinality();
-			if ((parser_cardinality.is_bounded()
-					&& (parseInfo.count < parser_cardinality.minimum
-						|| parser_cardinality.maximum < parseInfo.count))
-				|| (parser_cardinality.is_required()
-					&& (parseInfo.count < parser_cardinality.minimum)))
-				return make_parse_error(
-					tokens, *parseInfo.parser_p, p_result, style);
+			auto parsing_count_i = parsing_count.begin();
+			for (auto & p : parsers)
+			{
+				auto parser_cardinality = p->cardinality();
+				if ((parser_cardinality.is_bounded()
+						&& (*parsing_count_i < parser_cardinality.minimum
+							|| parser_cardinality.maximum < *parsing_count_i))
+					|| (parser_cardinality.is_required()
+						&& (*parsing_count_i < parser_cardinality.minimum)))
+					return make_parse_error(tokens, *p, parsing_result, style);
+				++parsing_count_i;
+			}
 		}
-		return p_result;
+		return parsing_result;
 	}
 
 	parse_result parse_sequence(
@@ -290,71 +317,70 @@ class arguments : public parser
 		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
 			"?=", tokens ? tokens.argument().name : "", "..");
 
-		struct ParserInfo
-		{
-			parser const * parser_p = nullptr;
-			std::size_t count = 0;
-		};
-		std::vector<ParserInfo> parser_info(parsers.size());
-		{
-			std::size_t i = 0;
-			for (auto const & p : parsers) parser_info[i++].parser_p = p.get();
-		}
-
+		std::vector<std::size_t> parsing_count(parsers.size(), 0);
 		auto p_result = parse_result::ok(
-			detail::parse_state(parser_result_type::matched, tokens));
+			detail::parse_state(parser_result_type::empty_match, tokens));
 
 		// Sequential parsing means we walk through the given parsers in order
 		// and exhaust the tokens as we match parsers.
-		for (std::size_t parser_i = 0; parser_i < parsers.size(); ++parser_i)
+		auto parsing_count_i = parsing_count.begin();
+		for (auto & p : parsers)
 		{
-			auto & parse_info = parser_info[parser_i];
-			auto parser_cardinality = parse_info.parser_p->cardinality();
+			auto parser_cardinality = p->cardinality();
 			// This is a greedy sequential parsing algo. As it parses the
 			// current argument as much as possible.
 			do
 			{
-				auto subresult = parse_info.parser_p->parse(
-					p_result.value().remainingTokens(), style);
-				if (!subresult)
+				auto subresult
+					= p->parse(p_result.value().remainingTokens(), style);
+				if (!subresult) break;
+				if (parser_result_type::no_match == subresult.value().type())
 				{
+					LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
+						p_result.value().remainingTokens()
+							? p_result.value().remainingTokens().argument().name
+							: "",
+						"==>", subresult.value().type());
 					break;
 				}
-				if (subresult.value().type()
-					== parser_result_type::short_circuit_all)
-				{
+				if (parser_result_type::short_circuit_all
+					== subresult.value().type())
 					return subresult;
-				}
-				LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-					p_result.value().remainingTokens()
-						? p_result.value().remainingTokens().argument().name
-						: "",
-					"==>", subresult.value().type());
-				if (subresult.value().type() == parser_result_type::no_match)
+				if (parser_result_type::matched == subresult.value().type())
 				{
-					break;
-				}
-				else
-				{
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+						p_result.value().remainingTokens()
+							? p_result.value().remainingTokens().argument().name
+							: "",
+						"==>", subresult.value().type());
+					*parsing_count_i += 1;
 					p_result = subresult;
-					parse_info.count += 1;
+				}
+				if (parser_result_type::empty_match == subresult.value().type())
+				{
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+						p_result.value().remainingTokens()
+							? p_result.value().remainingTokens().argument().name
+							: "",
+						"==>", subresult.value().type());
+					*parsing_count_i += 1;
 				}
 			}
 			while (p_result.value().have_tokens()
 				&& (parser_cardinality.is_unbounded()
-					|| parse_info.count < parser_cardinality.maximum));
+					|| *parsing_count_i < parser_cardinality.maximum));
 			// Check missing required options immediately as for sequential the
 			// argument is greedy and will fully match here. For bounded
 			// arguments we check bound min and max bounds against what we
 			// parsed. For the loosest required arguments we check for only the
 			// minimum. As the upper bound could be infinite.
 			if ((parser_cardinality.is_bounded()
-					&& (parse_info.count < parser_cardinality.minimum
-						|| parser_cardinality.maximum < parse_info.count))
+					&& (*parsing_count_i < parser_cardinality.minimum
+						|| parser_cardinality.maximum < *parsing_count_i))
 				|| (parser_cardinality.is_required()
-					&& (parse_info.count < parser_cardinality.minimum)))
-				return make_parse_error(
-					tokens, *parse_info.parser_p, p_result, style);
+					&& (*parsing_count_i < parser_cardinality.minimum)))
+				return make_parse_error(tokens, *p, p_result, style);
+			++parsing_count_i;
 		}
 		// The return is just the last state as it contains any remaining tokens
 		// to parse.
@@ -363,17 +389,17 @@ class arguments : public parser
 
 	template <typename R>
 	parse_result make_parse_error(const detail::token_iterator & tokens,
-		const parser & parser_p,
+		const parser & p,
 		const R & p_result,
 		const option_style & style) const
 	{
 		if (tokens)
 			return parse_result::error(p_result.value(),
 				"Unrecognized argument '" + tokens.argument().name
-					+ "' while parsing: " + parser_p.get_usage_text(style));
+					+ "' while parsing: " + p.get_usage_text(style));
 		else
-			return parse_result::error(p_result.value(),
-				"Expected: " + parser_p.get_usage_text(style));
+			return parse_result::error(
+				p_result.value(), "Expected: " + p.get_usage_text(style));
 	}
 
 	std::unique_ptr<parser> clone() const override

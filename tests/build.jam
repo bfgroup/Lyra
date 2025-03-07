@@ -5,20 +5,29 @@
 
 import testing ;
 
+variant pedantic : debug
+	:	<warnings>pedantic
+		<warnings-as-errors>on
+		<cxxflags>-Woverloaded-virtual
+		<cxxflags>-Wshadow
+		<cxxflags>-Wnon-virtual-dtor
+		<cxxflags>-Wzero-as-null-pointer-constant
+	;
+
 project /bfg_lyra_tests
 	: requirements
 		<toolset>clang:<cxxflags>-fcolor-diagnostics
 		<include>../examples
 		<variant>debug:<define>LYRA_DEBUG=1
-    ;
+	;
 
 for local test in [ glob *_compile_test.cpp ]
 {
-    compile $(test) : requirements <use>/bfg_lyra  ;
+	compile $(test) : requirements <use>/bfg_lyra  ;
 }
 for local test in [ glob *_run_test.cpp ]
 {
-    run $(test) : requirements <use>/bfg_lyra ;
+	run $(test) : requirements <use>/bfg_lyra ;
 }
 
 compile-fail single_include_test.cpp : : single_include_test_fail ;

@@ -18,7 +18,8 @@ enum class parser_result_type
 {
 	matched,
 	no_match,
-	short_circuit_all
+	short_circuit_all,
+	empty_match
 };
 
 inline std::string to_string(parser_result_type v)
@@ -28,6 +29,7 @@ inline std::string to_string(parser_result_type v)
 		case parser_result_type::matched: return "matched";
 		case parser_result_type::no_match: return "no_match";
 		case parser_result_type::short_circuit_all: return "short_circuit_all";
+		case parser_result_type::empty_match: return "empty_match";
 	}
 	return "?";
 }

@@ -119,7 +119,7 @@ int main()
 		auto result = parser.parse({ "TestApp" });
 		test
 			(REQUIRE( result ))
-			(REQUIRE( result.value().type() == parser_result_type::matched))
+			(REQUIRE( result.value().type() == parser_result_type::empty_match))
 			(REQUIRE( config.flag == false ));
 	}
 	config = Config();
