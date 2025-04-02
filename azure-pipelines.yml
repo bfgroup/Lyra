@@ -32,37 +32,42 @@ schedules:
       include:
         - develop
 
+variables:
+- { name: co_options, value: '--name container' }
+
 resources:
   containers:
-    - { container: linux_gcc15, image: 'teeks99/gcc-ubuntu:15', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc14, image: 'teeks99/gcc-ubuntu:14', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc13, image: 'teeks99/gcc-ubuntu:13', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc12, image: 'teeks99/gcc-ubuntu:12', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc11, image: 'teeks99/gcc-ubuntu:11', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc10, image: 'teeks99/gcc-ubuntu:10', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc9, image: 'teeks99/gcc-ubuntu:9', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc8, image: 'teeks99/gcc-ubuntu:8', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc7, image: 'teeks99/gcc-ubuntu:7', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc6, image: 'teeks99/gcc-ubuntu:6', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_gcc5, image: 'teeks99/gcc-ubuntu:5', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang20, image: 'teeks99/clang-ubuntu:20', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang19, image: 'teeks99/clang-ubuntu:19', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang18, image: 'teeks99/clang-ubuntu:18', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang17, image: 'teeks99/clang-ubuntu:17', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang16, image: 'teeks99/clang-ubuntu:16', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang15, image: 'teeks99/clang-ubuntu:15', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang14, image: 'teeks99/clang-ubuntu:14', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang13, image: 'teeks99/clang-ubuntu:13', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang12, image: 'teeks99/clang-ubuntu:12', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang11, image: 'teeks99/clang-ubuntu:11', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang10, image: 'teeks99/clang-ubuntu:10', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang9, image: 'teeks99/clang-ubuntu:9', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang8, image: 'teeks99/clang-ubuntu:8', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang7, image: 'teeks99/clang-ubuntu:7', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang6, image: 'teeks99/clang-ubuntu:6', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang5, image: 'teeks99/clang-ubuntu:5', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang4, image: 'teeks99/clang-ubuntu:4', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
-    - { container: linux_clang3, image: 'teeks99/clang-ubuntu:3.9', options: '--name container -v /usr/bin/docker:/tmp/docker:ro' }
+    - { container: linux_gcc15, image: 'teeks99/gcc-ubuntu:15', options: "${{variables.co_options}}" }
+    - { container: linux_gcc14, image: 'teeks99/gcc-ubuntu:14', options: "${{variables.co_options}}" }
+    - { container: linux_gcc13, image: 'teeks99/gcc-ubuntu:13', options: "${{variables.co_options}}" }
+    - { container: linux_gcc12, image: 'teeks99/gcc-ubuntu:12', options: "${{variables.co_options}}" }
+    - { container: linux_gcc11, image: 'teeks99/gcc-ubuntu:11', options: "${{variables.co_options}}" }
+    - { container: linux_gcc10, image: 'teeks99/gcc-ubuntu:10', options: "${{variables.co_options}}" }
+    - { container: linux_gcc9, image: 'teeks99/gcc-ubuntu:9', options: "${{variables.co_options}}" }
+    - { container: linux_gcc8, image: 'teeks99/gcc-ubuntu:8', options: "${{variables.co_options}}" }
+    - { container: linux_gcc7, image: 'teeks99/gcc-ubuntu:7', options: "${{variables.co_options}}" }
+    - { container: linux_gcc6, image: 'teeks99/gcc-ubuntu:6', options: "${{variables.co_options}}" }
+    - { container: linux_gcc5, image: 'teeks99/gcc-ubuntu:5', options: "${{variables.co_options}}" }
+    - { container: linux_gcc49, image: 'teeks99/gcc-ubuntu:4.9', options: "${{variables.co_options}}" }
+    - { container: linux_gcc48, image: 'teeks99/gcc-ubuntu:4.8', options: "${{variables.co_options}}" }
+    - { container: linux_clang20, image: 'teeks99/clang-ubuntu:20', options: "${{variables.co_options}}" }
+    - { container: linux_clang19, image: 'teeks99/clang-ubuntu:19', options: "${{variables.co_options}}" }
+    - { container: linux_clang18, image: 'teeks99/clang-ubuntu:18', options: "${{variables.co_options}}" }
+    - { container: linux_clang17, image: 'teeks99/clang-ubuntu:17', options: "${{variables.co_options}}" }
+    - { container: linux_clang16, image: 'teeks99/clang-ubuntu:16', options: "${{variables.co_options}}" }
+    - { container: linux_clang15, image: 'teeks99/clang-ubuntu:15', options: "${{variables.co_options}}" }
+    - { container: linux_clang14, image: 'teeks99/clang-ubuntu:14', options: "${{variables.co_options}}" }
+    - { container: linux_clang13, image: 'teeks99/clang-ubuntu:13', options: "${{variables.co_options}}" }
+    - { container: linux_clang12, image: 'teeks99/clang-ubuntu:12', options: "${{variables.co_options}}" }
+    - { container: linux_clang11, image: 'teeks99/clang-ubuntu:11', options: "${{variables.co_options}}" }
+    - { container: linux_clang10, image: 'teeks99/clang-ubuntu:10', options: "${{variables.co_options}}" }
+    - { container: linux_clang9, image: 'teeks99/clang-ubuntu:9', options: "${{variables.co_options}}" }
+    - { container: linux_clang8, image: 'teeks99/clang-ubuntu:8', options: "${{variables.co_options}}" }
+    - { container: linux_clang7, image: 'teeks99/clang-ubuntu:7', options: "${{variables.co_options}}" }
+    - { container: linux_clang6, image: 'teeks99/clang-ubuntu:6', options: "${{variables.co_options}}" }
+    - { container: linux_clang5, image: 'teeks99/clang-ubuntu:5', options: "${{variables.co_options}}" }
+    - { container: linux_clang4, image: 'teeks99/clang-ubuntu:4', options: "${{variables.co_options}}" }
+    - { container: linux_clang3, image: 'teeks99/clang-ubuntu:3.9', options: "${{variables.co_options}}" }
 
 stages:
 
@@ -162,7 +167,7 @@ stages:
         Clang 5.0: { CXX: clang++-5.0, CONTAINER: linux_clang5, TOOLSET: clang, CXXSTD: "11,14,17" }
         Clang 4.0: { CXX: clang++-4.0, CONTAINER: linux_clang4, TOOLSET: clang, CXXSTD: "11,14" }
         Clang 3.9: { CXX: clang++-3.9, CONTAINER: linux_clang3, TOOLSET: clang, CXXSTD: "11" }
-    pool: { vmImage: 'ubuntu-20.04' }
+    pool: { vmImage: 'ubuntu-latest' }
     container: $[ variables['CONTAINER'] ]
     steps:
     - template: .ci/azp-linux-docker-test.yml
