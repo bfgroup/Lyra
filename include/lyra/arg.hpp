@@ -80,6 +80,14 @@ class arg : public bound_parser<arg>
 
 		auto const & token = tokens.argument();
 
+		// argument not allowed at this point
+		if (token.type == detail::token_type::unknown)
+		{
+			// Nothing to match against.
+			return parse_result::ok(
+				detail::parse_state(parser_result_type::no_match, tokens));
+		}
+
 		auto valueRef = static_cast<detail::BoundValueRefBase *>(m_ref.get());
 
 		if (value_choices)

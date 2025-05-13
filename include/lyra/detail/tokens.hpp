@@ -124,8 +124,11 @@ class token_iterator
 		: style(opt_style)
 		, args_i(args.begin())
 		, args_e(args.end())
-		, args_i_sub(opt_style.short_option_size)
-	{}
+		, args_i_sub(0)
+		, had_terminator(false)
+	{
+		handle_next_arg_i();
+	}
 
 	explicit operator bool() const noexcept { return args_i != args_e; }
 
@@ -138,14 +141,14 @@ class token_iterator
 			if (++args_i_sub >= args_i->size())
 			{
 				++args_i;
-				args_i_sub = style.short_option_size;
+				handle_next_arg_i();
 			}
 		}
 		else
 		{
 			// Regular arg or long option, just advance to the next arg.
 			++args_i;
-			args_i_sub = style.short_option_size;
+			handle_next_arg_i();
 		}
 		return *this;
 	}
@@ -158,7 +161,7 @@ class token_iterator
 			args_i += 2;
 		else
 			++args_i;
-		args_i_sub = style.short_option_size;
+		handle_next_arg_i();
 		return *this;
 	}
 
@@ -195,6 +198,10 @@ class token_iterator
 	// Extract the current option token.
 	token option() const
 	{
+		if (had_terminator)
+		{
+			return token();
+		}
 		if (has_long_option_prefix())
 		{
 			if (has_value_delimiter())
@@ -249,7 +256,25 @@ class token_iterator
 		return token();
 	}
 
-	token argument() const { return token(token_type::argument, *args_i); }
+	token argument() const
+	{
+		if (args_i_sub != style.short_option_size)
+		{
+			// can't have value argument in the middle of a string of
+			// short options. Still return the argument string so it
+			// shows up in error messages.
+			return token(token_type::unknown, *args_i);
+		}
+		if (!style.option_terminator.empty()
+				&& has_option_prefix() && !had_terminator)
+		{
+			// can't have arguments starting with option prefix unless
+			// we had an explicit terminator for arguments. Still return
+			// the argument string so it shows up in error messages.
+			return token(token_type::unknown, *args_i);
+		}
+		return token(token_type::argument, *args_i);
+	}
 
 	static bool is_prefixed(
 		const std::string & prefix, std::size_t size, const std::string & s)
@@ -272,6 +297,7 @@ class token_iterator
 	std::vector<std::string>::const_iterator args_i;
 	std::vector<std::string>::const_iterator args_e;
 	std::string::size_type args_i_sub;
+	bool had_terminator;
 
 	inline bool is_opt_prefix(char c) const noexcept
 	{
@@ -294,6 +320,18 @@ class token_iterator
 	{
 		return std::string(
 			static_cast<typename std::string::size_type>(size), prefix[0]);
+	}
+
+	inline void handle_next_arg_i()
+	{
+		args_i_sub = style.short_option_size;
+		if (args_i != args_e
+				&& !style.option_terminator.empty()
+				&& *args_i == style.option_terminator)
+		{
+			had_terminator = true;
+			++args_i;
+		}
 	}
 };
 

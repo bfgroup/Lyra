@@ -59,6 +59,7 @@ struct option_style
 	std::size_t long_option_size = 0;
 	std::string short_option_prefix;
 	std::size_t short_option_size = 0;
+	std::string option_terminator = "";
 	opt_print_order options_print_order = opt_print_order::per_declaration;
 	std::size_t indent_size = 2;
 
@@ -70,12 +71,14 @@ struct option_style
 		std::string && short_option_prefix_chars = {},
 		std::size_t short_option_prefix_size = 0,
 		opt_print_order options_print_order_ = opt_print_order::per_declaration,
-		std::size_t indent_size_ = 2)
+		std::size_t indent_size_ = 2,
+		std::string && option_terminator_ = "")
 		: value_delimiters(std::move(value_delimiters_chars))
 		, long_option_prefix(std::move(long_option_prefix_chars))
 		, long_option_size(long_option_prefix_size)
 		, short_option_prefix(std::move(short_option_prefix_chars))
 		, short_option_size(short_option_prefix_size)
+		, option_terminator(std::move(option_terminator_))
 		, options_print_order(options_print_order_)
 		, indent_size(indent_size_)
 	{}
@@ -87,6 +90,7 @@ struct option_style
 
 	// Styles..
 
+	static const option_style & posix_with_terminator();
 	static const option_style & posix();
 	static const option_style & posix_brief();
 	static const option_style & windows();
@@ -188,6 +192,12 @@ These provide definitions for common syntax of option styles:
 	only available as individual long options, for example `/A`.
 
 end::reference[] */
+
+inline const option_style & option_style::posix_with_terminator()
+{
+	static const option_style style("= ", "-", 2, "-", 1, opt_print_order::per_declaration, 2, "--");
+	return style;
+}
 
 inline const option_style & option_style::posix()
 {
