@@ -106,8 +106,10 @@ stages:
     strategy:
       matrix:
         VS 2022 Warn-All: {
-          VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe, B2_ARGS: "warnings=extra warnings-as-errors=on",
-          PLATFORM: x64, VM_IMAGE: 'windows-2022', TOOLSET: msvc, TOOLSET_VERSION: '14.3' }
+          VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe,
+          PLATFORM: x64, VM_IMAGE: 'windows-2022', TOOLSET: msvc, TOOLSET_VERSION: '14.3',
+          CXXSTD: "14,17,20,latest",
+          B2_ARGS: "warnings=extra warnings-as-errors=on" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
@@ -195,9 +197,11 @@ stages:
       matrix:
         VS 2022: {
           VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe,
+          CXXSTD: "14,17,20,latest",
           PLATFORM: x64, VM_IMAGE: 'windows-2022', TOOLSET: msvc, TOOLSET_VERSION: '14.3' }
         VS 2019: {
           VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe,
+          CXXSTD: "14,17,20,latest",
           PLATFORM: x64, VM_IMAGE: 'windows-2019', TOOLSET: msvc, TOOLSET_VERSION: '14.2' }
     pool:
       vmImage: $(VM_IMAGE)
