@@ -15,13 +15,15 @@
 #include <type_traits>
 
 #ifndef LYRA_CONFIG_OPTIONAL_TYPE
-#	ifdef __has_include
-#		if __has_include(<optional>)
-#			include <optional>
-#			if defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
-#				define LYRA_CONFIG_OPTIONAL_TYPE std::optional
-#			endif
-#		endif
+#	if defined(__has_include) && __has_include(<version>)
+#		include <version>
+#	elif defined(__has_include) && __has_include(<ciso646>)
+#		include <ciso646>
+#	endif
+#	if defined(__has_include) && __has_include(<optional>) \
+		&& defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
+#		include <optional>
+#		define LYRA_CONFIG_OPTIONAL_TYPE std::optional
 #	endif
 #endif
 
