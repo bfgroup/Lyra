@@ -33,9 +33,9 @@ int main()
 			(REQUIRE( name.value() == "Pixie" ));
 	}
 	#else
-		#if defined(_MSC_VER)
+		#if defined(_MSC_VER) || defined(__GNUC__)
 			#pragma message("Skipped test because LYRA_CONFIG_OPTIONAL_TYPE is not defined.")
-		#else
+		#elif (__cplusplus >= 202302L)
 			#warning "Skipped test because LYRA_CONFIG_OPTIONAL_TYPE is not defined."
 		#endif
 	#endif

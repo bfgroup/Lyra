@@ -104,9 +104,11 @@ struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
 
 #ifndef LYRA_CONFIG_OPTIONAL_TYPE
 #	ifdef __has_include
-#		if __has_include(<optional>) && __cplusplus >= 201703L
+#		if __has_include(<optional>)
 #			include <optional>
-#			define LYRA_CONFIG_OPTIONAL_TYPE std::optional
+#			if defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
+#				define LYRA_CONFIG_OPTIONAL_TYPE std::optional
+#			endif
 #		endif
 #	endif
 #endif
