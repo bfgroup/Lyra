@@ -176,7 +176,8 @@ inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
 {
 	std::string srcLC;
 	to_string(source, srcLC);
-	for (std::string::value_type & c : srcLC) c = ::tolower(c);
+	for (std::string::value_type & c : srcLC)
+		c = static_cast<std::string::value_type>(::tolower(c));
 	if (srcLC == "<nullopt>")
 	{
 		target.reset();
