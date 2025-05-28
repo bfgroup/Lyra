@@ -103,11 +103,15 @@ struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
 #include <type_traits>
 
 #ifndef LYRA_CONFIG_OPTIONAL_TYPE
-#	ifdef __has_include
-#		if __has_include(<optional>) && __cplusplus >= 201703L
-#			include <optional>
-#			define LYRA_CONFIG_OPTIONAL_TYPE std::optional
-#		endif
+#	if defined(__has_include) && __has_include(<version>)
+#		include <version>
+#	elif defined(__has_include) && __has_include(<ciso646>)
+#		include <ciso646>
+#	endif
+#	if defined(__has_include) && __has_include(<optional>) \
+		&& defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
+#		include <optional>
+#		define LYRA_CONFIG_OPTIONAL_TYPE std::optional
 #	endif
 #endif
 
@@ -252,7 +256,8 @@ inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
 {
 	std::string srcLC;
 	to_string(source, srcLC);
-	for (std::string::value_type & c : srcLC) c = ::tolower(c);
+	for (std::string::value_type & c : srcLC)
+		c = static_cast<std::string::value_type>(::tolower(c));
 	if (srcLC == "<nullopt>")
 	{
 		target.reset();

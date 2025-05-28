@@ -34,4 +34,6 @@ compile-fail single_include_test.cpp : : single_include_test_fail ;
 compile single_include_test.cpp
 	: <include>../data/single_include ;
 
+run optional_type_test.cpp : requirements <use>/bfg_lyra ;
+
 build-project lib_use_test ;
