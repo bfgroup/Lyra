@@ -139,8 +139,15 @@ struct BoundLambda : BoundValueRefBase
 
 	static_assert(unary_lambda_traits<L>::isValid,
 		"Supplied lambda must take exactly one argument");
+	static_assert(
+		std::is_same<L, typename detail::remove_cvref<L>::type>::value,
+		"Supplied lambda must not be a reference");
+
 	explicit BoundLambda(L const & lambda)
 		: m_lambda(lambda)
+	{}
+	explicit BoundLambda(L && lambda)
+		: m_lambda(std::move(lambda))
 	{}
 
 	auto setValue(std::string const & arg) -> parser_result override
@@ -158,11 +165,18 @@ struct BoundFlagLambda : BoundFlagRefBase
 	static_assert(unary_lambda_traits<L>::isValid,
 		"Supplied lambda must take exactly one argument");
 	static_assert(
+		std::is_same<L, typename detail::remove_cvref<L>::type>::value,
+		"Supplied lambda must not be a reference");
+	static_assert(
 		std::is_same<typename unary_lambda_traits<L>::ArgType, bool>::value,
 		"flags must be boolean");
 
 	explicit BoundFlagLambda(L const & lambda)
 		: m_lambda(lambda)
+	{}
+
+	explicit BoundFlagLambda(L && lambda)
+		: m_lambda(std::move(lambda))
 	{}
 
 	auto setFlag(bool flag) -> parser_result override

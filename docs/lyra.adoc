@@ -317,6 +317,8 @@ Changes:
 	-- _René Ferdinand Rivera Morell_
 * Fix parsing with mix of required and optional arguments.
 	-- _René Ferdinand Rivera Morell_
+* Fix passing move-only lambdas to `opt` and `arg` parsers.
+	-- _René Ferdinand Rivera Morell_
 * Tested with
 		Visual Studio 2019, VS 2022,
 		MinGW-64 (gcc 8.1.0),

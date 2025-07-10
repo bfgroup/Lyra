@@ -93,6 +93,15 @@ struct parser_cardinality
 	}
 };
 
+enum class ctor_lambda_e : char
+{
+	val
+};
+enum class ctor_ref_e : char
+{
+	val
+};
+
 } // namespace detail
 
 /* tag::reference[]
@@ -316,20 +325,26 @@ class bound_parser : public composable_parser<Derived>
 	}
 
 	public:
-	enum class ctor_lambda_e
-	{
-		val
-	};
-
 	template <typename Reference>
-	bound_parser(Reference & ref, std::string const & hint);
+	bound_parser(Reference & ref,
+		std::string const & hint,
+		typename std::enable_if<!detail::is_invocable<Reference>::value,
+			detail::ctor_ref_e>::type
+		= detail::ctor_ref_e::val);
 
 	template <typename Lambda>
 	bound_parser(Lambda const & ref,
 		std::string const & hint,
 		typename std::enable_if<detail::is_invocable<Lambda>::value,
-			ctor_lambda_e>::type
-		= ctor_lambda_e::val);
+			detail::ctor_lambda_e>::type
+		= detail::ctor_lambda_e::val);
+
+	template <typename Lambda>
+	bound_parser(Lambda && ref,
+		std::string const & hint,
+		typename std::enable_if<detail::is_invocable<Lambda>::value,
+			detail::ctor_lambda_e>::type
+		= detail::ctor_lambda_e::val);
 
 	template <typename T>
 	explicit bound_parser(detail::BoundVal<T> && val)
@@ -397,6 +412,10 @@ bound_parser<Derived>::bound_parser(Reference& ref, std::string const& hint);
 template <typename Derived>
 template <typename Lambda>
 bound_parser<Derived>::bound_parser(Lambda const& ref, std::string const& hint);
+
+template <typename Derived>
+template <typename Lambda>
+bound_parser<Derived>::bound_parser(Lambda && ref, std::string const& hint);
 ----
 
 Constructs a value option with a target typed variable or callback. These are
@@ -411,7 +430,10 @@ contain all the specified values.
 end::reference[] */
 template <typename Derived>
 template <typename Reference>
-bound_parser<Derived>::bound_parser(Reference & ref, std::string const & hint)
+bound_parser<Derived>::bound_parser(Reference & ref,
+	std::string const & hint,
+	typename std::enable_if<!detail::is_invocable<Reference>::value,
+		detail::ctor_ref_e>::type)
 	: bound_parser(
 		  std::make_shared<detail::BoundValueRef<Reference>>(ref), hint)
 {}
@@ -421,8 +443,25 @@ template <typename Lambda>
 bound_parser<Derived>::bound_parser(Lambda const & ref,
 	std::string const & hint,
 	typename std::enable_if<detail::is_invocable<Lambda>::value,
-		ctor_lambda_e>::type)
-	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref), hint)
+		detail::ctor_lambda_e>::type)
+	: bound_parser(
+		  std::make_shared<
+			  detail::BoundLambda<typename detail::remove_cvref<Lambda>::type>>(
+			  ref),
+		  hint)
+{}
+
+template <typename Derived>
+template <typename Lambda>
+bound_parser<Derived>::bound_parser(Lambda && ref,
+	std::string const & hint,
+	typename std::enable_if<detail::is_invocable<Lambda>::value,
+		detail::ctor_lambda_e>::type)
+	: bound_parser(
+		  std::make_shared<
+			  detail::BoundLambda<typename detail::remove_cvref<Lambda>::type>>(
+			  std::move(ref)),
+		  hint)
 {}
 
 /* tag::reference[]

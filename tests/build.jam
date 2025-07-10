@@ -36,4 +36,6 @@ compile single_include_test.cpp
 
 run optional_type_test.cpp : requirements <use>/bfg_lyra ;
 
+compile issue_93_test.cpp : requirements <use>/bfg_lyra <cxxstd>11:<build>no ;
+
 build-project lib_use_test ;

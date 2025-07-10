@@ -687,8 +687,15 @@ struct BoundLambda : BoundValueRefBase
 
 	static_assert(unary_lambda_traits<L>::isValid,
 		"Supplied lambda must take exactly one argument");
+	static_assert(
+		std::is_same<L, typename detail::remove_cvref<L>::type>::value,
+		"Supplied lambda must not be a reference");
+
 	explicit BoundLambda(L const & lambda)
 		: m_lambda(lambda)
+	{}
+	explicit BoundLambda(L && lambda)
+		: m_lambda(std::move(lambda))
 	{}
 
 	auto setValue(std::string const & arg) -> parser_result override
@@ -706,11 +713,18 @@ struct BoundFlagLambda : BoundFlagRefBase
 	static_assert(unary_lambda_traits<L>::isValid,
 		"Supplied lambda must take exactly one argument");
 	static_assert(
+		std::is_same<L, typename detail::remove_cvref<L>::type>::value,
+		"Supplied lambda must not be a reference");
+	static_assert(
 		std::is_same<typename unary_lambda_traits<L>::ArgType, bool>::value,
 		"flags must be boolean");
 
 	explicit BoundFlagLambda(L const & lambda)
 		: m_lambda(lambda)
+	{}
+
+	explicit BoundFlagLambda(L && lambda)
+		: m_lambda(std::move(lambda))
 	{}
 
 	auto setFlag(bool flag) -> parser_result override
@@ -1662,6 +1676,15 @@ struct parser_cardinality
 	}
 };
 
+enum class ctor_lambda_e : char
+{
+	val
+};
+enum class ctor_ref_e : char
+{
+	val
+};
+
 } // namespace detail
 
 /* tag::reference[]
@@ -1884,20 +1907,26 @@ class bound_parser : public composable_parser<Derived>
 	}
 
 	public:
-	enum class ctor_lambda_e
-	{
-		val
-	};
-
 	template <typename Reference>
-	bound_parser(Reference & ref, std::string const & hint);
+	bound_parser(Reference & ref,
+		std::string const & hint,
+		typename std::enable_if<!detail::is_invocable<Reference>::value,
+			detail::ctor_ref_e>::type
+		= detail::ctor_ref_e::val);
 
 	template <typename Lambda>
 	bound_parser(Lambda const & ref,
 		std::string const & hint,
 		typename std::enable_if<detail::is_invocable<Lambda>::value,
-			ctor_lambda_e>::type
-		= ctor_lambda_e::val);
+			detail::ctor_lambda_e>::type
+		= detail::ctor_lambda_e::val);
+
+	template <typename Lambda>
+	bound_parser(Lambda && ref,
+		std::string const & hint,
+		typename std::enable_if<detail::is_invocable<Lambda>::value,
+			detail::ctor_lambda_e>::type
+		= detail::ctor_lambda_e::val);
 
 	template <typename T>
 	explicit bound_parser(detail::BoundVal<T> && val)
@@ -1965,6 +1994,10 @@ bound_parser<Derived>::bound_parser(Reference& ref, std::string const& hint);
 template <typename Derived>
 template <typename Lambda>
 bound_parser<Derived>::bound_parser(Lambda const& ref, std::string const& hint);
+
+template <typename Derived>
+template <typename Lambda>
+bound_parser<Derived>::bound_parser(Lambda && ref, std::string const& hint);
 ----
 
 Constructs a value option with a target typed variable or callback. These are
@@ -1979,7 +2012,10 @@ contain all the specified values.
 end::reference[] */
 template <typename Derived>
 template <typename Reference>
-bound_parser<Derived>::bound_parser(Reference & ref, std::string const & hint)
+bound_parser<Derived>::bound_parser(Reference & ref,
+	std::string const & hint,
+	typename std::enable_if<!detail::is_invocable<Reference>::value,
+		detail::ctor_ref_e>::type)
 	: bound_parser(
 		  std::make_shared<detail::BoundValueRef<Reference>>(ref), hint)
 {}
@@ -1989,8 +2025,25 @@ template <typename Lambda>
 bound_parser<Derived>::bound_parser(Lambda const & ref,
 	std::string const & hint,
 	typename std::enable_if<detail::is_invocable<Lambda>::value,
-		ctor_lambda_e>::type)
-	: bound_parser(std::make_shared<detail::BoundLambda<Lambda>>(ref), hint)
+		detail::ctor_lambda_e>::type)
+	: bound_parser(
+		  std::make_shared<
+			  detail::BoundLambda<typename detail::remove_cvref<Lambda>::type>>(
+			  ref),
+		  hint)
+{}
+
+template <typename Derived>
+template <typename Lambda>
+bound_parser<Derived>::bound_parser(Lambda && ref,
+	std::string const & hint,
+	typename std::enable_if<detail::is_invocable<Lambda>::value,
+		detail::ctor_lambda_e>::type)
+	: bound_parser(
+		  std::make_shared<
+			  detail::BoundLambda<typename detail::remove_cvref<Lambda>::type>>(
+			  std::move(ref)),
+		  hint)
 {}
 
 /* tag::reference[]
@@ -4218,38 +4271,42 @@ end::reference[] */
 class opt : public bound_parser<opt>
 {
 	public:
-	enum class ctor_lambda_e
-	{
-		val
-	};
-	enum class ctor_ref_e
-	{
-		val
-	};
-
 
 	explicit opt(bool & ref);
 
 	template <typename L>
 	explicit opt(L const & ref,
 		typename std::enable_if<detail::is_invocable<L>::value,
-			ctor_lambda_e>::type
-		= ctor_lambda_e::val);
+			detail::ctor_lambda_e>::type
+		= detail::ctor_lambda_e::val);
+
+	template <typename L>
+	explicit opt(L && ref,
+		typename std::enable_if<detail::is_invocable<L>::value,
+			detail::ctor_lambda_e>::type
+		= detail::ctor_lambda_e::val);
 
 
 	template <typename T>
 	opt(T & ref,
 		std::string const & hint,
 		typename std::enable_if<!detail::is_invocable<T>::value,
-			ctor_ref_e>::type
-		= ctor_ref_e::val);
+			detail::ctor_ref_e>::type
+		= detail::ctor_ref_e::val);
 
 	template <typename L>
 	opt(L const & ref,
 		std::string const & hint,
 		typename std::enable_if<detail::is_invocable<L>::value,
-			ctor_lambda_e>::type
-		= ctor_lambda_e::val);
+			detail::ctor_lambda_e>::type
+		= detail::ctor_lambda_e::val);
+
+	template <typename L>
+	opt(L && ref,
+		std::string const & hint,
+		typename std::enable_if<detail::is_invocable<L>::value,
+			detail::ctor_lambda_e>::type
+		= detail::ctor_lambda_e::val);
 
 	template <typename T>
 	explicit opt(detail::BoundVal<T> && val)
@@ -4465,6 +4522,9 @@ lyra::opt::opt(bool& ref);
 
 template <typename L>
 lyra::opt::opt(L const& ref);
+
+template <typename L>
+lyra::opt::opt(L && ref);
 ----
 
 Constructs a flag option with a target `bool` to indicate if the flag is
@@ -4479,8 +4539,17 @@ inline opt::opt(bool & ref)
 template <typename L>
 opt::opt(L const & ref,
 	typename std::enable_if<detail::is_invocable<L>::value,
-		opt::ctor_lambda_e>::type)
-	: bound_parser(std::make_shared<detail::BoundFlagLambda<L>>(ref))
+		detail::ctor_lambda_e>::type)
+	: bound_parser(std::make_shared<
+		  detail::BoundFlagLambda<typename detail::remove_cvref<L>::type>>(ref))
+{}
+template <typename L>
+opt::opt(L && ref,
+	typename std::enable_if<detail::is_invocable<L>::value,
+		detail::ctor_lambda_e>::type)
+	: bound_parser(std::make_shared<
+		  detail::BoundFlagLambda<typename detail::remove_cvref<L>::type>>(
+		  std::move(ref)))
 {}
 
 /* tag::reference[]
@@ -4495,6 +4564,9 @@ lyra::opt::opt(T& ref, std::string const& hint);
 
 template <typename L>
 lyra::opt::opt(L const& ref, std::string const& hint)
+
+template <typename L>
+lyra::opt::opt(L && ref, std::string const& hint)
 ----
 
 Constructs a value option with a target `ref`. The first form takes a reference
@@ -4506,15 +4578,22 @@ template <typename T>
 opt::opt(T & ref,
 	std::string const & hint,
 	typename std::enable_if<!detail::is_invocable<T>::value,
-		opt::ctor_ref_e>::type)
+		detail::ctor_ref_e>::type)
 	: bound_parser(ref, hint)
 {}
 template <typename L>
 opt::opt(L const & ref,
 	std::string const & hint,
 	typename std::enable_if<detail::is_invocable<L>::value,
-		opt::ctor_lambda_e>::type)
+		detail::ctor_lambda_e>::type)
 	: bound_parser(ref, hint)
+{}
+template <typename L>
+opt::opt(L && ref,
+	std::string const & hint,
+	typename std::enable_if<detail::is_invocable<L>::value,
+		detail::ctor_lambda_e>::type)
+	: bound_parser(std::move(ref), hint)
 {}
 
 /* tag::reference[]
