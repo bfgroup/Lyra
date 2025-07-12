@@ -10,6 +10,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <lyra/detail/unary_lambda_traits.hpp>
 #include <memory>
 #include <string>
+#include <vector>
 
 template <typename L>
 constexpr bool is_invocable_v(L,
@@ -101,6 +102,12 @@ int main()
 		test(REQUIRE(
 			lyra::detail::unary_lambda_traits<lyra::detail::remove_cvref<
 				decltype(std::move(f2))>::type>::isValid));
+	}
+	{
+		std::string s;
+		std::vector<int> v;
+		test(REQUIRE(!lyra::detail::is_invocable<decltype(s)>::value));
+		test(REQUIRE(!lyra::detail::is_invocable<decltype(v)>::value));
 	}
 
 	return test;

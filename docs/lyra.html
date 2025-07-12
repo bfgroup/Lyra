@@ -2123,6 +2123,31 @@ a way to get values of arguments directly specified in the cli.</p>
 <div class="paragraph">
 <p>Is-a <a href="#lyra_bound_parser"><code>lyra::bound_parser</code></a>.</p>
 </div>
+<div class="sect3">
+<h4 id="lyra_arg_ctor"><a class="anchor" href="#lyra_arg_ctor"></a>Construction</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Reference</span><span class="p">&gt;</span>
+<span class="n">arg</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">arg</span><span class="p">(</span><span class="n">Reference</span><span class="o">&amp;</span> <span class="n">ref</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">hint</span><span class="p">);</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Lambda</span><span class="p">&gt;</span>
+<span class="n">arg</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">arg</span><span class="p">(</span><span class="n">Lambda</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">ref</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">hint</span><span class="p">);</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Lambda</span><span class="p">&gt;</span>
+<span class="n">arg</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;::</span><span class="n">arg</span><span class="p">(</span><span class="n">Lambda</span> <span class="o">&amp;&amp;</span> <span class="n">ref</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">hint</span><span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constructs a value argument with a target typed variable or callback. These are
+bare arguments that take a value as in <code>value</code>. In the first form the given
+<code>ref</code> receives the value of the argument after parsing. The second form the
+callback is invoked during the parse with the given value. Both take a
+<code>hint</code> that is used in the help text. When the argument can be specified
+multiple times the callback will be called consecutively for each argument value
+given. And if a container is given as a reference on the first form it will
+contain all the specified values.</p>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="lyra_args"><a class="anchor" href="#lyra_args"></a>13.2. <code>lyra::args</code></h3>

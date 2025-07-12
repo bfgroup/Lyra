@@ -33,7 +33,18 @@ Is-a <<lyra_bound_parser>>.
 class arg : public bound_parser<arg>
 {
 	public:
-	using bound_parser::bound_parser;
+	template <typename Reference>
+	arg(Reference & ref, std::string const & hint)
+		: bound_parser(ref, hint)
+	{}
+	template <typename Lambda>
+	arg(Lambda const & ref, std::string const & hint)
+		: bound_parser(ref, hint)
+	{}
+	template <typename Lambda>
+	arg(Lambda && ref, std::string const & hint)
+		: bound_parser(std::move(ref), hint)
+	{}
 
 	std::string get_usage_text(const option_style &) const override
 	{
@@ -122,6 +133,37 @@ class arg : public bound_parser<arg>
 		p.option(style, get_usage_text(style), m_description);
 	}
 };
+
+/* tag::reference[]
+
+[#lyra_arg_ctor]
+== Construction
+
+end::reference[] */
+
+/* tag::reference[]
+[source]
+----
+template <typename Reference>
+arg<Derived>::arg(Reference& ref, std::string const& hint);
+
+template <typename Lambda>
+arg<Derived>::arg(Lambda const& ref, std::string const& hint);
+
+template <typename Lambda>
+arg<Derived>::arg(Lambda && ref, std::string const& hint);
+----
+
+Constructs a value argument with a target typed variable or callback. These are
+bare arguments that take a value as in `value`. In the first form the given
+`ref` receives the value of the argument after parsing. The second form the
+callback is invoked during the parse with the given value. Both take a
+`hint` that is used in the help text. When the argument can be specified
+multiple times the callback will be called consecutively for each argument value
+given. And if a container is given as a reference on the first form it will
+contain all the specified values.
+
+end::reference[] */
 
 } // namespace lyra
 
