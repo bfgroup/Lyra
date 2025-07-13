@@ -10,7 +10,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <lyra/lyra.hpp>
 #include <string>
 
-int main(int argc, char const ** argv)
+int main()
 {
 	bfg::mini_test::scope test;
 	{
