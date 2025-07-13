@@ -47,9 +47,8 @@ template <class F, class... Args>
 struct is_callable
 {
 	template <class U>
-	static auto test(U * p) -> decltype((*p)(std::declval<Args>()...),
-								void(),
-								std::true_type());
+	static auto test(U * p)
+		-> decltype((*p)(std::declval<Args>()...), void(), std::true_type());
 
 	template <class U>
 	static auto test(...) -> decltype(std::false_type());
@@ -68,8 +67,8 @@ template <class F>
 struct is_invocable
 {
 	template <class U>
-	static auto test(
-		U * p) -> decltype((&U::operator()), void(), std::true_type());
+	static auto test(U * p)
+		-> decltype((&U::operator()), void(), std::true_type());
 
 	template <class U>
 	static auto test(...) -> decltype(std::false_type());
@@ -92,6 +91,21 @@ struct is_specialization_of : std::false_type
 template <template <class...> class Primary, class... Args>
 struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
 {};
+
+template <typename C>
+struct is_character
+{
+	using bare_t = typename remove_cvref<C>::type;
+	static constexpr bool value = false || std::is_same<char, bare_t>::value
+		|| std::is_same<signed char, bare_t>::value
+		|| std::is_same<unsigned char, bare_t>::value
+		|| std::is_same<wchar_t, bare_t>::value
+#if (__cplusplus >= 202002L)
+		|| std::is_same<char8_t, bare_t>::value
+#endif
+		|| std::is_same<char16_t, bare_t>::value
+		|| std::is_same<char32_t, bare_t>::value;
+};
 
 }} // namespace lyra::detail
 
@@ -1958,7 +1972,9 @@ class bound_parser : public composable_parser<Derived>
 		typename std::enable_if<detail::is_invocable<Lambda>::value, int>::type
 		= 1>
 	Derived & choices(Lambda const & check_choice);
-	template <typename T, std::size_t N>
+	template <typename T,
+		std::size_t N,
+		typename std::enable_if<!detail::is_character<T>::value, int>::type = 2>
 	Derived & choices(const T (&choice_values)[N]);
 
 	std::unique_ptr<parser> clone() const override
@@ -2206,7 +2222,9 @@ Derived & bound_parser<Derived>::choices(Lambda const & check_choice)
 }
 
 template <typename Derived>
-template <typename T, std::size_t N>
+template <typename T,
+	std::size_t N,
+	typename std::enable_if<!detail::is_character<T>::value, int>::type>
 Derived & bound_parser<Derived>::choices(const T (&choice_values)[N])
 {
 	value_choices = std::make_shared<detail::choices_set<T>>(

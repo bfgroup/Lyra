@@ -109,6 +109,13 @@ int main()
 		test(REQUIRE(!lyra::detail::is_invocable<decltype(s)>::value));
 		test(REQUIRE(!lyra::detail::is_invocable<decltype(v)>::value));
 	}
+	{
+		test(REQUIRE(lyra::detail::is_character<char>::value));
+		test(REQUIRE(lyra::detail::is_character<wchar_t>::value));
+		test(REQUIRE(lyra::detail::is_character<unsigned char>::value));
+		test(REQUIRE(lyra::detail::is_character<const char>::value));
+		test(REQUIRE(lyra::detail::is_character<const char &>::value));
+	}
 
 	return test;
 }

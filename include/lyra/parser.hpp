@@ -376,7 +376,9 @@ class bound_parser : public composable_parser<Derived>
 		typename std::enable_if<detail::is_invocable<Lambda>::value, int>::type
 		= 1>
 	Derived & choices(Lambda const & check_choice);
-	template <typename T, std::size_t N>
+	template <typename T,
+		std::size_t N,
+		typename std::enable_if<!detail::is_character<T>::value, int>::type = 2>
 	Derived & choices(const T (&choice_values)[N]);
 
 	std::unique_ptr<parser> clone() const override
@@ -624,7 +626,9 @@ Derived & bound_parser<Derived>::choices(Lambda const & check_choice)
 }
 
 template <typename Derived>
-template <typename T, std::size_t N>
+template <typename T,
+	std::size_t N,
+	typename std::enable_if<!detail::is_character<T>::value, int>::type>
 Derived & bound_parser<Derived>::choices(const T (&choice_values)[N])
 {
 	value_choices = std::make_shared<detail::choices_set<T>>(
