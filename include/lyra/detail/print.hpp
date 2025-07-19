@@ -50,8 +50,9 @@ struct print
 	{
 		if (is_debug)
 		{
+			static auto indent = " | : | : | : | : | : | : | : | : | : | : ";
 			std::cerr << "[DEBUG]"
-					  << std::string((print::depth() - 1) * 2, ' ');
+					  << std::string(indent, (print::depth() - 1) * 2);
 			std::string args[] = { to_string(arg)... };
 			for (auto & arg_string : args)
 			{
