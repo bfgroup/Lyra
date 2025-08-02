@@ -821,8 +821,9 @@ struct print
 	{
 		if (is_debug)
 		{
+			static auto indent = " | : | : | : | : | : | : | : | : | : | : ";
 			std::cerr << "[DEBUG]"
-					  << std::string((print::depth() - 1) * 2, ' ');
+					  << std::string(indent, (print::depth() - 1) * 2);
 			std::string args[] = { to_string(arg)... };
 			for (auto & arg_string : args)
 			{
@@ -1688,6 +1689,16 @@ struct parser_cardinality
 		minimum = n;
 		maximum = m;
 	}
+
+	bool includes(std::size_t v) const
+	{
+		return is_bounded() && (minimum <= v) && (v <= maximum);
+	}
+
+	bool is_maximum(std::size_t v) const
+	{
+		return is_bounded() && v == maximum;
+	}
 };
 
 enum class ctor_lambda_e : char
@@ -2440,8 +2451,8 @@ namespace lyra {
 [#lyra_arguments]
 = `lyra::arguments`
 
-A Combined parser made up of any number of parsers. Creating and using
-one of these as a basis one can incrementally compose other parsers into this
+A combined parser made up of any number of sub-parsers. Creating and using
+one of these as a basis, one can incrementally compose other parsers into this
 one. For example:
 
 [source]
@@ -2460,7 +2471,7 @@ p.add_argument(lyra::opt(where, "where").name("--where")
 class arguments : public parser
 {
 	public:
-	enum evaluation
+	enum evaluation : char
 	{
 		eval_any = 0,
 		eval_sequence = 1,
@@ -2503,6 +2514,8 @@ class arguments : public parser
 	arguments & sequential();
 	arguments & inclusive();
 	arguments & relaxed();
+
+	arguments & require(std::size_t n, std::size_t m = 0);
 
 	template <typename T>
 	T & get(std::size_t i);
@@ -2578,12 +2591,14 @@ class arguments : public parser
 		LYRA_PRINT_SCOPE("arguments::parse_any");
 
 		std::vector<std::size_t> parsing_count(parsers.size(), 0);
+		std::size_t parsed_total = 0;
 		auto parsing_result = parse_result::ok(
 			detail::parse_state(parser_result_type::empty_match, tokens));
 		auto nomatch_result = parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
 
-		while (parsing_result.value().remainingTokens())
+		while (parsing_result.value().remainingTokens()
+			&& !parse_limit.is_maximum(parsed_total))
 		{
 			LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=",
 				parsing_result.value().remainingTokens()
@@ -2631,7 +2646,8 @@ class arguments : public parser
 						&& subparse_result.value().type()
 							!= parser_result_type::no_match)
 					{
-						LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+						LYRA_PRINT_DEBUG("(=) #", parsed_total + 1,
+							get_usage_text(style), "==",
 							parsing_result.value()
 								.remainingTokens()
 								.argument()
@@ -2640,6 +2656,7 @@ class arguments : public parser
 						parsing_result = parse_result(subparse_result);
 						token_parsed = true;
 						*parsing_count_i += 1;
+						parsed_total += 1;
 						break;
 					}
 				}
@@ -2796,6 +2813,7 @@ class arguments : public parser
 	std::shared_ptr<option_style> opt_style;
 	std::vector<std::unique_ptr<parser>> parsers;
 	evaluation eval_mode = eval_any;
+	detail::parser_cardinality parse_limit = { 0, 0 };
 
 	option_style get_option_style() const
 	{
@@ -2856,6 +2874,7 @@ inline arguments::arguments(const arguments & other)
 	: parser(other)
 	, opt_style(other.opt_style)
 	, eval_mode(other.eval_mode)
+	, parse_limit(other.parse_limit)
 {
 	for (auto & other_parser : other.parsers)
 	{
@@ -2870,6 +2889,16 @@ inline arguments::arguments(const arguments & other)
 
 end::reference[] */
 
+
+/* tag::reference[]
+[#lyra_arguments_specification_composition]
+=== Composition
+
+This parser is composed of sub-parsers that consume the arguments as possible.
+One can configure how the sub-parsers are used. And depending on the mode
+the ordering of the sub-parsers can matter.
+
+end::reference[] */
 
 /* tag::reference[]
 [#lyra_arguments_add_argument]
@@ -2919,7 +2948,17 @@ inline arguments & arguments::operator|=(arguments const & other)
 }
 
 /* tag::reference[]
-=== `lyra::arguments::sequential`
+[#lyra_arguments_specification_parsemode]
+=== Parsing Mode
+
+The parsing mode controls how the parsing of the added arguments happens.
+Depending on how this is specified different parsing algorithms get used to
+match parsers with arguments.
+
+end::reference[] */
+
+/* tag::reference[]
+==== `lyra::arguments::sequential`
 
 [source]
 ----
@@ -2975,6 +3014,45 @@ inline arguments & arguments::relaxed()
 	eval_mode = eval_relaxed;
 	return *this;
 }
+
+/* tag::reference[]
+[#lyra_arguments_specification_limits]
+=== Limits
+
+The parsing of sub-parsers can be restrained with limits. The limits can
+control how many parsed arguments are required or allowed.
+
+end::reference[] */
+
+/* tag::reference[]
+=== `lyra::arguments::require`
+
+[source]
+----
+arguments & arguments::require(std::size_t n, std::size_t m);
+----
+
+Requires a minimum and/or maximum number of arguments *only* to be successfully
+parsed by the sub-parsers to make this collection of arguments valid. Specifying
+the minimum or maximum as zero (`0`) indicates it's undefined. I.e. there would
+be no minimum or maximum. If a maximum is indicated, as soon as that maximum
+is reached the parsing is considered successful and completes.
+
+WARNING: Side-effects of parsing arguments, even if overall the collection as
+a whole fails for not satisfying the required bounds.
+
+end::reference[] */
+inline arguments & arguments::require(std::size_t n, std::size_t m)
+{
+	parse_limit.bounded(n, m);
+	return *this;
+}
+
+/* tag::reference[]
+[#lyra_arguments_specification_other]
+=== Other
+
+end::reference[] */
 
 /* tag::reference[]
 === `lyra::arguments::get`
@@ -3630,6 +3708,11 @@ class cli : protected arguments
 	cli & sequential() { return arguments::sequential(), *this; }
 	cli & inclusive() { return arguments::inclusive(), *this; }
 	cli & relaxed() { return arguments::relaxed(), *this; }
+
+	cli & require(std::size_t n, std::size_t m = 0)
+	{
+		return arguments::require(n, m), *this;
+	}
 
 
 	using arguments::parse;

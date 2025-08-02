@@ -91,6 +91,16 @@ struct parser_cardinality
 		minimum = n;
 		maximum = m;
 	}
+
+	bool includes(std::size_t v) const
+	{
+		return is_bounded() && (minimum <= v) && (v <= maximum);
+	}
+
+	bool is_maximum(std::size_t v) const
+	{
+		return is_bounded() && v == maximum;
+	}
 };
 
 enum class ctor_lambda_e : char

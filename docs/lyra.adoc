@@ -240,9 +240,9 @@ follows:
 
 :leveloffset: +1
 
-include::../examples/doc_commands.cpp[tag=doc]
-
 include::../examples/doc_groups.cpp[tag=doc]
+
+include::../examples/doc_commands.cpp[tag=doc]
 
 include::../examples/doc_simple_alt.cpp[tag=doc]
 

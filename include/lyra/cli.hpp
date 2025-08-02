@@ -149,9 +149,16 @@ class cli : protected arguments
 	}
 	parse_result parse(args const & args, const option_style & style) const;
 
+	// Parsing mode.
 	cli & sequential() { return arguments::sequential(), *this; }
 	cli & inclusive() { return arguments::inclusive(), *this; }
 	cli & relaxed() { return arguments::relaxed(), *this; }
+
+	// Limits..
+	cli & require(std::size_t n, std::size_t m = 0)
+	{
+		return arguments::require(n, m), *this;
+	}
 
 	// Internal..
 

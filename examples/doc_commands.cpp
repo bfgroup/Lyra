@@ -19,6 +19,11 @@ parser for the occasion.
 In this example we use two `command` parameters to specify the sub-commands and
 a lambda to execute the subcommands.
 
+The parsing for this example is arranged into two groups. One for global options
+and another for the commands. This follows the common practice of accepting
+options then commands in this scenario. It also allows us to specify that we
+only allow a single command, by using a `require(1,1)` specification.
+
 [source]
 ----
 */ // end::doc[]
@@ -37,22 +42,19 @@ struct run_command // <1>
 	bool verbose = false;
 	bool show_help = false;
 
-	run_command(lyra::cli & cli) // <3>
+	void add_command(lyra::group & g) // <3>
 	{
-		cli.add_argument(
-			lyra::command("run",
-				[this](const lyra::group & g) { this->do_command(g); }) // <4>
+		g.add_argument(lyra::command("run",
+			[this](const lyra::group & g) { this->do_command(g); }) // <4>
 				.help("Execute the given command.")
 				.add_argument(lyra::help(show_help))
-				.add_argument(
-					lyra::opt(verbose)
+				.add_argument(lyra::opt(verbose)
 						.name("-v")
 						.name("--verbose")
 						.optional()
 						.help(
 							"Show additional output as to what we are doing."))
-				.add_argument(
-					lyra::arg(command, "command")
+				.add_argument(lyra::arg(command, "command")
 						.required()
 						.help(
 							"The command, and arguments, to attempt to run.")));
@@ -79,22 +81,19 @@ struct kill_command // <6>
 	int signal = 9;
 	bool show_help = false;
 
-	kill_command(lyra::cli & cli)
+	void add_command(lyra::group & g)
 	{
-		cli.add_argument(
-			lyra::command(
-				"kill", [this](const lyra::group & g) { this->do_command(g); })
+		g.add_argument(lyra::command(
+			"kill", [this](const lyra::group & g) { this->do_command(g); })
 				.help("Terminate the process with the given name.")
 				.add_argument(lyra::help(show_help))
-				.add_argument(
-					lyra::opt(signal, "signal")
+				.add_argument(lyra::opt(signal, "signal")
 						.name("-s")
 						.name("--signal")
 						.optional()
 						.help(
 							"The signal integer to post to the running process."))
-				.add_argument(
-					lyra::arg(process_name, "process_name")
+				.add_argument(lyra::arg(process_name, "process_name")
 						.required()
 						.help(
 							"The name of the process to search and signal.")));
@@ -113,19 +112,26 @@ struct kill_command // <6>
 
 int main(int argc, const char ** argv)
 {
-	auto cli = lyra::cli();
-	std::string command;
+	lyra::group global; // <7>
 	bool show_help = false;
-	cli.add_argument(lyra::help(show_help));
-	kill_command kill { cli };
-	run_command run { cli };
-	auto result = cli.parse({ argc, argv }); // <7>
+	global.add_argument(lyra::help(show_help));
+
+	lyra::group subcommands; // <8>
+	subcommands.require(1, 1); // <9>
+	kill_command kill;
+	kill.add_command(subcommands);
+	run_command run;
+	run.add_command(subcommands);
+
+	auto cli = lyra::cli().add_argument(global).add_argument(subcommands);
+
+	auto result = cli.parse({ argc, argv }); // <10>
 	if (show_help)
 	{
 		std::cout << cli;
 		return 0;
 	}
-	if (!result) // <8>
+	if (!result) // <11>
 	{
 		std::cerr << result.message() << "\n";
 	}
@@ -145,7 +151,10 @@ int main(int argc, const char ** argv)
 	and print out the help for the `group` only. This help will look similar
 	to the full help output, but only contains the `group` arguments.
 <6> And now the information for our `kill` sub-comand.
-<7> We go ahead and parse the top-level `cli` which will also parse the
+<7> A group of global options.
+<8> A group of the accepted commands.
+<9> The group accepts exactly one command.
+<10> We go ahead and parse the top-level `cli` which will also parse the
 	sub-command groups.
-<8> At the end we can do the regular error handling.
+<11> At the end we can do the regular error handling.
 */ // end::doc[]
