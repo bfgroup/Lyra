@@ -23,9 +23,9 @@ int main()
 		cli.add_argument(lyra::opt(c0, "c0")["--c0"]);
 		cli.add_argument(lyra::opt(c1, "c1")["--c1"]);
 		cli.add_argument(lyra::command(
-			"foo", [&](lyra::group const & g) { cmds.push_back("foo"); }));
+			"foo", [&](lyra::group const &) { cmds.push_back("foo"); }));
 		cli.add_argument(lyra::command(
-			"bar", [&](lyra::group const & g) { cmds.push_back("bar"); }));
+			"bar", [&](lyra::group const &) { cmds.push_back("bar"); }));
 		{
 			cmds.clear();
 			auto result = cli.parse({ "test_app", "--c1=1", "foo" });
@@ -65,10 +65,10 @@ int main()
 		cli.add_argument(lyra::opt(c1, "c1")["--c1"]);
 		cli.add_argument(lyra::group()
 				.require(0, 1)
-				.add_argument(lyra::command("foo",
-					[&](lyra::group const & g) { cmds.push_back("foo"); }))
+				.add_argument(lyra::command(
+					"foo", [&](lyra::group const &) { cmds.push_back("foo"); }))
 				.add_argument(lyra::command("bar",
-					[&](lyra::group const & g) { cmds.push_back("bar"); })));
+					[&](lyra::group const &) { cmds.push_back("bar"); })));
 		{
 			cmds.clear();
 			auto result = cli.parse({ "test_app", "foo", "bar" });
@@ -110,9 +110,9 @@ int main()
 		auto cli = lyra::cli();
 		cli.add_argument(lyra::opt(c0, "c0")["--c0"]);
 		cli.add_argument(lyra::opt(c1, "c1")["--c1"]);
-		cli.add_argument(lyra::command("foo", [&](lyra::group const & g) {
+		cli.add_argument(lyra::command("foo", [&](lyra::group const &) {
 			cmds.push_back("foo");
-		}).add_argument(lyra::command("bar", [&](lyra::group const & g) {
+		}).add_argument(lyra::command("bar", [&](lyra::group const &) {
 			cmds.push_back("bar");
 		})));
 		{
