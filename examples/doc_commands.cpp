@@ -45,7 +45,7 @@ struct run_command // <1>
 	void add_command(lyra::group & g) // <3>
 	{
 		g.add_argument(lyra::command("run",
-			[this](const lyra::group & g) { this->do_command(g); }) // <4>
+			[this](const lyra::group & f) { this->do_command(f); }) // <4>
 				.help("Execute the given command.")
 				.add_argument(lyra::help(show_help))
 				.add_argument(lyra::opt(verbose)
@@ -84,7 +84,7 @@ struct kill_command // <6>
 	void add_command(lyra::group & g)
 	{
 		g.add_argument(lyra::command(
-			"kill", [this](const lyra::group & g) { this->do_command(g); })
+			"kill", [this](const lyra::group & f) { this->do_command(f); })
 				.help("Terminate the process with the given name.")
 				.add_argument(lyra::help(show_help))
 				.add_argument(lyra::opt(signal, "signal")
