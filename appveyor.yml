@@ -28,7 +28,7 @@ environment:
         VSWHERE_VERSION: "[17.0,18.0)",
         APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2022",
         TOOLSET: "msvc",
-        TOOLSET_VERSION: "14.2",
+        TOOLSET_VERSION: "14.3",
       }
     - {
         job_name: "VS 2019",
