@@ -8,8 +8,6 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include "mini_test.hpp"
 #include <lyra/lyra.hpp>
 
-#include <vector>
-
 const char * custom_error = "Custom error message w/ context.";
 
 static lyra::parser_result always_error_cb(std::string const &)
@@ -22,8 +20,8 @@ struct subcommand
 {
 	subcommand(lyra::cli & cli)
 	{
-		cli.add_argument(lyra::command(
-			"subcommand", [this](lyra::group const & g) { exec(); })
+		cli.add_argument(
+			lyra::command("subcommand", [this](lyra::group const &) { exec(); })
 				.add_argument(lyra::opt(
 					[](std::string const & s) { return always_error_cb(s); },
 					"arg")
