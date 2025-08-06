@@ -37,6 +37,7 @@ variables:
 
 resources:
   containers:
+    - { container: linux_gcc16, image: 'teeks99/gcc-ubuntu:16', options: "${{variables.co_options}}" }
     - { container: linux_gcc15, image: 'teeks99/gcc-ubuntu:15', options: "${{variables.co_options}}" }
     - { container: linux_gcc14, image: 'teeks99/gcc-ubuntu:14', options: "${{variables.co_options}}" }
     - { container: linux_gcc13, image: 'teeks99/gcc-ubuntu:13', options: "${{variables.co_options}}" }
@@ -50,6 +51,7 @@ resources:
     - { container: linux_gcc5, image: 'teeks99/gcc-ubuntu:5', options: "${{variables.co_options}}" }
     - { container: linux_gcc49, image: 'teeks99/gcc-ubuntu:4.9', options: "${{variables.co_options}}" }
     - { container: linux_gcc48, image: 'teeks99/gcc-ubuntu:4.8', options: "${{variables.co_options}}" }
+    - { container: linux_clang21, image: 'teeks99/clang-ubuntu:21', options: "${{variables.co_options}}" }
     - { container: linux_clang20, image: 'teeks99/clang-ubuntu:20', options: "${{variables.co_options}}" }
     - { container: linux_clang19, image: 'teeks99/clang-ubuntu:19', options: "${{variables.co_options}}" }
     - { container: linux_clang18, image: 'teeks99/clang-ubuntu:18', options: "${{variables.co_options}}" }
@@ -78,12 +80,12 @@ stages:
   - job: 'Linux'
     strategy:
       matrix:
-        GCC 14 Warn-All: {
-          CXX: g++-14, CONTAINER: linux_gcc14,
+        GCC 16 Warn-All: {
+          CXX: g++-16, CONTAINER: linux_gcc16,
           TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
           B2_ARGS: 'warnings=pedantic warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wnon-virtual-dtor cxxflags=-Wzero-as-null-pointer-constant' }
-        Clang 20 Warn-All: {
-          CXX: clang++-20, CONTAINER: linux_clang20,
+        Clang 21 Warn-All: {
+          CXX: clang++-21, CONTAINER: linux_clang21,
           TOOLSET: clang, CXXSTD: "11,14,17,20,23",
           B2_ARGS: "warnings=pedantic warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wnon-virtual-dtor cxxflags=-Wzero-as-null-pointer-constant" }
     pool: { vmImage: 'ubuntu-latest' }
@@ -94,8 +96,8 @@ stages:
   - job: 'Xcode'
     strategy:
       matrix:
-        Xcode 15.2 Warn-All: {
-          CXX: clang++, VM_IMAGE: 'macOS-13', XCODE_VERSION: "15.2",
+        Xcode 16.4 Warn-All: {
+          CXX: clang++, VM_IMAGE: 'macOS-15', XCODE_VERSION: "16.4",
           TOOLSET: clang, CXXSTD: "11,14,17,20", B2_ARGS: "warnings=pedantic warnings-as-errors=on" }
     pool:
       vmImage: $(VM_IMAGE)
@@ -107,7 +109,7 @@ stages:
       matrix:
         VS 2022 Warn-All: {
           VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe,
-          PLATFORM: x64, VM_IMAGE: 'windows-2022', TOOLSET: msvc, TOOLSET_VERSION: '14.3',
+          PLATFORM: x64, VM_IMAGE: 'windows-2025', TOOLSET: msvc, TOOLSET_VERSION: '14.3',
           CXXSTD: "14,17,20,latest",
           B2_ARGS: "warnings=extra warnings-as-errors=on" }
     pool:
@@ -123,11 +125,11 @@ stages:
     strategy:
       matrix:
         Address: {
-          CXX: g++-14, CONTAINER: linux_gcc14,
+          CXX: g++-16, CONTAINER: linux_gcc16,
           TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
           B2_ARGS: 'address-sanitizer=on' }
         Undefined: {
-          CXX: g++-14, CONTAINER: linux_gcc14,
+          CXX: g++-16, CONTAINER: linux_gcc16,
           TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
           B2_ARGS: 'undefined-sanitizer=on' }
     pool: { vmImage: 'ubuntu-latest' }
@@ -142,6 +144,8 @@ stages:
   - job: 'Linux'
     strategy:
       matrix:
+        GCC 16: { CXX: g++-16, CONTAINER: linux_gcc16, TOOLSET: gcc, CXXSTD: "11,14,17,20,23" }
+        GCC 15: { CXX: g++-15, CONTAINER: linux_gcc15, TOOLSET: gcc, CXXSTD: "11,14,17,20,23" }
         GCC 14: { CXX: g++-14, CONTAINER: linux_gcc14, TOOLSET: gcc, CXXSTD: "11,14,17,20,23" }
         GCC 13: { CXX: g++-13, CONTAINER: linux_gcc13, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
         GCC 12: { CXX: g++-12, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
@@ -152,6 +156,7 @@ stages:
         GCC 7: { CXX: g++-7, CONTAINER: linux_gcc7, TOOLSET: gcc, CXXSTD: "11,14,17" }
         GCC 6: { CXX: g++-6, CONTAINER: linux_gcc6, TOOLSET: gcc, CXXSTD: "11,14,17" }
         GCC 5: { CXX: g++-5, CONTAINER: linux_gcc5, TOOLSET: gcc, CXXSTD: "11,14" }
+        Clang 21: { CXX: clang++-21, CONTAINER: linux_clang21, TOOLSET: clang, CXXSTD: "11,14,17,20,23" }
         Clang 20: { CXX: clang++-20, CONTAINER: linux_clang20, TOOLSET: clang, CXXSTD: "11,14,17,20,23" }
         Clang 19: { CXX: clang++-19, CONTAINER: linux_clang19, TOOLSET: clang, CXXSTD: "11,14,17,20,23" }
         Clang 18: { CXX: clang++-18, CONTAINER: linux_clang18, TOOLSET: clang, CXXSTD: "11,14,17,20,23" }
@@ -178,8 +183,8 @@ stages:
   - job: 'Xcode'
     strategy:
       matrix:
-        Xcode 16.2: {
-          CXX: clang++, VM_IMAGE: 'macOS-14', XCODE_VERSION: "16.2",
+        Xcode 16.4: {
+          CXX: clang++, VM_IMAGE: 'macOS-15', XCODE_VERSION: "16.4",
           TOOLSET: clang, CXXSTD: "11,14,17,20" }
         Xcode 15.4: {
           CXX: clang++, VM_IMAGE: 'macOS-14', XCODE_VERSION: "15.4",
@@ -199,10 +204,6 @@ stages:
           VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe,
           CXXSTD: "14,17,20,latest",
           PLATFORM: x64, VM_IMAGE: 'windows-2022', TOOLSET: msvc, TOOLSET_VERSION: '14.3' }
-        VS 2019: {
-          VSWHERE_VERSION: '[16.0,17.0)', CXX: cl.exe,
-          CXXSTD: "14,17,20,latest",
-          PLATFORM: x64, VM_IMAGE: 'windows-2019', TOOLSET: msvc, TOOLSET_VERSION: '14.2' }
     pool:
       vmImage: $(VM_IMAGE)
     steps:

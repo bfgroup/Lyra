@@ -23,6 +23,22 @@ skip_commits:
 environment:
   matrix:
     - {
+        job_name: "VS 2022",
+        COMPILER: "MSVC",
+        VSWHERE_VERSION: "[17.0,18.0)",
+        APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2022",
+        TOOLSET: "msvc",
+        TOOLSET_VERSION: "14.2",
+      }
+    - {
+        job_name: "VS 2019",
+        COMPILER: "MSVC",
+        VSWHERE_VERSION: "[16.0,17.0)",
+        APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2019",
+        TOOLSET: "msvc",
+        TOOLSET_VERSION: "14.2",
+      }
+    - {
         job_name: "VS 2017",
         COMPILER: "MSVC",
         VSWHERE_VERSION: "[15.0,16.0)",
