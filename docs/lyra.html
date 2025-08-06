@@ -1683,7 +1683,7 @@ only allow a single command, by using a <code>require(1,1)</code> specification.
     <span class="kt">void</span> <span class="n">add_command</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">g</span><span class="p">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
     <span class="p">{</span>
         <span class="n">g</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">command</span><span class="p">(</span><span class="s">"run"</span><span class="p">,</span>
-            <span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">g</span><span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">do_command</span><span class="p">(</span><span class="n">g</span><span class="p">);</span> <span class="p">})</span> <i class="conum" data-value="4"></i><b>(4)</b>
+            <span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">f</span><span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">do_command</span><span class="p">(</span><span class="n">f</span><span class="p">);</span> <span class="p">})</span> <i class="conum" data-value="4"></i><b>(4)</b>
                 <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"Execute the given command."</span><span class="p">)</span>
                 <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="n">show_help</span><span class="p">))</span>
                 <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
@@ -1722,7 +1722,7 @@ only allow a single command, by using a <code>require(1,1)</code> specification.
     <span class="kt">void</span> <span class="n">add_command</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">g</span><span class="p">)</span>
     <span class="p">{</span>
         <span class="n">g</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">command</span><span class="p">(</span>
-            <span class="s">"kill"</span><span class="p">,</span> <span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">g</span><span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">do_command</span><span class="p">(</span><span class="n">g</span><span class="p">);</span> <span class="p">})</span>
+            <span class="s">"kill"</span><span class="p">,</span> <span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span> <span class="n">lyra</span><span class="o">::</span><span class="n">group</span> <span class="o">&amp;</span> <span class="n">f</span><span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">do_command</span><span class="p">(</span><span class="n">f</span><span class="p">);</span> <span class="p">})</span>
                 <span class="p">.</span><span class="n">help</span><span class="p">(</span><span class="s">"Terminate the process with the given name."</span><span class="p">)</span>
                 <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="n">show_help</span><span class="p">))</span>
                 <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="s">"signal"</span><span class="p">)</span>
@@ -3430,6 +3430,11 @@ their output through the <code>printer</code> object.&#8201;&#8212;&#8201;<em>Re
 <li>
 <p>Fix incorrect interpretation of single character literal strings to the
 <code>choice(..)</code> function.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Fix ignored short circuit error results returned from user callbacks. This
+now, correctly, allows for custom error messages from user callbacks when
+parsing or checking arguments.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
 </li>
 <li>
 <p>Tested with

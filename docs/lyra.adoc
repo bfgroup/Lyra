@@ -325,6 +325,10 @@ Changes:
 * Fix incorrect interpretation of single character literal strings to the
 	`choice(..)` function.
 	-- _René Ferdinand Rivera Morell_
+* Fix ignored short circuit error results returned from user callbacks. This
+	now, correctly, allows for custom error messages from user callbacks when
+	parsing or checking arguments.
+	-- _René Ferdinand Rivera Morell_
 * Tested with
 		Visual Studio 2019, VS 2022,
 		MinGW-64 (gcc 8.1.0),

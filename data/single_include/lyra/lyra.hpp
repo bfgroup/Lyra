@@ -2724,6 +2724,10 @@ class arguments : public parser
 			{
 				auto subresult
 					= p->parse(p_result.value().remainingTokens(), style);
+				if (subresult.has_value()
+					&& parser_result_type::short_circuit_all
+						== subresult.value().type())
+					return subresult;
 				if (!subresult) break;
 				if (parser_result_type::no_match == subresult.value().type())
 				{
@@ -2734,9 +2738,6 @@ class arguments : public parser
 						"==>", subresult.value().type());
 					break;
 				}
-				if (parser_result_type::short_circuit_all
-					== subresult.value().type())
-					return subresult;
 				if (parser_result_type::matched == subresult.value().type())
 				{
 					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
