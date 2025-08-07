@@ -1,4 +1,4 @@
-// Copyright 2020-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,15 +23,14 @@ struct is_callable
 	template <class U>
 	static auto test(...) -> decltype(std::false_type());
 
-	static constexpr bool value = decltype(test<F>(0))::value;
+	static constexpr bool value = decltype(test<F>(nullptr))::value;
 };
 
 template <class T>
 struct remove_cvref
 {
-	typedef
-		typename std::remove_cv<typename std::remove_reference<T>::type>::type
-			type;
+	using type =
+		typename std::remove_cv<typename std::remove_reference<T>::type>::type;
 };
 
 // Checks that F can be called, with an unspecified set of arguments.
@@ -49,7 +48,7 @@ struct is_invocable
 	static auto test(...) -> decltype(std::false_type());
 
 	static constexpr bool value
-		= decltype(test<typename remove_cvref<F>::type>(0))::value;
+		= decltype(test<typename remove_cvref<F>::type>(nullptr))::value;
 };
 
 // C++11 compatible void_t equivalent.
@@ -68,6 +67,22 @@ struct is_specialization_of : std::false_type
 template <template <class...> class Primary, class... Args>
 struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
 {};
+
+// Composite trait for just character types.
+template <typename C>
+struct is_character
+{
+	using bare_t = typename remove_cvref<C>::type;
+	static constexpr bool value = false || std::is_same<char, bare_t>::value
+		|| std::is_same<signed char, bare_t>::value
+		|| std::is_same<unsigned char, bare_t>::value
+		|| std::is_same<wchar_t, bare_t>::value
+#if (__cplusplus >= 202002L)
+		|| std::is_same<char8_t, bare_t>::value
+#endif
+		|| std::is_same<char16_t, bare_t>::value
+		|| std::is_same<char32_t, bare_t>::value;
+};
 
 }} // namespace lyra::detail
 

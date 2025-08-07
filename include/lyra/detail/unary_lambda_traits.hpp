@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying

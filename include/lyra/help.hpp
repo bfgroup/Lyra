@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -8,6 +8,12 @@
 #define LYRA_HELP_HPP
 
 #include "lyra/opt.hpp"
+#include "lyra/option_style.hpp"
+#include "lyra/parser.hpp"
+#include "lyra/parser_result.hpp"
+
+#include <memory>
+#include <string>
 
 namespace lyra {
 
@@ -41,13 +47,12 @@ class help : public opt
 
 	help & description(const std::string & text);
 
-	virtual std::string get_description_text(
-		const option_style &) const override
+	std::string get_description_text(const option_style &) const override
 	{
 		return description_text;
 	}
 
-	virtual std::unique_ptr<parser> clone() const override
+	std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<help>(this);
 	}

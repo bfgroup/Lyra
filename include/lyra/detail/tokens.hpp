@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -9,6 +9,8 @@
 
 #include "lyra/option_style.hpp"
 
+#include <cstddef>
+#include <iterator>
 #include <string>
 #include <vector>
 
@@ -218,8 +220,13 @@ class token_iterator
 	// lookahead through the args for the value.
 	token value() const
 	{
-		if (has_option_prefix() && has_value_delimiter())
-			// --option=x, -o=x
+		if (has_short_option_prefix()
+			&& (args_i->find_first_of(style.value_delimiters)
+				== (style.short_option_size + 1)))
+			// -o=x
+			return token(token_type::argument, args_i->substr(3));
+		else if (has_long_option_prefix() && has_value_delimiter())
+			// --option=x
 			return token(token_type::argument,
 				args_i->substr(
 					args_i->find_first_of(style.value_delimiters) + 1));

@@ -10,11 +10,12 @@ Obtain::
 image:https://img.shields.io/github/downloads/bfgroup/Lyra/total.svg?label=GitHub[GitHub All Releases, link="https://github.com/bfgroup/Lyra/releases"]
 image:https://img.shields.io/badge/package-Conan-blue[Conan Center, link="https://conan.io/center/lyra"]
 License:: image:https://img.shields.io/badge/license-BSL%201.0-blue.svg["Boost Software License 1.0", link="LICENSE.txt"]
-Standards:: image:https://img.shields.io/badge/standard-PFL-orange.svg["Pitchfork Layout", link="https://github.com/vector-of-bool/pitchfork"]
+Standards::
 image:https://img.shields.io/badge/standard-C%2B%2B%2011-blue.svg?logo=C%2B%2B["C\+\+ 11", link="https://isocpp.org/"]
 image:https://img.shields.io/badge/standard-C%2B%2B%2014-blue.svg?logo=C%2B%2B["C\+\+ 14", link="https://isocpp.org/"]
 image:https://img.shields.io/badge/standard-C%2B%2B%2017-blue.svg?logo=C%2B%2B["C\+\+ 17", link="https://isocpp.org/"]
 image:https://img.shields.io/badge/standard-C%2B%2B%2020-blue.svg?logo=C%2B%2B["C\+\+ 20", link="https://isocpp.org/"]
+image:https://img.shields.io/badge/standard-C%2B%2B%2023-blue.svg?logo=C%2B%2B["C\+\+ 23", link="https://isocpp.org/"]
 Stats:: image:https://img.shields.io/github/languages/code-size/bfgroup/Lyra.svg[GitHub code size in bytes, link="https://github.com/bfgroup/Lyra"]
 image:https://img.shields.io/github/issues/bfgroup/Lyra.svg[GitHub issues, link="https://github.com/bfgroup/Lyra/issues"]
 image:https://img.shields.io/github/stars/bfgroup/Lyra.svg?label=%E2%98%85[GitHub stars, link="https://github.com/bfgroup/Lyra/stargazers"]

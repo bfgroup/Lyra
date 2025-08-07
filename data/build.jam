@@ -1,12 +1,24 @@
-# Copyright 2019-2021 René Ferdinand Rivera Morell
+# Copyright René Ferdinand Rivera Morell
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import path ;
+import regex ;
 import os ;
 
-local lyra_headers = [ SORT [ glob $(BFG_LYRA_INCLUDE)/lyra/*.hpp $(BFG_LYRA_INCLUDE)/lyra/*/*.hpp ] ] ;
+path-constant BFG_LYRA_ROOT : .. ;
+path-constant BFG_LYRA_INCLUDE : ../include ;
+path-constant BFG_LYRA_DATA : ../data ;
+
+local lyra_version = [ regex.grep $(BFG_LYRA_INCLUDE)/lyra : version.hpp :
+	"LYRA_VERSION_[^ ]+ ([0-9]+)" : 1 ] ;
+lyra_version = $(lyra_version[2]).$(lyra_version[4]).$(lyra_version[6]) ;
+
+local lyra_headers = [ SORT [ glob
+	$(BFG_LYRA_INCLUDE)/lyra/*.hpp
+	$(BFG_LYRA_INCLUDE)/lyra/*/*.hpp
+	] ] ;
 
 make lyra.hpp
 	: $(BFG_LYRA_INCLUDE)/lyra/lyra.hpp
@@ -49,7 +61,7 @@ local meson_build_header_join_str = ",
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 # Copyright 2019 Rémi Gastaldi.
-# Copyright 2020-2021 René Ferdinand Rivera Morell.
+# Copyright René Ferdinand Rivera Morell.
 
 # This Meson file provides support for using the Lyra library externally as
 # a standalone project or by embedding in your Meson project tree. To use
@@ -76,7 +88,7 @@ local meson_build_header_join_str = ",
 # ----
 
 project('Lyra','cpp',
-	version: '1.6',
+	version: '"$(lyra_version)"',
 	default_options : ['cpp_std=c++11', 'cpp_eh=none', 'b_lto=true', 'warning_level=3'],
 	license: 'BSL-1.0')
 
@@ -88,15 +100,25 @@ $(lyra_headers_relative:J=$(meson_build_header_join_str))
 "
 ]
 
-inc_dir = [include_directories('include')]
+fs = import('fs')
+foreach header : src
+	# use substring to drop `include/` prefix
+	install_headers(header, subdir : fs.parent(header.substring(8)))
+endforeach
 
-lyra_lib = shared_library('lyra',
-	sources : src,
-	include_directories: inc_dir,
-	install: true,
-	install_dir : '/usr/lib')
+inc_dir = include_directories('include')
 
-lyra_dep = declare_dependency(include_directories: inc_dir, link_with: lyra_lib)
+lyra_dep = declare_dependency(include_directories: inc_dir)
+
+pkg = import('pkgconfig')
+pkg.generate(
+	subdirs : 'lyra',
+	filebase : 'lyra',
+	version : meson.project_version(),
+	name : meson.project_name(),
+	description : 'A simple to use, composing, header only, command line arguments parser for C++ 11 and beyond.',
+	url: 'https://github.com/bfgroup/Lyra',
+)
 " ;
 
 .meson_build_file = $(.meson_build_file:J=) ;

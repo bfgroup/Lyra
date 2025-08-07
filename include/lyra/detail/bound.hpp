@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -11,7 +11,13 @@
 #include "lyra/detail/invoke_lambda.hpp"
 #include "lyra/detail/parse.hpp"
 #include "lyra/detail/unary_lambda_traits.hpp"
+#include "lyra/parser_result.hpp"
+
+#include <cstddef>
+#include <memory>
 #include <string>
+#include <type_traits>
+#include <vector>
 
 namespace lyra { namespace detail {
 
@@ -59,14 +65,14 @@ struct BoundValueRef : BoundValueRefBase
 		return parse_string(arg, m_ref);
 	}
 
-	virtual size_t get_value_count() const override { return 1; }
-	virtual std::string get_value(size_t i) const override
+	size_t get_value_count() const override { return 1; }
+	std::string get_value(size_t i) const override
 	{
 		if (i == 0)
 		{
-			std::string result;
-			detail::to_string(m_ref, result);
-			return result;
+			std::string text;
+			detail::to_string(m_ref, text);
+			return text;
 		}
 		return "";
 	}
@@ -91,8 +97,8 @@ struct BoundValueRef<std::vector<T>> : BoundValueRefBase
 		return str_result;
 	}
 
-	virtual size_t get_value_count() const override { return m_ref.size(); }
-	virtual std::string get_value(size_t i) const override
+	size_t get_value_count() const override { return m_ref.size(); }
+	std::string get_value(size_t i) const override
 	{
 		if (i < m_ref.size())
 		{
@@ -118,8 +124,8 @@ struct BoundFlagRef : BoundFlagRefBase
 		return parser_result::ok(parser_result_type::matched);
 	}
 
-	virtual size_t get_value_count() const override { return 1; }
-	virtual std::string get_value(size_t i) const override
+	size_t get_value_count() const override { return 1; }
+	std::string get_value(size_t i) const override
 	{
 		if (i == 0) return m_ref ? "true" : "false";
 		return "";
@@ -133,8 +139,15 @@ struct BoundLambda : BoundValueRefBase
 
 	static_assert(unary_lambda_traits<L>::isValid,
 		"Supplied lambda must take exactly one argument");
+	static_assert(
+		std::is_same<L, typename detail::remove_cvref<L>::type>::value,
+		"Supplied lambda must not be a reference");
+
 	explicit BoundLambda(L const & lambda)
 		: m_lambda(lambda)
+	{}
+	explicit BoundLambda(L && lambda)
+		: m_lambda(std::move(lambda))
 	{}
 
 	auto setValue(std::string const & arg) -> parser_result override
@@ -152,11 +165,18 @@ struct BoundFlagLambda : BoundFlagRefBase
 	static_assert(unary_lambda_traits<L>::isValid,
 		"Supplied lambda must take exactly one argument");
 	static_assert(
+		std::is_same<L, typename detail::remove_cvref<L>::type>::value,
+		"Supplied lambda must not be a reference");
+	static_assert(
 		std::is_same<typename unary_lambda_traits<L>::ArgType, bool>::value,
 		"flags must be boolean");
 
 	explicit BoundFlagLambda(L const & lambda)
 		: m_lambda(lambda)
+	{}
+
+	explicit BoundFlagLambda(L && lambda)
+		: m_lambda(std::move(lambda))
 	{}
 
 	auto setFlag(bool flag) -> parser_result override
@@ -177,7 +197,7 @@ struct BoundVal : BoundValueRef<T>
 		, value(v)
 	{}
 
-	BoundVal(BoundVal && other)
+	BoundVal(BoundVal && other) noexcept
 		: BoundValueRef<T>(value)
 		, value(std::move(other.value))
 	{}

@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -8,11 +8,18 @@
 #define LYRA_ARGUMENTS_HPP
 
 #include "lyra/detail/print.hpp"
-#include "lyra/exe_name.hpp"
+#include "lyra/detail/tokens.hpp"
+#include "lyra/detail/trait_utils.hpp"
+#include "lyra/option_style.hpp"
 #include "lyra/parser.hpp"
+#include "lyra/parser_result.hpp"
+#include "lyra/printer.hpp"
 
-#include <functional>
-#include <sstream>
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 namespace lyra {
 
@@ -21,8 +28,8 @@ namespace lyra {
 [#lyra_arguments]
 = `lyra::arguments`
 
-A Combined parser made up of any number of parsers. Creating and using
-one of these as a basis one can incrementally compose other parsers into this
+A combined parser made up of any number of sub-parsers. Creating and using
+one of these as a basis, one can incrementally compose other parsers into this
 one. For example:
 
 [source]
@@ -43,12 +50,15 @@ class arguments : public parser
 	public:
 	// How to evaluate the collection of arguments within the limits of the
 	// cardinality.
-	enum evaluation
+	enum evaluation : char
 	{
 		// Any of the arguments, in any order, are valid. I.e. an inclusive-or.
-		any = 0,
+		eval_any = 0,
 		// All arguments, in sequence, matched. I.e. conjunctive-and.
-		sequence = 1
+		eval_sequence = 1,
+		// Any of the arguments, in any order, are valid and uknown arguments
+		// do not cause parsing errors.
+		eval_relaxed = 2,
 	};
 
 	arguments() = default;
@@ -69,77 +79,80 @@ class arguments : public parser
 	arguments & operator|=(arguments const & other);
 
 	// Concat composition.
-	template <typename T>
-	arguments operator|(T const & other) const
+	template <typename T, typename U>
+	friend typename std::enable_if<
+		std::is_base_of<arguments,
+			typename detail::remove_cvref<T>::type>::value,
+		T &>::type
+		operator|(T & self, U const & other)
 	{
-		return arguments(*this) |= other;
+		return static_cast<T &>(self.add_argument(other));
+	}
+	template <typename T, typename U>
+	friend typename std::enable_if<
+		std::is_base_of<arguments,
+			typename detail::remove_cvref<T>::type>::value,
+		T &>::type
+		operator|(T && self, U const & other)
+	{
+		return static_cast<T &>(self.add_argument(other));
 	}
 
 	// Parsing mode.
 	arguments & sequential();
 	arguments & inclusive();
+	arguments & relaxed();
+
+	// Limits..
+	arguments & require(std::size_t n, std::size_t m = 0);
 
 	// Access.
 	template <typename T>
-	T & get(size_t i);
+	T & get(std::size_t i);
 
 	// Internal..
 
-	virtual std::string get_usage_text(
-		const option_style & style) const override
+	std::string get_usage_text(const option_style & style) const override
 	{
-		std::ostringstream os;
+		std::string text;
 		for (auto const & p : parsers)
 		{
 			std::string usage_text = p->get_usage_text(style);
 			if (usage_text.size() > 0)
 			{
-				if (os.tellp() != std::ostringstream::pos_type(0)) os << " ";
+				if (!text.empty()) text += " ";
 				if (p->is_group() && p->is_optional())
-					os << "[ " << usage_text << " ]";
+					((text += "[ ") += usage_text) += " ]";
 				else if (p->is_group())
-					os << "{ " << usage_text << " }";
+					((text += "{ ") += usage_text) += " }";
 				else if (p->is_optional())
-					os << "[" << usage_text << "]";
+					((text += "[") += usage_text) += "]";
 				else
-					os << usage_text;
+					text += usage_text;
 			}
-		}
-		return os.str();
-	}
-
-	virtual std::string get_description_text(
-		const option_style & style) const override
-	{
-		std::ostringstream os;
-		for (auto const & p : parsers)
-		{
-			if (p->is_group()) continue;
-			auto child_description = p->get_description_text(style);
-			if (!child_description.empty()) os << child_description << "\n";
-		}
-		return os.str();
-	}
-
-	// Return a container of the individual help text for the composed parsers.
-	virtual help_text get_help_text(const option_style & style) const override
-	{
-		help_text text;
-		for (auto const & p : parsers)
-		{
-			if (p->is_group()) text.push_back({ "", "" });
-			auto child_help = p->get_help_text(style);
-			text.insert(text.end(), child_help.begin(), child_help.end());
 		}
 		return text;
 	}
 
-	virtual detail::parser_cardinality cardinality() const override
+	std::string get_description_text(const option_style & style) const override
 	{
-		return { 0, 0 };
+		std::string text;
+		for (auto const & p : parsers)
+		{
+			if (p->is_group()) continue;
+			auto child_description = p->get_description_text(style);
+			if (!child_description.empty())
+			{
+				if (!text.empty()) text += "\n";
+				text += child_description;
+			}
+		}
+		return text;
 	}
 
-	virtual result validate() const override
+	detail::parser_cardinality cardinality() const override { return { 0, 0 }; }
+
+	result validate() const override
 	{
 		for (auto const & p : parsers)
 		{
@@ -154,12 +167,13 @@ class arguments : public parser
 	{
 		switch (eval_mode)
 		{
-			case any: return parse_any(tokens, style);
-			case sequence: return parse_sequence(tokens, style);
+			case eval_any:
+			case eval_relaxed: return parse_any(tokens, style);
+			case eval_sequence: return parse_sequence(tokens, style);
 		}
 		return parse_result::error(
 			detail::parse_state(parser_result_type::no_match, tokens),
-			"Unknown evaluation mode; not one of 'any', or 'sequence'.");
+			"Unknown evaluation mode; not one of 'any', 'sequence', or 'relaxed'.");
 	}
 
 	// Match in any order, any number of times. Returns an error if nothing
@@ -168,40 +182,40 @@ class arguments : public parser
 		detail::token_iterator const & tokens, const option_style & style) const
 	{
 		LYRA_PRINT_SCOPE("arguments::parse_any");
-		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
-			"?=", tokens ? tokens.argument().name : "", "..");
 
-		struct ParserInfo
-		{
-			parser const * parser_p = nullptr;
-			size_t count = 0;
-		};
-		std::vector<ParserInfo> parser_info(parsers.size());
-		{
-			size_t i = 0;
-			for (auto const & p : parsers) parser_info[i++].parser_p = p.get();
-		}
-
-		auto p_result = parse_result::ok(
-			detail::parse_state(parser_result_type::matched, tokens));
-		auto error_result = parse_result::ok(
+		std::vector<std::size_t> parsing_count(parsers.size(), 0);
+		std::size_t parsed_total = 0;
+		auto parsing_result = parse_result::ok(
+			detail::parse_state(parser_result_type::empty_match, tokens));
+		auto nomatch_result = parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
-		while (p_result.value().remainingTokens())
+
+		while (parsing_result.value().remainingTokens()
+			&& !parse_limit.is_maximum(parsed_total))
 		{
+			LYRA_PRINT_DEBUG("(?)", get_usage_text(style), "?=",
+				parsing_result.value().remainingTokens()
+					? parsing_result.value().remainingTokens().argument().name
+					: "",
+				"..");
 			bool token_parsed = false;
 
-			for (auto & parse_info : parser_info)
+			auto parsing_count_i = parsing_count.begin();
+			for (auto & p : parsers)
 			{
-				auto parser_cardinality = parse_info.parser_p->cardinality();
+				auto parser_cardinality = p->cardinality();
 				if (parser_cardinality.is_unbounded()
-					|| parse_info.count < parser_cardinality.maximum)
+					|| *parsing_count_i < parser_cardinality.maximum)
 				{
-					auto subparse_result = parse_info.parser_p->parse(
-						p_result.value().remainingTokens(), style);
+					auto subparse_result = p->parse(
+						parsing_result.value().remainingTokens(), style);
 					if (!subparse_result)
 					{
 						LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
-							p_result.value().remainingTokens().argument().name);
+							parsing_result.value()
+								.remainingTokens()
+								.argument()
+								.name);
 						// Is the subparse error bad enough to trigger an
 						// immediate return? For example for an option syntax
 						// error.
@@ -213,49 +227,94 @@ class arguments : public parser
 						// the first so that in case no other parsers match
 						// we can report the earliest problem, as that's
 						// the likeliest issue.
-						if (error_result)
-							error_result = parse_result(subparse_result);
+						else if (nomatch_result)
+							nomatch_result = parse_result(subparse_result);
+					}
+					else if (subparse_result
+						&& subparse_result.value().type()
+							== parser_result_type::empty_match)
+					{
+						LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+							parsing_result.value()
+								.remainingTokens()
+								.argument()
+								.name,
+							"==>", subparse_result.value().type());
+						parsing_result = parse_result(subparse_result);
 					}
 					else if (subparse_result
 						&& subparse_result.value().type()
 							!= parser_result_type::no_match)
 					{
-						LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
-							p_result.value().remainingTokens().argument().name,
+						LYRA_PRINT_DEBUG("(=) #", parsed_total + 1,
+							get_usage_text(style), "==",
+							parsing_result.value()
+								.remainingTokens()
+								.argument()
+								.name,
 							"==>", subparse_result.value().type());
-						p_result = parse_result(subparse_result);
+						parsing_result = parse_result(subparse_result);
 						token_parsed = true;
-						parse_info.count += 1;
+						*parsing_count_i += 1;
+						parsed_total += 1;
 						break;
 					}
 				}
+				++parsing_count_i;
 			}
 
-			if (p_result.value().type() == parser_result_type::short_circuit_all)
-				return p_result;
-			// If something signaled and error, and hence we didn't match/parse
-			// anything, we indicate the error.
-			if (!token_parsed && !error_result) return error_result;
-			if (!token_parsed) break;
+			if (parsing_result.value().type()
+				== parser_result_type::short_circuit_all)
+				return parsing_result;
+			if (!token_parsed)
+			{
+				// Nothing matched for the current arg and we are doing relaxed
+				// parsing. Hence we need to skip over that unknown arg to
+				// continue trying the rest.
+				if (eval_mode == eval_relaxed)
+				{
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+						parsing_result.value()
+							.remainingTokens()
+							.argument()
+							.name,
+						"==> skipped");
+					auto remainingTokens
+						= parsing_result.value().remainingTokens();
+					remainingTokens.pop(remainingTokens.argument());
+					parsing_result = parse_result::ok(detail::parse_state(
+						parser_result_type::empty_match, remainingTokens));
+				}
+				// If something signaled and error, and hence we didn't
+				// match/parse anything, we indicate the error if not in relaxed
+				// mode.
+				else if (!nomatch_result)
+					return nomatch_result;
+				// Encountered something unrecognized. We stop and report the
+				// result.
+				else
+					break;
+			}
 		}
 		// Check missing required options. For bounded arguments we check
 		// bound min and max bounds against what we parsed. For the loosest
 		// required arguments we check for only the minimum. As the upper
 		// bound could be infinite.
-		for (auto & parseInfo : parser_info)
 		{
-			auto parser_cardinality = parseInfo.parser_p->cardinality();
-			if ((parser_cardinality.is_bounded()
-					&& (parseInfo.count < parser_cardinality.minimum
-						|| parser_cardinality.maximum < parseInfo.count))
-				|| (parser_cardinality.is_required()
-					&& (parseInfo.count < parser_cardinality.minimum)))
+			auto parsing_count_i = parsing_count.begin();
+			for (auto & p : parsers)
 			{
-				return parse_result::error(p_result.value(),
-					"Expected: " + parseInfo.parser_p->get_usage_text(style));
+				auto parser_cardinality = p->cardinality();
+				if ((parser_cardinality.is_bounded()
+						&& (*parsing_count_i < parser_cardinality.minimum
+							|| parser_cardinality.maximum < *parsing_count_i))
+					|| (parser_cardinality.is_required()
+						&& (*parsing_count_i < parser_cardinality.minimum)))
+					return make_parse_error(tokens, *p, parsing_result, style);
+				++parsing_count_i;
 			}
 		}
-		return p_result;
+		return parsing_result;
 	}
 
 	parse_result parse_sequence(
@@ -265,90 +324,106 @@ class arguments : public parser
 		LYRA_PRINT_DEBUG("(?)", get_usage_text(style),
 			"?=", tokens ? tokens.argument().name : "", "..");
 
-		struct ParserInfo
-		{
-			parser const * parser_p = nullptr;
-			size_t count = 0;
-		};
-		std::vector<ParserInfo> parser_info(parsers.size());
-		{
-			size_t i = 0;
-			for (auto const & p : parsers) parser_info[i++].parser_p = p.get();
-		}
-
+		std::vector<std::size_t> parsing_count(parsers.size(), 0);
 		auto p_result = parse_result::ok(
-			detail::parse_state(parser_result_type::matched, tokens));
+			detail::parse_state(parser_result_type::empty_match, tokens));
 
 		// Sequential parsing means we walk through the given parsers in order
-		// and exhaust the tokens as we match persers.
-		for (std::size_t parser_i = 0; parser_i < parsers.size(); ++parser_i)
+		// and exhaust the tokens as we match parsers.
+		auto parsing_count_i = parsing_count.begin();
+		for (auto & p : parsers)
 		{
-			auto & parse_info = parser_info[parser_i];
-			auto parser_cardinality = parse_info.parser_p->cardinality();
-			// This is a greedy sequential parsing algo. As it parsers the
+			auto parser_cardinality = p->cardinality();
+			// This is a greedy sequential parsing algo. As it parses the
 			// current argument as much as possible.
 			do
 			{
-				auto subresult = parse_info.parser_p->parse(
-					p_result.value().remainingTokens(), style);
-				if (!subresult)
+				auto subresult
+					= p->parse(p_result.value().remainingTokens(), style);
+				if (subresult.has_value()
+					&& parser_result_type::short_circuit_all
+						== subresult.value().type())
+					return subresult;
+				if (!subresult) break;
+				if (parser_result_type::no_match == subresult.value().type())
 				{
+					LYRA_PRINT_DEBUG("(!)", get_usage_text(style), "!=",
+						p_result.value().remainingTokens()
+							? p_result.value().remainingTokens().argument().name
+							: "",
+						"==>", subresult.value().type());
 					break;
 				}
-				if (subresult.value().type()
-					== parser_result_type::short_circuit_all)
-				{
-					return subresult;
-				}
-				if (subresult.value().type() != parser_result_type::no_match)
+				if (parser_result_type::matched == subresult.value().type())
 				{
 					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
 						p_result.value().remainingTokens()
 							? p_result.value().remainingTokens().argument().name
 							: "",
 						"==>", subresult.value().type());
+					*parsing_count_i += 1;
 					p_result = subresult;
-					parse_info.count += 1;
+				}
+				if (parser_result_type::empty_match == subresult.value().type())
+				{
+					LYRA_PRINT_DEBUG("(=)", get_usage_text(style), "==",
+						p_result.value().remainingTokens()
+							? p_result.value().remainingTokens().argument().name
+							: "",
+						"==>", subresult.value().type());
+					*parsing_count_i += 1;
 				}
 			}
 			while (p_result.value().have_tokens()
 				&& (parser_cardinality.is_unbounded()
-					|| parse_info.count < parser_cardinality.maximum));
+					|| *parsing_count_i < parser_cardinality.maximum));
 			// Check missing required options immediately as for sequential the
 			// argument is greedy and will fully match here. For bounded
 			// arguments we check bound min and max bounds against what we
 			// parsed. For the loosest required arguments we check for only the
 			// minimum. As the upper bound could be infinite.
 			if ((parser_cardinality.is_bounded()
-					&& (parse_info.count < parser_cardinality.minimum
-						|| parser_cardinality.maximum < parse_info.count))
+					&& (*parsing_count_i < parser_cardinality.minimum
+						|| parser_cardinality.maximum < *parsing_count_i))
 				|| (parser_cardinality.is_required()
-					&& (parse_info.count < parser_cardinality.minimum)))
-			{
-				return parse_result::error(p_result.value(),
-					"Expected: " + parse_info.parser_p->get_usage_text(style));
-			}
+					&& (*parsing_count_i < parser_cardinality.minimum)))
+				return make_parse_error(tokens, *p, p_result, style);
+			++parsing_count_i;
 		}
 		// The return is just the last state as it contains any remaining tokens
 		// to parse.
 		return p_result;
 	}
 
-	virtual std::unique_ptr<parser> clone() const override
+	template <typename R>
+	parse_result make_parse_error(const detail::token_iterator & tokens,
+		const parser & p,
+		const R & p_result,
+		const option_style & style) const
+	{
+		if (tokens)
+			return parse_result::error(p_result.value(),
+				"Unrecognized argument '" + tokens.argument().name
+					+ "' while parsing: " + p.get_usage_text(style));
+		else
+			return parse_result::error(
+				p_result.value(), "Expected: " + p.get_usage_text(style));
+	}
+
+	std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<arguments>(this);
 	}
 
-	friend std::ostream & operator<<(
-		std::ostream & os, arguments const & parser)
+	template <typename T>
+	T & print_help(T & os) const
 	{
-		const option_style & s
-			= parser.opt_style ? *parser.opt_style : option_style::posix();
-		parser.print_help_text(os, s);
+		std::unique_ptr<printer> p = make_printer(os);
+		this->print_help_text(*p, get_option_style());
 		return os;
 	}
 
-	virtual const parser * get_named(const std::string & n) const override
+	const parser * get_named(const std::string & n) const override
 	{
 		for (auto & p : parsers)
 		{
@@ -360,10 +435,30 @@ class arguments : public parser
 
 	protected:
 	std::shared_ptr<option_style> opt_style;
-
-	private:
 	std::vector<std::unique_ptr<parser>> parsers;
-	evaluation eval_mode = any;
+	evaluation eval_mode = eval_any;
+	detail::parser_cardinality parse_limit = { 0, 0 };
+
+	option_style get_option_style() const
+	{
+		return opt_style ? *opt_style : option_style::posix();
+	}
+
+	option_style & ref_option_style()
+	{
+		if (!opt_style)
+			opt_style = std::make_shared<option_style>(option_style::posix());
+		return *opt_style;
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		for_each_print_ordered_parser(style, parsers.begin(), parsers.end(),
+			[&](const option_style & s, const parser & q) {
+				q.print_help_text_details(p, s);
+			});
+	}
 };
 
 /* tag::reference[]
@@ -403,6 +498,7 @@ inline arguments::arguments(const arguments & other)
 	: parser(other)
 	, opt_style(other.opt_style)
 	, eval_mode(other.eval_mode)
+	, parse_limit(other.parse_limit)
 {
 	for (auto & other_parser : other.parsers)
 	{
@@ -418,6 +514,16 @@ inline arguments::arguments(const arguments & other)
 end::reference[] */
 
 // ==
+
+/* tag::reference[]
+[#lyra_arguments_specification_composition]
+=== Composition
+
+This parser is composed of sub-parsers that consume the arguments as possible.
+One can configure how the sub-parsers are used. And depending on the mode
+the ordering of the sub-parsers can matter.
+
+end::reference[] */
 
 /* tag::reference[]
 [#lyra_arguments_add_argument]
@@ -467,7 +573,17 @@ inline arguments & arguments::operator|=(arguments const & other)
 }
 
 /* tag::reference[]
-=== `lyra::arguments::sequential`
+[#lyra_arguments_specification_parsemode]
+=== Parsing Mode
+
+The parsing mode controls how the parsing of the added arguments happens.
+Depending on how this is specified different parsing algorithms get used to
+match parsers with arguments.
+
+end::reference[] */
+
+/* tag::reference[]
+==== `lyra::arguments::sequential`
 
 [source]
 ----
@@ -481,7 +597,7 @@ This is useful for sub-commands and structured command lines.
 end::reference[] */
 inline arguments & arguments::sequential()
 {
-	eval_mode = sequence;
+	eval_mode = eval_sequence;
 	return *this;
 }
 
@@ -500,9 +616,68 @@ parsers. This means that there is no ordering enforced.
 end::reference[] */
 inline arguments & arguments::inclusive()
 {
-	eval_mode = any;
+	eval_mode = eval_any;
 	return *this;
 }
+
+/* tag::reference[]
+=== `lyra::arguments::relaxed`
+
+[source]
+----
+arguments & arguments::relaxed();
+----
+
+Sets the parsing mode for the arguments to "relaxed any". When parsing the
+arguments it attempts to match each parsed argument with all the available
+parsers. This means that there is no ordering enforced. Unknown, i.e. failed,
+parsing are ignored.
+
+end::reference[] */
+inline arguments & arguments::relaxed()
+{
+	eval_mode = eval_relaxed;
+	return *this;
+}
+
+/* tag::reference[]
+[#lyra_arguments_specification_limits]
+=== Limits
+
+The parsing of sub-parsers can be restrained with limits. The limits can
+control how many parsed arguments are required or allowed.
+
+end::reference[] */
+
+/* tag::reference[]
+=== `lyra::arguments::require`
+
+[source]
+----
+arguments & arguments::require(std::size_t n, std::size_t m);
+----
+
+Requires a minimum and/or maximum number of arguments *only* to be successfully
+parsed by the sub-parsers to make this collection of arguments valid. Specifying
+the minimum or maximum as zero (`0`) indicates it's undefined. I.e. there would
+be no minimum or maximum. If a maximum is indicated, as soon as that maximum
+is reached the parsing is considered successful and completes.
+
+WARNING: Side-effects of parsing arguments, even if overall the collection as
+a whole fails for not satisfying the required bounds.
+
+end::reference[] */
+inline arguments & arguments::require(std::size_t n, std::size_t m)
+{
+	parse_limit.bounded(n, m);
+	return *this;
+}
+
+/* tag::reference[]
+[#lyra_arguments_specification_other]
+=== Other
+
+end::reference[] */
 
 /* tag::reference[]
 === `lyra::arguments::get`
@@ -510,16 +685,37 @@ inline arguments & arguments::inclusive()
 [source]
 ----
 template <typename T>
-T & arguments::get(size_t i);
+T & arguments::get(std::size_t i);
 ----
 
-Get a modifyable reference to one of the parsers specified.
+Get a modifiable reference to one of the parsers specified.
 
 end::reference[] */
 template <typename T>
-T & arguments::get(size_t i)
+T & arguments::get(std::size_t i)
 {
 	return static_cast<T &>(*parsers.at(i));
+}
+
+/* tag::reference[]
+=== `lyra::operator<<`
+
+[source]
+----
+template <typename T>
+T & operator<<(T & os, arguments const & a);
+----
+
+Prints the help text for the arguments to the given stream `os`. The `os` stream
+is not used directly for printing out. Instead a <<lyra_printer>> object is
+created by calling `lyra::make_printer(os)`. This indirection allows one to
+customize how the output is generated.
+
+end::reference[] */
+template <typename T>
+T & operator<<(T & os, arguments const & a)
+{
+	return a.print_help(os);
 }
 
 } // namespace lyra

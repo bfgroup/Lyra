@@ -1,4 +1,4 @@
-# Copyright 2014-2019 René Ferdinand Rivera Morell
+# Copyright René Ferdinand Rivera Morell
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -10,34 +10,27 @@ externally you would need a `use-project` declaration and to use the
 project as a dependency where needed:
 
 ----
-use-project /lyra : /path/to/bfg-lyra/root ;
+project-search /bfg_lyra : /path/to/bfg_lyra ;
 
-exe my_thing : main.cpp : <dependency>/lyra ;
-----
-
-To use in your project tree you would only need to place the Lyra tree
-in a subdirectory and reference the project location as a dependency where
-needed.
-
-----
-exe my_thin : main.cpp : <dependency>libs/hash-predef ;
+exe my_thing : main.cpp : <library>/bfg_lyra//bfg_lyra ;
 ----
 |#
 
+require-b2 5.2.1 ;
 import project ;
 
-path-constant BFG_LYRA_ROOT : . ;
-path-constant BFG_LYRA_INCLUDE : include ;
-path-constant BFG_LYRA_DATA : data ;
-
-project /bfg_lyra
-    : usage-requirements
-        <include>$(BFG_LYRA_INCLUDE) ;
+project /bfg_lyra ;
 
 if [ project.is-jamroot-module $(__name__) ]
 {
-    local attributes = [ project.attributes $(__name__) ] ;
-    $(attributes).set "build-dir" : .bin ;
+	local attributes = [ project.attributes $(__name__) ] ;
+	$(attributes).set "build-dir" : .bin ;
 }
 
-alias libs ;
+alias bfg_lyra
+	: usage-requirements
+		<include>include ;
+
+explicit
+	[ alias all : data docs examples tests ]
+	;

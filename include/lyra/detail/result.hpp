@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -19,7 +19,6 @@ class result_base
 	explicit operator bool() const { return is_ok(); }
 	bool is_ok() const { return kind_ == result_kind::ok; }
 	std::string message() const { return message_; }
-	[[deprecated]] std::string errorMessage() const { return message(); }
 
 	protected:
 	enum class result_kind

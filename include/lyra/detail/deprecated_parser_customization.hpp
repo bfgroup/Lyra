@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -38,6 +38,7 @@ struct parser_customization
 {
 	virtual std::string token_delimiters() const = 0;
 	virtual std::string option_prefix() const = 0;
+	virtual ~parser_customization() {}
 };
 
 /* tag::reference[]

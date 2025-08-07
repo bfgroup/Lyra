@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -9,17 +9,21 @@
 
 #include "lyra/detail/trait_utils.hpp"
 
-#include <algorithm>
+#include <cctype>
 #include <sstream>
 #include <string>
 #include <type_traits>
 
 #ifndef LYRA_CONFIG_OPTIONAL_TYPE
-#	ifdef __has_include
-#		if __has_include(<optional>) && __cplusplus >= 201703L
-#			include <optional>
-#			define LYRA_CONFIG_OPTIONAL_TYPE std::optional
-#		endif
+#	if defined(__has_include) && __has_include(<version>)
+#		include <version>
+#	elif defined(__has_include) && __has_include(<ciso646>)
+#		include <ciso646>
+#	endif
+#	if defined(__has_include) && __has_include(<optional>) \
+		&& defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
+#		include <optional>
+#		define LYRA_CONFIG_OPTIONAL_TYPE std::optional
 #	endif
 #endif
 
@@ -148,8 +152,8 @@ inline bool from_string(S const & source, bool & target)
 {
 	std::string srcLC;
 	to_string(source, srcLC);
-	std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(),
-		[](char c) { return static_cast<char>(::tolower(c)); });
+	for (std::string::value_type & c : srcLC)
+		c = static_cast<std::string::value_type>(std::tolower(c));
 	if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes"
 		|| srcLC == "on")
 		target = true;
@@ -174,8 +178,8 @@ inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
 {
 	std::string srcLC;
 	to_string(source, srcLC);
-	std::transform(srcLC.begin(), srcLC.end(), srcLC.begin(),
-		[](char c) { return static_cast<char>(::tolower(c)); });
+	for (std::string::value_type & c : srcLC)
+		c = static_cast<std::string::value_type>(::tolower(c));
 	if (srcLC == "<nullopt>")
 	{
 		target.reset();

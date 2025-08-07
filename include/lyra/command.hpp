@@ -1,4 +1,4 @@
-// Copyright 2020-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -8,6 +8,11 @@
 
 #include "lyra/group.hpp"
 #include "lyra/literal.hpp"
+#include "lyra/option_style.hpp"
+#include "lyra/parser.hpp"
+#include "lyra/printer.hpp"
+
+#include <cstddef>
 #include <functional>
 #include <string>
 
@@ -38,7 +43,7 @@ lyra::command c = lyra::group()
 lyra::group & g = c.get<lyra::group>(1);
 ----
 
-I.e. it's conposed of a `literal` followed by the rest of the command arguments.
+I.e. it's composed of a `literal` followed by the rest of the command arguments.
 
 Is-a <<lyra_group>>.
 
@@ -61,10 +66,65 @@ class command : public group
 	template <typename P>
 	command & operator|=(P const & p);
 
+	// Settings.
+	command & brief_help(bool brief = true);
+	command & optional() { return static_cast<command &>(group::optional()); }
+	command & required(std::size_t n = 1)
+	{
+		return static_cast<command &>(group::required(n));
+	}
+	command & cardinality(std::size_t n)
+	{
+		return static_cast<command &>(group::cardinality(n));
+	}
+	command & cardinality(std::size_t n, std::size_t m)
+	{
+		return static_cast<command &>(group::cardinality(n, m));
+	}
+
 	// Internal.
-	virtual std::unique_ptr<parser> clone() const override
+	std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<command>(this);
+	}
+	detail::parser_cardinality cardinality() const override
+	{
+		return group::cardinality();
+	}
+
+	std::string get_usage_text(const option_style & style) const override
+	{
+		auto tail = parsers[1]->get_usage_text(style);
+		return parsers[0]->get_usage_text(style)
+			+ (tail.empty() ? (tail) : (" " + tail));
+	}
+
+	protected:
+	bool expanded_help_details = true;
+
+	std::string get_print_order_key(const option_style & style) const override
+	{
+		return parsers[0]->get_print_order_key(style);
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		// This avoids printing out the "internal" group brackets "{}" for the
+		// command arguments.
+		if (expanded_help_details)
+		{
+			p.option(style, "", "");
+			parsers[0]->print_help_text_details(p, style);
+			p.option(style, "", "");
+			p.indent();
+			parsers[1]->print_help_text_details(p, style);
+			p.dedent();
+		}
+		else
+		{
+			parsers[0]->print_help_text_details(p, style);
+		}
 	}
 };
 
@@ -144,7 +204,7 @@ template <typename P>
 command & command::operator|=(P const & p);
 ----
 
-Adds the given argument parser to the considered arguments for this `comand`.
+Adds the given argument parser to the considered arguments for this `command`.
 The argument is added to the sub-group argument instead of this one. Hence it
 has the effect of adding arguments *after* the command name.
 
@@ -159,6 +219,27 @@ template <typename P>
 command & command::operator|=(P const & p)
 {
 	return this->add_argument(p);
+}
+
+/* tag::reference[]
+[#lyra_command_brief_help]
+=== `lyra::command::brief_help`
+
+[source]
+----
+command & command::brief_help(bool brief = true);
+----
+
+Enables, or disables with `false`, brief output of the top level help. Brief
+output only prints out the command name and description for the top level
+help (i.e. `std::cout << cli`). You can output the full command, options, and
+arguments by printing the command (i.e. `std::cout << command`).
+
+end::reference[] */
+inline command & command::brief_help(bool brief)
+{
+	expanded_help_details = !brief;
+	return *this;
 }
 
 } // namespace lyra

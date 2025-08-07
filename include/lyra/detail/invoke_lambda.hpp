@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -8,7 +8,6 @@
 #define LYRA_DETAIL_INVOKE_LAMBDA_HPP
 
 #include "lyra/detail/parse.hpp"
-#include "lyra/detail/result.hpp"
 #include "lyra/detail/unary_lambda_traits.hpp"
 #include "lyra/parser_result.hpp"
 

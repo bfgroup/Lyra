@@ -4,7 +4,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 # Copyright 2019 Rémi Gastaldi.
-# Copyright 2020-2021 René Ferdinand Rivera Morell.
+# Copyright René Ferdinand Rivera Morell.
 
 # This Meson file provides support for using the Lyra library externally as
 # a standalone project or by embedding in your Meson project tree. To use
@@ -31,7 +31,7 @@
 # ----
 
 project('Lyra','cpp',
-	version: '1.6',
+	version: '1.7.0',
 	default_options : ['cpp_std=c++11', 'cpp_eh=none', 'b_lto=true', 'warning_level=3'],
 	license: 'BSL-1.0')
 
@@ -63,16 +63,27 @@ src = [
 	'include/lyra/option_style.hpp',
 	'include/lyra/parser.hpp',
 	'include/lyra/parser_result.hpp',
+	'include/lyra/printer.hpp',
 	'include/lyra/val.hpp',
 	'include/lyra/version.hpp'
 ]
 
-inc_dir = [include_directories('include')]
+fs = import('fs')
+foreach header : src
+	# use substring to drop `include/` prefix
+	install_headers(header, subdir : fs.parent(header.substring(8)))
+endforeach
 
-lyra_lib = shared_library('lyra',
-	sources : src,
-	include_directories: inc_dir,
-	install: true,
-	install_dir : '/usr/lib')
+inc_dir = include_directories('include')
 
-lyra_dep = declare_dependency(include_directories: inc_dir, link_with: lyra_lib)
+lyra_dep = declare_dependency(include_directories: inc_dir)
+
+pkg = import('pkgconfig')
+pkg.generate(
+	subdirs : 'lyra',
+	filebase : 'lyra',
+	version : meson.project_version(),
+	name : meson.project_name(),
+	description : 'A simple to use, composing, header only, command line arguments parser for C++ 11 and beyond.',
+	url: 'https://github.com/bfgroup/Lyra',
+)

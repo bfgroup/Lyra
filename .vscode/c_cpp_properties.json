@@ -1,0 +1,14 @@
+{
+	"configurations": [
+		{
+			"name": "Linux",
+			"compilerPath": "/usr/bin/clang",
+			"compilerArgs": ["-std=c++11"],
+			"cStandard": "c18",
+			"cppStandard": "c++11",
+			"includePath": ["${workspaceFolder}/include"],
+			"compileCommands": "${workspaceFolder}/compile_commands.json"
+		}
+	],
+	"version": 4
+}

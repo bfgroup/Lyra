@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -7,8 +7,15 @@
 #ifndef LYRA_ARG_HPP
 #define LYRA_ARG_HPP
 
+#include "lyra/detail/bound.hpp"
 #include "lyra/detail/print.hpp"
+#include "lyra/detail/tokens.hpp"
+#include "lyra/option_style.hpp"
 #include "lyra/parser.hpp"
+#include "lyra/parser_result.hpp"
+
+#include <cstddef>
+#include <string>
 
 namespace lyra {
 
@@ -26,37 +33,43 @@ Is-a <<lyra_bound_parser>>.
 class arg : public bound_parser<arg>
 {
 	public:
-	using bound_parser::bound_parser;
+	template <typename Reference>
+	arg(Reference & ref, std::string const & hint)
+		: bound_parser(ref, hint)
+	{}
+	template <typename Lambda>
+	arg(Lambda const & ref, std::string const & hint)
+		: bound_parser(ref, hint)
+	{}
+	template <typename Lambda>
+	arg(Lambda && ref, std::string const & hint)
+		: bound_parser(std::move(ref), hint)
+	{}
 
-	virtual std::string get_usage_text(const option_style &) const override
+	std::string get_usage_text(const option_style &) const override
 	{
-		std::ostringstream oss;
+		std::string text;
 		if (!m_hint.empty())
 		{
 			auto c = cardinality();
 			if (c.is_required())
 			{
-				for (size_t i = 0; i < c.minimum; ++i)
-					oss << (i > 0 ? " " : "") << "<" << m_hint << ">";
+				for (std::size_t i = 0; i < c.minimum; ++i)
+					(((text += (i > 0 ? " " : "")) += "<") += m_hint) += ">";
 				if (c.is_unbounded())
-					oss << (c.is_required() ? " " : "") << "[<" << m_hint
-						<< ">...]";
+					(((text += (c.is_required() ? " " : "")) += "[<") += m_hint)
+						+= ">...]";
 			}
 			else if (c.is_unbounded())
 			{
-				oss << "[<" << m_hint << ">...]";
+				((text += "[<") += m_hint) += ">...]";
 			}
 			else
 			{
-				oss << "<" << m_hint << ">";
+				((text += "<") += m_hint) += ">";
 			}
 		}
-		return oss.str();
-	}
-
-	virtual help_text get_help_text(const option_style & style) const override
-	{
-		return { { get_usage_text(style), m_description } };
+		return text;
 	}
 
 	using parser::parse;
@@ -87,7 +100,8 @@ class arg : public bound_parser<arg>
 			{
 				LYRA_PRINT_DEBUG(
 					"(!)", get_usage_text(style), "!=", token.name);
-				return parse_result(choice_result);
+				return parse_result::ok(
+					detail::parse_state(parser_result_type::no_match, tokens));
 			}
 		}
 
@@ -106,7 +120,50 @@ class arg : public bound_parser<arg>
 				parser_result_type::matched, remainingTokens));
 		}
 	}
+
+	protected:
+	std::string get_print_order_key(const option_style &) const override
+	{
+		return this->hint();
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		p.option(style, get_usage_text(style), m_description);
+	}
 };
+
+/* tag::reference[]
+
+[#lyra_arg_ctor]
+== Construction
+
+end::reference[] */
+
+/* tag::reference[]
+[source]
+----
+template <typename Reference>
+arg<Derived>::arg(Reference& ref, std::string const& hint);
+
+template <typename Lambda>
+arg<Derived>::arg(Lambda const& ref, std::string const& hint);
+
+template <typename Lambda>
+arg<Derived>::arg(Lambda && ref, std::string const& hint);
+----
+
+Constructs a value argument with a target typed variable or callback. These are
+bare arguments that take a value as in `value`. In the first form the given
+`ref` receives the value of the argument after parsing. The second form the
+callback is invoked during the parse with the given value. Both take a
+`hint` that is used in the help text. When the argument can be specified
+multiple times the callback will be called consecutively for each argument value
+given. And if a container is given as a reference on the first form it will
+contain all the specified values.
+
+end::reference[] */
 
 } // namespace lyra
 

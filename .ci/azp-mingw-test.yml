@@ -1,13 +1,14 @@
 steps:
 - script: |
     cd %BUILD_SOURCESDIRECTORY%/..
-    curl "https://github.com/niXman/mingw-builds-binaries/releases/download/%MINGW_VERSION%-%MINGW_RT%/x86_64-%MINGW_VERSION%-release-posix-seh-%MINGW_RT%.7z" -L -o mingw.7z
+    curl "https://github.com/niXman/mingw-builds-binaries/releases/download/%MINGW_VERSION%-%MINGW_RT%/x86_64-%MINGW_VERSION%-release-posix-seh-ucrt-%MINGW_RT%.7z" -L -o mingw.7z
   displayName: Download MinGW
 - task: ExtractFiles@1
   inputs:
     archiveFilePatterns: $(Build.SourcesDirectory)/../mingw.7z
     destinationFolder: C:/
     cleanDestinationFolder: false
+    overwriteExistingFiles: true
   displayName: Extract MinGW
 - script: |
     cd %BUILD_SOURCESDIRECTORY%/..
@@ -18,6 +19,7 @@ steps:
     archiveFilePatterns: $(Build.SourcesDirectory)/../b2.zip
     destinationFolder: $(Build.SourcesDirectory)/..
     cleanDestinationFolder: false
+    overwriteExistingFiles: true
   displayName: Extract B2
 - script: |
     echo using gcc ^: ^: ^"C:/mingw64/bin/g++.exe^"  ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam

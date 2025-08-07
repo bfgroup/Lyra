@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -8,10 +8,8 @@
 #define LYRA_DETAIL_CHOICES_HPP
 
 #include "lyra/detail/from_string.hpp"
-#include "lyra/detail/result.hpp"
 #include "lyra/detail/unary_lambda_traits.hpp"
 #include "lyra/parser_result.hpp"
-#include <algorithm>
 #include <initializer_list>
 #include <string>
 #include <type_traits>
@@ -58,10 +56,10 @@ struct choices_set : choices_base
 			return parser_result::error(
 				parser_result_type::no_match, parse.message());
 		}
-		bool result = std::count(values.begin(), values.end(), value) > 0;
-		if (result)
+		for (const T & allowed_value : values)
 		{
-			return parser_result::ok(parser_result_type::matched);
+			if (allowed_value == value)
+				return parser_result::ok(parser_result_type::matched);
 		}
 		// We consider not finding a choice a parse error.
 		return parser_result::error(parser_result_type::no_match,
@@ -72,21 +70,17 @@ struct choices_set : choices_base
 	// Returns a comma separated list of the allowed values.
 	std::string to_string() const
 	{
-		std::string result;
+		std::string text;
 		for (const T & val : values)
 		{
-			if (!result.empty()) result += ", ";
+			if (!text.empty()) text += ", ";
 			std::string val_string;
 			if (detail::to_string(val, val_string))
-			{
-				result += val_string;
-			}
+				text += val_string;
 			else
-			{
-				result += "<value error>";
-			}
+				text += "<value error>";
 		}
-		return result;
+		return text;
 	}
 
 	protected:

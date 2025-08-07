@@ -1,5 +1,5 @@
 = Lyra
-:copyright: Copyright 2019-2022 René Ferdinand Rivera Morell
+:copyright: Copyright René Ferdinand Rivera Morell
 :author: René Ferdinand Rivera Morell
 :email: grafikrobot@gmail.com
 :revnumber: 1.6.1
@@ -240,9 +240,9 @@ follows:
 
 :leveloffset: +1
 
-include::../examples/doc_commands.cpp[tag=doc]
-
 include::../examples/doc_groups.cpp[tag=doc]
+
+include::../examples/doc_commands.cpp[tag=doc]
 
 include::../examples/doc_simple_alt.cpp[tag=doc]
 
@@ -271,11 +271,88 @@ include::../include/lyra/main.hpp[tag=reference]
 include::../include/lyra/opt.hpp[tag=reference]
 include::../include/lyra/option_style.hpp[tag=reference]
 include::../include/lyra/parser.hpp[tag=reference]
+include::../include/lyra/printer.hpp[tag=reference]
 include::../include/lyra/val.hpp[tag=reference]
 
 :leveloffset: -2
 
 == History
+
+=== 1.7
+
+It's been a rather long time since a release. But hopefully releases will be
+more frequent from now on because.. Instead of waiting for a "large enough"
+accumulation of changes in a release the plan going forward is to have at least
+one release a year.
+
+In this release there are a variety of bug fixes and adjustments. Although most
+are small they do add up to a good chunk of new stability. There are also some
+enhancements as requested that make for more flexibility in output and parsing
+modes.
+
+Changes:
+
+* *New*: Make printing help text configurable to make it possible to avoid using
+	iostreams for output.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Implements a new `brief_help` mode for a `command` that only prints
+	out the command name and description.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Adds printing default/initial value for options in help output.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Add `relaxed` parsing to support "bag of options" style command lines.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Add ordering/sorting of printed option details specified in the
+	`option_style::options_print_order` value.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Improve output readability by indenting sub-commands.
+	-- _René Ferdinand Rivera Morell_
+* *New*: Add `lyra::arguments::require` to specify limits on how many successful
+	sub-parsers are required for parsing.
+	-- _René Ferdinand Rivera Morell_
+* Fix `operator|` loosing group subtype causing invalid parsing.
+	-- _René Ferdinand Rivera Morell_
+* Fix crash when no arguments are given to the parsing.
+	-- _René Ferdinand Rivera Morell_
+* Fix crash when changing settings of a command and adding subsequent arguments.
+	-- _René Ferdinand Rivera Morell_
+* Fix short option values being ignored in the case where the value separator
+	is past the short option and in the value itself.
+	-- _René Ferdinand Rivera Morell_
+* Fix choice limited args from erroring early.
+	-- _René Ferdinand Rivera Morell_
+* Refactored the way help is printed to allow individual parsers to customize
+	their output through the `printer` object.
+	-- _René Ferdinand Rivera Morell_
+* Fix zero-as-null pointer conversion warnings.
+	-- _Hermann von Kleist_
+* Fix some unclear error messages when parsing optional arguments.
+	-- _René Ferdinand Rivera Morell_
+* Fix parsing with mix of required and optional arguments.
+	-- _René Ferdinand Rivera Morell_
+* Fix passing move-only lambdas to `opt` and `arg` parsers.
+	-- _René Ferdinand Rivera Morell_
+* Fix incorrect interpretation of single character literal strings to the
+	`choice(..)` function.
+	-- _René Ferdinand Rivera Morell_
+* Fix ignored short circuit error results returned from user callbacks. This
+	now, correctly, allows for custom error messages from user callbacks when
+	parsing or checking arguments.
+	-- _René Ferdinand Rivera Morell_
+* Tested with
+		Visual Studio 2022,
+		MinGW-64 (gcc 8.1.0),
+		Linux (
+			clang 3.9, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+				20, 21;
+			gcc 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16),
+		Xcode (
+			14.3.1, 15.4, 16.4),
+		on Azure Pipelines;
+	and with
+		VS 2015, VS 2017, VS 2019, VS 2022,
+		MinGW-64 (gcc 6.3, 7.3, 8.1)
+		on AppVeyor.
 
 === 1.6.1
 

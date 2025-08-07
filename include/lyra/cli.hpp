@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -7,15 +7,25 @@
 #ifndef LYRA_CLI_HPP
 #define LYRA_CLI_HPP
 
+#include "lyra/args.hpp"
 #include "lyra/arguments.hpp"
 #include "lyra/detail/deprecated_parser_customization.hpp"
 #include "lyra/detail/from_string.hpp"
 #include "lyra/detail/print.hpp"
+#include "lyra/detail/tokens.hpp"
+#include "lyra/detail/trait_utils.hpp"
 #include "lyra/exe_name.hpp"
 #include "lyra/group.hpp"
 #include "lyra/option_style.hpp"
+#include "lyra/parser.hpp"
+#include "lyra/parser_result.hpp"
 
+#include <cstddef>
+#include <memory>
+#include <string>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace lyra {
 
@@ -97,7 +107,7 @@ class cli : protected arguments
 			std::vector<T> converted_value;
 			if (parser_ref)
 			{
-				for (size_t i = 0; i < parser_ref->get_value_count(); ++i)
+				for (std::size_t i = 0; i < parser_ref->get_value_count(); ++i)
 				{
 					T v;
 					if (detail::from_string(parser_ref->get_value(i), v))
@@ -119,14 +129,15 @@ class cli : protected arguments
 
 	value_result operator[](const std::string & n);
 
+	// Style control.
 	cli & style(const option_style & style);
 	cli & style(option_style && style);
+	cli & style_print_short_first();
+	cli & style_print_long_first();
 
 	// Stream out generates the help output.
-	friend std::ostream & operator<<(std::ostream & os, cli const & parser)
-	{
-		return os << static_cast<const arguments &>(parser);
-	}
+	template <typename T>
+	friend T & operator<<(T & os, cli const & c);
 
 	// Parse from arguments.
 	parse_result parse(args const & args) const
@@ -138,14 +149,15 @@ class cli : protected arguments
 	}
 	parse_result parse(args const & args, const option_style & style) const;
 
-	// Backward compatability parse() that takes `parser_customization` and
-	// converts to `option_style`.
-	[[deprecated]] parse_result parse(
-		args const & args, const parser_customization & customize) const
+	// Parsing mode.
+	cli & sequential() { return arguments::sequential(), *this; }
+	cli & inclusive() { return arguments::inclusive(), *this; }
+	cli & relaxed() { return arguments::relaxed(), *this; }
+
+	// Limits..
+	cli & require(std::size_t n, std::size_t m = 0)
 	{
-		return this->parse(args,
-			option_style(customize.token_delimiters(),
-				customize.option_prefix(), 2, customize.option_prefix(), 1));
+		return arguments::require(n, m), *this;
 	}
 
 	// Internal..
@@ -153,7 +165,7 @@ class cli : protected arguments
 	using arguments::parse;
 	using arguments::get_named;
 
-	virtual std::unique_ptr<parser> clone() const override
+	std::unique_ptr<parser> clone() const override
 	{
 		return std::unique_ptr<parser>(new cli(*this));
 	}
@@ -161,8 +173,7 @@ class cli : protected arguments
 	protected:
 	mutable exe_name m_exeName;
 
-	virtual std::string get_usage_text(
-		const option_style & style) const override
+	std::string get_usage_text(const option_style & style) const override
 	{
 		if (!m_exeName.name().empty())
 			return m_exeName.name() + " " + arguments::get_usage_text(style);
@@ -335,7 +346,8 @@ inline parse_result cli::parse(
 	parse_result p_result = parse(args_tokens, style);
 	if (p_result
 		&& (p_result.value().type() == parser_result_type::no_match
-			|| p_result.value().type() == parser_result_type::matched))
+			|| p_result.value().type() == parser_result_type::matched
+			|| p_result.value().type() == parser_result_type::empty_match))
 	{
 		if (p_result.value().have_tokens())
 		{
@@ -369,6 +381,65 @@ inline cli & cli::style(option_style && style)
 {
 	opt_style = std::make_shared<option_style>(std::move(style));
 	return *this;
+}
+
+/* tag::reference[]
+[#lyra_cli_style_print_short_first]
+=== `lyra::cli::style_print_short_first`
+
+[source]
+----
+lyra::cli & lyra::cli::style_print_short_first()
+----
+
+Specifies print options sorted with short options appearing first.
+
+end::reference[] */
+inline cli & cli::style_print_short_first()
+{
+	ref_option_style().options_print_order
+		= option_style::opt_print_order::sorted_short_first;
+	return *this;
+}
+
+/* tag::reference[]
+[#lyra_cli_style_print_long_first]
+=== `lyra::cli::style_print_long_first`
+
+[source]
+----
+lyra::cli & lyra::cli::style_print_long_first()
+----
+
+Specifies print options sorted with long options appearing first.
+
+end::reference[] */
+inline cli & cli::style_print_long_first()
+{
+	ref_option_style().options_print_order
+		= option_style::opt_print_order::sorted_long_first;
+	return *this;
+}
+
+/* tag::reference[]
+=== `lyra::operator<<`
+
+[source]
+----
+template <typename T>
+T & operator<<(T & os, cli const & c);
+----
+
+Prints the help text for the cli to the given stream `os`. The `os` stream
+is not used directly for printing out. Instead a <<lyra_printer>> object is
+created by calling `lyra::make_printer(os)`. This indirection allows one to
+customize how the output is generated.
+
+end::reference[] */
+template <typename T>
+T & operator<<(T & os, cli const & c)
+{
+	return c.print_help(os);
 }
 
 } // namespace lyra

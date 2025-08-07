@@ -1,4 +1,4 @@
-// Copyright 2018-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 // Copyright 2017 Two Blue Cubes Ltd. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -9,8 +9,12 @@
 
 #include "lyra/detail/bound.hpp"
 #include "lyra/detail/tokens.hpp"
+#include "lyra/option_style.hpp"
 #include "lyra/parser.hpp"
 #include "lyra/parser_result.hpp"
+
+#include <memory>
+#include <string>
 
 namespace lyra {
 
@@ -41,16 +45,22 @@ class exe_name : public composable_parser<exe_name>
 
 	// The exe name is not parsed out of the normal tokens, but is handled
 	// specially
-	virtual parse_result parse(detail::token_iterator const & tokens,
+	parse_result parse(detail::token_iterator const & tokens,
 		const option_style &) const override
 	{
 		return parse_result::ok(
 			detail::parse_state(parser_result_type::no_match, tokens));
 	}
 
-	virtual std::unique_ptr<parser> clone() const override
+	std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<exe_name>(this);
+	}
+
+	protected:
+	std::string get_print_order_key(const option_style &) const override
+	{
+		return m_name ? *m_name : "";
 	}
 
 	private:

@@ -1,4 +1,4 @@
-// Copyright 2020-2022 René Ferdinand Rivera Morell
+// Copyright René Ferdinand Rivera Morell
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -6,7 +6,12 @@
 #ifndef LYRA_LITERAL_HPP
 #define LYRA_LITERAL_HPP
 
+#include "lyra/detail/tokens.hpp"
+#include "lyra/option_style.hpp"
 #include "lyra/parser.hpp"
+#include "lyra/parser_result.hpp"
+
+#include <memory>
 #include <string>
 
 namespace lyra {
@@ -32,32 +37,23 @@ class literal : public parser
 	literal & operator()(std::string const & help_description_text);
 
 	// Singular argument allowed and required.
-	virtual detail::parser_cardinality cardinality() const override
-	{
-		return { 1, 1 };
-	}
+	detail::parser_cardinality cardinality() const override { return { 1, 1 }; }
 
 	// Internal.
 
-	virtual std::string get_usage_text(const option_style &) const override
+	std::string get_usage_text(const option_style &) const override
 	{
 		return name;
 	}
 
-	virtual std::string get_description_text(
-		const option_style &) const override
+	std::string get_description_text(const option_style &) const override
 	{
 		return description;
 	}
 
-	virtual help_text get_help_text(const option_style &) const override
-	{
-		return { { name, description } };
-	}
-
 	using parser::parse;
 
-	virtual parse_result parse(detail::token_iterator const & tokens,
+	parse_result parse(detail::token_iterator const & tokens,
 		const option_style &) const override
 	{
 		auto validationResult = validate();
@@ -78,7 +74,7 @@ class literal : public parser
 		}
 	}
 
-	virtual std::unique_ptr<parser> clone() const override
+	std::unique_ptr<parser> clone() const override
 	{
 		return make_clone<literal>(this);
 	}
@@ -86,6 +82,17 @@ class literal : public parser
 	protected:
 	std::string name;
 	std::string description;
+
+	std::string get_print_order_key(const option_style &) const override
+	{
+		return name;
+	}
+
+	void print_help_text_details(
+		printer & p, const option_style & style) const override
+	{
+		p.option(style, name, description);
+	}
 };
 
 /* tag::reference[]

@@ -1,4 +1,4 @@
-# Copyright 2019 René Ferdinand Rivera Morell
+# Copyright René Ferdinand Rivera Morell
 # Copyright 2020 Jayesh Vinay Badwaik
 # Distributed under the Boost Software License, Version 1.0.
 # See accompanying file LICENSE.txt or copy at
@@ -20,7 +20,7 @@
 
 # Only need the basic minimum of project, add_library, and
 # target_include_directories commands.
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.5 )
 
 # Don't set VERSION, as that's a pita to keep up to date with the version
 # header. And don't set LANGUAGES as we are multi-language and header
