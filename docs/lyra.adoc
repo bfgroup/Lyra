@@ -280,6 +280,16 @@ include::../include/lyra/val.hpp[tag=reference]
 
 === 1.7
 
+It's been a rather long time since a release. But hopefully releases will be
+more frequent from now on because.. Instead of waiting for a "large enough"
+accumulation of changes in a release the plan going forward is to have at least
+one release a year.
+
+In this release there are a variety of bug fixes and adjustments. Although most
+are small they do add up to a good chunk of new stability. There are also some
+enhancements as requested that make for more flexibility in output and parsing
+modes.
+
 Changes:
 
 * *New*: Make printing help text configurable to make it possible to avoid using
