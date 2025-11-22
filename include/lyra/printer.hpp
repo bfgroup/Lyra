@@ -120,7 +120,7 @@ class ostream_printer : public printer
 		const option_style & style, const std::string & txt) override
 	{
 		const std::string indent_str(
-			get_indent_level() * style.indent_size, ' ');
+			static_cast<unsigned int>(get_indent_level()) * style.indent_size, ' ');
 		os << indent_str << txt << "\n\n";
 		return *this;
 	}
@@ -129,9 +129,9 @@ class ostream_printer : public printer
 		const std::string & description) override
 	{
 		const std::string indent_str(
-			get_indent_level() * style.indent_size, ' ');
+			static_cast<unsigned int>(get_indent_level()) * style.indent_size, ' ');
 		const std::string opt_pad(
-			26 - get_indent_level() * style.indent_size - 1, ' ');
+			26 - static_cast<unsigned int>(get_indent_level()) * style.indent_size - 1, ' ');
 		if (opt.size() > opt_pad.size())
 			os << indent_str << opt << "\n"
 			   << indent_str << opt_pad << " " << description << "\n";
