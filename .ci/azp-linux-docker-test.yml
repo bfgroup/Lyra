@@ -14,9 +14,10 @@ steps:
     id
     sudo apt-get -o Acquire::Retries=3 -yq --no-install-suggests --no-install-recommends install unzip wget
     cd ${HOME}
-    wget https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3-linux-x86_64.tar.gz -O cmake.tgz
+    CMAKE_URL=`curl -s https://api.github.com/repos/Kitware/cmake/releases/latest | grep browser_download_url | grep "linux-x86_64[.]tar[.]gz" | cut -d '"' -f 4`
+    wget "${CMAKE_URL}" -O cmake.tgz
     tar zxvf cmake.tgz
-    mv cmake-3.24.3-linux-x86_64 cmake
+    mv cmake-*-linux-x86_64 cmake
   displayName: Install Deps
 - bash: |
     set -e
