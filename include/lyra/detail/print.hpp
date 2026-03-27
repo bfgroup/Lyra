@@ -6,15 +6,15 @@
 #ifndef LYRA_DETAIL_PRINT_HPP
 #define LYRA_DETAIL_PRINT_HPP
 
+#ifndef LYRA_DEBUG
+#	define LYRA_DEBUG 0
+#endif
+
 #if LYRA_DEBUG
 #	include <iostream>
 #endif
 
 #include <string>
-
-#ifndef LYRA_DEBUG
-#	define LYRA_DEBUG 0
-#endif
 
 namespace lyra { namespace detail {
 
