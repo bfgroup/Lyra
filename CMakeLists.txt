@@ -20,7 +20,7 @@
 
 # Only need the basic minimum of project, add_library, and
 # target_include_directories commands.
-cmake_minimum_required( VERSION 3.5...4.2.3 )
+cmake_minimum_required( VERSION 3.5...4.3.1 )
 
 # Don't set VERSION, as that's a pita to keep up to date with the version
 # header. And don't set LANGUAGES as we are multi-language and header
