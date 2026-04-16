@@ -1051,6 +1051,10 @@ inline const option_style & option_style::windows()
 #include <string>
 #include <vector>
 
+#ifndef LYRA_USE_BASIC_TOKEN
+#define LYRA_USE_BASIC_TOKEN false
+#endif
+
 namespace lyra { namespace detail {
 
 enum class token_type
@@ -1060,6 +1064,7 @@ enum class token_type
 	argument
 };
 
+#if LYRA_USE_BASIC_TOKEN
 template <typename Char, class Traits = std::char_traits<Char>>
 class basic_token_name
 {
@@ -1129,7 +1134,13 @@ class basic_token_name
 	size_type len;
 };
 
+using token_name = basic_token_name<std::string::value_type>;
+
+#else
+
 using token_name = std::string;
+
+#endif
 
 struct token
 {
