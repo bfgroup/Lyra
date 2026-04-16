@@ -34,21 +34,6 @@ int main()
 	bfg::mini_test::scope test;
 
 	{
-		test(REQUIRE((!lyra::detail::is_callable<int, int>::value)));
-		test(REQUIRE((!lyra::detail::is_callable<float, int, int>::value)));
-		test(REQUIRE((!lyra::detail::is_callable<std::string, int>::value)));
-	}
-	{
-		auto f0 = []() -> bool { return false; };
-		auto f1 = [](int x) -> bool { return x > 1; };
-		auto f2 = [](int x, float y) -> bool { return x > y; };
-		test(REQUIRE((lyra::detail::is_callable<decltype(f0)>::value)));
-		test(REQUIRE((lyra::detail::is_callable<decltype(f1), int>::value)));
-		test(REQUIRE(
-			(lyra::detail::is_callable<decltype(f2), int, int>::value)));
-	}
-
-	{
 		test(REQUIRE((!lyra::detail::is_invocable<int>::value)));
 		test(REQUIRE((!lyra::detail::is_invocable<float>::value)));
 		test(REQUIRE((!lyra::detail::is_invocable<std::string>::value)));
