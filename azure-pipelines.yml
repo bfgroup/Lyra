@@ -96,9 +96,9 @@ stages:
   - job: 'Xcode'
     strategy:
       matrix:
-        Xcode 16.4 Warn-All: {
-          CXX: clang++, VM_IMAGE: 'macOS-15', XCODE_VERSION: "16.4",
-          TOOLSET: clang, CXXSTD: "11,14,17,20", B2_ARGS: "warnings=pedantic warnings-as-errors=on" }
+        Xcode 26.3 Warn-All: {
+          CXX: clang++, VM_IMAGE: 'macOS-15', XCODE_VERSION: "26.3",
+          TOOLSET: clang, CXXSTD: "11,14,17,20,23", B2_ARGS: "warnings=pedantic warnings-as-errors=on" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
@@ -107,10 +107,10 @@ stages:
   - job: 'Visual_Studio'
     strategy:
       matrix:
-        VS 2022 Warn-All: {
-          VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe,
-          PLATFORM: x64, VM_IMAGE: 'windows-2025', TOOLSET: msvc, TOOLSET_VERSION: '14.3',
-          CXXSTD: "14,17,20,latest",
+        VS 2026 Warn-All: {
+          VSWHERE_VERSION: '[18.0,19.0)', CXX: cl.exe,
+          PLATFORM: x64, VM_IMAGE: 'windows-2025-vs2026', TOOLSET: msvc, TOOLSET_VERSION: '14.5',
+          CXXSTD: "14,17,20,23,latest",
           B2_ARGS: "warnings=extra warnings-as-errors=on" }
     pool:
       vmImage: $(VM_IMAGE)
@@ -188,9 +188,6 @@ stages:
           TOOLSET: clang, CXXSTD: "11,14,17,20" }
         Xcode 15.4: {
           CXX: clang++, VM_IMAGE: 'macOS-14', XCODE_VERSION: "15.4",
-          TOOLSET: clang, CXXSTD: "11,14,17,20" }
-        Xcode 14.3.1: {
-          CXX: clang++, VM_IMAGE: 'macOS-13', XCODE_VERSION: "14.3.1",
           TOOLSET: clang, CXXSTD: "11,14,17,20" }
     pool:
       vmImage: $(VM_IMAGE)
