@@ -58,7 +58,7 @@ struct parser_cardinality
 	parser_cardinality(std::size_t a, std::size_t b)
 		: minimum(a)
 		, maximum(b)
-	{}
+	{ }
 
 	// If zero or more are accepted, it's optional.
 	bool is_optional() const { return (minimum == 0); }
@@ -132,7 +132,7 @@ class parse_result : public detail::basic_result<detail::parse_state>
 
 	parse_result(const base & other)
 		: base(other)
-	{}
+	{ }
 };
 
 /* tag::reference[]
@@ -179,9 +179,8 @@ class parser
 		return "";
 	}
 
-	virtual parse_result parse(
-		detail::token_iterator const & tokens, const option_style & style) const
-		= 0;
+	virtual parse_result parse(detail::token_iterator const & tokens,
+		const option_style & style) const = 0;
 
 	virtual std::string get_print_order_key(const option_style &) const
 	{
@@ -189,7 +188,7 @@ class parser
 	}
 
 	virtual void print_help_text_details(printer &, const option_style &) const
-	{}
+	{ }
 
 	protected:
 	virtual void print_help_text(printer & p, const option_style & style) const
@@ -287,7 +286,7 @@ two `composable_parser` instances generates a `cli` parser.
 end::reference[] */
 template <typename Derived>
 class composable_parser : public parser
-{};
+{ };
 
 // Common code and state for args and Opts
 /* tag::reference[]
@@ -339,31 +338,28 @@ class bound_parser : public composable_parser<Derived>
 	bound_parser(Reference & ref,
 		std::string const & hint,
 		typename std::enable_if<!detail::is_invocable<Reference>::value,
-			detail::ctor_ref_e>::type
-		= detail::ctor_ref_e::val);
+			detail::ctor_ref_e>::type = detail::ctor_ref_e::val);
 
 	template <typename Lambda>
 	bound_parser(Lambda const & ref,
 		std::string const & hint,
 		typename std::enable_if<detail::is_invocable<Lambda>::value,
-			detail::ctor_lambda_e>::type
-		= detail::ctor_lambda_e::val);
+			detail::ctor_lambda_e>::type = detail::ctor_lambda_e::val);
 
 	template <typename Lambda>
 	bound_parser(Lambda && ref,
 		std::string const & hint,
 		typename std::enable_if<detail::is_invocable<Lambda>::value,
-			detail::ctor_lambda_e>::type
-		= detail::ctor_lambda_e::val);
+			detail::ctor_lambda_e>::type = detail::ctor_lambda_e::val);
 
 	template <typename T>
 	explicit bound_parser(detail::BoundVal<T> && val)
 		: bound_parser(val.move_to_shared())
-	{}
+	{ }
 	template <typename T>
 	bound_parser(detail::BoundVal<T> && val, std::string const & hint)
 		: bound_parser(val.move_to_shared(), hint)
-	{}
+	{ }
 
 	Derived & help(const std::string & text);
 	Derived & operator()(std::string const & description);
@@ -448,7 +444,7 @@ bound_parser<Derived>::bound_parser(Reference & ref,
 		detail::ctor_ref_e>::type)
 	: bound_parser(
 		  std::make_shared<detail::BoundValueRef<Reference>>(ref), hint)
-{}
+{ }
 
 template <typename Derived>
 template <typename Lambda>
@@ -461,7 +457,7 @@ bound_parser<Derived>::bound_parser(Lambda const & ref,
 			  detail::BoundLambda<typename detail::remove_cvref<Lambda>::type>>(
 			  ref),
 		  hint)
-{}
+{ }
 
 template <typename Derived>
 template <typename Lambda>
@@ -474,7 +470,7 @@ bound_parser<Derived>::bound_parser(Lambda && ref,
 			  detail::BoundLambda<typename detail::remove_cvref<Lambda>::type>>(
 			  std::move(ref)),
 		  hint)
-{}
+{ }
 
 /* tag::reference[]
 
@@ -610,7 +606,7 @@ lyra::opt& lyra::bound_parser<Derived>::choices(Lambda const &check_choice)
 ----
 
 Limit the allowed values of an argument. In the first form the value is
-limited to the ones listed in the call (two or more values). In the second
+limited to the ones listed in the call (one or more values). In the second
 form the `check_choice` function is called with the parsed value and returns
 `true` if it's an allowed value.
 
