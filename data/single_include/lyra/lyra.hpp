@@ -5058,7 +5058,7 @@ main & main::operator()(
 	{
 		arg a(std::move(bound_val), *arg_names.begin());
 		a.optional();
-		if (arg_names.size() > 2) a.help(*(arg_names.begin() + 1));
+		if (arg_names.size() > 1) a.help(*(arg_names.begin() + 1));
 		cli::add_argument(a);
 	}
 	return *this;
