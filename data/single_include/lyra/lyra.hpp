@@ -1052,7 +1052,7 @@ inline const option_style & option_style::windows()
 #include <vector>
 
 #ifndef LYRA_USE_BASIC_TOKEN
-#define LYRA_USE_BASIC_TOKEN false
+#	define LYRA_USE_BASIC_TOKEN false
 #endif
 
 namespace lyra { namespace detail {
@@ -1086,19 +1086,19 @@ class basic_token_name
 	basic_token_name() noexcept
 		: str { nullptr }
 		, len { 0 }
-	{}
+	{ }
 
 	basic_token_name(const basic_token_name &) noexcept = default;
 
 	basic_token_name(const_pointer s) noexcept
 		: str { s }
 		, len { traits_type::length(s) }
-	{}
+	{ }
 
 	basic_token_name(const_pointer s, size_type count) noexcept
 		: str { s }
 		, len { count }
-	{}
+	{ }
 
 	basic_token_name & operator=(const basic_token_name &) noexcept = default;
 
@@ -1149,12 +1149,12 @@ struct token
 
 	token()
 		: type(token_type::unknown)
-	{}
+	{ }
 	token(const token & other) = default;
 	token(token_type t, const token_name & n)
 		: type(t)
 		, name(n)
-	{}
+	{ }
 
 	explicit operator bool() const { return type != token_type::unknown; }
 };
@@ -1168,7 +1168,7 @@ class token_iterator
 		, args_i(args.begin())
 		, args_e(args.end())
 		, args_i_sub(opt_style.short_option_size)
-	{}
+	{ }
 
 	explicit operator bool() const noexcept { return args_i != args_e; }
 
@@ -1253,7 +1253,8 @@ class token_iterator
 		if (has_short_option_prefix()
 			&& (args_i->find_first_of(style.value_delimiters)
 				== (style.short_option_size + 1)))
-			return token(token_type::argument, args_i->substr(3));
+			return token(token_type::argument,
+				args_i->substr(style.short_option_size + 2));
 		else if (has_long_option_prefix() && has_value_delimiter())
 			return token(token_type::argument,
 				args_i->substr(
