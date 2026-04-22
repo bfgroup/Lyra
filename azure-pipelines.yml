@@ -34,7 +34,7 @@ schedules:
 
 variables:
 - { name: co_options, value: '--name container' }
-- { name: all_warnings_gcc, value: 'warnings=pedantic warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wnon-virtual-dtor cxxflags=-Wzero-as-null-pointer-constant cxxflags=-Wsign-promo' }
+- { name: all_warnings_gcc, value: 'warnings=pedantic warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wnon-virtual-dtor cxxflags=-Wzero-as-null-pointer-constant cxxflags=-Wsign-promo cxxflags=-Wsign-compare cxxflags=-Wsign-conversion' }
 - { name: all_warnings_msvc, value: 'warnings=extra warnings-as-errors=on' }
 
 resources:
