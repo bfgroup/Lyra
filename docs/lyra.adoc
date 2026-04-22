@@ -278,6 +278,19 @@ include::../include/lyra/val.hpp[tag=reference]
 
 == History
 
+=== 1.8
+
+Changes:
+
+* Fix cmake version for deprecation of 3.5.
+	-- _Tomáš Slanina_
+* Remove some unused code in type traits compatibility code.
+	-- _Paolo Pastori_
+* Fix short option not using the option style for extracting value.
+	-- _Paolo Pastori_
+* Fix spec of help for arguments in main style help API.
+	-- _Paolo Pastori_
+
 === 1.7
 
 It's been a rather long time since a release. But hopefully releases will be
