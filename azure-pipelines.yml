@@ -34,6 +34,8 @@ schedules:
 
 variables:
 - { name: co_options, value: '--name container' }
+- { name: all_warnings_gcc, value: 'warnings=pedantic warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wnon-virtual-dtor cxxflags=-Wzero-as-null-pointer-constant cxxflags=-Wsign-promo' }
+- { name: all_warnings_msvc, value: 'warnings=extra warnings-as-errors=on' }
 
 resources:
   containers:
@@ -83,11 +85,11 @@ stages:
         GCC 16 Warn-All: {
           CXX: g++-16, CONTAINER: linux_gcc16,
           TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: 'warnings=pedantic warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wnon-virtual-dtor cxxflags=-Wzero-as-null-pointer-constant' }
+          B2_ARGS: "${{variables.all_warnings_gcc}}" }
         Clang 21 Warn-All: {
           CXX: clang++-21, CONTAINER: linux_clang21,
           TOOLSET: clang, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: "warnings=pedantic warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wnon-virtual-dtor cxxflags=-Wzero-as-null-pointer-constant" }
+          B2_ARGS: "${{variables.all_warnings_gcc}}" }
     pool: { vmImage: 'ubuntu-latest' }
     container: $[ variables['CONTAINER'] ]
     steps:
@@ -98,7 +100,9 @@ stages:
       matrix:
         Xcode 26.3 Warn-All: {
           CXX: clang++, VM_IMAGE: 'macOS-15', XCODE_VERSION: "26.3",
-          TOOLSET: clang, CXXSTD: "11,14,17,20,23", B2_ARGS: "warnings=pedantic warnings-as-errors=on" }
+          TOOLSET: clang,
+          CXXSTD: "11,14,17,20,23",
+          B2_ARGS: "${{variables.all_warnings_gcc}}" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
@@ -111,7 +115,7 @@ stages:
           VSWHERE_VERSION: '[18.0,19.0)', CXX: cl.exe,
           PLATFORM: x64, VM_IMAGE: 'windows-2025-vs2026', TOOLSET: msvc, TOOLSET_VERSION: '14.5',
           CXXSTD: "14,17,20,23,latest",
-          B2_ARGS: "warnings=extra warnings-as-errors=on" }
+          B2_ARGS: "${{variables.all_warnings_msvc}}" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
