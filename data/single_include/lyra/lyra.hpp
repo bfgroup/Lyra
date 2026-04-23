@@ -1573,7 +1573,7 @@ class ostream_printer : public printer
 		const option_style & style, const std::string & txt) override
 	{
 		const std::string indent_str(
-			get_indent_level() * style.indent_size, ' ');
+			static_cast<unsigned int>(get_indent_level()) * style.indent_size, ' ');
 		os << indent_str << txt << "\n\n";
 		return *this;
 	}
@@ -1582,9 +1582,9 @@ class ostream_printer : public printer
 		const std::string & description) override
 	{
 		const std::string indent_str(
-			get_indent_level() * style.indent_size, ' ');
+			static_cast<unsigned int>(get_indent_level()) * style.indent_size, ' ');
 		const std::string opt_pad(
-			26 - get_indent_level() * style.indent_size - 1, ' ');
+			26 - static_cast<unsigned int>(get_indent_level()) * style.indent_size - 1, ' ');
 		if (opt.size() > opt_pad.size())
 			os << indent_str << opt << "\n"
 			   << indent_str << opt_pad << " " << description << "\n";
@@ -1809,17 +1809,17 @@ class parser
 		if (style.options_print_order
 			!= option_style::opt_print_order::per_declaration)
 		{
-			std::vector<std::size_t> order_index(std::distance(b, e));
+			std::vector<std::size_t> order_index( static_cast<std::size_t>(std::distance(b, e)) );
 			std::iota(order_index.begin(), order_index.end(), 0);
 			std::stable_sort(order_index.begin(), order_index.end(),
 				[&](std::size_t i, std::size_t j) {
-					const parser & pa = **(b + i);
-					const parser & pb = **(b + j);
+					const parser & pa = **(b + static_cast<std::ptrdiff_t>(i));
+					const parser & pb = **(b + static_cast<std::ptrdiff_t>(j));
 					return style.opt_print_order_less(
 						pa.get_print_order_key(style),
 						pb.get_print_order_key(style));
 				});
-			for (auto i : order_index) f(style, **(b + i));
+			for (auto i : order_index) f(style, **(b + static_cast<std::ptrdiff_t>(i)));
 		}
 		else
 		{
