@@ -17,14 +17,13 @@ struct scope
 {
 	unsigned pass_count = 0;
 	unsigned fail_count = 0;
-	operator int() const { return fail_count; }
+	operator int() const { return static_cast<int>(fail_count); }
 	scope & operator()(
 		bool pass, const std::string & expression, char const * file, int line)
 	{
 		return (*this)("", pass, expression, file, line);
 	}
-	scope & operator()(
-		const std::string & message,
+	scope & operator()(const std::string & message,
 		bool pass,
 		const std::string & expression,
 		char const * file,
