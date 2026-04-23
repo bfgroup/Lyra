@@ -221,17 +221,17 @@ class parser
 		if (style.options_print_order
 			!= option_style::opt_print_order::per_declaration)
 		{
-			std::vector<std::size_t> order_index(std::distance(b, e));
+			std::vector<std::size_t> order_index( static_cast<std::size_t>(std::distance(b, e)) );
 			std::iota(order_index.begin(), order_index.end(), 0);
 			std::stable_sort(order_index.begin(), order_index.end(),
 				[&](std::size_t i, std::size_t j) {
-					const parser & pa = **(b + i);
-					const parser & pb = **(b + j);
+					const parser & pa = **(b + static_cast<std::ptrdiff_t>(i));
+					const parser & pb = **(b + static_cast<std::ptrdiff_t>(j));
 					return style.opt_print_order_less(
 						pa.get_print_order_key(style),
 						pb.get_print_order_key(style));
 				});
-			for (auto i : order_index) f(style, **(b + i));
+			for (auto i : order_index) f(style, **(b + static_cast<std::ptrdiff_t>(i)));
 		}
 		else
 		{
