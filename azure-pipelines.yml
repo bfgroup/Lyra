@@ -34,8 +34,6 @@ schedules:
 
 variables:
 - { name: co_options, value: '--name container' }
-- { name: all_warnings_gcc, value: 'warnings=pedantic warnings-as-errors=on cxxflags=-Woverloaded-virtual cxxflags=-Wshadow cxxflags=-Wnon-virtual-dtor cxxflags=-Wzero-as-null-pointer-constant cxxflags=-Wsign-promo cxxflags=-Wsign-compare cxxflags=-Wsign-conversion cxxflags=-Wundef' }
-- { name: all_warnings_msvc, value: 'warnings=extra warnings-as-errors=on' }
 
 resources:
   containers:
@@ -85,11 +83,11 @@ stages:
         GCC 16 Warn-All: {
           CXX: g++-16, CONTAINER: linux_gcc16,
           TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: "${{variables.all_warnings_gcc}}" }
+          B2_ARGS: "pedantic" }
         Clang 21 Warn-All: {
           CXX: clang++-21, CONTAINER: linux_clang21,
           TOOLSET: clang, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: "${{variables.all_warnings_gcc}}" }
+          B2_ARGS: "variant=pedantic" }
     pool: { vmImage: 'ubuntu-latest' }
     container: $[ variables['CONTAINER'] ]
     steps:
@@ -102,7 +100,7 @@ stages:
           CXX: clang++, VM_IMAGE: 'macOS-15', XCODE_VERSION: "26.3",
           TOOLSET: clang,
           CXXSTD: "11,14,17,20,23",
-          B2_ARGS: "${{variables.all_warnings_gcc}}" }
+          B2_ARGS: "variant=pedantic" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
@@ -115,7 +113,7 @@ stages:
           VSWHERE_VERSION: '[18.0,19.0)', CXX: cl.exe,
           PLATFORM: x64, VM_IMAGE: 'windows-2025-vs2026', TOOLSET: msvc, TOOLSET_VERSION: '14.5',
           CXXSTD: "14,17,20,23,latest",
-          B2_ARGS: "${{variables.all_warnings_msvc}}" }
+          B2_ARGS: "variant=pedantic" }
     pool:
       vmImage: $(VM_IMAGE)
     steps:
@@ -131,11 +129,11 @@ stages:
         Address: {
           CXX: g++-16, CONTAINER: linux_gcc16,
           TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: 'address-sanitizer=on' }
+          B2_ARGS: 'address-sanitizer=on variant=debug' }
         Undefined: {
           CXX: g++-16, CONTAINER: linux_gcc16,
           TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: 'undefined-sanitizer=on' }
+          B2_ARGS: 'undefined-sanitizer=on variant=debug' }
     pool: { vmImage: 'ubuntu-latest' }
     container: $[ variables['CONTAINER'] ]
     steps:
@@ -181,6 +179,8 @@ stages:
         Clang 3.9: { CXX: clang++-3.9, CONTAINER: linux_clang3, TOOLSET: clang, CXXSTD: "11" }
     pool: { vmImage: 'ubuntu-latest' }
     container: $[ variables['CONTAINER'] ]
+    variables:
+      B2_ARGS: "variant=debug,release"
     steps:
     - template: .ci/azp-linux-docker-test.yml
 
@@ -195,6 +195,8 @@ stages:
           TOOLSET: clang, CXXSTD: "11,14,17,20" }
     pool:
       vmImage: $(VM_IMAGE)
+    variables:
+      B2_ARGS: "variant=debug,release"
     steps:
     - template: .ci/azp-xcode-test.yml
 
@@ -218,5 +220,7 @@ stages:
         MinGW 12.2.0: { MINGW_VERSION: '12.2.0', MINGW_RT: 'rt_v10-rev2', CXXSTD: "11,14,17,20" }
     pool:
       vmImage: 'windows-latest'
+    variables:
+      B2_ARGS: "variant=debug,release"
     steps:
     - template: .ci/azp-mingw-test.yml

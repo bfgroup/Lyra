@@ -3,23 +3,44 @@
 # (See accompanying file LICENSE.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
+import feature ;
 import testing ;
 
-variant pedantic : debug
-	:	<warnings>pedantic
-		<warnings-as-errors>on
-		<cxxflags>-Woverloaded-virtual
-		<cxxflags>-Wshadow
-		<cxxflags>-Wnon-virtual-dtor
-		<cxxflags>-Wzero-as-null-pointer-constant
-	;
+variant pedantic : debug ;
 
 project /bfg_lyra_tests
 	: requirements
 		<toolset>clang:<cxxflags>-fcolor-diagnostics
 		<include>../examples
 		<variant>debug:<define>LYRA_DEBUG=1
+		<conditional>@pedantic
+	: default-build
+		<variant>pedantic
 	;
+
+rule pedantic ( p * )
+{
+	local r ;
+	local t = [ feature.get-values <toolset> : $(p) ] ;
+	if ( <variant>pedantic in $(p) ) && ( $(t) in gcc clang )
+	{
+		r +=
+			<cxxflags>-Woverloaded-virtual
+			<cxxflags>-Wshadow
+			<cxxflags>-Wnon-virtual-dtor
+			<cxxflags>-Wzero-as-null-pointer-constant
+			<cxxflags>-Wsign-promo
+			<cxxflags>-Wsign-compare
+			<cxxflags>-Wsign-conversion
+			<cxxflags>-Wundef
+			;
+	}
+	r +=
+		<warnings>pedantic
+		<warnings-as-errors>on
+		;
+	return $(r) ;
+}
 
 for local test in [ glob *_compile_test.cpp ]
 {
