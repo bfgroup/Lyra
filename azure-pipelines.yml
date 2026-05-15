@@ -36,7 +36,7 @@ stages:
   - template: ".ci/azp.yml"
     parameters:
       name: Core
-      dependsOn: []
+      depends_on: []
       toolsets:
         - "gcc-16"
         - "clang-23"
@@ -50,7 +50,7 @@ stages:
   - template: ".ci/azp.yml"
     parameters:
       name: Sanitize
-      dependsOn: []
+      depends_on: []
       toolsets:
         - "gcc-16"
       b2_tests:
