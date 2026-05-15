@@ -449,10 +449,11 @@ stages:
               - bash: |
                   set -e
                   SOURCE=$PWD
+                  rm -rf "../${{ cmake_test.dir }}_build"
                   mkdir -p "../${{ cmake_test.dir }}_build"
-                  mkdir -p "../${{ cmake_test.dir }}_run"
+                  mkdir -p "../${{ cmake_test.dir }}_install"
                   pushd "../${{ cmake_test.dir }}_build"
-                  ${HOME}/cmake/bin/cmake $SOURCE/${{ cmake_test.cml_dir }} ${{ cmake_test.args }} -DCMAKE_INSTALL_PREFIX=$SOURCE/../${{ cmake_test.dir }}_run -DCMAKE_PREFIX_PATH=$SOURCE/../${{ cmake_test.dir }}_run
+                  ${HOME}/cmake/bin/cmake $SOURCE/${{ cmake_test.cml_dir }} ${{ cmake_test.args }} -DCMAKE_INSTALL_PREFIX=$SOURCE/../${{ cmake_test.dir }}_install -DCMAKE_PREFIX_PATH=$SOURCE/../${{ cmake_test.dir }}_install
                   make ${{ cmake_test.make_args }}
                   ${HOME}/cmake/bin/ctest
                   popd
