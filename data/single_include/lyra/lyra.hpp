@@ -95,15 +95,17 @@ struct is_character
 #include <type_traits>
 
 #ifndef LYRA_CONFIG_OPTIONAL_TYPE
-#	if defined(__has_include) && __has_include(<version>)
-#		include <version>
-#	elif defined(__has_include) && __has_include(<ciso646>)
-#		include <ciso646>
-#	endif
-#	if defined(__has_include) && __has_include(<optional>) \
+#	if defined(__has_include)
+#		if __has_include(<version>)
+#			include <version>
+#		elif __has_include(<ciso646>)
+#			include <ciso646>
+#		endif
+#		if __has_include(<optional>) \
 		&& defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
-#		include <optional>
-#		define LYRA_CONFIG_OPTIONAL_TYPE std::optional
+#			include <optional>
+#			define LYRA_CONFIG_OPTIONAL_TYPE std::optional
+#		endif
 #	endif
 #endif
 
@@ -151,13 +153,13 @@ inline bool to_string(
 
 template <typename, typename = void>
 struct is_convertible_from_string : std::false_type
-{};
+{ };
 
 template <typename T>
 struct is_convertible_from_string<T,
 	typename std::enable_if<std::is_arithmetic<T>::value>::type>
 	: std::true_type
-{};
+{ };
 
 template <typename, typename = void>
 struct validate_from_string
@@ -194,7 +196,7 @@ inline bool from_string(S const & source, T & target)
 	std::stringstream ss;
 	ss << source;
 	if (!validate_from_string<T>::validate(ss.str())) return false;
-	T temp {};
+	T temp { };
 	ss >> temp;
 	if (!ss.fail() && ss.eof())
 	{
@@ -215,7 +217,7 @@ template <typename T>
 struct is_convertible_from_string<T,
 	typename std::enable_if<std::is_same<T, bool>::value>::type>
 	: std::true_type
-{};
+{ };
 
 template <typename S>
 inline bool from_string(S const & source, bool & target)
@@ -241,7 +243,7 @@ struct is_convertible_from_string<T,
 	typename std::enable_if<
 		is_specialization_of<T, LYRA_CONFIG_OPTIONAL_TYPE>::value>::type>
 	: std::true_type
-{};
+{ };
 
 template <typename S, typename T>
 inline bool from_string(S const & source, LYRA_CONFIG_OPTIONAL_TYPE<T> & target)
