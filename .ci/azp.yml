@@ -425,7 +425,7 @@ stages:
               echo "using ${TOOLSET%%-[0-9]*} : : ${EXE_PATH} : ${B2_CONFIG} ;" > ${HOME}/user-config.jam
               popd
             displayName: "Install B2"
-            condition: gt(length(parameters.b2_tests),0)
+            condition: ${{ gt(length(parameters.b2_tests),0) }}
           - bash: |
               set -e
               pushd ${HOME}
@@ -435,7 +435,7 @@ stages:
               mv cmake-*-linux-x86_64 cmake
               popd
             displayName: "Install Cmake"
-            condition: gt(length(parameters.cmake_tests),0)
+            condition: ${{ gt(length(parameters.cmake_tests),0) }}
           - ${{ each b2_test in parameters.b2_tests }}:
               - bash: |
                   set -e
