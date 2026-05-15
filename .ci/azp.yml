@@ -450,7 +450,7 @@ stages:
                   mkdir -p "../${{ cmake_test.dir }}_build"
                   mkdir -p "../${{ cmake_test.dir }}_run"
                   pushd "../${{ cmake_test.dir }}_cmake_build"
-                  ${HOME}/cmake/bin/cmake $SOURCE ${{ cmake_test.args }} -DCMAKE_INSTALL_PREFIX=$SOURCE/../${{ cmake_test.dir }}_run -DCMAKE_PREFIX_PATH=$SOURCE/../${{ cmake_test.dir }}_run
+                  ${HOME}/cmake/bin/cmake $SOURCE/${{ cmake_test.cml_dir }} ${{ cmake_test.args }} -DCMAKE_INSTALL_PREFIX=$SOURCE/../${{ cmake_test.dir }}_run -DCMAKE_PREFIX_PATH=$SOURCE/../${{ cmake_test.dir }}_run
                   make ${{ cmake_test.make_args }}
                   ${HOME}/cmake/bin/ctest
                   popd

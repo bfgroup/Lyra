@@ -67,7 +67,7 @@ stages:
       depends_on: ["Core", "Sanitize"]
       b2_tests:
         - name: "B2 Test"
-          dir: test
+          dir: tests
           args: "--debug-configuration -a variant=debug,release"
       cmake_tests:
         - name: "Cmake Install"
@@ -77,3 +77,4 @@ stages:
         - name: "Cmake Test"
           args: "-DCMAKE_CXX_STANDARD=11"
           dir: cmake_test
+          cml_dir: tests/lib_use_test
