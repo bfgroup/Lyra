@@ -440,7 +440,7 @@ stages:
               - bash: |
                   set -e
                   pushd "${{ b2_test.dir }}"
-                  b2 "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} ${{ b2_test.args }}
+                  b2 "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} cxxstd=${CXXSTD} ${{ b2_test.args }}
                   popd
                 displayName: "${{ b2_test.name }}"
           - ${{ each cmake_test in parameters.cmake_tests }}:
@@ -449,7 +449,7 @@ stages:
                   SOURCE=$PWD
                   mkdir -p "../${{ cmake_test.dir }}_build"
                   mkdir -p "../${{ cmake_test.dir }}_run"
-                  pushd "../${{ cmake_test.dir }}_cmake_build"
+                  pushd "../${{ cmake_test.dir }}_build"
                   ${HOME}/cmake/bin/cmake $SOURCE/${{ cmake_test.cml_dir }} ${{ cmake_test.args }} -DCMAKE_INSTALL_PREFIX=$SOURCE/../${{ cmake_test.dir }}_run -DCMAKE_PREFIX_PATH=$SOURCE/../${{ cmake_test.dir }}_run
                   make ${{ cmake_test.make_args }}
                   ${HOME}/cmake/bin/ctest
@@ -515,7 +515,7 @@ stages:
                   CXX_PATH=`which ${EXE}`
                   echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
                   pushd "${{ b2_test.dir }}"
-                  b2 "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} ${{ b2_test.args }}
+                  b2 "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} cxxstd=${CXXSTD} ${{ b2_test.args }}
                   popd
                 displayName: "${{ b2_test.name }}"
       - job: "Windows"
@@ -591,5 +591,5 @@ stages:
               - script: |
                   set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../b2-main
                   cd "%BUILD_SOURCESDIRECTORY%/${{ b2_test.dir }}"
-                  %BUILD_SOURCESDIRECTORY%/../b2-main/b2.exe toolset=%TOOLSET% ${{ b2_test.args }}
+                  %BUILD_SOURCESDIRECTORY%/../b2-main/b2.exe toolset=%TOOLSET% cxxstd=${CXXSTD} ${{ b2_test.args }}
                 displayName: "${{ b2_test.name }}"
