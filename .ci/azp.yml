@@ -51,9 +51,11 @@ parameters:
       - "clang-darwin-15.4"
       - "msvc-14.5"
       - "msvc-14.3"
-      - "mingw-14.2"
-      - "mingw-13.2"
-      - "mingw-12.2"
+      - "mingw-16"
+      - "mingw-15"
+      - "mingw-14"
+      - "mingw-13"
+      - "mingw-12"
   - name: b2_tests
     type: object
     default: []
@@ -535,21 +537,35 @@ stages:
                 TOOLSET_VERSION: 14.3
                 VM_IMAGE: "windows-2022"
                 CXXSTD: "14,17,20"
-            ${{ if containsValue( parameters.toolsets, 'mingw-14.2' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'mingw-16' ) }}:
+              MinGW 14.2:
+                TOOLSET: gcc
+                TOOLSET_VERSION: 16.1.0
+                VM_IMAGE: "windows-latest"
+                CXXSTD: "11,14,17,20,23"
+                MINGW_RT: "rt_v14-rev0"
+            ${{ if containsValue( parameters.toolsets, 'mingw-15' ) }}:
+              MinGW 14.2:
+                TOOLSET: gcc
+                TOOLSET_VERSION: 15.2.0
+                VM_IMAGE: "windows-latest"
+                CXXSTD: "11,14,17,20,23"
+                MINGW_RT: "rt_v13-rev1"
+            ${{ if containsValue( parameters.toolsets, 'mingw-14' ) }}:
               MinGW 14.2:
                 TOOLSET: gcc
                 TOOLSET_VERSION: 14.2.0
                 VM_IMAGE: "windows-latest"
                 CXXSTD: "11,14,17,20,23"
-                MINGW_RT: "rt_v12-rev0"
-            ${{ if containsValue( parameters.toolsets, 'mingw-13.2' ) }}:
+                MINGW_RT: "rt_v12-rev2"
+            ${{ if containsValue( parameters.toolsets, 'mingw-13' ) }}:
               MinGW 13.2:
                 TOOLSET: gcc
                 TOOLSET_VERSION: 13.2.0
                 VM_IMAGE: "windows-latest"
                 CXXSTD: "11,14,17,20"
                 MINGW_RT: "rt_v11-rev1"
-            ${{ if containsValue( parameters.toolsets, 'mingw-12.2' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'mingw-12' ) }}:
               MinGW 12.2:
                 TOOLSET: gcc
                 TOOLSET_VERSION: 12.2.0
