@@ -591,5 +591,5 @@ stages:
               - script: |
                   set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../b2-main
                   cd "%BUILD_SOURCESDIRECTORY%/${{ b2_test.dir }}"
-                  %BUILD_SOURCESDIRECTORY%/../b2-main/b2.exe toolset=%TOOLSET% cxxstd=${CXXSTD} ${{ b2_test.args }}
+                  %BUILD_SOURCESDIRECTORY%/../b2-main/b2.exe toolset=%TOOLSET% cxxstd=%CXXSTD% ${{ b2_test.args }}
                 displayName: "${{ b2_test.name }}"
