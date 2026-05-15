@@ -8,219 +8,72 @@
 trigger:
   branches:
     include:
-    - develop
-    - release
-    - feature/*
-    - pr/*
-    - issue/*
+      - develop
+      - release
+      - feature/*
+      - pr/*
+      - issue/*
   paths:
     exclude:
-    - .circleci/*
-    - .drone.star
-    - .github/workflows/*
-    - .semaphore/*
-    - .travis.yml
-    - appveyor.yml
+      - .circleci/*
+      - .drone.star
+      - .github/workflows/*
+      - .semaphore/*
+      - .travis.yml
+      - appveyor.yml
 pr:
   branches:
     include:
-    - develop
+      - develop
 schedules:
-  - cron: '0 1 * * 0'
-    displayName: 'Weekly'
+  - cron: "0 1 * * 0"
+    displayName: "Weekly"
     branches:
       include:
         - develop
 
-variables:
-- { name: co_options, value: '--name container' }
-
-resources:
-  containers:
-    - { container: linux_gcc16, image: 'teeks99/gcc-ubuntu:16', options: "${{variables.co_options}}" }
-    - { container: linux_gcc15, image: 'teeks99/gcc-ubuntu:15', options: "${{variables.co_options}}" }
-    - { container: linux_gcc14, image: 'teeks99/gcc-ubuntu:14', options: "${{variables.co_options}}" }
-    - { container: linux_gcc13, image: 'teeks99/gcc-ubuntu:13', options: "${{variables.co_options}}" }
-    - { container: linux_gcc12, image: 'teeks99/gcc-ubuntu:12', options: "${{variables.co_options}}" }
-    - { container: linux_gcc11, image: 'teeks99/gcc-ubuntu:11', options: "${{variables.co_options}}" }
-    - { container: linux_gcc10, image: 'teeks99/gcc-ubuntu:10', options: "${{variables.co_options}}" }
-    - { container: linux_gcc9, image: 'teeks99/gcc-ubuntu:9', options: "${{variables.co_options}}" }
-    - { container: linux_gcc8, image: 'teeks99/gcc-ubuntu:8', options: "${{variables.co_options}}" }
-    - { container: linux_gcc7, image: 'teeks99/gcc-ubuntu:7', options: "${{variables.co_options}}" }
-    - { container: linux_gcc6, image: 'teeks99/gcc-ubuntu:6', options: "${{variables.co_options}}" }
-    - { container: linux_gcc5, image: 'teeks99/gcc-ubuntu:5', options: "${{variables.co_options}}" }
-    - { container: linux_gcc49, image: 'teeks99/gcc-ubuntu:4.9', options: "${{variables.co_options}}" }
-    - { container: linux_gcc48, image: 'teeks99/gcc-ubuntu:4.8', options: "${{variables.co_options}}" }
-    - { container: linux_clang21, image: 'teeks99/clang-ubuntu:21', options: "${{variables.co_options}}" }
-    - { container: linux_clang20, image: 'teeks99/clang-ubuntu:20', options: "${{variables.co_options}}" }
-    - { container: linux_clang19, image: 'teeks99/clang-ubuntu:19', options: "${{variables.co_options}}" }
-    - { container: linux_clang18, image: 'teeks99/clang-ubuntu:18', options: "${{variables.co_options}}" }
-    - { container: linux_clang17, image: 'teeks99/clang-ubuntu:17', options: "${{variables.co_options}}" }
-    - { container: linux_clang16, image: 'teeks99/clang-ubuntu:16', options: "${{variables.co_options}}" }
-    - { container: linux_clang15, image: 'teeks99/clang-ubuntu:15', options: "${{variables.co_options}}" }
-    - { container: linux_clang14, image: 'teeks99/clang-ubuntu:14', options: "${{variables.co_options}}" }
-    - { container: linux_clang13, image: 'teeks99/clang-ubuntu:13', options: "${{variables.co_options}}" }
-    - { container: linux_clang12, image: 'teeks99/clang-ubuntu:12', options: "${{variables.co_options}}" }
-    - { container: linux_clang11, image: 'teeks99/clang-ubuntu:11', options: "${{variables.co_options}}" }
-    - { container: linux_clang10, image: 'teeks99/clang-ubuntu:10', options: "${{variables.co_options}}" }
-    - { container: linux_clang9, image: 'teeks99/clang-ubuntu:9', options: "${{variables.co_options}}" }
-    - { container: linux_clang8, image: 'teeks99/clang-ubuntu:8', options: "${{variables.co_options}}" }
-    - { container: linux_clang7, image: 'teeks99/clang-ubuntu:7', options: "${{variables.co_options}}" }
-    - { container: linux_clang6, image: 'teeks99/clang-ubuntu:6', options: "${{variables.co_options}}" }
-    - { container: linux_clang5, image: 'teeks99/clang-ubuntu:5', options: "${{variables.co_options}}" }
-    - { container: linux_clang4, image: 'teeks99/clang-ubuntu:4', options: "${{variables.co_options}}" }
-    - { container: linux_clang3, image: 'teeks99/clang-ubuntu:3.9', options: "${{variables.co_options}}" }
-
 stages:
+  - template: ".ci/azp.yml"
+    parameters:
+      name: Core
+      dependsOn: []
+      toolsets:
+        - "gcc-16"
+        - "clang-23"
+        - "clang-darwin-26.0"
+        - "msvc-14.5"
+      b2_tests:
+        - name: "Warnings"
+          dir: tests
+          args: "-a variant=pedantic"
 
-- stage: No_Warn
-  dependsOn: []
-  jobs:
+  - template: ".ci/azp.yml"
+    parameters:
+      name: Sanitize
+      dependsOn: []
+      toolsets:
+        - "gcc-16"
+      b2_tests:
+        - name: "Address"
+          dir: tests
+          args: "-a address-sanitizer=on variant=debug"
+        - name: "Undefined"
+          dir: tests
+          args: "-a undefined-sanitizer=on variant=debug"
 
-  - job: 'Linux'
-    strategy:
-      matrix:
-        GCC 16 Warn-All: {
-          CXX: g++-16, CONTAINER: linux_gcc16,
-          TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: "pedantic" }
-        Clang 21 Warn-All: {
-          CXX: clang++-21, CONTAINER: linux_clang21,
-          TOOLSET: clang, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: "variant=pedantic" }
-    pool: { vmImage: 'ubuntu-latest' }
-    container: $[ variables['CONTAINER'] ]
-    steps:
-    - template: .ci/azp-linux-docker-test.yml
-
-  - job: 'Xcode'
-    strategy:
-      matrix:
-        Xcode 26.3 Warn-All: {
-          CXX: clang++, VM_IMAGE: 'macOS-15', XCODE_VERSION: "26.3",
-          TOOLSET: clang,
-          CXXSTD: "11,14,17,20,23",
-          B2_ARGS: "variant=pedantic" }
-    pool:
-      vmImage: $(VM_IMAGE)
-    steps:
-    - template: .ci/azp-xcode-test.yml
-
-  - job: 'Visual_Studio'
-    strategy:
-      matrix:
-        VS 2026 Warn-All: {
-          VSWHERE_VERSION: '[18.0,19.0)', CXX: cl.exe,
-          PLATFORM: x64, VM_IMAGE: 'windows-2025-vs2026', TOOLSET: msvc, TOOLSET_VERSION: '14.5',
-          CXXSTD: "14,17,20,23,latest",
-          B2_ARGS: "variant=pedantic" }
-    pool:
-      vmImage: $(VM_IMAGE)
-    steps:
-    - template: .ci/azp-msvc-test.yml
-
-- stage: Sanitize
-  dependsOn: []
-  jobs:
-
-  - job: 'Linux'
-    strategy:
-      matrix:
-        Address: {
-          CXX: g++-16, CONTAINER: linux_gcc16,
-          TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: 'address-sanitizer=on variant=debug' }
-        Undefined: {
-          CXX: g++-16, CONTAINER: linux_gcc16,
-          TOOLSET: gcc, CXXSTD: "11,14,17,20,23",
-          B2_ARGS: 'undefined-sanitizer=on variant=debug' }
-    pool: { vmImage: 'ubuntu-latest' }
-    container: $[ variables['CONTAINER'] ]
-    steps:
-    - template: .ci/azp-linux-docker-test.yml
-
-- stage: Test
-  dependsOn: [No_Warn, Sanitize]
-  jobs:
-
-  - job: 'Linux'
-    strategy:
-      matrix:
-        GCC 16: { CXX: g++-16, CONTAINER: linux_gcc16, TOOLSET: gcc, CXXSTD: "11,14,17,20,23" }
-        GCC 15: { CXX: g++-15, CONTAINER: linux_gcc15, TOOLSET: gcc, CXXSTD: "11,14,17,20,23" }
-        GCC 14: { CXX: g++-14, CONTAINER: linux_gcc14, TOOLSET: gcc, CXXSTD: "11,14,17,20,23" }
-        GCC 13: { CXX: g++-13, CONTAINER: linux_gcc13, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
-        GCC 12: { CXX: g++-12, CONTAINER: linux_gcc12, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
-        GCC 11: { CXX: g++-11, CONTAINER: linux_gcc11, TOOLSET: gcc, CXXSTD: "11,14,17,20" }
-        GCC 10: { CXX: g++-10, CONTAINER: linux_gcc10, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
-        GCC 9: { CXX: g++-9, CONTAINER: linux_gcc9, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
-        GCC 8: { CXX: g++-8, CONTAINER: linux_gcc8, TOOLSET: gcc, CXXSTD: "11,14,17,2a" }
-        GCC 7: { CXX: g++-7, CONTAINER: linux_gcc7, TOOLSET: gcc, CXXSTD: "11,14,17" }
-        GCC 6: { CXX: g++-6, CONTAINER: linux_gcc6, TOOLSET: gcc, CXXSTD: "11,14,17" }
-        GCC 5: { CXX: g++-5, CONTAINER: linux_gcc5, TOOLSET: gcc, CXXSTD: "11,14" }
-        Clang 21: { CXX: clang++-21, CONTAINER: linux_clang21, TOOLSET: clang, CXXSTD: "11,14,17,20,23" }
-        Clang 20: { CXX: clang++-20, CONTAINER: linux_clang20, TOOLSET: clang, CXXSTD: "11,14,17,20,23" }
-        Clang 19: { CXX: clang++-19, CONTAINER: linux_clang19, TOOLSET: clang, CXXSTD: "11,14,17,20,23" }
-        Clang 18: { CXX: clang++-18, CONTAINER: linux_clang18, TOOLSET: clang, CXXSTD: "11,14,17,20,23" }
-        Clang 17: { CXX: clang++-17, CONTAINER: linux_clang17, TOOLSET: clang, CXXSTD: "11,14,17,20" }
-        Clang 16: { CXX: clang++-16, CONTAINER: linux_clang16, TOOLSET: clang, CXXSTD: "11,14,17,20" }
-        Clang 15: { CXX: clang++-15, CONTAINER: linux_clang15, TOOLSET: clang, CXXSTD: "11,14,17,20" }
-        Clang 14: { CXX: clang++-14, CONTAINER: linux_clang14, TOOLSET: clang, CXXSTD: "11,14,17,20" }
-        Clang 13: { CXX: clang++-13, CONTAINER: linux_clang13, TOOLSET: clang, CXXSTD: "11,14,17,20" }
-        Clang 12: { CXX: clang++-12, CONTAINER: linux_clang12, TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Clang 11: { CXX: clang++-11, CONTAINER: linux_clang11, TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Clang 10: { CXX: clang++-10, CONTAINER: linux_clang10, TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Clang 9: { CXX: clang++-9, CONTAINER: linux_clang9, TOOLSET: clang, CXXSTD: "11,14,17,2a" }
-        Clang 8: { CXX: clang++-8, CONTAINER: linux_clang8, TOOLSET: clang, CXXSTD: "11,14,17" }
-        Clang 7: { CXX: clang++-7, CONTAINER: linux_clang7, TOOLSET: clang, CXXSTD: "11,14,17" }
-        Clang 6.0: { CXX: clang++-6.0, CONTAINER: linux_clang6, TOOLSET: clang, CXXSTD: "11,14,17" }
-        Clang 5.0: { CXX: clang++-5.0, CONTAINER: linux_clang5, TOOLSET: clang, CXXSTD: "11,14,17" }
-        Clang 4.0: { CXX: clang++-4.0, CONTAINER: linux_clang4, TOOLSET: clang, CXXSTD: "11,14" }
-        Clang 3.9: { CXX: clang++-3.9, CONTAINER: linux_clang3, TOOLSET: clang, CXXSTD: "11" }
-    pool: { vmImage: 'ubuntu-latest' }
-    container: $[ variables['CONTAINER'] ]
-    variables:
-      B2_ARGS: "variant=debug,release"
-    steps:
-    - template: .ci/azp-linux-docker-test.yml
-
-  - job: 'Xcode'
-    strategy:
-      matrix:
-        Xcode 16.4: {
-          CXX: clang++, VM_IMAGE: 'macOS-15', XCODE_VERSION: "16.4",
-          TOOLSET: clang, CXXSTD: "11,14,17,20" }
-        Xcode 15.4: {
-          CXX: clang++, VM_IMAGE: 'macOS-14', XCODE_VERSION: "15.4",
-          TOOLSET: clang, CXXSTD: "11,14,17,20" }
-    pool:
-      vmImage: $(VM_IMAGE)
-    variables:
-      B2_ARGS: "variant=debug,release"
-    steps:
-    - template: .ci/azp-xcode-test.yml
-
-  - job: 'Visual_Studio'
-    strategy:
-      matrix:
-        VS 2022: {
-          VSWHERE_VERSION: '[17.0,18.0)', CXX: cl.exe,
-          CXXSTD: "14,17,20,latest",
-          PLATFORM: x64, VM_IMAGE: 'windows-2022', TOOLSET: msvc, TOOLSET_VERSION: '14.3' }
-    pool:
-      vmImage: $(VM_IMAGE)
-    steps:
-    - template: .ci/azp-msvc-test.yml
-
-  - job: 'MinGW'
-    strategy:
-      matrix:
-        MinGW 14.2.0: { MINGW_VERSION: '14.2.0', MINGW_RT: 'rt_v12-rev0', CXXSTD: "11,14,17,20,23" }
-        MinGW 13.2.0: { MINGW_VERSION: '13.2.0', MINGW_RT: 'rt_v11-rev1', CXXSTD: "11,14,17,20" }
-        MinGW 12.2.0: { MINGW_VERSION: '12.2.0', MINGW_RT: 'rt_v10-rev2', CXXSTD: "11,14,17,20" }
-    pool:
-      vmImage: 'windows-latest'
-    variables:
-      B2_ARGS: "variant=debug,release"
-    steps:
-    - template: .ci/azp-mingw-test.yml
+  - template: ".ci/azp.yml"
+    parameters:
+      name: Compilers
+      depends_on: ["Core", "Sanitize"]
+      b2_tests:
+        - name: "B2 Test"
+          dir: test
+          args: "--debug-configuration -a variant=debug,release"
+      cmake_tests:
+        - name: "Cmake Install"
+          args: "-DCMAKE_CXX_STANDARD=11"
+          dir: cmake_install
+          make_args: "install"
+        - name: "Cmake Test"
+          args: "-DCMAKE_CXX_STANDARD=11"
+          dir: cmake_test
