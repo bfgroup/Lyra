@@ -57,7 +57,10 @@ class main final : protected cli
 	template <typename L>
 	int operator()(int argc, const char ** argv, L action);
 
-	using cli::operator[];
+	value_result operator[](const std::string & n)
+	{
+		return cli::operator[](n);
+	}
 
 	main & style(const option_style & style)
 	{
