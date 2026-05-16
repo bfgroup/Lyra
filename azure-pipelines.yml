@@ -35,13 +35,25 @@ schedules:
 stages:
   - template: ".ci/azp.yml"
     parameters:
-      name: Core
+      name: Latest
       depends_on: []
       toolsets:
         - "gcc-16"
         - "clang-23"
         - "clang-darwin-26.0"
         - "msvc-14.5"
+      b2_tests:
+        - name: "Warnings"
+          dir: tests
+          args: "-a variant=pedantic"
+
+  - template: ".ci/azp.yml"
+    parameters:
+      name: Oldest
+      depends_on: []
+      toolsets:
+        - "gcc-4.8"
+        - "clang-3.9"
       b2_tests:
         - name: "Warnings"
           dir: tests
@@ -64,7 +76,7 @@ stages:
   - template: ".ci/azp.yml"
     parameters:
       name: Compilers
-      depends_on: ["Core", "Sanitize"]
+      depends_on: ["Latest", "Oldest", "Sanitize"]
       b2_tests:
         - name: "B2 Test"
           dir: tests

@@ -16,6 +16,7 @@
 
 #include <cstddef>
 #include <string>
+#include <utility>
 
 namespace lyra {
 
@@ -33,18 +34,14 @@ Is-a <<lyra_bound_parser>>.
 class arg : public bound_parser<arg>
 {
 	public:
-	template <typename Reference>
-	arg(Reference & ref, std::string const & hint)
-		: bound_parser(ref, hint)
-	{}
-	template <typename Lambda>
-	arg(Lambda const & ref, std::string const & hint)
-		: bound_parser(ref, hint)
-	{}
-	template <typename Lambda>
-	arg(Lambda && ref, std::string const & hint)
-		: bound_parser(std::move(ref), hint)
-	{}
+	template <typename Value>
+	arg(Value & val, std::string const & hint)
+		: bound_parser(val, hint)
+	{ }
+	template <typename Value>
+	arg(Value && val, std::string const & hint)
+		: bound_parser(std::move(val), hint)
+	{ }
 
 	std::string get_usage_text(const option_style &) const override
 	{
