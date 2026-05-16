@@ -2459,7 +2459,7 @@ class arguments : public parser
 
 	arguments(evaluation e)
 		: eval_mode(e)
-	{}
+	{ }
 
 	arguments(const arguments & other);
 
@@ -2474,18 +2474,9 @@ class arguments : public parser
 		std::is_base_of<arguments,
 			typename detail::remove_cvref<T>::type>::value,
 		T &>::type
-		operator|(T & self, U const & other)
-	{
-		return static_cast<T &>(self.add_argument(other));
-	}
-	template <typename T, typename U>
-	friend typename std::enable_if<
-		std::is_base_of<arguments,
-			typename detail::remove_cvref<T>::type>::value,
-		T &>::type
 		operator|(T && self, U const & other)
 	{
-		return static_cast<T &>(self.add_argument(other));
+		return static_cast<T &>(static_cast<T &>(self).add_argument(other));
 	}
 
 	arguments & sequential();
@@ -3614,15 +3605,12 @@ class cli : protected arguments
 	cli & add_argument(cli const & other);
 	cli & operator|=(cli const & other);
 
-	template <typename T>
-	cli operator|(T const & other) const;
-
 	struct value_result
 	{
 		public:
 		explicit value_result(const parser * p)
 			: parser_ref(p)
-		{}
+		{ }
 
 		template <typename T,
 			typename std::enable_if<detail::is_convertible_from_string<
@@ -3630,7 +3618,7 @@ class cli : protected arguments
 				type * = nullptr>
 		operator T() const
 		{
-			typename detail::remove_cvref<T>::type converted_value {};
+			typename detail::remove_cvref<T>::type converted_value { };
 			if (parser_ref)
 				detail::from_string<std::string,
 					typename detail::remove_cvref<T>::type>(
@@ -3749,7 +3737,7 @@ end::reference[] */
 inline cli::cli(const cli & other)
 	: arguments(other)
 	, m_exeName(other.m_exeName)
-{}
+{ }
 
 /* tag::reference[]
 
@@ -3817,12 +3805,6 @@ inline cli & cli::add_argument(cli const & other)
 inline cli & cli::operator|=(cli const & other)
 {
 	return this->add_argument(other);
-}
-
-template <typename T>
-inline cli cli::operator|(T const & other) const
-{
-	return cli(*this).add_argument(other);
 }
 
 template <typename DerivedT, typename T>

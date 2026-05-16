@@ -65,7 +65,7 @@ class arguments : public parser
 
 	arguments(evaluation e)
 		: eval_mode(e)
-	{}
+	{ }
 
 	// Copy construction, needs to copy the the composed parsers.
 	arguments(const arguments & other);
@@ -84,18 +84,9 @@ class arguments : public parser
 		std::is_base_of<arguments,
 			typename detail::remove_cvref<T>::type>::value,
 		T &>::type
-		operator|(T & self, U const & other)
-	{
-		return static_cast<T &>(self.add_argument(other));
-	}
-	template <typename T, typename U>
-	friend typename std::enable_if<
-		std::is_base_of<arguments,
-			typename detail::remove_cvref<T>::type>::value,
-		T &>::type
 		operator|(T && self, U const & other)
 	{
-		return static_cast<T &>(self.add_argument(other));
+		return static_cast<T &>(static_cast<T &>(self).add_argument(other));
 	}
 
 	// Parsing mode.
