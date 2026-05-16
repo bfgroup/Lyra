@@ -41,7 +41,7 @@ rule pedantic ( p * )
 		switch $(t)
 		{
 			case clang-3.* : { }
-			case * :
+			case gcc-* :
 			r += <cxxflags>-Wzero-as-null-pointer-constant ;
 		}
 		r +=
