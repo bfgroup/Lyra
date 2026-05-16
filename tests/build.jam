@@ -22,7 +22,7 @@ rule pedantic ( p * )
 {
 	local r ;
 	local t = [ feature.get-values <toolset> : $(p) ] ;
-	local v = [ feature.get-values <toolset-version> : $(p) ] ;
+	local v = [ feature.get-values <toolset-$(t):version> : $(p) ] ;
 	if $(v) { t = $(t)-$(v) ; }
 	if <variant>pedantic in $(p)
 	{
