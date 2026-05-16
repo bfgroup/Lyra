@@ -2285,12 +2285,8 @@ class arg : public bound_parser<arg>
 {
 	public:
 	template <typename Value>
-	arg(Value & val, std::string const & hint)
-		: bound_parser(val, hint)
-	{ }
-	template <typename Value>
 	arg(Value && val, std::string const & hint)
-		: bound_parser(std::move(val), hint)
+		: bound_parser(std::forward<Value>(val), hint)
 	{ }
 
 	std::string get_usage_text(const option_style &) const override
