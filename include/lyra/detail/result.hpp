@@ -27,15 +27,15 @@ class result_base
 		error
 	};
 
-	explicit result_base(result_kind kind, const std::string & message = "")
+	explicit result_base(result_kind kind, const std::string & msg = "")
 		: kind_(kind)
-		, message_(message)
-	{}
+		, message_(msg)
+	{ }
 
 	explicit result_base(const result_base & other)
 		: kind_(other.kind_)
 		, message_(other.message_)
-	{}
+	{ }
 
 	virtual ~result_base() = default;
 
@@ -58,15 +58,13 @@ class result_value_base : public result_base
 	protected:
 	std::unique_ptr<value_type> value_;
 
-	explicit result_value_base(
-		result_kind kind, const std::string & message = "")
-		: result_base(kind, message)
-	{}
+	explicit result_value_base(result_kind kind, const std::string & msg = "")
+		: result_base(kind, msg)
+	{ }
 
-	explicit result_value_base(result_kind kind,
-		const value_type & val,
-		const std::string & message = "")
-		: result_base(kind, message)
+	explicit result_value_base(
+		result_kind kind, const value_type & val, const std::string & msg = "")
+		: result_base(kind, msg)
 	{
 		value_.reset(new value_type(val));
 	}
@@ -79,7 +77,7 @@ class result_value_base : public result_base
 
 	explicit result_value_base(const result_base & other)
 		: result_base(other)
-	{}
+	{ }
 
 	result_value_base & operator=(result_value_base const & other)
 	{
@@ -99,11 +97,10 @@ class result_value_base<void> : public result_base
 	// using result_base::result_base;
 	explicit result_value_base(const result_base & other)
 		: result_base(other)
-	{}
-	explicit result_value_base(
-		result_kind kind, const std::string & message = "")
-		: result_base(kind, message)
-	{}
+	{ }
+	explicit result_value_base(result_kind kind, const std::string & msg = "")
+		: result_base(kind, msg)
+	{ }
 };
 
 template <typename T>
@@ -114,7 +111,7 @@ class basic_result : public result_value_base<T>
 
 	explicit basic_result(result_base const & other)
 		: result_value_base<T>(other)
-	{}
+	{ }
 
 	// With-value results..
 
@@ -123,10 +120,9 @@ class basic_result : public result_value_base<T>
 		return basic_result(result_base::result_kind::ok, val);
 	}
 
-	static basic_result error(
-		value_type const & val, std::string const & message)
+	static basic_result error(value_type const & val, std::string const & msg)
 	{
-		return basic_result(result_base::result_kind::error, val, message);
+		return basic_result(result_base::result_kind::error, val, msg);
 	}
 
 	protected:
@@ -141,7 +137,7 @@ class basic_result<void> : public result_value_base<void>
 
 	explicit basic_result(result_base const & other)
 		: result_value_base<void>(other)
-	{}
+	{ }
 
 	// Value-less results.. (only kind as void is a value-less kind)
 
@@ -150,9 +146,9 @@ class basic_result<void> : public result_value_base<void>
 		return basic_result(result_base::result_kind::ok);
 	}
 
-	static basic_result error(std::string const & message)
+	static basic_result error(std::string const & msg)
 	{
-		return basic_result(result_base::result_kind::error, message);
+		return basic_result(result_base::result_kind::error, msg);
 	}
 
 	protected:
