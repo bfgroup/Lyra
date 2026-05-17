@@ -342,7 +342,7 @@ stages:
                         name: "${{ replace(replace(parameters.compilers[toolset].NAME,' ','_'),'.','_') }}"
           - bash: |
               echo -n "##vso[task.setVariable variable=Linux;isOutput=true]{"
-              echo -n `cat var_linux.txt`
+              cat var_linux.txt
               echo "}"
             name: Matrix
       - job: "Linux"
