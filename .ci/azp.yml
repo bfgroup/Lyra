@@ -339,7 +339,7 @@ stages:
                           echo -n "${{ convertToJson(parameters.compilers[toolset]) }}," >> var_linux.txt
                           echo -n "'${{ parameters.compilers[toolset].NAME }}':"
                           echo "${{ convertToJson(parameters.compilers[toolset]) }},"
-                        name: "${{ parameters.compilers[toolset].NAME }}"
+                        name: "${{ replace(replace(parameters.compilers[toolset].NAME,' ','_'),',','_') }}"
           - bash: |
               echo "}" >> var_linux.txt
               cat var_linux.txt
