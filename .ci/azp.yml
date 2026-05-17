@@ -329,20 +329,19 @@ stages:
         pool:
           vmImage: "ubuntu-latest"
         steps:
-          - bash: |
-              echo -n "##vso[task.setVariable variable=Linux;isOutput=true]{" > var_linux.txt
           - ${{ each toolset in parameters.toolsets }}:
               - ${{ if eq(parameters.compilers[toolset].GROUP,'Linux') }}:
                   - ${{ if not(containsValue(parameters.exclude,toolset)) }}:
                       - bash: |
                           echo -n "'${{ parameters.compilers[toolset].NAME }}':" >> var_linux.txt
-                          echo -n "${{ convertToJson(parameters.compilers[toolset]) }}," >> var_linux.txt
-                          echo -n "'${{ parameters.compilers[toolset].NAME }}':"
-                          echo "${{ convertToJson(parameters.compilers[toolset]) }},"
+                          echo -n "${{ replace(convertToJson(parameters.compilers[toolset]),'"','\'') }}," >> var_linux.txt
+                          echo "'${{ parameters.compilers[toolset].NAME }}':"
+                          echo "${{ replace(convertToJson(parameters.compilers[toolset]),'"','\'') }},"
                         name: "${{ replace(replace(parameters.compilers[toolset].NAME,' ','_'),'.','_') }}"
           - bash: |
-              echo "}" >> var_linux.txt
-              cat var_linux.txt
+              echo -n "##vso[task.setVariable variable=Linux;isOutput=true]{"
+              echo -n `cat var_linux.txt`
+              echo "}"
             name: Matrix
       - job: "Linux"
         dependsOn: "Matrix"
