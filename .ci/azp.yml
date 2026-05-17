@@ -62,51 +62,56 @@ parameters:
   - name: cmake_tests
     type: object
     default: []
+  - name: exclude
+    type: object
+    default: []
 
 stages:
   - stage: "${{ parameters.name }}"
     dependsOn: ${{ parameters.depends_on }}
     jobs:
       - job: "Linux"
-        condition: ${{ or( containsValue(parameters.toolsets,'gcc-16'),
-          containsValue(parameters.toolsets,'gcc-15'),
-          containsValue(parameters.toolsets,'gcc-14'),
-          containsValue(parameters.toolsets,'gcc-13'),
-          containsValue(parameters.toolsets,'gcc-12'),
-          containsValue(parameters.toolsets,'gcc-11'),
-          containsValue(parameters.toolsets,'gcc-10'),
-          containsValue(parameters.toolsets,'gcc-9'),
-          containsValue(parameters.toolsets,'gcc-8'),
-          containsValue(parameters.toolsets,'gcc-7'),
-          containsValue(parameters.toolsets,'gcc-6'),
-          containsValue(parameters.toolsets,'gcc-5'),
-          containsValue(parameters.toolsets,'gcc-4.9'),
-          containsValue(parameters.toolsets,'gcc-4.8'),
-          containsValue(parameters.toolsets,'clang-23'),
-          containsValue(parameters.toolsets,'clang-22'),
-          containsValue(parameters.toolsets,'clang-21'),
-          containsValue(parameters.toolsets,'clang-20'),
-          containsValue(parameters.toolsets,'clang-19'),
-          containsValue(parameters.toolsets,'clang-18'),
-          containsValue(parameters.toolsets,'clang-17'),
-          containsValue(parameters.toolsets,'clang-16'),
-          containsValue(parameters.toolsets,'clang-15'),
-          containsValue(parameters.toolsets,'clang-14'),
-          containsValue(parameters.toolsets,'clang-13'),
-          containsValue(parameters.toolsets,'clang-12'),
-          containsValue(parameters.toolsets,'clang-11'),
-          containsValue(parameters.toolsets,'clang-10'),
-          containsValue(parameters.toolsets,'clang-9'),
-          containsValue(parameters.toolsets,'clang-8'),
-          containsValue(parameters.toolsets,'clang-7'),
-          containsValue(parameters.toolsets,'clang-6'),
-          containsValue(parameters.toolsets,'clang-5'),
-          containsValue(parameters.toolsets,'clang-4'),
-          containsValue(parameters.toolsets,'clang-3.9'),
-          containsValue(parameters.toolsets,'tcc-0.9.27') ) }}
+        condition: ${{ or(
+          and(containsValue(parameters.toolsets,'gcc-16'),not(containsValue(parameters.exclude,'gcc-16'))),
+          and(containsValue(parameters.toolsets,'gcc-15'),not(containsValue(parameters.exclude,'gcc-15'))),
+          and(containsValue(parameters.toolsets,'gcc-14'),not(containsValue(parameters.exclude,'gcc-14'))),
+          and(containsValue(parameters.toolsets,'gcc-13'),not(containsValue(parameters.exclude,'gcc-13'))),
+          and(containsValue(parameters.toolsets,'gcc-12'),not(containsValue(parameters.exclude,'gcc-12'))),
+          and(containsValue(parameters.toolsets,'gcc-11'),not(containsValue(parameters.exclude,'gcc-11'))),
+          and(containsValue(parameters.toolsets,'gcc-10'),not(containsValue(parameters.exclude,'gcc-10'))),
+          and(containsValue(parameters.toolsets,'gcc-9'),not(containsValue(parameters.exclude,'gcc-9'))),
+          and(containsValue(parameters.toolsets,'gcc-8'),not(containsValue(parameters.exclude,'gcc-8'))),
+          and(containsValue(parameters.toolsets,'gcc-7'),not(containsValue(parameters.exclude,'gcc-7'))),
+          and(containsValue(parameters.toolsets,'gcc-6'),not(containsValue(parameters.exclude,'gcc-6'))),
+          and(containsValue(parameters.toolsets,'gcc-5'),not(containsValue(parameters.exclude,'gcc-5'))),
+          and(containsValue(parameters.toolsets,'gcc-4.9'),not(containsValue(parameters.exclude,'gcc-4.9'))),
+          and(containsValue(parameters.toolsets,'gcc-4.8'),not(containsValue(parameters.exclude,'gcc-4.8'))),
+          and(containsValue(parameters.toolsets,'clang-23'),not(containsValue(parameters.exclude,'clang-23'))),
+          and(containsValue(parameters.toolsets,'clang-22'),not(containsValue(parameters.exclude,'clang-22'))),
+          and(containsValue(parameters.toolsets,'clang-21'),not(containsValue(parameters.exclude,'clang-21'))),
+          and(containsValue(parameters.toolsets,'clang-20'),not(containsValue(parameters.exclude,'clang-20'))),
+          and(containsValue(parameters.toolsets,'clang-19'),not(containsValue(parameters.exclude,'clang-19'))),
+          and(containsValue(parameters.toolsets,'clang-18'),not(containsValue(parameters.exclude,'clang-18'))),
+          and(containsValue(parameters.toolsets,'clang-17'),not(containsValue(parameters.exclude,'clang-17'))),
+          and(containsValue(parameters.toolsets,'clang-16'),not(containsValue(parameters.exclude,'clang-16'))),
+          and(containsValue(parameters.toolsets,'clang-15'),not(containsValue(parameters.exclude,'clang-15'))),
+          and(containsValue(parameters.toolsets,'clang-14'),not(containsValue(parameters.exclude,'clang-14'))),
+          and(containsValue(parameters.toolsets,'clang-13'),not(containsValue(parameters.exclude,'clang-13'))),
+          and(containsValue(parameters.toolsets,'clang-12'),not(containsValue(parameters.exclude,'clang-12'))),
+          and(containsValue(parameters.toolsets,'clang-11'),not(containsValue(parameters.exclude,'clang-11'))),
+          and(containsValue(parameters.toolsets,'clang-10'),not(containsValue(parameters.exclude,'clang-10'))),
+          and(containsValue(parameters.toolsets,'clang-9'),not(containsValue(parameters.exclude,'clang-9'))),
+          and(containsValue(parameters.toolsets,'clang-8'),not(containsValue(parameters.exclude,'clang-8'))),
+          and(containsValue(parameters.toolsets,'clang-7'),not(containsValue(parameters.exclude,'clang-7'))),
+          and(containsValue(parameters.toolsets,'clang-6'),not(containsValue(parameters.exclude,'clang-6'))),
+          and(containsValue(parameters.toolsets,'clang-5'),not(containsValue(parameters.exclude,'clang-5'))),
+          and(containsValue(parameters.toolsets,'clang-4'),not(containsValue(parameters.exclude,'clang-4'))),
+          and(containsValue(parameters.toolsets,'clang-3.9'),not(containsValue(parameters.exclude,'clang-3.9'))),
+          and(containsValue(parameters.toolsets,'tcc-0.9.27')not(containsValue(parameters.exclude,'tcc-0.9.27')))
+          ) }}
         strategy:
           matrix:
-            ${{ if containsValue( parameters.toolsets, 'gcc-16' ) }}:
+            ${{ if and( containsValue( parameters.toolsets, 'gcc-16' ), not( containsValue( parameters.toolsets, 'gcc-16' ) ) ) }}:
               GCC 16:
                 {
                   EXE: g++-16,
@@ -114,7 +119,7 @@ stages:
                   CXXSTD: "11,14,17,20,23",
                   CONTAINER: "teeks99/gcc-ubuntu:16",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-15' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-15' ), not( containsValue( parameters.toolsets, 'gcc-15' ) ) ) }}:
               GCC 15:
                 {
                   EXE: g++-15,
@@ -122,7 +127,7 @@ stages:
                   CXXSTD: "11,14,17,20,23",
                   CONTAINER: "teeks99/gcc-ubuntu:15",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-14' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-14' ), not( containsValue( parameters.toolsets, 'gcc-14' ) ) ) }}:
               GCC 14:
                 {
                   EXE: g++-14,
@@ -130,7 +135,7 @@ stages:
                   CXXSTD: "11,14,17,20,23",
                   CONTAINER: "teeks99/gcc-ubuntu:14",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-13' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-13' ), not( containsValue( parameters.toolsets, 'gcc-13' ) ) ) }}:
               GCC 13:
                 {
                   EXE: g++-13,
@@ -138,7 +143,7 @@ stages:
                   CXXSTD: "11,14,17,20",
                   CONTAINER: "teeks99/gcc-ubuntu:13",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-12' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-12' ), not( containsValue( parameters.toolsets, 'gcc-12' ) ) ) }}:
               GCC 12:
                 {
                   EXE: g++-12,
@@ -146,7 +151,7 @@ stages:
                   CXXSTD: "11,14,17,20",
                   CONTAINER: "teeks99/gcc-ubuntu:12",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-11' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-11' ), not( containsValue( parameters.toolsets, 'gcc-11' ) ) ) }}:
               GCC 11:
                 {
                   EXE: g++-11,
@@ -154,7 +159,7 @@ stages:
                   CXXSTD: "11,14,17,20",
                   CONTAINER: "teeks99/gcc-ubuntu:11",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-10' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-10' ), not( containsValue( parameters.toolsets, 'gcc-10' ) ) ) }}:
               GCC 10:
                 {
                   EXE: g++-10,
@@ -162,7 +167,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/gcc-ubuntu:10",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-9' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-9' ), not( containsValue( parameters.toolsets, 'gcc-9' ) ) ) }}:
               GCC 9:
                 {
                   EXE: g++-9,
@@ -170,7 +175,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/gcc-ubuntu:9",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-8' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-8' ), not( containsValue( parameters.toolsets, 'gcc-8' ) ) ) }}:
               GCC 8:
                 {
                   EXE: g++-8,
@@ -178,7 +183,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/gcc-ubuntu:8",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-7' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-7' ), not( containsValue( parameters.toolsets, 'gcc-7' ) ) ) }}:
               GCC 7:
                 {
                   EXE: g++-7,
@@ -186,7 +191,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/gcc-ubuntu:7",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-6' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-6' ), not( containsValue( parameters.toolsets, 'gcc-6' ) ) ) }}:
               GCC 6:
                 {
                   EXE: g++-6,
@@ -194,7 +199,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/gcc-ubuntu:6",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-5' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-5' ), not( containsValue( parameters.toolsets, 'gcc-5' ) ) ) }}:
               GCC 5:
                 {
                   EXE: g++-5,
@@ -202,7 +207,7 @@ stages:
                   CXXSTD: "11,14",
                   CONTAINER: "teeks99/gcc-ubuntu:5",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-4.9' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-4.9' ), not( containsValue( parameters.toolsets, 'gcc-4.9' ) ) ) }}:
               GCC 4.9:
                 {
                   EXE: g++-4.9,
@@ -210,7 +215,7 @@ stages:
                   CXXSTD: "11",
                   CONTAINER: "teeks99/gcc-ubuntu:4.9",
                 }
-            ${{ if containsValue( parameters.toolsets, 'gcc-4.8' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'gcc-4.8' ), not( containsValue( parameters.toolsets, 'gcc-4.8' ) ) ) }}:
               GCC 4.8:
                 {
                   EXE: g++-4.8,
@@ -218,7 +223,7 @@ stages:
                   CXXSTD: "11",
                   CONTAINER: "teeks99/gcc-ubuntu:4.8",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-23' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-23' ), not( containsValue( parameters.toolsets, 'clang-23' ) ) ) }}:
               Clang 23:
                 {
                   EXE: clang++-23,
@@ -226,7 +231,7 @@ stages:
                   CXXSTD: "11,14,17,20,23",
                   CONTAINER: "teeks99/clang-ubuntu:23",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-22' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-22' ), not( containsValue( parameters.toolsets, 'clang-22' ) ) ) }}:
               Clang 22:
                 {
                   EXE: clang++-22,
@@ -234,7 +239,7 @@ stages:
                   CXXSTD: "11,14,17,20,23",
                   CONTAINER: "teeks99/clang-ubuntu:22",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-21' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-21' ), not( containsValue( parameters.toolsets, 'clang-21' ) ) ) }}:
               Clang 21:
                 {
                   EXE: clang++-21,
@@ -242,7 +247,7 @@ stages:
                   CXXSTD: "11,14,17,20,23",
                   CONTAINER: "teeks99/clang-ubuntu:21",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-20' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-20' ), not( containsValue( parameters.toolsets, 'clang-20' ) ) ) }}:
               Clang 20:
                 {
                   EXE: clang++-20,
@@ -250,7 +255,7 @@ stages:
                   CXXSTD: "11,14,17,20,23",
                   CONTAINER: "teeks99/clang-ubuntu:20",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-19' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-19' ), not( containsValue( parameters.toolsets, 'clang-19' ) ) ) }}:
               Clang 19:
                 {
                   EXE: clang++-19,
@@ -258,7 +263,7 @@ stages:
                   CXXSTD: "11,14,17,20,23",
                   CONTAINER: "teeks99/clang-ubuntu:19",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-18' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-18' ), not( containsValue( parameters.toolsets, 'clang-18' ) ) ) }}:
               Clang 18:
                 {
                   EXE: clang++-18,
@@ -266,7 +271,7 @@ stages:
                   CXXSTD: "11,14,17,20,23",
                   CONTAINER: "teeks99/clang-ubuntu:18",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-17' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-17' ), not( containsValue( parameters.toolsets, 'clang-17' ) ) ) }}:
               Clang 17:
                 {
                   EXE: clang++-17,
@@ -274,7 +279,7 @@ stages:
                   CXXSTD: "11,14,17,20",
                   CONTAINER: "teeks99/clang-ubuntu:17",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-16' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-16' ), not( containsValue( parameters.toolsets, 'clang-16' ) ) ) }}:
               Clang 16:
                 {
                   EXE: clang++-16,
@@ -282,7 +287,7 @@ stages:
                   CXXSTD: "11,14,17,20",
                   CONTAINER: "teeks99/clang-ubuntu:16",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-15' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-15' ), not( containsValue( parameters.toolsets, 'clang-15' ) ) ) }}:
               Clang 15:
                 {
                   EXE: clang++-15,
@@ -290,7 +295,7 @@ stages:
                   CXXSTD: "11,14,17,20",
                   CONTAINER: "teeks99/clang-ubuntu:15",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-14' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-14' ), not( containsValue( parameters.toolsets, 'clang-14'clang-14 ) ) ) }}:
               Clang 14:
                 {
                   EXE: clang++-14,
@@ -298,7 +303,7 @@ stages:
                   CXXSTD: "11,14,17,20",
                   CONTAINER: "teeks99/clang-ubuntu:14",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-13' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-13' ), not( containsValue( parameters.toolsets, 'clang-13' ) ) ) }}:
               Clang 13:
                 {
                   EXE: clang++-13,
@@ -306,7 +311,7 @@ stages:
                   CXXSTD: "11,14,17,20",
                   CONTAINER: "teeks99/clang-ubuntu:13",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-12' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-12' ), not( containsValue( parameters.toolsets, 'clang-12' ) ) ) }}:
               Clang 12:
                 {
                   EXE: clang++-12,
@@ -314,7 +319,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/clang-ubuntu:12",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-11' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-11' ), not( containsValue( parameters.toolsets, 'clang-11' ) ) ) }}:
               Clang 11:
                 {
                   EXE: clang++-11,
@@ -322,7 +327,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/clang-ubuntu:11",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-10' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-10' ), not( containsValue( parameters.toolsets, 'clang-10' ) ) ) }}:
               Clang 10:
                 {
                   EXE: clang++-10,
@@ -330,7 +335,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/clang-ubuntu:10",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-9' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-9' ), not( containsValue( parameters.toolsets, 'clang-9' ) ) ) }}:
               Clang 9:
                 {
                   EXE: clang++-9,
@@ -338,7 +343,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/clang-ubuntu:9",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-8' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-8' ), not( containsValue( parameters.toolsets, 'clang-8' ) ) ) }}:
               Clang 8:
                 {
                   EXE: clang++-8,
@@ -346,7 +351,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/clang-ubuntu:8",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-7' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-7' ), not( containsValue( parameters.toolsets, 'clang-7' ) ) ) }}:
               Clang 7:
                 {
                   EXE: clang++-7,
@@ -354,7 +359,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/clang-ubuntu:7",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-6' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-6' ), not( containsValue( parameters.toolsets, 'clang-6' ) ) ) }}:
               Clang 6:
                 {
                   EXE: clang++-6.0,
@@ -362,7 +367,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/clang-ubuntu:6",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-5' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-5' ), not( containsValue( parameters.toolsets, 'clang-5' ) ) ) }}:
               Clang 5:
                 {
                   EXE: clang++-5.0,
@@ -370,7 +375,7 @@ stages:
                   CXXSTD: "11,14,17",
                   CONTAINER: "teeks99/clang-ubuntu:5",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-4' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-4' ), not( containsValue( parameters.toolsets, 'clang-4' ) ) ) }}:
               Clang 4:
                 {
                   EXE: clang++-4.0,
@@ -378,7 +383,7 @@ stages:
                   CXXSTD: "11,14",
                   CONTAINER: "teeks99/clang-ubuntu:4",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-3.9' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-3.9' ), not( containsValue( parameters.toolsets, 'clang-3.9' ) ) ) }}:
               Clang 3.9:
                 {
                   EXE: clang++-3.9,
@@ -386,7 +391,7 @@ stages:
                   CXXSTD: "11",
                   CONTAINER: "teeks99/clang-ubuntu:3.9",
                 }
-            ${{ if containsValue( parameters.toolsets, 'tcc-0.9.27' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'tcc-0.9.27' ), not( containsValue( parameters.toolsets, 'tcc-0.9.27' ) ) ) }}:
               TCC 0.9.27:
                 {
                   EXE: tcc,
@@ -459,13 +464,14 @@ stages:
                   popd
                 displayName: "${{ cmake_test.name }}"
       - job: "macOS"
-        condition:
-          ${{ or( containsValue(parameters.toolsets,'clang-darwin-26.0'),
-          containsValue(parameters.toolsets,'clang-darwin-16.4'),
-          containsValue(parameters.toolsets,'clang-darwin-15.4') ) }}
+        condition: ${{ or(
+          and(containsValue(parameters.toolsets,'clang-darwin-26.0'),not(containsValue(parameters.exclude,'clang-darwin-26.0'))),
+          and(containsValue(parameters.toolsets,'clang-darwin-16.4'),not(containsValue(parameters.exclude,'clang-darwin-16.4'))),
+          and(containsValue(parameters.toolsets,'clang-darwin-15.4'),not(containsValue(parameters.exclude,'clang-darwin-15.4')))
+          ) }}
         strategy:
           matrix:
-            ${{ if containsValue( parameters.toolsets, 'clang-darwin-26.0' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-darwin-26.0' ), not( containsValue( parameters.toolsets, 'clang-darwin-26.0' ) ) ) }}:
               Xcode 26.0.1:
                 {
                   EXE: clang++,
@@ -474,7 +480,7 @@ stages:
                   VM_IMAGE: "macOS-15",
                   CXXSTD: "11,14,17,20,23",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-darwin-16.4' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-darwin-16.4' ), not( containsValue( parameters.toolsets, 'clang-darwin-16.4' ) ) ) }}:
               Xcode 16.4:
                 {
                   EXE: clang++,
@@ -483,7 +489,7 @@ stages:
                   VM_IMAGE: "macOS-15",
                   CXXSTD: "11,14,17,20",
                 }
-            ${{ if containsValue( parameters.toolsets, 'clang-darwin-15.4' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'clang-darwin-15.4' ), not( containsValue( parameters.toolsets, 'clang-darwin-15.4' ) ) ) }}:
               Xcode 15.4:
                 {
                   EXE: clang++,
@@ -522,51 +528,58 @@ stages:
                   popd
                 displayName: "${{ b2_test.name }}"
       - job: "Windows"
-        condition: ${{ or( containsValue(parameters.toolsets,'msvc-14.5'),
-          containsValue(parameters.toolsets,'msvc-14.3') ) }}
+        condition: ${{ or(
+          and(containsValue(parameters.toolsets,'msvc-14.5'),not(containsValue(parameters.exclude,'msvc-14.5'))),
+          and(containsValue(parameters.toolsets,'msvc-14.3'),not(containsValue(parameters.exclude,'msvc-14.3'))),
+          and(containsValue(parameters.toolsets,'mingw-16'),not(containsValue(parameters.exclude,'mingw-16'))),
+          and(containsValue(parameters.toolsets,'mingw-15'),not(containsValue(parameters.exclude,'mingw-15'))),
+          and(containsValue(parameters.toolsets,'mingw-14'),not(containsValue(parameters.exclude,'mingw-14'))),
+          and(containsValue(parameters.toolsets,'mingw-13'),not(containsValue(parameters.exclude,'mingw-13'))),
+          and(containsValue(parameters.toolsets,'mingw-12'),not(containsValue(parameters.exclude,'mingw-12')))
+          ) }}
         strategy:
           matrix:
-            ${{ if containsValue( parameters.toolsets, 'msvc-14.5' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'msvc-14.5' ), not( containsValue( parameters.toolsets, 'msvc-14.5' ) ) ) }}:
               VS 2025:
                 TOOLSET: msvc
                 TOOLSET_VERSION: 14.5
                 VM_IMAGE: "windows-2025-vs2026"
                 CXXSTD: "14,17,20,latest"
-            ${{ if containsValue( parameters.toolsets, 'msvc-14.3' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'msvc-14.3' ), not( containsValue( parameters.toolsets, 'msvc-14.3' ) ) ) }}:
               VS 2022:
                 TOOLSET: msvc
                 TOOLSET_VERSION: 14.3
                 VM_IMAGE: "windows-2022"
                 CXXSTD: "14,17,20"
-            ${{ if containsValue( parameters.toolsets, 'mingw-16' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'mingw-16' ), not( containsValue( parameters.toolsets, 'mingw-16' ) ) ) }}:
               MinGW 16:
                 TOOLSET: gcc
                 TOOLSET_VERSION: 16.1.0
                 VM_IMAGE: "windows-latest"
                 CXXSTD: "11,14,17,20,23"
                 MINGW_RT: "rt_v14-rev0"
-            ${{ if containsValue( parameters.toolsets, 'mingw-15' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'mingw-15' ), not( containsValue( parameters.toolsets, 'mingw-15' ) ) ) }}:
               MinGW 15:
                 TOOLSET: gcc
                 TOOLSET_VERSION: 15.2.0
                 VM_IMAGE: "windows-latest"
                 CXXSTD: "11,14,17,20,23"
                 MINGW_RT: "rt_v13-rev1"
-            ${{ if containsValue( parameters.toolsets, 'mingw-14' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'mingw-14' ), not( containsValue( parameters.toolsets, 'mingw-14' ) ) ) }}:
               MinGW 14:
                 TOOLSET: gcc
                 TOOLSET_VERSION: 14.2.0
                 VM_IMAGE: "windows-latest"
                 CXXSTD: "11,14,17,20,23"
                 MINGW_RT: "rt_v12-rev2"
-            ${{ if containsValue( parameters.toolsets, 'mingw-13' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'mingw-13' ), not( containsValue( parameters.toolsets, 'mingw-13' ) ) ) }}:
               MinGW 13:
                 TOOLSET: gcc
                 TOOLSET_VERSION: 13.2.0
                 VM_IMAGE: "windows-latest"
                 CXXSTD: "11,14,17,20"
                 MINGW_RT: "rt_v11-rev1"
-            ${{ if containsValue( parameters.toolsets, 'mingw-12' ) }}:
+            ${{ if containsValue( parameters.toolsets, 'mingw-12' ), not( containsValue( parameters.toolsets, 'mingw-12' ) ) ) }}:
               MinGW 12:
                 TOOLSET: gcc
                 TOOLSET_VERSION: 12.2.0

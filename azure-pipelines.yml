@@ -42,6 +42,7 @@ stages:
         - "clang-23"
         - "clang-darwin-26.0"
         - "msvc-14.5"
+        - "mingw-16"
       b2_tests:
         - name: "Warnings"
           dir: tests
@@ -77,6 +78,8 @@ stages:
     parameters:
       name: Compilers
       depends_on: ["Latest", "Oldest", "Sanitize"]
+      exclude:
+        - "gcc-4.8"
       b2_tests:
         - name: "B2 Test"
           dir: tests
