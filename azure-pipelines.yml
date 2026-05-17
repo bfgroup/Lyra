@@ -52,7 +52,7 @@ stages:
       name: Oldest
       depends_on: []
       toolsets:
-        - "gcc-4.8"
+        - "gcc-4.9"
         - "clang-3.9"
       b2_tests:
         - name: "Warnings"
