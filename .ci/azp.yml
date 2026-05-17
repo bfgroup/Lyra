@@ -333,10 +333,11 @@ stages:
               - ${{ if eq(parameters.compilers[toolset].GROUP,'Linux') }}:
                   - ${{ if not(containsValue(parameters.exclude,toolset)) }}:
                       - bash: |
+                          JSON=${{ replace(convertToJson(parameters.compilers[toolset]),'"','\'') }}
                           echo -n "'${{ parameters.compilers[toolset].NAME }}':" >> var_linux.txt
-                          echo -n "${{ replace(convertToJson(parameters.compilers[toolset]),'"','\'') }}," >> var_linux.txt
+                          echo -n "${JSON}," >> var_linux.txt
                           echo "'${{ parameters.compilers[toolset].NAME }}':"
-                          echo "${{ replace(convertToJson(parameters.compilers[toolset]),'"','\'') }},"
+                          echo "${JSON},"
                         name: "${{ replace(replace(parameters.compilers[toolset].NAME,' ','_'),'.','_') }}"
           - bash: |
               echo -n "##vso[task.setVariable variable=Linux;isOutput=true]{"
