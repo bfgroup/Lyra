@@ -337,6 +337,8 @@ stages:
                       - bash: |
                           echo -n "'${{ parameters.compilers[toolset].NAME }}':" > var_linux.txt
                           echo -n "${{ convertToJson(parameters.compilers[toolset]) }}," > var_linux.txt
+                          echo -n "'${{ parameters.compilers[toolset].NAME }}':"
+                          echo "${{ convertToJson(parameters.compilers[toolset]) }},"
           - bash: |
               echo "}" > var_linux.txt
               cat var_linux.txt
