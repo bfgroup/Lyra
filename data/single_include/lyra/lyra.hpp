@@ -4896,14 +4896,10 @@ class main final : protected cli
 	template <typename L>
 	int operator()(int argc, const char ** argv, L action);
 
-	value_result operator[](const std::string & n)
+	template <typename T>
+	value_result operator[](T && n)
 	{
-		return cli::operator[](n);
-	}
-	template <std::size_t N>
-	value_result operator[](const char n[N])
-	{
-		return cli::operator[](std::string(n));
+		return cli::operator[](std::string(std::forward<T>(n)));
 	}
 
 	main & style(const option_style & style)
