@@ -4853,6 +4853,7 @@ inline detail::BoundVal<std::string> val(const char * v)
 
 #endif
 
+#include <cstddef>
 #include <initializer_list>
 #include <iostream>
 #include <string>
@@ -4898,6 +4899,11 @@ class main final : protected cli
 	value_result operator[](const std::string & n)
 	{
 		return cli::operator[](n);
+	}
+	template <std::size_t N>
+	value_result operator[](const char n[N])
+	{
+		return cli::operator[](std::string(n));
 	}
 
 	main & style(const option_style & style)
