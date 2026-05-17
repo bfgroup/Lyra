@@ -342,6 +342,7 @@ stages:
           - bash: |
               echo "}" > var_linux.txt
               cat var_linux.txt
+            name: Matrix
       - job: "Linux"
         dependsOn: "Matrix"
         strategy:
