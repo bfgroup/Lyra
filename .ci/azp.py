@@ -300,6 +300,94 @@ class CXXPipelines(object):
             "GROUP": "Linux",
             "EXCLUDE": True,
         },
+        "clang-darwin-26.0": {
+            "NAME": "Xcode 26.0.1",
+            "GROUP": "macOS",
+            "EXE": "clang++",
+            "TOOLSET": "clang",
+            "XCODE_APP": "/Applications/Xcode_26.0.1.app",
+            "VM_IMAGE": "macOS-15",
+            "CXXSTD": "11,14,17,20,23",
+        },
+        "clang-darwin-16.4": {
+            "NAME": "Xcode 16.4",
+            "GROUP": "macOS",
+            "EXE": "clang++",
+            "TOOLSET": "clang",
+            "XCODE_APP": "/Applications/Xcode_16.4.app",
+            "VM_IMAGE": "macOS-15",
+            "CXXSTD": "11,14,17,20",
+        },
+        "clang-darwin-15.4": {
+            "NAME": "Xcode 15.4",
+            "GROUP": "macOS",
+            "EXE": "clang++",
+            "TOOLSET": "clang",
+            "XCODE_APP": "/Applications/Xcode_15.4.app",
+            "VM_IMAGE": "macOS-14",
+            "CXXSTD": "11,14,17,20",
+        },
+        "msvc-14.5": {
+            "NAME": "VS 2025",
+            "GROUP": "Windows",
+            "TOOLSET": "msvc",
+            "TOOLSET_VERSION": "14.5",
+            "VM_IMAGE": "windows-2025-vs2026",
+            "CXXSTD": "14,17,20,latest",
+        },
+        "msvc-14.3": {
+            "NAME": "VS 2022",
+            "GROUP": "Windows",
+            "TOOLSET": "msvc",
+            "TOOLSET_VERSION": "14.3",
+            "VM_IMAGE": "windows-2022",
+            "CXXSTD": "14,17,20",
+        },
+        "mingw-16": {
+            "NAME": "MinGW 16",
+            "GROUP": "Windows",
+            "TOOLSET": "gcc",
+            "TOOLSET_VERSION": "16.1.0",
+            "VM_IMAGE": "windows-latest",
+            "CXXSTD": "11,14,17,20,23",
+            "MINGW_RT": "rt_v14-rev0",
+        },
+        "mingw-15": {
+            "NAME": "MinGW 15",
+            "GROUP": "Windows",
+            "TOOLSET": "gcc",
+            "TOOLSET_VERSION": "15.2.0",
+            "VM_IMAGE": "windows-latest",
+            "CXXSTD": "11,14,17,20,23",
+            "MINGW_RT": "rt_v13-rev1",
+        },
+        "mingw-14": {
+            "NAME": "MinGW 14",
+            "GROUP": "Windows",
+            "TOOLSET": "gcc",
+            "TOOLSET_VERSION": "14.2.0",
+            "VM_IMAGE": "windows-latest",
+            "CXXSTD": "11,14,17,20,23",
+            "MINGW_RT": "rt_v12-rev2",
+        },
+        "mingw-13": {
+            "NAME": "MinGW 13",
+            "TOOLSET": "gcc",
+            "TOOLSET_VERSION": "13.2.0",
+            "VM_IMAGE": "windows-latest",
+            "CXXSTD": "11,14,17,20",
+            "MINGW_RT": "rt_v11-rev1",
+            "GROUP": "Windows",
+        },
+        "mingw-12": {
+            "NAME": "MinGW 12",
+            "GROUP": "Windows",
+            "TOOLSET": "gcc",
+            "TOOLSET_VERSION": "12.2.0",
+            "VM_IMAGE": "windows-latest",
+            "CXXSTD": "11,14,17,20",
+            "MINGW_RT": "rt_v10-rev2",
+        },
     }
 
     def __init__(self):
@@ -307,12 +395,22 @@ class CXXPipelines(object):
         parser.add_argument("--type")
         parser.add_argument("--include", default="")
         parser.add_argument("--exclude", default="")
-        parser.add_argument("--group", default="")
+        parser.add_argument("--groups", default="")
         self.args = parser.parse_args()
         if self.args.type == "matrix":
             self.gen_matrix()
 
     def gen_matrix(self):
+        known_groups = set()
+        for mc in self.matrix_compilers.items():
+            known_groups.add(mc[1]["GROUP"])
+        # Compute teh groups to generate from the CLI or the known toolsets.
+        groups = set()
+        if self.args.groups:
+            groups = set(self.args.groups.split(","))
+        else:
+            groups |= known_groups
+        # Generate the toolsets to include.
         include = set()
         if self.args.include:
             include = set(self.args.include.split(","))
@@ -320,22 +418,33 @@ class CXXPipelines(object):
             for mc in self.matrix_compilers.items():
                 if "EXCLUDE" in mc[1] and mc[1]["EXCLUDE"]:
                     continue
-                if self.args.group != mc[1]["GROUP"]:
+                if mc[1]["GROUP"] not in groups:
                     continue
                 include.add(mc[0])
         include -= set(self.args.exclude.split(","))
-        result = {}
-        for toolset in include:
-            if toolset not in self.matrix_compilers:
-                continue
-            matrix_compiler = self.matrix_compilers[toolset]
-            result[matrix_compiler["NAME"]] = matrix_compiler
-        result_vso = "##vso[task.setVariable variable={0};isOutput=true]".format(
-            self.args.group
-        )
-        result_vso += json.dumps(result, ensure_ascii=True, sort_keys=True, indent=None)
-        print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
-        print(result_vso)
+        for group in groups:
+            result = {}
+            for toolset in include:
+                if toolset not in self.matrix_compilers:
+                    continue
+                matrix_compiler = self.matrix_compilers[toolset]
+                if group != matrix_compiler["GROUP"]:
+                    continue
+                result[matrix_compiler["NAME"]] = matrix_compiler
+            result_vso = "##vso[task.setVariable variable={0};isOutput=true]".format(
+                group
+            )
+            result_vso += json.dumps(
+                result, ensure_ascii=True, sort_keys=True, indent=None
+            )
+            print(group, "...")
+            print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
+            print(result_vso)
+            print(
+                "##vso[task.setVariable variable={0}Len;isOutput=true]{1}".format(
+                    group, len(result)
+                )
+            )
 
 
 if __name__ == "__main__":
