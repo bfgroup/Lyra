@@ -30,9 +30,7 @@ stages:
           vmImage: "ubuntu-latest"
         steps:
           - bash: |
-              B2TESTS=`cat << EOM
-${{ convertToJson(parameters.b2_tests) }}
-EOM`
+              B2TESTS=`cat << EOM ${{ convertToJson(parameters.b2_tests) }} EOM`
               python .ci/azp.py --type=matrix --include=${{ join(',',parameters.toolsets) }} --exclude=${{ join(',',parameters.exclude) }} "--b2tests=${B2TESTS}"
             name: Matrix
       - job: "Linux"
