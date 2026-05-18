@@ -19,7 +19,7 @@ skip_commits:
     - .semaphore/*
     - .travis.yml
     - azure-pipelines.yml
-    - .ci/azp.yml
+    - .ci/azp.*
 
 environment:
   matrix:

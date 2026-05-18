@@ -326,6 +326,8 @@ class CXXPipelines(object):
         include -= set(self.args.exclude.split(","))
         result = {}
         for toolset in include:
+            if toolset not in self.matrix_compilers:
+                continue
             matrix_compiler = self.matrix_compilers[toolset]
             result[matrix_compiler["NAME"]] = matrix_compiler
         result_vso = "##vso[task.setVariable variable=Matrix.{0};isOutput=true]".format(
