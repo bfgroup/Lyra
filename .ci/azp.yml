@@ -329,21 +329,8 @@ stages:
         pool:
           vmImage: "ubuntu-latest"
         steps:
-          - ${{ each toolset in parameters.toolsets }}:
-              - ${{ if eq(parameters.compilers[toolset].GROUP,'Linux') }}:
-                  - ${{ if not(containsValue(parameters.exclude,toolset)) }}:
-                      - bash: |
-                          NAME="${{ parameters.compilers[toolset].NAME }}"
-                          JSON="${{ convertToJson(parameters.compilers[toolset]) }}"
-                          echo -n "'${NAME}':" >> var_linux.txt
-                          echo -n "${JSON}," >> var_linux.txt
-                          echo "'${NAME}':"
-                          echo "${JSON},"
-                        name: "${{ replace(replace(parameters.compilers[toolset].NAME,' ','_'),'.','_') }}"
           - bash: |
-              echo -n "##vso[task.setVariable variable=Linux;isOutput=true]{"
-              cat var_linux.txt
-              echo "}"
+              python .ci/azp.py --type=matrix --group=Linux --include=${{ join(',',parameters.toolsets) }} --exclude=${{ join(',',parameters.exclude) }}
             name: Matrix
       - job: "Linux"
         dependsOn: "Matrix"
