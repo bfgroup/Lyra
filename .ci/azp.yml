@@ -34,7 +34,7 @@ stages:
             name: Matrix
       - job: "Linux"
         dependsOn: "Matrix"
-        condition: $[ gt(dependencies.Matrix.outputs['Matrix.LinuxLen'],0) ]
+        condition: gt(dependencies.Matrix.outputs['Matrix.LinuxLen'],0)
         strategy:
           matrix: $[ dependencies.Matrix.outputs['Matrix.Linux'] ]
         pool:
@@ -103,7 +103,7 @@ stages:
                 displayName: "${{ cmake_test.name }}"
       - job: "macOS"
         dependsOn: "Matrix"
-        condition: $[ gt(dependencies.Matrix.outputs['Matrix.macOSLen'],0) ]
+        condition: gt(dependencies.Matrix.outputs['Matrix.macOSLen'],0)
         strategy:
           matrix: $[ dependencies.Matrix.outputs['Matrix.macOS'] ]
         pool:
@@ -137,7 +137,7 @@ stages:
                 displayName: "${{ b2_test.name }}"
       - job: "Windows"
         dependsOn: "Matrix"
-        condition: $[ gt(dependencies.Matrix.outputs['Matrix.WindowsLen'],0) ]
+        condition: gt(dependencies.Matrix.outputs['Matrix.WindowsLen'],0)
         strategy:
           matrix: $[ dependencies.Matrix.outputs['Matrix.Windows'] ]
         pool:
