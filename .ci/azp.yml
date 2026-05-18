@@ -30,7 +30,7 @@ stages:
           vmImage: "ubuntu-latest"
         steps:
           - bash: |
-              python .ci/azp.py --type=matrix --include=${{ join(',',parameters.toolsets) }} --exclude=${{ join(',',parameters.exclude) }}
+              python .ci/azp.py --type=matrix --include=${{ join(',',parameters.toolsets) }} --exclude=${{ join(',',parameters.exclude) }} "--b2tests=${{ convertToJson(parameters.b2_tests) }}"
             name: Matrix
       - job: "Linux"
         dependsOn: "Matrix"

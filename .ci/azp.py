@@ -390,26 +390,40 @@ class CXXPipelines(object):
         },
     }
 
+    group_steps = {
+        "Linux": [],
+        "macOS": [],
+        "Windows": [],
+    }
+
     def __init__(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("--type")
         parser.add_argument("--include", default="")
         parser.add_argument("--exclude", default="")
         parser.add_argument("--groups", default="")
+        parser.add_argument("--b2tests", default="[]")
+        parser.add_argument("--cmaketests", default="[]")
         self.args = parser.parse_args()
+
+        # All the groups we know about from the compilers.
+        self.known_groups = set()
+        for mc in self.matrix_compilers.items():
+            self.known_groups.add(mc[1]["GROUP"])
+        # Compute teh groups to generate from the CLI or the known toolsets.
+        self.groups = set()
+        if self.args.groups:
+            self.groups = set(self.args.groups.split(","))
+        else:
+            self.groups |= self.known_groups
+        # B2 & Cmake Tests are serialized json. Decode for convenience.
+        self.b2tests = json.loads(self.args.b2tests)
+        self.cmaketests = json.loads(self.args.cmaketests)
+
         if self.args.type == "matrix":
             self.gen_matrix()
 
     def gen_matrix(self):
-        known_groups = set()
-        for mc in self.matrix_compilers.items():
-            known_groups.add(mc[1]["GROUP"])
-        # Compute teh groups to generate from the CLI or the known toolsets.
-        groups = set()
-        if self.args.groups:
-            groups = set(self.args.groups.split(","))
-        else:
-            groups |= known_groups
         # Generate the toolsets to include.
         include = set()
         if self.args.include:
@@ -418,11 +432,11 @@ class CXXPipelines(object):
             for mc in self.matrix_compilers.items():
                 if "EXCLUDE" in mc[1] and mc[1]["EXCLUDE"]:
                     continue
-                if mc[1]["GROUP"] not in groups:
+                if mc[1]["GROUP"] not in self.groups:
                     continue
                 include.add(mc[0])
         include -= set(self.args.exclude.split(","))
-        for group in groups:
+        for group in self.groups:
             result = {}
             for toolset in include:
                 if toolset not in self.matrix_compilers:
@@ -437,12 +451,92 @@ class CXXPipelines(object):
             result_vso += json.dumps(
                 result, ensure_ascii=True, sort_keys=True, indent=None
             )
-            print(group, "...")
+            print("***", group, "Matrix...")
             print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
             print(result_vso)
             print(
                 "##vso[task.setVariable variable={0}Len;isOutput=true]{1}".format(
                     group, len(result)
+                )
+            )
+        self.gen_matrix_steps(include)
+
+    def gen_matrix_steps(self, toolsets):
+        need_mingw = False
+        need_b2 = False
+        need_cmake = False
+        for toolset in toolsets:
+            if toolset.startswith("mingw-"):
+                need_mingw = True
+                break
+        need_b2 = len(self.b2tests) > 0
+        need_cmake = len(self.cmaketests) > 0
+        for group in self.groups:
+            result = []
+            if group == "Windows":
+                if need_mingw:
+                    result.append(
+                        {
+                            "script": """\
+cd %BUILD_SOURCESDIRECTORY%/..
+curl "https://github.com/niXman/mingw-builds-binaries/releases/download/%TOOLSET_VERSION%-%MINGW_RT%/x86_64-%TOOLSET_VERSION%-release-posix-seh-ucrt-%MINGW_RT%.7z" -L -o mingw.7z
+""",
+                            "displayName": "Download MinGW",
+                            "condition": "eq(variables['TOOLSET'], 'gcc')",
+                        }
+                    )
+                    result.append(
+                        {
+                            "task": "ExtractFiles@1",
+                            "inputs": {
+                                "archiveFilePatterns": "$(Build.SourcesDirectory)/../mingw.7z",
+                                "destinationFolder": "C:/",
+                                "cleanDestinationFolder": False,
+                                "overwriteExistingFiles": True,
+                            },
+                            "displayName": "Extract MinGW",
+                            "condition": "eq(variables['TOOLSET'], 'gcc')",
+                        }
+                    )
+                if need_b2:
+                    result.append(
+                        {
+                            "script": """\
+cd %BUILD_SOURCESDIRECTORY%/..
+curl "https://github.com/bfgroup/b2/archive/main.zip" -L -o b2.zip
+""",
+                            "displayName": "Download B2",
+                        }
+                    )
+                    result.append(
+                        {
+                            "task": "ExtractFiles@1",
+                            "inputs": {
+                                "archiveFilePatterns": "$(Build.SourcesDirectory)/../b2.zip",
+                                "destinationFolder": "$(Build.SourcesDirectory)/..",
+                                "cleanDestinationFolder": False,
+                            },
+                            "displayName": "Extract B2",
+                        }
+                    )
+                    for b2test in self.b2tests:
+                        result.append(
+                            {
+                                "script": """\
+set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../b2-main
+cd "%BUILD_SOURCESDIRECTORY%/{dir}"
+%BUILD_SOURCESDIRECTORY%/../b2-main/b2.exe toolset=%TOOLSET% cxxstd=%CXXSTD% {args}
+""".format(
+                                    **b2test
+                                ),
+                                "displayName": b2test["name"],
+                            }
+                        )
+            print("***", group, "Steps...")
+            print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
+            print(
+                "##vso[task.setVariable variable={0}Steps;isOutput=true]{1}".format(
+                    group, json.dumps(result, ensure_ascii=True, sort_keys=True)
                 )
             )
 
