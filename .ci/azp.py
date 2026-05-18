@@ -330,7 +330,7 @@ class CXXPipelines(object):
                 continue
             matrix_compiler = self.matrix_compilers[toolset]
             result[matrix_compiler["NAME"]] = matrix_compiler
-        result_vso = "##vso[task.setVariable variable=Matrix.{0};isOutput=true]".format(
+        result_vso = "##vso[task.setVariable variable={0};isOutput=true]".format(
             self.args.group
         )
         result_vso += json.dumps(result, ensure_ascii=True, sort_keys=True, indent=None)

@@ -335,7 +335,7 @@ stages:
       - job: "Linux"
         dependsOn: "Matrix"
         strategy:
-          matrix: $[ dependencies.Matrix.outputs['Matrix.Linux'] ]
+          matrix: $[ dependencies.Matrix.outputs['Linux'] ]
         pool:
           vmImage: "ubuntu-latest"
         container:
