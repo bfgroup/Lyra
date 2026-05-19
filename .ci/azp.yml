@@ -148,39 +148,39 @@ stages:
           matrix: $[ dependencies.Matrix.outputs['Matrix.Windows'] ]
         pool:
           vmImage: $[ variables['VM_IMAGE'] ]
-        steps: $[ dependencies.Matrix.outputs['Matrix.WindowsSteps'] ]
-        # steps:
-        #   - script: |
-        #       cd %BUILD_SOURCESDIRECTORY%/..
-        #       curl "https://github.com/niXman/mingw-builds-binaries/releases/download/%TOOLSET_VERSION%-%MINGW_RT%/x86_64-%TOOLSET_VERSION%-release-posix-seh-ucrt-%MINGW_RT%.7z" -L -o mingw.7z
-        #     displayName: Download MinGW
-        #     condition: eq(variables['TOOLSET'], 'gcc')
-        #   - task: ExtractFiles@1
-        #     inputs:
-        #       archiveFilePatterns: $(Build.SourcesDirectory)/../mingw.7z
-        #       destinationFolder: C:/
-        #       cleanDestinationFolder: false
-        #       overwriteExistingFiles: true
-        #     displayName: Extract MinGW
-        #     condition: eq(variables['TOOLSET'], 'gcc')
-        #   - script: |
-        #       cd %BUILD_SOURCESDIRECTORY%/..
-        #       curl "https://github.com/bfgroup/b2/archive/main.zip" -L -o b2.zip
-        #     displayName: Download B2
-        #   - task: ExtractFiles@1
-        #     inputs:
-        #       archiveFilePatterns: $(Build.SourcesDirectory)/../b2.zip
-        #       destinationFolder: $(Build.SourcesDirectory)/..
-        #       cleanDestinationFolder: false
-        #     displayName: Extract B2
-        #   - script: |
-        #       echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
-        #       cd %BUILD_SOURCESDIRECTORY%/../b2-main
-        #       cmd.exe /c bootstrap.bat
-        #     displayName: Install B2
-        #   - ${{ each b2_test in parameters.b2_tests }}:
-        #       - script: |
-        #           set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../b2-main
-        #           cd "%BUILD_SOURCESDIRECTORY%/${{ b2_test.dir }}"
-        #           %BUILD_SOURCESDIRECTORY%/../b2-main/b2.exe toolset=%TOOLSET% cxxstd=%CXXSTD% ${{ b2_test.args }}
-        #         displayName: "${{ b2_test.name }}"
+        # steps: $[ dependencies.Matrix.outputs['Matrix.WindowsSteps'] ]
+        steps:
+          - script: |
+              cd %BUILD_SOURCESDIRECTORY%/..
+              curl "https://github.com/niXman/mingw-builds-binaries/releases/download/%TOOLSET_VERSION%-%MINGW_RT%/x86_64-%TOOLSET_VERSION%-release-posix-seh-ucrt-%MINGW_RT%.7z" -L -o mingw.7z
+            displayName: Download MinGW
+            condition: eq(variables['TOOLSET'], 'gcc')
+          - task: ExtractFiles@1
+            inputs:
+              archiveFilePatterns: $(Build.SourcesDirectory)/../mingw.7z
+              destinationFolder: C:/
+              cleanDestinationFolder: false
+              overwriteExistingFiles: true
+            displayName: Extract MinGW
+            condition: eq(variables['TOOLSET'], 'gcc')
+          - script: |
+              cd %BUILD_SOURCESDIRECTORY%/..
+              curl "https://github.com/bfgroup/b2/archive/main.zip" -L -o b2.zip
+            displayName: Download B2
+          - task: ExtractFiles@1
+            inputs:
+              archiveFilePatterns: $(Build.SourcesDirectory)/../b2.zip
+              destinationFolder: $(Build.SourcesDirectory)/..
+              cleanDestinationFolder: false
+            displayName: Extract B2
+          - script: |
+              echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+              cd %BUILD_SOURCESDIRECTORY%/../b2-main
+              cmd.exe /c bootstrap.bat
+            displayName: Install B2
+          - ${{ each b2_test in parameters.b2_tests }}:
+              - script: |
+                  set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../b2-main
+                  cd "%BUILD_SOURCESDIRECTORY%/${{ b2_test.dir }}"
+                  %BUILD_SOURCESDIRECTORY%/../b2-main/b2.exe toolset=%TOOLSET% cxxstd=%CXXSTD% ${{ b2_test.args }}
+                displayName: "${{ b2_test.name }}"
