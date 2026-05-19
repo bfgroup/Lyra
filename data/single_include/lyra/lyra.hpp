@@ -571,8 +571,8 @@ struct NonCopyable
 struct BoundRef : NonCopyable
 {
 	virtual ~BoundRef() = default;
-	virtual auto isContainer() const -> bool { return false; }
-	virtual auto isFlag() const -> bool { return false; }
+	virtual bool isContainer() const { return false; }
+	virtual bool isFlag() const { return false; }
 
 	virtual size_t get_value_count() const { return 0; }
 	virtual std::string get_value(size_t) const { return ""; }
@@ -580,13 +580,13 @@ struct BoundRef : NonCopyable
 
 struct BoundValueRefBase : BoundRef
 {
-	virtual auto setValue(std::string const & arg) -> parser_result = 0;
+	virtual parser_result setValue(std::string const & arg) = 0;
 };
 
 struct BoundFlagRefBase : BoundRef
 {
-	virtual auto setFlag(bool flag) -> parser_result = 0;
-	virtual auto isFlag() const -> bool { return true; }
+	virtual parser_result setFlag(bool flag) = 0;
+	virtual bool isFlag() const { return true; }
 };
 
 template <typename T>
@@ -596,9 +596,9 @@ struct BoundValueRef : BoundValueRefBase
 
 	explicit BoundValueRef(T & ref)
 		: m_ref(ref)
-	{}
+	{ }
 
-	auto setValue(std::string const & arg) -> parser_result override
+	parser_result setValue(std::string const & arg) override
 	{
 		return parse_string(arg, m_ref);
 	}
@@ -623,11 +623,11 @@ struct BoundValueRef<std::vector<T>> : BoundValueRefBase
 
 	explicit BoundValueRef(std::vector<T> & ref)
 		: m_ref(ref)
-	{}
+	{ }
 
-	auto isContainer() const -> bool override { return true; }
+	bool isContainer() const override { return true; }
 
-	auto setValue(std::string const & arg) -> parser_result override
+	parser_result setValue(std::string const & arg) override
 	{
 		T temp;
 		auto str_result = parse_string(arg, temp);
@@ -654,9 +654,9 @@ struct BoundFlagRef : BoundFlagRefBase
 
 	explicit BoundFlagRef(bool & ref)
 		: m_ref(ref)
-	{}
+	{ }
 
-	auto setFlag(bool flag) -> parser_result override
+	parser_result setFlag(bool flag) override
 	{
 		m_ref = flag;
 		return parser_result::ok(parser_result_type::matched);
@@ -683,12 +683,12 @@ struct BoundLambda : BoundValueRefBase
 
 	explicit BoundLambda(L const & lambda)
 		: m_lambda(lambda)
-	{}
+	{ }
 	explicit BoundLambda(L && lambda)
 		: m_lambda(std::move(lambda))
-	{}
+	{ }
 
-	auto setValue(std::string const & arg) -> parser_result override
+	parser_result setValue(std::string const & arg) override
 	{
 		return invokeLambda<typename unary_lambda_traits<L>::ArgType>(
 			m_lambda, arg);
@@ -711,13 +711,13 @@ struct BoundFlagLambda : BoundFlagRefBase
 
 	explicit BoundFlagLambda(L const & lambda)
 		: m_lambda(lambda)
-	{}
+	{ }
 
 	explicit BoundFlagLambda(L && lambda)
 		: m_lambda(std::move(lambda))
-	{}
+	{ }
 
-	auto setFlag(bool flag) -> parser_result override
+	parser_result setFlag(bool flag) override
 	{
 		return LambdaInvoker<
 			typename unary_lambda_traits<L>::ReturnType>::invoke(m_lambda,
@@ -733,12 +733,12 @@ struct BoundVal : BoundValueRef<T>
 	BoundVal(T && v)
 		: BoundValueRef<T>(value)
 		, value(v)
-	{}
+	{ }
 
 	BoundVal(BoundVal && other) noexcept
 		: BoundValueRef<T>(value)
 		, value(std::move(other.value))
-	{}
+	{ }
 
 	std::shared_ptr<BoundRef> move_to_shared()
 	{
