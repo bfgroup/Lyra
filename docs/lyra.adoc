@@ -252,6 +252,8 @@ include::../examples/count_flag.cpp[tag=doc]
 
 include::../examples/option_styles.cpp[tag=doc]
 
+include::../examples/option_termination.cpp[tag=doc]
+
 :leveloffset: -1
 
 == Reference
@@ -290,6 +292,10 @@ Changes:
 	-- _Paolo Pastori_
 * Fix spec of help for arguments in main style help API.
 	-- _Paolo Pastori_
+* Fix various warnings in the most pedantic compile modes.
+	-- _René Ferdinand Rivera Morell_
+* Add example for option termination with arbitrary tail arguments.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.7
 
