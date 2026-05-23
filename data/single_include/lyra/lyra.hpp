@@ -1190,12 +1190,12 @@ class token_iterator
 
 	token_iterator & pop(const token & /* opt */, const token & /* val */)
 	{
-		if (has_short_option_prefix() && args_i->size() > 2)
-			++args_i;
-		else if (!has_value_delimiter())
-			args_i += 2;
+		if (
+			has_value_delimiter() ||
+			(has_short_option_prefix() && (args_i->size() - args_i_sub) > 1))
+			args_i += 1;
 		else
-			++args_i;
+			args_i += 2;
 		args_i_sub = style.short_option_size;
 		return *this;
 	}

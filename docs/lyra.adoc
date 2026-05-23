@@ -296,6 +296,9 @@ Changes:
 	-- _René Ferdinand Rivera Morell_
 * Add example for option termination with arbitrary tail arguments.
 	-- _René Ferdinand Rivera Morell_
+* Fix short-option with value not being recognized when part of other short
+	options.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.7
 
