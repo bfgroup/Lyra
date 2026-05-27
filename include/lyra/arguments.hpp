@@ -301,7 +301,9 @@ class arguments : public parser
 							|| parser_cardinality.maximum < *parsing_count_i))
 					|| (parser_cardinality.is_required()
 						&& (*parsing_count_i < parser_cardinality.minimum)))
-					return make_parse_error(tokens, *p, parsing_result, style);
+					return make_parse_error(
+						parsing_result.value().remainingTokens(), *p,
+						parsing_result, style);
 				++parsing_count_i;
 			}
 		}

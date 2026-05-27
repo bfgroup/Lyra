@@ -299,6 +299,8 @@ Changes:
 * Fix short-option with value not being recognized when part of other short
 	options.
 	-- _René Ferdinand Rivera Morell_
+* Fix error message when a required argument is not matched.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.7
 
