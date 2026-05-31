@@ -75,7 +75,7 @@ int main()
 		auto result = cli.parse({ "TestApp", "--number", "42" });
 		test
 			(REQUIRE(!result))
-			(REQUIRE(result.message() == "Unrecognized argument '--number' while parsing: --name <name>"));
+			(REQUIRE(result.message() == "Expected: --name <name>"));
 	}
 
 	return test;

@@ -1,0 +1,186 @@
+parameters:
+  - name: name
+    type: string
+    default: ""
+  - name: apt_packages
+    type: string
+    default: ""
+  - name: depends_on
+    type: object
+    default: []
+  - name: toolsets
+    type: object
+    default: []
+  - name: b2_tests
+    type: object
+    default: []
+  - name: cmake_tests
+    type: object
+    default: []
+  - name: exclude
+    type: object
+    default: []
+
+stages:
+  - stage: "${{ parameters.name }}"
+    dependsOn: ${{ parameters.depends_on }}
+    jobs:
+      - job: "Matrix"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - bash: |
+              B2TESTS=`cat << EOM
+              ${{ convertToJson(parameters.b2_tests) }}
+              EOM`
+              CMAKETESTS=`cat << EOM
+              ${{ convertToJson(parameters.cmake_tests) }}
+              EOM`
+              python .ci/azp.py --type=matrix --include=${{ join(',',parameters.toolsets) }} --exclude=${{ join(',',parameters.exclude) }} "--b2tests=${CMAKETESTS}" "--b2tests=${CMAKETESTS}"
+            name: Matrix
+      - job: "Linux"
+        dependsOn: "Matrix"
+        condition: gt(dependencies.Matrix.outputs['Matrix.LinuxLen'],0)
+        strategy:
+          matrix: $[ dependencies.Matrix.outputs['Matrix.Linux'] ]
+        pool:
+          vmImage: "ubuntu-latest"
+        container:
+          image: $[ variables['CONTAINER'] ]
+          options: "--name container"
+          # volumes: $[ variables['CO_VOLUMES'] ]
+        steps:
+          - task: CmdLine@2
+            displayName: Sudorize
+            target: host
+            inputs:
+              script: |
+                /usr/bin/docker exec -t -u root container mv /etc/sudoers /etc/sudoers.bak
+                /usr/bin/docker exec -t -u root container apt-get -qq update
+                /usr/bin/docker exec -t -u root container apt-get -qq install sudo
+                /usr/bin/docker exec -t -u root container mv /etc/sudoers.bak /etc/sudoers
+          - bash: |
+              APT_OPT="-o Acquire::Retries=3 -yq"
+              sudo apt-get ${APT_OPT} update
+              sudo apt-get ${APT_OPT} install wget software-properties-common ${{ parameters.apt_packages }}
+            displayName: "Install Packages"
+          - bash: |
+              set -e
+              pushd ${HOME}
+              wget -nv https://github.com/bfgroup/b2/archive/main.tar.gz
+              tar -zxf main.tar.gz
+              cd b2-main
+              ./bootstrap.sh
+              sudo ./b2 --debug-configuration install
+              EXE_PATH=`which ${EXE}`
+              echo "using ${TOOLSET%%-[0-9]*} : : ${EXE_PATH} : ${B2_CONFIG} ;" > ${HOME}/user-config.jam
+              popd
+            displayName: "Install B2"
+            condition: ${{ gt(length(parameters.b2_tests),0) }}
+          - bash: |
+              set -e
+              pushd ${HOME}
+              CMAKE_URL=`wget -q -O - https://api.github.com/repos/Kitware/cmake/releases/latest | grep browser_download_url | grep "linux-x86_64[.]tar[.]gz" | cut -d '"' -f 4`
+              wget "${CMAKE_URL}" -O cmake.tgz
+              tar zxvf cmake.tgz
+              mv cmake-*-linux-x86_64 cmake
+              popd
+            displayName: "Install Cmake"
+            condition: ${{ gt(length(parameters.cmake_tests),0) }}
+          - ${{ each b2_test in parameters.b2_tests }}:
+              - bash: |
+                  set -e
+                  pushd "${{ b2_test.dir }}"
+                  b2 "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} cxxstd=${CXXSTD} ${{ b2_test.args }}
+                  popd
+                displayName: "${{ b2_test.name }}"
+          - ${{ each cmake_test in parameters.cmake_tests }}:
+              - bash: |
+                  set -e
+                  SOURCE=$PWD
+                  rm -rf "../${{ cmake_test.dir }}_build"
+                  mkdir -p "../${{ cmake_test.dir }}_build"
+                  mkdir -p "../${{ cmake_test.dir }}_install"
+                  pushd "../${{ cmake_test.dir }}_build"
+                  ${HOME}/cmake/bin/cmake $SOURCE/${{ cmake_test.cml_dir }} ${{ cmake_test.args }} -DCMAKE_INSTALL_PREFIX=$SOURCE/../${{ cmake_test.dir }}_install -DCMAKE_PREFIX_PATH=$SOURCE/../${{ cmake_test.dir }}_install
+                  make ${{ cmake_test.make_args }}
+                  ${HOME}/cmake/bin/ctest
+                  popd
+                displayName: "${{ cmake_test.name }}"
+      - job: "macOS"
+        dependsOn: "Matrix"
+        condition: gt(dependencies.Matrix.outputs['Matrix.macOSLen'],0)
+        strategy:
+          matrix: $[ dependencies.Matrix.outputs['Matrix.macOS'] ]
+        pool:
+          vmImage: $[ variables['VM_IMAGE'] ]
+        steps:
+          - bash: |
+              set -e
+              uname -a
+              sudo xcode-select -switch ${XCODE_APP}
+              which clang++
+              clang++ --version
+            displayName: "Install CXX"
+          - bash: |
+              set -e
+              pushd ${HOME}
+              wget -nv https://github.com/bfgroup/b2/archive/main.tar.gz
+              tar -zxf main.tar.gz
+              cd b2-main
+              CXX= ./bootstrap.sh
+              sudo ./b2 install
+              popd
+            displayName: "Install B2"
+          - ${{ each b2_test in parameters.b2_tests }}:
+              - bash: |
+                  set -e
+                  CXX_PATH=`which ${EXE}`
+                  echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+                  pushd "${{ b2_test.dir }}"
+                  b2 "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} cxxstd=${CXXSTD} ${{ b2_test.args }}
+                  popd
+                displayName: "${{ b2_test.name }}"
+      - job: "Windows"
+        dependsOn: "Matrix"
+        condition: gt(dependencies.Matrix.outputs['Matrix.WindowsLen'],0)
+        strategy:
+          matrix: $[ dependencies.Matrix.outputs['Matrix.Windows'] ]
+        pool:
+          vmImage: $[ variables['VM_IMAGE'] ]
+        # steps: $[ dependencies.Matrix.outputs['Matrix.WindowsSteps'] ]
+        steps:
+          - script: |
+              cd %BUILD_SOURCESDIRECTORY%/..
+              curl "https://github.com/niXman/mingw-builds-binaries/releases/download/%TOOLSET_VERSION%-%MINGW_RT%/x86_64-%TOOLSET_VERSION%-release-posix-seh-ucrt-%MINGW_RT%.7z" -L -o mingw.7z
+            displayName: Download MinGW
+            condition: eq(variables['TOOLSET'], 'gcc')
+          - task: ExtractFiles@1
+            inputs:
+              archiveFilePatterns: $(Build.SourcesDirectory)/../mingw.7z
+              destinationFolder: C:/
+              cleanDestinationFolder: false
+              overwriteExistingFiles: true
+            displayName: Extract MinGW
+            condition: eq(variables['TOOLSET'], 'gcc')
+          - script: |
+              cd %BUILD_SOURCESDIRECTORY%/..
+              curl "https://github.com/bfgroup/b2/archive/main.zip" -L -o b2.zip
+            displayName: Download B2
+          - task: ExtractFiles@1
+            inputs:
+              archiveFilePatterns: $(Build.SourcesDirectory)/../b2.zip
+              destinationFolder: $(Build.SourcesDirectory)/..
+              cleanDestinationFolder: false
+            displayName: Extract B2
+          - script: |
+              echo using %TOOLSET% ^: %TOOLSET_VERSION% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+              cd %BUILD_SOURCESDIRECTORY%/../b2-main
+              cmd.exe /c bootstrap.bat
+            displayName: Install B2
+          - ${{ each b2_test in parameters.b2_tests }}:
+              - script: |
+                  set BOOST_BUILD_PATH=%BUILD_SOURCESDIRECTORY%/../b2-main
+                  cd "%BUILD_SOURCESDIRECTORY%/${{ b2_test.dir }}"
+                  %BUILD_SOURCESDIRECTORY%/../b2-main/b2.exe toolset=%TOOLSET% cxxstd=%CXXSTD% ${{ b2_test.args }}
+                displayName: "${{ b2_test.name }}"

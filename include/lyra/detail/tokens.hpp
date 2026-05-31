@@ -14,6 +14,10 @@
 #include <string>
 #include <vector>
 
+#ifndef LYRA_USE_BASIC_TOKEN
+#	define LYRA_USE_BASIC_TOKEN false
+#endif
+
 namespace lyra { namespace detail {
 
 // Wraps a token coming from a token stream. These may not directly
@@ -26,6 +30,7 @@ enum class token_type
 	argument
 };
 
+#if LYRA_USE_BASIC_TOKEN
 template <typename Char, class Traits = std::char_traits<Char>>
 class basic_token_name
 {
@@ -47,19 +52,19 @@ class basic_token_name
 	basic_token_name() noexcept
 		: str { nullptr }
 		, len { 0 }
-	{}
+	{ }
 
 	basic_token_name(const basic_token_name &) noexcept = default;
 
 	basic_token_name(const_pointer s) noexcept
 		: str { s }
 		, len { traits_type::length(s) }
-	{}
+	{ }
 
 	basic_token_name(const_pointer s, size_type count) noexcept
 		: str { s }
 		, len { count }
-	{}
+	{ }
 
 	basic_token_name & operator=(const basic_token_name &) noexcept = default;
 
@@ -95,8 +100,13 @@ class basic_token_name
 	size_type len;
 };
 
-// using token_name = basic_token_name<std::string::value_type>;
+using token_name = basic_token_name<std::string::value_type>;
+
+#else
+
 using token_name = std::string;
+
+#endif
 
 struct token
 {
@@ -105,12 +115,12 @@ struct token
 
 	token()
 		: type(token_type::unknown)
-	{}
+	{ }
 	token(const token & other) = default;
 	token(token_type t, const token_name & n)
 		: type(t)
 		, name(n)
-	{}
+	{ }
 
 	explicit operator bool() const { return type != token_type::unknown; }
 };
@@ -125,7 +135,7 @@ class token_iterator
 		, args_i(args.begin())
 		, args_e(args.end())
 		, args_i_sub(opt_style.short_option_size)
-	{}
+	{ }
 
 	explicit operator bool() const noexcept { return args_i != args_e; }
 
@@ -152,12 +162,15 @@ class token_iterator
 
 	token_iterator & pop(const token & /* opt */, const token & /* val */)
 	{
-		if (has_short_option_prefix() && args_i->size() > 2)
-			++args_i;
-		else if (!has_value_delimiter())
-			args_i += 2;
+		if (
+			// Either "--option=val" or "-o=val"
+			has_value_delimiter() ||
+			// "-oval" or "-mnoval"?
+			(has_short_option_prefix() && (args_i->size() - args_i_sub) > 1))
+			args_i += 1;
 		else
-			++args_i;
+			// Any of "--option val", "-o val", or "-mno val"
+			args_i += 2;
 		args_i_sub = style.short_option_size;
 		return *this;
 	}
@@ -224,7 +237,8 @@ class token_iterator
 			&& (args_i->find_first_of(style.value_delimiters)
 				== (style.short_option_size + 1)))
 			// -o=x
-			return token(token_type::argument, args_i->substr(3));
+			return token(token_type::argument,
+				args_i->substr(style.short_option_size + 2));
 		else if (has_long_option_prefix() && has_value_delimiter())
 			// --option=x
 			return token(token_type::argument,
@@ -265,6 +279,11 @@ class token_iterator
 			}
 		}
 		return false;
+	}
+
+	int count() const
+	{
+		return static_cast<int>(std::distance(args_i, args_e));
 	}
 
 	private:

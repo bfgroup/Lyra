@@ -252,6 +252,8 @@ include::../examples/count_flag.cpp[tag=doc]
 
 include::../examples/option_styles.cpp[tag=doc]
 
+include::../examples/option_termination.cpp[tag=doc]
+
 :leveloffset: -1
 
 == Reference
@@ -277,6 +279,33 @@ include::../include/lyra/val.hpp[tag=reference]
 :leveloffset: -2
 
 == History
+
+=== 1.8
+
+Changes:
+
+* Fix cmake version for deprecation of 3.5.
+	-- _Tomáš Slanina_
+* Remove some unused code in type traits compatibility code.
+	-- _Paolo Pastori_
+* Fix short option not using the option style for extracting value.
+	-- _Paolo Pastori_
+* Fix spec of help for arguments in main style help API.
+	-- _Paolo Pastori_
+* Fix various warnings in the most pedantic compile modes.
+	-- _René Ferdinand Rivera Morell_
+* Add example for option termination with arbitrary tail arguments.
+	-- _René Ferdinand Rivera Morell_
+* Fix short-option with value not being recognized when part of other short
+	options.
+	-- _René Ferdinand Rivera Morell_
+* Fix error message when a required argument is not matched.
+	-- _René Ferdinand Rivera Morell_
+* Fix error message for sequence parsed arguments.
+	-- _René Ferdinand Rivera Morell_
+* Improve error message for parsing arguments in group, like commands, to
+	better reflect user intent.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.7
 

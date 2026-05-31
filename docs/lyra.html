@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.23">
+<meta name="generator" content="Asciidoctor 2.0.26">
 <meta name="author" content="René Ferdinand Rivera Morell">
 <meta name="copyright" content="Copyright René Ferdinand Rivera Morell">
 <title>Lyra</title>
@@ -967,41 +967,43 @@ pre.rouge .ss {
 <li><a href="#_more_main">10. More Main</a></li>
 <li><a href="#_counting_flags">11. Counting Flags</a></li>
 <li><a href="#_option_styles">12. Option Styles</a></li>
-<li><a href="#_reference">13. Reference</a>
+<li><a href="#_tail_arguments">13. Tail Arguments</a></li>
+<li><a href="#_reference">14. Reference</a>
 <ul class="sectlevel2">
-<li><a href="#lyra_arg">13.1. <code>lyra::arg</code></a></li>
-<li><a href="#lyra_args">13.2. <code>lyra::args</code></a></li>
-<li><a href="#lyra_arguments">13.3. <code>lyra::arguments</code></a></li>
-<li><a href="#lyra_cli">13.4. <code>lyra::cli</code></a></li>
-<li><a href="#lyra_command">13.5. <code>lyra::command</code></a></li>
-<li><a href="#lyra_exe_name">13.6. <code>lyra::exe_name</code></a></li>
-<li><a href="#lyra_group">13.7. <code>lyra::group</code></a></li>
-<li><a href="#lyra_help">13.8. <code>lyra::help</code></a></li>
-<li><a href="#lyra_literal">13.9. <code>lyra::literal</code></a></li>
-<li><a href="#lyra_main">13.10. <code>lyra::main</code></a></li>
-<li><a href="#lyra_opt">13.11. <code>lyra::opt</code></a></li>
-<li><a href="#lyra_option_style">13.12. <code>lyra::option_style</code></a></li>
-<li><a href="#lyra_parser_result">13.13. <code>lyra::parser_result</code></a></li>
-<li><a href="#lyra_parser">13.14. <code>lyra::parser</code></a></li>
-<li><a href="#lyra_composable_parser">13.15. <code>lyra::composable_parser</code></a></li>
-<li><a href="#lyra_bound_parser">13.16. <code>lyra::bound_parser</code></a></li>
-<li><a href="#lyra_printer">13.17. <code>lyra::printer</code></a></li>
-<li><a href="#lyra_ostream_printer">13.18. <code>lyra::ostream_printer</code></a></li>
-<li><a href="#lyra_val">13.19. <code>lyra::val</code></a></li>
+<li><a href="#lyra_arg">14.1. <code>lyra::arg</code></a></li>
+<li><a href="#lyra_args">14.2. <code>lyra::args</code></a></li>
+<li><a href="#lyra_arguments">14.3. <code>lyra::arguments</code></a></li>
+<li><a href="#lyra_cli">14.4. <code>lyra::cli</code></a></li>
+<li><a href="#lyra_command">14.5. <code>lyra::command</code></a></li>
+<li><a href="#lyra_exe_name">14.6. <code>lyra::exe_name</code></a></li>
+<li><a href="#lyra_group">14.7. <code>lyra::group</code></a></li>
+<li><a href="#lyra_help">14.8. <code>lyra::help</code></a></li>
+<li><a href="#lyra_literal">14.9. <code>lyra::literal</code></a></li>
+<li><a href="#lyra_main">14.10. <code>lyra::main</code></a></li>
+<li><a href="#lyra_opt">14.11. <code>lyra::opt</code></a></li>
+<li><a href="#lyra_option_style">14.12. <code>lyra::option_style</code></a></li>
+<li><a href="#lyra_parser_result">14.13. <code>lyra::parser_result</code></a></li>
+<li><a href="#lyra_parser">14.14. <code>lyra::parser</code></a></li>
+<li><a href="#lyra_composable_parser">14.15. <code>lyra::composable_parser</code></a></li>
+<li><a href="#lyra_bound_parser">14.16. <code>lyra::bound_parser</code></a></li>
+<li><a href="#lyra_printer">14.17. <code>lyra::printer</code></a></li>
+<li><a href="#lyra_ostream_printer">14.18. <code>lyra::ostream_printer</code></a></li>
+<li><a href="#lyra_val">14.19. <code>lyra::val</code></a></li>
 </ul>
 </li>
-<li><a href="#_history">14. History</a>
+<li><a href="#_history">15. History</a>
 <ul class="sectlevel2">
-<li><a href="#_1_7">14.1. 1.7</a></li>
-<li><a href="#_1_6_1">14.2. 1.6.1</a></li>
-<li><a href="#_1_6">14.3. 1.6</a></li>
-<li><a href="#_1_5_1">14.4. 1.5.1</a></li>
-<li><a href="#_1_5">14.5. 1.5</a></li>
-<li><a href="#_1_4">14.6. 1.4</a></li>
-<li><a href="#_1_3">14.7. 1.3</a></li>
-<li><a href="#_1_2">14.8. 1.2</a></li>
-<li><a href="#_1_1">14.9. 1.1</a></li>
-<li><a href="#_1_0">14.10. 1.0</a></li>
+<li><a href="#_1_8">15.1. 1.8</a></li>
+<li><a href="#_1_7">15.2. 1.7</a></li>
+<li><a href="#_1_6_1">15.3. 1.6.1</a></li>
+<li><a href="#_1_6">15.4. 1.6</a></li>
+<li><a href="#_1_5_1">15.5. 1.5.1</a></li>
+<li><a href="#_1_5">15.6. 1.5</a></li>
+<li><a href="#_1_4">15.7. 1.4</a></li>
+<li><a href="#_1_3">15.8. 1.3</a></li>
+<li><a href="#_1_2">15.9. 1.2</a></li>
+<li><a href="#_1_1">15.10. 1.1</a></li>
+<li><a href="#_1_0">15.11. 1.0</a></li>
 </ul>
 </li>
 </ul>
@@ -2131,10 +2133,74 @@ the <a href="#lyra_cli_style"><code>lyra::cli::style</code></a> method. For exam
 </div>
 </div>
 <div class="sect1">
-<h2 id="_reference"><a class="anchor" href="#_reference"></a>13. Reference</h2>
+<h2 id="_tail_arguments"><a class="anchor" href="#_tail_arguments"></a>13. Tail Arguments</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A common pattern for command line programs is to use "escaped" arguments at the
+end of the command. Usually with an empty option prefix as the escape indicator.
+For example: <code>command --option&#8201;&#8212;&#8201;arbitrary arguments --more</code>. For which the
+<code>--option</code> is treated as a regular option. But everything after the <code>--</code> is
+immune to parsing for options. Such behaviour can be done in Lyra with a
+combination of a group, a literal, and a container to capture the rest of the
+arguments.</p>
+</div>
+<div class="paragraph">
+<p>This example shows how you could do that. Do note that as one can create
+multiple Lyra parsers. It would also be possible to use an additional parser to
+also parse the escaped argument differently.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c++"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;lyra/lyra.hpp&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">bool</span> <span class="n">echo</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">help</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">rest</span><span class="p">;</span>
+
+    <span class="k">auto</span> <span class="n">cli</span> <span class="o">=</span> <span class="n">lyra</span><span class="o">::</span><span class="n">cli</span><span class="p">();</span>
+    <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">help</span><span class="p">(</span><span class="n">help</span><span class="p">));</span>
+    <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">opt</span><span class="p">(</span><span class="n">echo</span><span class="p">).</span><span class="n">name</span><span class="p">(</span><span class="s">"--echo"</span><span class="p">).</span><span class="n">help</span><span class="p">(</span>
+        <span class="s">"Echo the post options arguments."</span><span class="p">));</span>
+    <span class="n">cli</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">group</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">literal</span><span class="p">(</span><span class="s">"--"</span><span class="p">))</span>
+            <span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">lyra</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="n">rest</span><span class="p">,</span> <span class="s">"rest"</span><span class="p">)));</span>
+
+    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="p">.</span><span class="n">parse</span><span class="p">({</span> <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span> <span class="p">});</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error in command line: "</span> <span class="o">&lt;&lt;</span> <span class="n">result</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">help</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">cli</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">echo</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"rest:"</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span> <span class="n">r</span> <span class="o">:</span> <span class="n">rest</span><span class="p">)</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">" "</span> <span class="o">&lt;&lt;</span> <span class="n">r</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_reference"><a class="anchor" href="#_reference"></a>14. Reference</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="lyra_arg"><a class="anchor" href="#lyra_arg"></a>13.1. <code>lyra::arg</code></h3>
+<h3 id="lyra_arg"><a class="anchor" href="#lyra_arg"></a>14.1. <code>lyra::arg</code></h3>
 <div class="paragraph">
 <p>A parser for regular arguments, i.e. not <code>--</code> or <code>-</code> prefixed. This is simply
 a way to get values of arguments directly specified in the cli.</p>
@@ -2169,14 +2235,14 @@ contain all the specified values.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_args"><a class="anchor" href="#lyra_args"></a>13.2. <code>lyra::args</code></h3>
+<h3 id="lyra_args"><a class="anchor" href="#lyra_args"></a>14.2. <code>lyra::args</code></h3>
 <div class="paragraph">
 <p>Transport for raw args (copied from main args, supplied via init list, or from
 a pair of iterators).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_arguments"><a class="anchor" href="#lyra_arguments"></a>13.3. <code>lyra::arguments</code></h3>
+<h3 id="lyra_arguments"><a class="anchor" href="#lyra_arguments"></a>14.3. <code>lyra::arguments</code></h3>
 <div class="paragraph">
 <p>A combined parser made up of any number of sub-parsers. Creating and using
 one of these as a basis, one can incrementally compose other parsers into this
@@ -2361,7 +2427,7 @@ customize how the output is generated.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_cli"><a class="anchor" href="#lyra_cli"></a>13.4. <code>lyra::cli</code></h3>
+<h3 id="lyra_cli"><a class="anchor" href="#lyra_cli"></a>14.4. <code>lyra::cli</code></h3>
 <div class="paragraph">
 <p>A Combined parser made up of any two or more other parsers. Creating and using
 one of these as a basis one can incrementally compose other parsers into this
@@ -2505,7 +2571,7 @@ customize how the output is generated.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_command"><a class="anchor" href="#lyra_command"></a>13.5. <code>lyra::command</code></h3>
+<h3 id="lyra_command"><a class="anchor" href="#lyra_command"></a>14.5. <code>lyra::command</code></h3>
 <div class="paragraph">
 <p>A parser that encapsulates the pattern of parsing sub-commands. It provides a
 quick wrapper for the equivalent arrangement of <code>group</code> and <code>literal</code> parsers.
@@ -2596,7 +2662,7 @@ arguments by printing the command (i.e. <code>std::cout &lt;&lt; command</code>)
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_exe_name"><a class="anchor" href="#lyra_exe_name"></a>13.6. <code>lyra::exe_name</code></h3>
+<h3 id="lyra_exe_name"><a class="anchor" href="#lyra_exe_name"></a>14.6. <code>lyra::exe_name</code></h3>
 <div class="paragraph">
 <p>Specifies the name of the executable.</p>
 </div>
@@ -2654,7 +2720,7 @@ in the bound string reference or callback.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_group"><a class="anchor" href="#lyra_group"></a>13.7. <code>lyra::group</code></h3>
+<h3 id="lyra_group"><a class="anchor" href="#lyra_group"></a>14.7. <code>lyra::group</code></h3>
 <div class="paragraph">
 <p>A group of arguments provides for parsing, optionally, a set of arguments
 together. The group itself is considered successfully parsed only when the
@@ -2740,7 +2806,7 @@ inclusive.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_help"><a class="anchor" href="#lyra_help"></a>13.8. <code>lyra::help</code></h3>
+<h3 id="lyra_help"><a class="anchor" href="#lyra_help"></a>14.8. <code>lyra::help</code></h3>
 <div class="paragraph">
 <p>Utility function that defines a default <code>--help</code> option. You can specify a
 <code>bool</code> flag to indicate if the help option was specified and that you could
@@ -2761,7 +2827,7 @@ and "Options, arguments" sections.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_literal"><a class="anchor" href="#lyra_literal"></a>13.9. <code>lyra::literal</code></h3>
+<h3 id="lyra_literal"><a class="anchor" href="#lyra_literal"></a>14.9. <code>lyra::literal</code></h3>
 <div class="paragraph">
 <p>A parser that matches a single fixed value.</p>
 </div>
@@ -2799,7 +2865,7 @@ and "Options, arguments" sections.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_main"><a class="anchor" href="#lyra_main"></a>13.10. <code>lyra::main</code></h3>
+<h3 id="lyra_main"><a class="anchor" href="#lyra_main"></a>14.10. <code>lyra::main</code></h3>
 <div class="paragraph">
 <p>Encapsulates the common use case of a main program that has a help option and
 has a minimal way to specify and parse options. This provides for a way to
@@ -2852,7 +2918,7 @@ the type of argument created and added:</p>
 <div class="paragraph">
 <p>Specify either <code>-&lt;name&gt;</code> or <code>--&lt;name&gt;</code> to add a <code>lyra::opt</code>. You can specify as
 many option names following the first name. A name that doesn&#8217;t follow the
-option syntax is considered the as the help text for the option.</p>
+option syntax is considered as the help text for the option.</p>
 </div>
 <div class="paragraph">
 <p>Specify a non <code>-</code> prefixed name as the first item to signify a positional
@@ -2924,7 +2990,7 @@ access to the parsed argument values.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_opt"><a class="anchor" href="#lyra_opt"></a>13.11. <code>lyra::opt</code></h3>
+<h3 id="lyra_opt"><a class="anchor" href="#lyra_opt"></a>14.11. <code>lyra::opt</code></h3>
 <div class="paragraph">
 <p>A parser for one option with multiple possible names. The option value(s) are
 communicated through a reference to a variable, a container, or a callback.</p>
@@ -2993,7 +3059,7 @@ One can add multiple short spellings at once with <code>-abc</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_option_style"><a class="anchor" href="#lyra_option_style"></a>13.12. <code>lyra::option_style</code></h3>
+<h3 id="lyra_option_style"><a class="anchor" href="#lyra_option_style"></a>14.12. <code>lyra::option_style</code></h3>
 <div class="paragraph">
 <p>Specify the syntax style for options to the parser.</p>
 </div>
@@ -3109,13 +3175,13 @@ only available as individual long options, for example <code>/A</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_parser_result"><a class="anchor" href="#lyra_parser_result"></a>13.13. <code>lyra::parser_result</code></h3>
+<h3 id="lyra_parser_result"><a class="anchor" href="#lyra_parser_result"></a>14.13. <code>lyra::parser_result</code></h3>
 <div class="paragraph">
 <p>The result of parsing arguments.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_parser"><a class="anchor" href="#lyra_parser"></a>13.14. <code>lyra::parser</code></h3>
+<h3 id="lyra_parser"><a class="anchor" href="#lyra_parser"></a>14.14. <code>lyra::parser</code></h3>
 <div class="paragraph">
 <p>Base for all argument parser types.</p>
 </div>
@@ -3148,14 +3214,14 @@ called to print out the help text from the stream operator.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_composable_parser"><a class="anchor" href="#lyra_composable_parser"></a>13.15. <code>lyra::composable_parser</code></h3>
+<h3 id="lyra_composable_parser"><a class="anchor" href="#lyra_composable_parser"></a>14.15. <code>lyra::composable_parser</code></h3>
 <div class="paragraph">
 <p>A parser that can be composed with other parsers using <code>operator|</code>. Composing
 two <code>composable_parser</code> instances generates a <code>cli</code> parser.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_bound_parser"><a class="anchor" href="#lyra_bound_parser"></a>13.16. <code>lyra::bound_parser</code></h3>
+<h3 id="lyra_bound_parser"><a class="anchor" href="#lyra_bound_parser"></a>14.16. <code>lyra::bound_parser</code></h3>
 <div class="paragraph">
 <p>Parser that binds a variable reference or callback to the value of an argument.</p>
 </div>
@@ -3263,7 +3329,7 @@ inclusive.</p>
 </div>
 <div class="paragraph">
 <p>Limit the allowed values of an argument. In the first form the value is
-limited to the ones listed in the call (two or more values). In the second
+limited to the ones listed in the call (one or more values). In the second
 form the <code>check_choice</code> function is called with the parsed value and returns
 <code>true</code> if it&#8217;s an allowed value.</p>
 </div>
@@ -3290,7 +3356,7 @@ or used in a <code>lyra::composable_parser</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_printer"><a class="anchor" href="#lyra_printer"></a>13.17. <code>lyra::printer</code></h3>
+<h3 id="lyra_printer"><a class="anchor" href="#lyra_printer"></a>14.17. <code>lyra::printer</code></h3>
 <div class="paragraph">
 <p>A <code>printer</code> is an interface to manage formatting for output. Mostly the output
 is for the help text of lyra cli parsers. The interface abstracts away specifics
@@ -3336,7 +3402,7 @@ function which matches the output to the printer. For example:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_ostream_printer"><a class="anchor" href="#lyra_ostream_printer"></a>13.18. <code>lyra::ostream_printer</code></h3>
+<h3 id="lyra_ostream_printer"><a class="anchor" href="#lyra_ostream_printer"></a>14.18. <code>lyra::ostream_printer</code></h3>
 <div class="paragraph">
 <p>A <a href="#lyra_printer"><code>lyra::printer</code></a> that uses <code>std::ostream</code> for output. This is the one used in
 the case of printing to the standard output channels of <code>std::cout</code> and
@@ -3344,7 +3410,7 @@ the case of printing to the standard output channels of <code>std::cout</code> a
 </div>
 </div>
 <div class="sect2">
-<h3 id="lyra_val"><a class="anchor" href="#lyra_val"></a>13.19. <code>lyra::val</code></h3>
+<h3 id="lyra_val"><a class="anchor" href="#lyra_val"></a>14.19. <code>lyra::val</code></h3>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="c++"><span class="k">auto</span> <span class="nf">val</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;&amp;</span> <span class="n">v</span><span class="p">);</span>
@@ -3361,10 +3427,52 @@ be retrieved with the
 </div>
 </div>
 <div class="sect1">
-<h2 id="_history"><a class="anchor" href="#_history"></a>14. History</h2>
+<h2 id="_history"><a class="anchor" href="#_history"></a>15. History</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_7"><a class="anchor" href="#_1_7"></a>14.1. 1.7</h3>
+<h3 id="_1_8"><a class="anchor" href="#_1_8"></a>15.1. 1.8</h3>
+<div class="paragraph">
+<p>Changes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Fix cmake version for deprecation of 3.5.&#8201;&#8212;&#8201;<em>Tomáš Slanina</em></p>
+</li>
+<li>
+<p>Remove some unused code in type traits compatibility code.&#8201;&#8212;&#8201;<em>Paolo Pastori</em></p>
+</li>
+<li>
+<p>Fix short option not using the option style for extracting value.&#8201;&#8212;&#8201;<em>Paolo Pastori</em></p>
+</li>
+<li>
+<p>Fix spec of help for arguments in main style help API.&#8201;&#8212;&#8201;<em>Paolo Pastori</em></p>
+</li>
+<li>
+<p>Fix various warnings in the most pedantic compile modes.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Add example for option termination with arbitrary tail arguments.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Fix short-option with value not being recognized when part of other short
+options.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Fix error message when a required argument is not matched.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Fix error message for sequence parsed arguments.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+<li>
+<p>Improve error message for parsing arguments in group, like commands, to
+better reflect user intent.&#8201;&#8212;&#8201;<em>René Ferdinand Rivera Morell</em></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_1_7"><a class="anchor" href="#_1_7"></a>15.2. 1.7</h3>
 <div class="paragraph">
 <p>It&#8217;s been a rather long time since a release. But hopefully releases will be
 more frequent from now on because.. Instead of waiting for a "large enough"
@@ -3468,7 +3576,7 @@ and with
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_6_1"><a class="anchor" href="#_1_6_1"></a>14.2. 1.6.1</h3>
+<h3 id="_1_6_1"><a class="anchor" href="#_1_6_1"></a>15.3. 1.6.1</h3>
 <div class="paragraph">
 <p>Only bug fixes for compile warnings and a pair of bad argument names.</p>
 </div>
@@ -3487,7 +3595,7 @@ and with
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_6"><a class="anchor" href="#_1_6"></a>14.3. 1.6</h3>
+<h3 id="_1_6"><a class="anchor" href="#_1_6"></a>15.4. 1.6</h3>
 <div class="paragraph">
 <p>Even though most of the changes for this release are to fix various reported
 bug fixes, fixing those bugs has meant dealing with some long standing
@@ -3579,14 +3687,14 @@ and with
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_5_1"><a class="anchor" href="#_1_5_1"></a>14.4. 1.5.1</h3>
+<h3 id="_1_5_1"><a class="anchor" href="#_1_5_1"></a>15.5. 1.5.1</h3>
 <div class="paragraph">
 <p>Minor change to bring back the missing option argument hints from the usage
 help output.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_5"><a class="anchor" href="#_1_5"></a>14.5. 1.5</h3>
+<h3 id="_1_5"><a class="anchor" href="#_1_5"></a>15.6. 1.5</h3>
 <div class="paragraph">
 <p>This release has some big changes in easy of use and functionality. There are
 now alternate interfaces for specifying and fetching arguments. Also the help
@@ -3678,7 +3786,7 @@ and with
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_4"><a class="anchor" href="#_1_4"></a>14.6. 1.4</h3>
+<h3 id="_1_4"><a class="anchor" href="#_1_4"></a>15.7. 1.4</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -3712,7 +3820,7 @@ and with
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_3"><a class="anchor" href="#_1_3"></a>14.7. 1.3</h3>
+<h3 id="_1_3"><a class="anchor" href="#_1_3"></a>15.8. 1.3</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -3757,7 +3865,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_2"><a class="anchor" href="#_1_2"></a>14.8. 1.2</h3>
+<h3 id="_1_2"><a class="anchor" href="#_1_2"></a>15.9. 1.2</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -3803,7 +3911,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_1"><a class="anchor" href="#_1_1"></a>14.9. 1.1</h3>
+<h3 id="_1_1"><a class="anchor" href="#_1_1"></a>15.10. 1.1</h3>
 <div class="paragraph">
 <p>Changes:</p>
 </div>
@@ -3848,7 +3956,7 @@ on Azure Pipelines.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>14.10. 1.0</h3>
+<h3 id="_1_0"><a class="anchor" href="#_1_0"></a>15.11. 1.0</h3>
 <div class="paragraph">
 <p>This is the initial base version based on Clara library. Changes from that
 library:</p>

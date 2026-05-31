@@ -7,7 +7,7 @@
 			"label": "Compile DB",
 			"type": "shell",
 			"command": "b2",
-			"args": ["--command-database", "all"],
+			"args": ["--command-database=json", "cxxstd=11", "all"],
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},

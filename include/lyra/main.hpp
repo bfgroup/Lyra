@@ -57,7 +57,10 @@ class main final : protected cli
 	template <typename L>
 	int operator()(int argc, const char ** argv, L action);
 
-	using cli::operator[];
+	value_result operator[](const std::string & n)
+	{
+		return cli::operator[](n);
+	}
 
 	main & style(const option_style & style)
 	{
@@ -146,7 +149,7 @@ the type of argument created and added:
 
 Specify either `-<name>` or `--<name>` to add a `lyra::opt`. You can specify as
 many option names following the first name. A name that doesn't follow the
-option syntax is considered the as the help text for the option.
+option syntax is considered as the help text for the option.
 
 Specify a non `-` prefixed name as the first item to signify a positional
 `lyra::arg`.
@@ -195,7 +198,7 @@ main & main::operator()(
 		// An argument to add.
 		arg a(std::move(bound_val), *arg_names.begin());
 		a.optional();
-		if (arg_names.size() > 2) a.help(*(arg_names.begin() + 1));
+		if (arg_names.size() > 1) a.help(*(arg_names.begin() + 1));
 		cli::add_argument(a);
 	}
 	return *this;

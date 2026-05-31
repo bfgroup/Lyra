@@ -17,14 +17,13 @@ struct scope
 {
 	unsigned pass_count = 0;
 	unsigned fail_count = 0;
-	operator int() const { return fail_count; }
+	operator int() const { return static_cast<int>(fail_count); }
 	scope & operator()(
 		bool pass, const std::string & expression, char const * file, int line)
 	{
 		return (*this)("", pass, expression, file, line);
 	}
-	scope & operator()(
-		const std::string & message,
+	scope & operator()(const std::string & message,
 		bool pass,
 		const std::string & expression,
 		char const * file,
@@ -41,10 +40,22 @@ struct scope
 		}
 		return *this;
 	}
+	template <typename R>
+	void check_result(const R & result) const
+	{
+		auto m = result.message();
+		if (!result)
+			std::cerr << "[ERROR] " << m << "\n";
+		else
+			std::cout << "[DEBUG] " << m << "\n";
+	}
 };
 
 #define CONTEXT __FILE__, __LINE__
 #define REQUIRE(condition) (bool(condition)), #condition, __FILE__, __LINE__
+#define COND_HAS_STRING(message_a, string_a) \
+	((message_a).find(string_a) != std::string::npos)
+
 }} // namespace bfg::mini_test
 
 #endif
