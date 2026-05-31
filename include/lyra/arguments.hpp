@@ -215,10 +215,18 @@ class arguments : public parser
 								== parser_result_type::short_circuit_all)
 							return subparse_result;
 						// For not severe errors, we save the error if it's
-						// the first so that in case no other parsers match
-						// we can report the earliest problem, as that's
-						// the likeliest issue.
-						else if (nomatch_result)
+						// the longest matched so that in case no other parsers
+						// match we can report the problem, as that's
+						// the likeliest parse the user intended.
+						else if (nomatch_result.is_ok()
+							|| (nomatch_result.has_value()
+								&& subparse_result.has_value()
+								&& nomatch_result.value()
+										.remainingTokens()
+										.count()
+									> subparse_result.value()
+										.remainingTokens()
+										.count()))
 							nomatch_result = parse_result(subparse_result);
 					}
 					else if (subparse_result
@@ -380,7 +388,8 @@ class arguments : public parser
 						|| parser_cardinality.maximum < *parsing_count_i))
 				|| (parser_cardinality.is_required()
 					&& (*parsing_count_i < parser_cardinality.minimum)))
-				return make_parse_error(tokens, *p, p_result, style);
+				return make_parse_error(
+					p_result.value().remainingTokens(), *p, p_result, style);
 			++parsing_count_i;
 		}
 		// The return is just the last state as it contains any remaining tokens

@@ -1290,6 +1290,11 @@ class token_iterator
 		return false;
 	}
 
+	int count() const
+	{
+		return static_cast<int>(std::distance(args_i, args_e));
+	}
+
 	private:
 	const option_style & style;
 	std::vector<std::string>::const_iterator args_i;
@@ -2595,7 +2600,15 @@ class arguments : public parser
 							&& subparse_result.value().type()
 								== parser_result_type::short_circuit_all)
 							return subparse_result;
-						else if (nomatch_result)
+						else if (nomatch_result.is_ok()
+							|| (nomatch_result.has_value()
+								&& subparse_result.has_value()
+								&& nomatch_result.value()
+										.remainingTokens()
+										.count()
+									> subparse_result.value()
+										.remainingTokens()
+										.count()))
 							nomatch_result = parse_result(subparse_result);
 					}
 					else if (subparse_result
@@ -2736,7 +2749,8 @@ class arguments : public parser
 						|| parser_cardinality.maximum < *parsing_count_i))
 				|| (parser_cardinality.is_required()
 					&& (*parsing_count_i < parser_cardinality.minimum)))
-				return make_parse_error(tokens, *p, p_result, style);
+				return make_parse_error(
+					p_result.value().remainingTokens(), *p, p_result, style);
 			++parsing_count_i;
 		}
 		return p_result;

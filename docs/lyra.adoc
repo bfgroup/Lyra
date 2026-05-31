@@ -301,6 +301,11 @@ Changes:
 	-- _René Ferdinand Rivera Morell_
 * Fix error message when a required argument is not matched.
 	-- _René Ferdinand Rivera Morell_
+* Fix error message for sequence parsed arguments.
+	-- _René Ferdinand Rivera Morell_
+* Improve error message for parsing arguments in group, like commands, to
+	better reflect user intent.
+	-- _René Ferdinand Rivera Morell_
 
 === 1.7
 

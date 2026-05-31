@@ -281,6 +281,11 @@ class token_iterator
 		return false;
 	}
 
+	int count() const
+	{
+		return static_cast<int>(std::distance(args_i, args_e));
+	}
+
 	private:
 	const option_style & style;
 	std::vector<std::string>::const_iterator args_i;

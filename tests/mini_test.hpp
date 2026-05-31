@@ -40,10 +40,22 @@ struct scope
 		}
 		return *this;
 	}
+	template <typename R>
+	void check_result(const R & result) const
+	{
+		auto m = result.message();
+		if (!result)
+			std::cerr << "[ERROR] " << m << "\n";
+		else
+			std::cout << "[DEBUG] " << m << "\n";
+	}
 };
 
 #define CONTEXT __FILE__, __LINE__
 #define REQUIRE(condition) (bool(condition)), #condition, __FILE__, __LINE__
+#define COND_HAS_STRING(message_a, string_a) \
+	((message_a).find(string_a) != std::string::npos)
+
 }} // namespace bfg::mini_test
 
 #endif
