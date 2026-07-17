@@ -130,8 +130,10 @@ class ostream_printer : public printer
 	{
 		const std::string indent_str(
 			static_cast<unsigned int>(get_indent_level()) * style.indent_size, ' ');
+		const std::size_t indent_chars
+			= static_cast<std::size_t>(get_indent_level()) * style.indent_size;
 		const std::string opt_pad(
-			26 - static_cast<unsigned int>(get_indent_level()) * style.indent_size - 1, ' ');
+			(indent_chars + 1 < 26) ? (26 - indent_chars - 1) : 0, ' ');
 		if (opt.size() > opt_pad.size())
 			os << indent_str << opt << "\n"
 			   << indent_str << opt_pad << " " << description << "\n";
