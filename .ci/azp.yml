@@ -67,11 +67,10 @@ stages:
           - bash: |
               set -e
               pushd ${HOME}
-              wget -nv https://github.com/bfgroup/b2/archive/main.tar.gz
-              tar -zxf main.tar.gz
-              cd b2-main
-              ./bootstrap.sh
-              sudo ./b2 --debug-configuration install
+              B2_URL=`wget --tries=3 -q -O - https://api.github.com/repos/bfgroup/b2/releases/latest | grep browser_download_url | grep 'linux-x86_64[.]bz2["]' | cut -d '"' -f 4`
+              wget -nv "${B2_URL}" -O b2.bz2
+              tar -jxvf b2.bz2
+              mv b2-* b2
               EXE_PATH=`which ${EXE}`
               echo "using ${TOOLSET%%-[0-9]*} : : ${EXE_PATH} : ${B2_CONFIG} ;" > ${HOME}/user-config.jam
               popd
@@ -80,7 +79,7 @@ stages:
           - bash: |
               set -e
               pushd ${HOME}
-              CMAKE_URL=`wget -q -O - https://api.github.com/repos/Kitware/cmake/releases/latest | grep browser_download_url | grep "linux-x86_64[.]tar[.]gz" | cut -d '"' -f 4`
+              CMAKE_URL=`wget --tries=3 -q -O - https://api.github.com/repos/Kitware/cmake/releases/latest | grep browser_download_url | grep "linux-x86_64[.]tar[.]gz" | cut -d '"' -f 4`
               wget "${CMAKE_URL}" -O cmake.tgz
               tar zxvf cmake.tgz
               mv cmake-*-linux-x86_64 cmake
@@ -91,7 +90,7 @@ stages:
               - bash: |
                   set -e
                   pushd "${{ b2_test.dir }}"
-                  b2 "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} cxxstd=${CXXSTD} ${{ b2_test.args }}
+                  "${HOME}/b2/b2" "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} cxxstd=${CXXSTD} ${{ b2_test.args }}
                   popd
                 displayName: "${{ b2_test.name }}"
           - ${{ each cmake_test in parameters.cmake_tests }}:
@@ -125,11 +124,10 @@ stages:
           - bash: |
               set -e
               pushd ${HOME}
-              wget -nv https://github.com/bfgroup/b2/archive/main.tar.gz
-              tar -zxf main.tar.gz
-              cd b2-main
-              CXX= ./bootstrap.sh
-              sudo ./b2 install
+              B2_URL=`wget --tries=3 -q -O - https://api.github.com/repos/bfgroup/b2/releases/latest | grep browser_download_url | grep 'macos-x86_64[.]bz2["]' | cut -d '"' -f 4`
+              wget -nv "${B2_URL}" -O b2.bz2
+              tar -jxvf b2.bz2
+              mv b2-* b2
               popd
             displayName: "Install B2"
           - ${{ each b2_test in parameters.b2_tests }}:
@@ -138,7 +136,7 @@ stages:
                   CXX_PATH=`which ${EXE}`
                   echo "using ${TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
                   pushd "${{ b2_test.dir }}"
-                  b2 "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} cxxstd=${CXXSTD} ${{ b2_test.args }}
+                  "${HOME}/b2/b2" "--user-config=${HOME}/user-config.jam" ${TOOLSET:+toolset=$TOOLSET} cxxstd=${CXXSTD} ${{ b2_test.args }}
                   popd
                 displayName: "${{ b2_test.name }}"
       - job: "Windows"
