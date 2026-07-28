@@ -9,7 +9,7 @@
 :sectanchors:
 :sectnums:
 :sectnumlevels: 2
-:stylesheet: amber.css
+:stylesheet: tufte.css
 :icons: font
 :source-highlighter: rouge
 :rouge-style: base16.solarized

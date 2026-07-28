@@ -6,7 +6,7 @@
 :sectanchors:
 :sectnums:
 :sectnumlevels: 2
-:stylesheet: amber.css
+:stylesheet: tufte.css
 :icons: font
 :source-highlighter: rouge
 :rouge-style: base16.solarized
@@ -26,10 +26,13 @@ ifdef::backend-html5[]
 ++++
 <style>
 #toctitle {
-	padding: 400px 0 0 0;
-	background: url(logo-color-300.png) no-repeat center/90%;
+	padding: 15rem 0 0 0;
+	background: url(logo-color-300.png) no-repeat center/15rem;
 	height: 0;
 	overflow: hidden;
+}
+div.shields {
+	width: 55%;
 }
 </style>
 ++++

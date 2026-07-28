@@ -1,0 +1,731 @@
+@charset "UTF-8";
+
+/* Adapted from https://github.com/edwardtufte/tufte-css */
+
+:root {
+	--color-accent: #fa9300;
+	--dark-bg-color: #151515;
+	--dark-fg-color: #ddd;
+	--dark-hr-color: #555;
+	--dark-th-color: #222;
+	--light-bg-color: #fffff8;
+	--light-fg-color: #111;
+	--light-hr-color: #aaa;
+	--light-th-color: #ddd;
+
+	--font-family-regular:
+		Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua",
+		Georgia, serif;
+	--font-family-code: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+	--font-size-base: 15px;
+	--font-size-h1: 3.2rem;
+
+	--wide-margin-left: 12.5%;
+	--wide-max-width: 1400px;
+
+	--narrow-margins: 8%;
+
+	--indent-block-border: solid var(--color-accent) 0.2rem;
+
+	color-scheme: light dark;
+}
+
+html {
+	font-size: var(--font-size-base);
+	font-family: var(--font-family-regular);
+	counter-reset: sidenote-counter;
+	color: light-dark(var(--light-fg-color), var(--dark-fg-color));
+	background-color: light-dark(var(--light-bg-color), var(--dark-bg-color));
+}
+
+body {
+	margin: 0 auto 0 auto;
+	padding-left: var(--wide-margin-left);
+	max-width: var(--wide-max-width);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-top: 2rem;
+	margin-bottom: 1.4rem;
+	font-weight: 400;
+	font-style: italic;
+	line-height: 1;
+}
+
+h1 {
+	margin-top: 4rem;
+	font-style: normal;
+	font-size: var(--font-size-h1);
+}
+
+h2 {
+	font-size: calc(var(--font-size-h1) * 0.75);
+}
+
+h3,
+#toctitle {
+	font-size: calc(var(--font-size-h1) * 0.65);
+}
+
+h4 {
+	font-size: calc(var(--font-size-h1) * 0.5);
+}
+
+h5 {
+	font-size: calc(var(--font-size-h1) * 0.55);
+}
+
+h6 {
+	font-size: calc(var(--font-size-h1) * 0.5);
+}
+
+hr {
+	display: block;
+	height: 1px;
+	width: 55%;
+	border: 0;
+	border-top: 1px solid;
+	margin: 1rem 0;
+	padding: 0;
+	@media (prefers-color-scheme: light) {
+		border-top-color: var(--light-hr-color);
+	}
+	@media (prefers-color-scheme: dark) {
+		border-top-color: var(--dark-hr-color);
+	}
+}
+
+table {
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+p.subtitle,
+#header .details {
+	font-style: italic;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	font-size: 1.3rem;
+	display: block;
+	line-height: 1;
+	width: 55%;
+}
+
+.numeral {
+	font-family: et-book-roman-old-style;
+}
+
+article {
+	padding: 5rem 0rem;
+}
+#header {
+	padding-top: 5rem;
+}
+
+section,
+.sect1 {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
+
+p,
+dl,
+ol,
+ul {
+	font-size: 1.4rem;
+	line-height: 2rem;
+}
+
+p {
+	margin-top: 1.4rem;
+	margin-bottom: 1.4rem;
+	padding-right: 0;
+	vertical-align: baseline;
+}
+
+div.epigraph {
+	margin: 5rem 0;
+}
+
+div.epigraph > blockquote {
+	margin-top: 3rem;
+	margin-bottom: 3rem;
+}
+
+div.epigraph > blockquote,
+div.epigraph > blockquote > p,
+div.sidebarblock .paragraph,
+div.sidebarblock .paragraph > p,
+div.admonitionblock .content {
+	font-style: italic;
+}
+
+div.epigraph > blockquote > footer {
+	font-style: normal;
+}
+
+div.epigraph > blockquote > footer > cite {
+	font-style: italic;
+}
+/* end chapter epigraphs styles */
+
+blockquote {
+	font-size: 1.4rem;
+}
+
+blockquote p {
+	width: 55%;
+	margin-right: 40px;
+}
+
+blockquote footer {
+	width: 55%;
+	font-size: 1.1rem;
+	text-align: right;
+}
+
+section > p,
+section > footer,
+section > table,
+.sectionbody > .paragraph,
+.sect2 > .paragraph,
+.sect3 > .paragraph,
+.sect4 > .paragraph,
+.sect5 > .paragraph,
+.sectionbody > .openblock,
+.sect2 > .openblock,
+.sect3 > .openblock,
+.sect4 > .openblock,
+.sect5 > .openblock,
+.tip,
+.note > table:not(dl table, ol table, ul table),
+.warning > table:not(dl table, ol table, ul table),
+.important > table:not(dl table, ol table, ul table) {
+	width: 55%;
+}
+
+.note > table:not(dl table, ol table, ul table),
+.warning > table:not(dl table, ol table, ul table),
+.important > table:not(dl table, ol table, ul table) {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+/* data tables */
+
+table.tableblock {
+	table-layout: auto;
+}
+table.tableblock col {
+	width: auto !important;
+}
+table.tableblock > * > tr > * {
+	border: 1px solid var(--color-accent);
+	padding: 2px 0.5em 2px 0.5em;
+	@media (prefers-color-scheme: light) {
+		border-color: var(--light-hr-color);
+	}
+	@media (prefers-color-scheme: dark) {
+		border-color: var(--dark-hr-color);
+	}
+}
+
+/* 50 + 5 == 55, to be the same width as paragraph */
+section > dl,
+section > ol,
+section > ul,
+.sectionbody > .olist,
+.sectionbody > .ulist,
+.sectionbody > .dlist,
+.sect2 > .olist,
+.sect2 > .ulist,
+.sect2 > .dlist,
+.sect3 > .olist,
+.sect3 > .ulist,
+.sect3 > .dlist,
+.sect4 > .olist,
+.sect4 > .ulist,
+.sect4 > .dlist,
+.sect5 > .olist,
+.sect5 > .ulist,
+.sect5 > .dlist {
+	width: 50%;
+	/* -webkit-padding-start: 5%; */
+	/* background-color: #555; */
+}
+
+dt:not(:first-child),
+li:not(:first-child) {
+	margin-top: 0.25rem;
+}
+
+figure {
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+	max-width: 55%;
+	-webkit-margin-start: 0;
+	-webkit-margin-end: 0;
+	margin: 0 0 3em 0;
+}
+
+figcaption {
+	float: right;
+	clear: right;
+	margin-top: 0;
+	margin-bottom: 0;
+	font-size: 1.1rem;
+	line-height: 1.6;
+	vertical-align: baseline;
+	position: relative;
+	max-width: 40%;
+}
+
+figure.fullwidth figcaption {
+	margin-right: 24%;
+}
+
+a:link,
+a:visited {
+	color: inherit;
+	text-underline-offset: 0.1em;
+	text-decoration-thickness: 0.05em;
+}
+
+/* Sidenotes, margin notes, figures, captions */
+img {
+	max-width: 100%;
+}
+
+.sidenote,
+.marginnote,
+.sidebarblock,
+#toc {
+	float: right;
+	clear: right;
+	margin-right: -60%;
+	width: 50%;
+	margin-top: 0.3rem;
+	margin-bottom: 0;
+	position: relative;
+}
+
+.sidenote,
+.marginnote,
+.sidebarblock p,
+#toc,
+.note > table,
+.warning > table,
+.important > table,
+.tip p {
+	font-size: 1.1rem;
+	line-height: 1.3;
+	vertical-align: baseline;
+}
+
+.sidebarblock,
+#toc {
+	margin-top: -3rem;
+	margin-right: 10%;
+	width: 30%;
+}
+
+.sidebarblock {
+	margin-top: 0.5rem;
+}
+
+.sidenote-number {
+	counter-increment: sidenote-counter;
+}
+
+.sidenote-number:after,
+.sidenote:before {
+	font-family: et-book-roman-old-style;
+	position: relative;
+	vertical-align: baseline;
+}
+
+.sidenote-number:after {
+	content: counter(sidenote-counter);
+	font-size: 1rem;
+	top: -0.5rem;
+	left: 0.1rem;
+}
+
+.sidenote:before {
+	content: counter(sidenote-counter) " ";
+	font-size: 1rem;
+	top: -0.5rem;
+}
+
+blockquote .sidenote,
+blockquote .marginnote {
+	margin-right: -82%;
+	min-width: 59%;
+	text-align: left;
+}
+
+div.fullwidth,
+table.fullwidth {
+	width: 100%;
+}
+
+div.table-wrapper {
+	overflow-x: auto;
+	font-family: "Trebuchet MS", "Gill Sans", "Gill Sans MT", sans-serif;
+}
+
+.sans {
+	font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+	letter-spacing: 0.03em;
+}
+
+code,
+pre > code,
+dd pre {
+	font-family: var(--font-family-code);
+	font-size: 0.9rem;
+	line-height: 1rem;
+	-webkit-text-size-adjust: 100%; /* Prevent adjustments of font size after orientation changes in iOS. See https://github.com/edwardtufte/tufte-css/issues/81#issuecomment-261953409 */
+	font-style: normal;
+}
+
+.sans > code {
+	font-size: 1.2rem;
+}
+
+h1 > code,
+h2 > code,
+h3 > code,
+h4 > code,
+h5 > code,
+h6 > code {
+	font-size: 0.8em;
+}
+
+.marginnote > code,
+.sidenote > code {
+	font-size: 1rem;
+}
+
+/* pre > code, */
+.sect1 > * > .listingblock,
+.sect1 > * > .literalblock,
+.sect2 > .listingblock,
+.sect2 > .literalblock,
+.sect3 > .listingblock,
+.sect3 > .literalblock,
+.sect4 > .listingblock,
+.sect4 > .literalblock,
+.sect5 > .listingblock,
+.sect5 > .literalblock {
+	width: 52.5%;
+}
+
+/* pre > code, */
+.listingblock,
+.literalblock {
+	font-size: 0.9rem;
+	margin-left: 2rem;
+	padding-left: 1rem;
+	display: block;
+	border-left: var(--indent-block-border);
+}
+
+.listingblock > .content,
+.literalblock > .content {
+	overflow-x: scroll;
+}
+
+pre.fullwidth > code {
+	width: 90%;
+}
+
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+	word-wrap: break-word;
+}
+
+.sectionbody > table,
+.sect2 > table,
+.sect3 > table,
+.sect4 > table,
+.sect5 > table,
+.fullwidth {
+	max-width: 90%;
+	clear: both;
+}
+
+span.newthought {
+	font-variant: small-caps;
+	font-size: 1.2em;
+}
+
+input.margin-toggle {
+	display: none;
+}
+
+label.sidenote-number {
+	display: inline-block;
+	max-height: 2rem; /* should be less than or equal to paragraph line-height */
+}
+
+label.margin-toggle:not(.sidenote-number) {
+	display: none;
+}
+
+@media (max-width: 760px) {
+	body {
+		width: calc(100% - var(--narrow-margins) - var(--narrow-margins));
+		padding-left: var(--narrow-margins);
+		padding-right: var(--narrow-margins);
+	}
+
+	hr,
+	section > p,
+	section > footer,
+	section > table,
+	#content .sectionbody > .paragraph > p,
+	#content .sectionbody > .paragraph > footer,
+	#content .sectionbody > .paragraph > table,
+	.sectionbody > .paragraph,
+	.sect2 > .paragraph,
+	.sect3 > .paragraph,
+	.sect4 > .paragraph,
+	.sect5 > .paragraph,
+	.sectionbody > .openblock,
+	.sect2 > .openblock,
+	.sect3 > .openblock,
+	.sect4 > .openblock,
+	.sect5 > .openblock,
+	.tip {
+		width: 100%;
+	}
+
+	pre > code {
+		width: 97%;
+	}
+
+	section > dl,
+	section > ol,
+	section > ul,
+	.sectionbody > .olist,
+	.sectionbody > .ulist,
+	.sectionbody > .dlist,
+	.sect2 > .olist,
+	.sect2 > .ulist,
+	.sect2 > .dlist,
+	.sect3 > .olist,
+	.sect3 > .ulist,
+	.sect3 > .dlist,
+	.sect4 > .olist,
+	.sect4 > .ulist,
+	.sect4 > .dlist,
+	.sect5 > .olist,
+	.sect5 > .ulist,
+	.sect5 > .dlist {
+		width: 90%;
+	}
+
+	figure {
+		max-width: 90%;
+	}
+
+	figcaption,
+	figure.fullwidth figcaption {
+		margin-right: 0%;
+		max-width: none;
+	}
+
+	blockquote {
+		margin-left: 1.5em;
+		margin-right: 0em;
+	}
+
+	blockquote p,
+	blockquote footer {
+		width: 100%;
+	}
+
+	label.margin-toggle:not(.sidenote-number) {
+		display: inline;
+	}
+
+	.sidenote,
+	.marginnote,
+	#toc {
+		/* display: none; */
+	}
+
+	.sidebarblock,
+	.admonitionblock > table:not(dl table, ol table, ul table),
+	.note > table:not(dl table, ol table, ul table),
+	.warning > table:not(dl table, ol table, ul table),
+	.important > table:not(dl table, ol table, ul table),
+	.margin-toggle:checked + .sidenote,
+	.margin-toggle:checked + .marginnote {
+		display: block;
+		float: left;
+		left: 1rem;
+		clear: both;
+		width: 95%;
+		margin: 1rem 2.5%;
+		position: relative;
+	}
+
+	.sidebarblock,
+	.admonitionblock > table:not(dl table, ol table, ul table),
+	.note > table:not(dl table, ol table, ul table),
+	.warning > table:not(dl table, ol table, ul table),
+	.important > table:not(dl table, ol table, ul table) {
+		float: none;
+		left: 0;
+		width: 100%;
+		margin: 1rem 0;
+	}
+
+	label {
+		cursor: pointer;
+	}
+
+	div.table-wrapper {
+		width: 85%;
+	}
+
+	img {
+		width: 100%;
+	}
+
+	.sect1 > * > .listingblock,
+	.sect1 > * > .literalblock,
+	.sect2 > .listingblock,
+	.sect2 > .literalblock,
+	.sect3 > .listingblock,
+	.sect3 > .literalblock,
+	.sect4 > .listingblock,
+	.sect4 > .literalblock,
+	.sect5 > .listingblock,
+	.sect5 > .literalblock {
+		width: 100%;
+	}
+
+	table code {
+		word-wrap: break-word;
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+
+#header .details br {
+	display: none;
+}
+
+#header h1 {
+	color: var(--color-accent);
+}
+
+#toc {
+	position: absolute;
+	width: 30%;
+	right: 5%;
+	margin-right: inherit;
+	margin-top: 3rem;
+	@media (max-width: 760px) {
+		position: static;
+		width: auto;
+		margin-top: inherit;
+		float: none;
+	}
+}
+#toc .sectlevel2 {
+	@media (max-width: 760px) {
+		display: none;
+	}
+}
+
+#toc ul {
+	font-size: 1.1rem;
+	line-height: 1.3;
+	list-style-type: none;
+	padding-left: 0.125em;
+}
+
+#toc ul ul {
+	padding-left: 1em;
+}
+
+a.anchor {
+	position: absolute;
+	z-index: 1001;
+	width: 1.5ex;
+	margin-left: -1.5ex;
+	display: block;
+	text-decoration: none !important;
+	visibility: hidden;
+	text-align: center;
+	font-weight: normal;
+	color: var(--color-accent);
+}
+
+a.anchor:before {
+	content: "\00A7";
+	display: block;
+}
+
+*:hover > a.anchor,
+a.anchor:hover {
+	visibility: visible;
+}
+
+.admonitionblock .icon {
+	font-weight: bold;
+	font-size: 1.8rem;
+	width: 1.9rem;
+	text-align: center;
+	color: var(--color-accent);
+	vertical-align: text-top;
+	border-right: var(--indent-block-border);
+}
+
+.admonitionblock td.content {
+	padding-left: 1.1rem;
+}
+.admonitionblock .listingblock {
+	border-left: none !important;
+}
+
+table p {
+	margin: 0 0 0.1rem 0;
+}
+table .valign-top {
+	vertical-align: top;
+}
+table .valign-middle {
+	vertical-align: -webkit-baseline-middle;
+}
+table th {
+	@media (prefers-color-scheme: light) {
+		background-color: var(--light-th-color);
+	}
+	@media (prefers-color-scheme: dark) {
+		background-color: var(--dark-th-color);
+	}
+}
+
+#content h2,
+#content h3,
+#content h4 {
+	color: var(--color-accent);
+}
