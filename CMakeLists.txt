@@ -48,7 +48,7 @@ include(CMakePackageConfigHelpers)
 configure_package_config_file(
   ${PROJECT_SOURCE_DIR}/data/cmake/lyraConfig.cmake.in
   ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra
+  INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/lyra
   )
 
 install(
@@ -60,7 +60,7 @@ install(
   EXPORT lyraTarget
   FILE  lyraTarget.cmake
   NAMESPACE bfg::
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/lyra
   )
 
 install(
@@ -71,7 +71,7 @@ install(
 install(
   FILES
   ${PROJECT_BINARY_DIR}/lyraConfig.cmake
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/lyra/cmake/
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/lyra
   )
 
 
