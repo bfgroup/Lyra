@@ -4,7 +4,7 @@
 # http://www.boost.org/LICENSE_1_0.txt
 
 
-cmake_minimum_required( VERSION 3.0...4.2.3 )
+cmake_minimum_required( VERSION 3.5...4.4 )
 project(base_lib_test)
 
 message(STATUS "${CMAKE_PREFIX_PATH}")
@@ -16,5 +16,4 @@ add_executable(base_exe base_exe.cpp)
 target_sources(base_exe PRIVATE base_lib.cpp)
 target_include_directories(base_exe PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(base_exe PUBLIC bfg::lyra)
-add_test(NAME base_exe
-         COMMAND base_exe -f)
+add_test(NAME base_exe COMMAND base_exe -f)

@@ -103,7 +103,7 @@ stages:
                   pushd "../${{ cmake_test.dir }}_build"
                   ${HOME}/cmake/bin/cmake $SOURCE/${{ cmake_test.cml_dir }} ${{ cmake_test.args }} -DCMAKE_INSTALL_PREFIX=$SOURCE/../${{ cmake_test.dir }}_install -DCMAKE_PREFIX_PATH=$SOURCE/../${{ cmake_test.dir }}_install
                   make ${{ cmake_test.make_args }}
-                  ${HOME}/cmake/bin/ctest
+                  ${HOME}/cmake/bin/ctest --no-tests=ignore
                   popd
                 displayName: "${{ cmake_test.name }}"
       - job: "macOS"
