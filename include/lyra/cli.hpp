@@ -160,6 +160,7 @@ class cli : protected arguments
 
 	using arguments::parse;
 	using arguments::get_named;
+	using arguments::print_help;
 
 	std::unique_ptr<parser> clone() const override
 	{
