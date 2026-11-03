@@ -417,11 +417,16 @@ class arguments : public parser
 		return make_clone<arguments>(this);
 	}
 
+	void print_help(printer & p) const
+	{
+		print_help_text(p, get_option_style());
+	}
+
 	template <typename T>
 	T & print_help(T & os) const
 	{
 		std::unique_ptr<printer> p = make_printer(os);
-		this->print_help_text(*p, get_option_style());
+		print_help(*p);
 		return os;
 	}
 
