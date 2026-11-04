@@ -59,7 +59,8 @@ struct is_charconv_convertible<T,
 
 template <typename T>
 struct is_charconv_convertible<T,
-	typename std::enable_if<std::is_floating_point<T>>::type> : std::true_type
+	typename std::enable_if<std::is_floating_point<T>::value>::type>
+	: std::true_type
 { };
 #endif
 
