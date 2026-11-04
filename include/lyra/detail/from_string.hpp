@@ -14,31 +14,84 @@
 #include <string>
 #include <type_traits>
 
-#ifndef LYRA_CONFIG_OPTIONAL_TYPE
-#	if defined(__has_include)
-#		if __has_include(<version>)
-#			include <version>
-#		elif __has_include(<ciso646>)
-#			include <ciso646>
-#		endif
+#if defined(__has_include)
+#	if __has_include(<version>)
+#		include <version>
+#	elif __has_include(<ciso646>)
+#		include <ciso646>
+#	endif
+
+#	ifndef LYRA_CONFIG_OPTIONAL_TYPE
 #		if __has_include(<optional>) \
 		&& defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
 #			include <optional>
 #			define LYRA_CONFIG_OPTIONAL_TYPE std::optional
 #		endif
 #	endif
+
+#	if __has_include(<filesystem>) \
+	&& defined(__cpp_lib_filesystem) && (__cpp_lib_filesystem >= 201703L)
+#		include <filesystem>
+#		define LYRA_HAS_FILESYSTEM_PATH
+#	endif
+
+#	if __has_include(<charconv>) \
+	&& defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L)
+#		include <array>
+#		include <charconv>
+#		include <system_error>
+#		define LYRA_HAS_CHARCONV
+#	endif
 #endif
 
 namespace lyra { namespace detail {
 
+template <typename T, typename = void>
+struct is_charconv_convertible : std::false_type
+{ };
+
+#ifdef LYRA_HAS_CHARCONV
 template <typename T>
-bool to_string(const T & source, std::string & target)
+struct is_charconv_convertible<T,
+	typename std::enable_if<std::is_integral<T>::value
+		&& !std::is_same<T, bool>::value>::type> : std::true_type
+{ };
+
+template <typename T>
+struct is_charconv_convertible<T,
+	typename std::enable_if<std::is_floating_point<T>::value>::type>
+	: std::true_type
+{ };
+#endif
+
+template <typename T,
+	typename std::enable_if<!is_charconv_convertible<T>::value, int>::type = 0>
+inline bool to_string(const T & source, std::string & target)
 {
 	std::stringstream ss;
 	ss << source;
 	ss >> target;
 	return !ss.fail();
 }
+
+#ifdef LYRA_HAS_CHARCONV
+template <typename T,
+	typename std::enable_if<is_charconv_convertible<T>::value, int>::type = 0>
+inline bool to_string(const T & source, std::string & target)
+{
+	std::array<char, 24> buffer { };
+
+	auto result
+		= std::to_chars(buffer.data(), buffer.data() + buffer.size(), source);
+	if (result.ec != std::errc())
+	{
+		return false;
+	}
+
+	target = std::string(buffer.data(), result.ptr);
+	return true;
+}
+#endif
 
 inline bool to_string(const std::string & source, std::string & target)
 {
@@ -57,6 +110,15 @@ inline bool to_string(bool source, std::string & target)
 	target = source ? "true" : "false";
 	return true;
 }
+
+#ifdef LYRA_HAS_FILESYSTEM_PATH
+inline bool to_string(
+	const std::filesystem::path & source, std::string & target)
+{
+	target = source.string();
+	return true;
+}
+#endif
 
 #ifdef LYRA_CONFIG_OPTIONAL_TYPE
 template <typename T>
@@ -116,7 +178,9 @@ struct validate_from_string<T,
 	}
 };
 
-template <typename S, typename T>
+template <typename S,
+	typename T,
+	typename std::enable_if<!is_charconv_convertible<T>::value, int>::type = 0>
 inline bool from_string(S const & source, T & target)
 {
 	std::stringstream ss;
@@ -135,6 +199,27 @@ inline bool from_string(S const & source, T & target)
 	}
 	return false;
 }
+
+#ifdef LYRA_HAS_CHARCONV
+template <typename S,
+	typename T,
+	typename std::enable_if<is_charconv_convertible<T>::value, int>::type = 0>
+inline bool from_string(S const & source, T & target)
+{
+	T tmp { };
+	std::from_chars_result result
+		= std::from_chars(source.data(), source.data() + source.size(), tmp);
+
+	if (result.ec == std::errc()
+		&& result.ptr == (source.data() + source.size()))
+	{
+		target = tmp;
+		return true;
+	}
+
+	return false;
+}
+#endif
 
 template <typename S, typename... C>
 inline bool from_string(S const & source, std::basic_string<C...> & target)
@@ -166,6 +251,15 @@ inline bool from_string(S const & source, bool & target)
 		return false;
 	return true;
 }
+
+#ifdef LYRA_HAS_FILESYSTEM_PATH
+template <typename S>
+inline bool from_string(S const & source, std::filesystem::path & target)
+{
+	target = { source };
+	return true;
+}
+#endif
 
 #ifdef LYRA_CONFIG_OPTIONAL_TYPE
 template <typename T>
