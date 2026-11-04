@@ -53,13 +53,13 @@ struct is_charconv_convertible : std::false_type
 #ifdef LYRA_HAS_CHARCONV
 template <typename T>
 struct is_charconv_convertible<T,
-	typename std::enable_if<std::is_integral_v<T>
-		&& !std::is_same_v<T, bool>>::type> : std::true_type
+	typename std::enable_if<std::is_integral<T>::value
+		&& !std::is_same<T, bool>::value>::type> : std::true_type
 { };
 
 template <typename T>
 struct is_charconv_convertible<T,
-	typename std::enable_if<std::is_floating_point_v<T>>::type> : std::true_type
+	typename std::enable_if<std::is_floating_point<T>>::type> : std::true_type
 { };
 #endif
 
